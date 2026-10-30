@@ -1,0 +1,88 @@
+{
+ "name": "radial-progress",
+ "title": {
+  "en": "Radial progress"
+ },
+ "description": {
+  "en": "Radial progress can be used to show the progress of a task or to show the passing of time.",
+  "ca": "El Radial Progress s'utilitza per mostrar el progrés d'una tasca o per mostrar el pas del temps.",
+  "es": "Radial progress se puede utilizar para mostrar el progreso de una tarea o para mostrar el paso del tiempo."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "radial-progress",
+     "description": {
+      "en": "Shows a radial progress",
+      "ca": "Mostra un Radial progress",
+      "es": "Muestra un Radial progress"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "radial-progress",
+   "section": null,
+   "title": {
+    "en": "Radial progress"
+   },
+   "subtitle": null,
+   "html": "<div class=\"radial-progress\" data-style=\"--value:70;\" aria-valuenow=\"70\" role=\"progressbar\">70%</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "different-values",
+   "section": null,
+   "title": {
+    "en": "Different values"
+   },
+   "subtitle": null,
+   "html": "<div class=\"radial-progress\" data-style=\"--value:0;\" aria-valuenow=\"0\" role=\"progressbar\">0%</div>\n<div class=\"radial-progress\" data-style=\"--value:20;\" aria-valuenow=\"20\" role=\"progressbar\">20%</div>\n<div class=\"radial-progress\" data-style=\"--value:60;\" aria-valuenow=\"60\" role=\"progressbar\">60%</div>\n<div class=\"radial-progress\" data-style=\"--value:80;\" aria-valuenow=\"80\" role=\"progressbar\">80%</div>\n<div class=\"radial-progress\" data-style=\"--value:100;\" aria-valuenow=\"100\" role=\"progressbar\">100%</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "custom-color",
+   "section": null,
+   "title": {
+    "en": "Custom color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"radial-progress text-primary\" data-style=\"--value:70;\" aria-valuenow=\"70\" role=\"progressbar\">70%</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-background-color-and-border",
+   "section": null,
+   "title": {
+    "en": "With background color and border"
+   },
+   "subtitle": null,
+   "html": "<div\n  class=\"radial-progress bg-primary text-primary-content border-primary border-4\"\n  data-style=\"--value:70;\" aria-valuenow=\"70\" role=\"progressbar\">\n  70%\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "custom-size-and-custom-thickness",
+   "section": null,
+   "title": {
+    "en": "Custom size and custom thickness"
+   },
+   "subtitle": null,
+   "html": "<div class=\"radial-progress\" data-style=\"--value:70; --size:12rem; --thickness: 2px;\" aria-valuenow=\"70\" role=\"progressbar\">70%</div>\n<div class=\"radial-progress\" data-style=\"--value:70; --size:12rem; --thickness: 2rem;\" aria-valuenow=\"70\" role=\"progressbar\">70%</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

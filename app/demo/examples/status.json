@@ -1,0 +1,179 @@
+{
+ "name": "status",
+ "title": {
+  "en": "Status"
+ },
+ "description": {
+  "en": "Status is a really small icon to visually show the current status of an element, like online, offline, error, etc."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "status",
+     "description": {
+      "en": "Status icon",
+      "ca": "Icona Status",
+      "es": "Icono Status"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "status-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "status-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "status-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "status-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "status-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "status-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "status-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "status-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "status-xs",
+     "description": {
+      "en": "extra small size",
+      "ca": "mida extra petita",
+      "es": "tamaño extra pequeño"
+     }
+    },
+    {
+     "class": "status-sm",
+     "description": {
+      "en": "small size"
+     }
+    },
+    {
+     "class": "status-md",
+     "description": {
+      "en": "medium size"
+     },
+     "default": true
+    },
+    {
+     "class": "status-lg",
+     "description": {
+      "en": "large size"
+     }
+    },
+    {
+     "class": "status-xl",
+     "description": {
+      "en": "extra large size",
+      "ca": "mida extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "status",
+   "section": null,
+   "title": {
+    "en": "Status"
+   },
+   "subtitle": null,
+   "html": "<span class=\"status\"></span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "status-sizes",
+   "section": null,
+   "title": {
+    "en": "Status sizes"
+   },
+   "subtitle": null,
+   "html": "<div aria-label=\"status\" class=\"status status-xs\"></div>\n<div aria-label=\"status\" class=\"status status-sm\"></div>\n<div aria-label=\"status\" class=\"status status-md\"></div>\n<div aria-label=\"status\" class=\"status status-lg\"></div>\n<div aria-label=\"status\" class=\"status status-xl\"></div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "status-with-colors",
+   "section": null,
+   "title": {
+    "en": "Status with colors"
+   },
+   "subtitle": null,
+   "html": "<div aria-label=\"status\" class=\"status status-primary\"></div>\n<div aria-label=\"status\" class=\"status status-secondary\"></div>\n<div aria-label=\"status\" class=\"status status-accent\"></div>\n<div aria-label=\"status\" class=\"status status-neutral\"></div>\n\n<div aria-label=\"info\" class=\"status status-info\"></div>\n<div aria-label=\"success\" class=\"status status-success\"></div>\n<div aria-label=\"warning\" class=\"status status-warning\"></div>\n<div aria-label=\"error\" class=\"status status-error\"></div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "status-with-ping-animation",
+   "section": null,
+   "title": {
+    "en": "Status with ping animation"
+   },
+   "subtitle": null,
+   "html": "<div class=\"inline-grid *:[grid-area:1/1]\">\n  <div class=\"status status-error animate-ping\"></div>\n  <div class=\"status status-error\"></div>\n</div> Server is down",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "status-with-bounce-animation",
+   "section": null,
+   "title": {
+    "en": "Status with bounce animation"
+   },
+   "subtitle": null,
+   "html": "<div class=\"status status-info animate-bounce\"></div> Unread messages",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

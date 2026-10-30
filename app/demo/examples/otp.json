@@ -1,0 +1,220 @@
+{
+ "name": "otp",
+ "title": {
+  "en": "OTP"
+ },
+ "description": {
+  "en": "OTP (One-Time Password) component for inputting verification codes. It's usually 4 to 6 digits long and is used for two-factor authentication (2FA) or passwordless login.",
+  "ca": "Component OTP (One-Time Password) per introduir codis de verificació. Normalment té entre 4 i 6 dígits i s'utilitza per a l'autenticació de dos factors (2FA) o l'inici de sessió sense contrasenya.",
+  "es": "Componente OTP (contraseña de un solo uso) para ingresar códigos de verificación. Suele tener entre 4 y 6 dígitos y se utiliza para la autenticación de dos factores (2FA) o el inicio de sesión sin contraseña."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "otp",
+     "description": {
+      "en": "For the container label",
+      "ca": "Per al contenidor Label",
+      "es": "Para el contenedor Label"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "otp-joined",
+     "description": {
+      "en": "Connects the character boxes together",
+      "ca": "Connecta els quadres de personatges junts",
+      "es": "Conecta las cajas de personajes entre sí."
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "otp-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "otp-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "otp-md",
+     "description": {
+      "en": "Medium size",
+      "ca": "Talla mitjana",
+      "es": "tamaño mediano"
+     },
+     "default": true
+    },
+    {
+     "class": "otp-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "otp-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "otp-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "otp-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "otp-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "otp-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "otp-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "otp-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "otp-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "otp-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "otp",
+   "section": null,
+   "title": {
+    "en": "OTP"
+   },
+   "subtitle": {
+    "en": "Make sure the number of spans matches the maxlength and the pattern of the input field. In this example, we have 4 spans for a 4-digit OTP.",
+    "ca": "Assegureu-vos que el nombre de trams coincideix amb la longitud màxima i el patró del camp d'entrada. En aquest exemple, tenim 4 intervals per a un OTP de 4 dígits.",
+    "es": "Asegúrese de que el número de tramos coincida con la longitud máxima y el patrón del campo de entrada. En este ejemplo, tenemos 4 tramos para una OTP de 4 dígitos."
+   },
+   "html": "<label class=\"otp\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "otp-with-6-digits",
+   "section": null,
+   "title": {
+    "en": "OTP with 6 digits"
+   },
+   "subtitle": null,
+   "html": "<label class=\"otp\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"6\" pattern=\"[0-9]{6}\" required />\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "otp-joined",
+   "section": null,
+   "title": {
+    "en": "OTP joined"
+   },
+   "subtitle": {
+    "en": "Connects the character boxes together",
+    "ca": "Connecta els quadres de personatges junts",
+    "es": "Conecta las cajas de personajes entre sí."
+   },
+   "html": "<label class=\"otp otp-joined\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "otp-with-different-sizes",
+   "section": null,
+   "title": {
+    "en": "OTP with different sizes"
+   },
+   "subtitle": null,
+   "html": "<label class=\"otp otp-xs\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-sm\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-md\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-lg\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-xl\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "otp-with-different-colors",
+   "section": null,
+   "title": {
+    "en": "OTP with different colors"
+   },
+   "subtitle": null,
+   "html": "<label class=\"otp otp-neutral\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-primary\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-secondary\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-accent\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-info\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-success\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-warning\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-error\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "otp-disabled",
+   "section": null,
+   "title": {
+    "en": "OTP disabled"
+   },
+   "subtitle": null,
+   "html": "<label class=\"otp\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required disabled />\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

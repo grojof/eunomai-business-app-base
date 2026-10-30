@@ -1,0 +1,197 @@
+{
+ "name": "validator",
+ "title": {
+  "en": "Validator"
+ },
+ "description": {
+  "en": "Validator class changes the color of form elements to error or success based on input's validation rules.",
+  "ca": "La classe Validator canvia el color dels elements del formulari a error o èxit en funció de les regles de validació de l'entrada.",
+  "es": "La clase Validator cambia el color de los elementos del formulario a error o éxito según las reglas de validación de entrada."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "validator",
+     "description": {
+      "en": "For input, select, textarea",
+      "ca": "Per a l'entrada, Select, Textarea",
+      "es": "Para entrada, Select, Textarea"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "validator-hint",
+     "description": {
+      "en": "for the hint text that appears after the input if it's invalid",
+      "ca": "per al text de la pista que apareix després de l'entrada si no és vàlid",
+      "es": "para el texto de sugerencia que aparece después de la entrada si no es válida"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "validator",
+   "section": null,
+   "title": {
+    "en": "Validator"
+   },
+   "subtitle": {
+    "en": "writing an invalid email address applies error color to the input. Valid email address applies success color.",
+    "ca": "escriure una adreça de correu electrònic no vàlida aplica un color d'error a l'entrada. L'adreça de correu electrònic vàlida aplica el color d'èxit.",
+    "es": "escribir una dirección de correo electrónico no válida aplica un color de error a la entrada. La dirección de correo electrónico válida aplica el color de éxito."
+   },
+   "html": "<input class=\"input validator\" type=\"email\" required placeholder=\"mail@site.com\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "validator-and-validator-hint",
+   "section": null,
+   "title": {
+    "en": "Validator and validator-hint"
+   },
+   "subtitle": {
+    "en": "If value is invalid, a hint text appears below the input.",
+    "ca": "Si el valor no és vàlid, apareixerà un text d'indicació a sota de l'entrada.",
+    "es": "Si el valor no es válido, aparece un texto de sugerencia debajo de la entrada."
+   },
+   "html": "<input class=\"input validator\" type=\"email\" required placeholder=\"mail@site.com\" />\n<div class=\"validator-hint\">Enter valid email address</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "password-requirement-validator",
+   "section": null,
+   "title": {
+    "en": "Password requirement validator"
+   },
+   "subtitle": null,
+   "html": "<input type=\"password\" class=\"input validator\" required placeholder=\"Password\" minlength=\"8\" \n  pattern=\"(?=.*\\\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}\" \n  title=\"Must be more than 8 characters, including number, lowercase letter, uppercase letter\" />\n<p class=\"validator-hint\">\n  Must be more than 8 characters, including\n  <br/>At least one number\n  <br/>At least one lowercase letter\n  <br/>At least one uppercase letter\n</p>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "username-requirement-validator",
+   "section": null,
+   "title": {
+    "en": "Username requirement validator"
+   },
+   "subtitle": null,
+   "html": "<input type=\"text\" class=\"input validator\" required placeholder=\"Username\" \n  pattern=\"[A-Za-z][A-Za-z0-9\\\\-]*\" minlength=\"3\" maxlength=\"30\" title=\"Only letters, numbers or dash\" />\n<p class=\"validator-hint\">\n  Must be 3 to 30 characters\n  <br/>containing only letters, numbers or dash\n</p>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "phone-number-requirement-validator",
+   "section": null,
+   "title": {
+    "en": "Phone Number requirement validator"
+   },
+   "subtitle": null,
+   "html": "<input type=\"tel\" class=\"input validator tabular-nums\" required placeholder=\"Phone\" \n  pattern=\"[0-9]*\" minlength=\"10\" maxlength=\"10\" title=\"Must be 10 digits\" />\n<p class=\"validator-hint\">Must be 10 digits</p>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "url-input-requirement-validator",
+   "section": null,
+   "title": {
+    "en": "URL input requirement validator"
+   },
+   "subtitle": null,
+   "html": "<input type=\"url\" class=\"input validator\" required placeholder=\"https://\" value=\"https://\"\n  pattern=\"^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9\\-].*[a-zA-Z0-9])?\\.)+[a-zA-Z].*$\" \n  title=\"Must be valid URL\" />\n<p class=\"validator-hint\">Must be valid URL</p>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "date-input-requirement-validator",
+   "section": null,
+   "title": {
+    "en": "Date input requirement validator"
+   },
+   "subtitle": null,
+   "html": "<input type=\"date\" class=\"input validator\" required placeholder=\"Pick a date in 2025\" \nmin=\"2025-01-01\" max=\"2025-12-31\"\n  title=\"Must be valid URL\" />\n<p class=\"validator-hint\">Must be 2025</p>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "number-input-requirement-validator",
+   "section": null,
+   "title": {
+    "en": "Number input requirement validator"
+   },
+   "subtitle": null,
+   "html": "<input type=\"number\" class=\"input validator\" required placeholder=\"Type a number between 1 to 10\" \nmin=\"1\" max=\"10\"\n  title=\"Must be between be 1 to 10\" />\n<p class=\"validator-hint\">Must be between be 1 to 10</p>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "checkbox-requirement-validator",
+   "section": null,
+   "title": {
+    "en": "Checkbox requirement validator"
+   },
+   "subtitle": null,
+   "html": "<input type=\"checkbox\" class=\"checkbox validator\" required title=\"Required\" />\n<p class=\"validator-hint\">Required</p>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "toggle-requirement-validator",
+   "section": null,
+   "title": {
+    "en": "Toggle requirement validator"
+   },
+   "subtitle": null,
+   "html": "<input type=\"checkbox\" class=\"toggle validator\" required title=\"Required\" />\n<p class=\"validator-hint\">Required</p>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "select-requirement-validator",
+   "section": null,
+   "title": {
+    "en": "Select requirement validator"
+   },
+   "subtitle": {
+    "en": "Click the button before picking an option to see the error color.",
+    "ca": "Feu clic a Button abans de triar una opció per veure el color de l'error.",
+    "es": "Haga clic en Button antes de elegir una opción para ver el color del error."
+   },
+   "html": "<form>\n  <select class=\"select validator\" required>\n    <option disabled selected value=\"\">Choose:</option>\n    <option>Tabs</option>\n    <option>Spaces</option>\n  </select>\n  <p class=\"validator-hint\">Required</p>\n  <button class=\"btn\" type=\"submit\">Submit form</button>\n</form>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "form-requirement-validator",
+   "section": null,
+   "title": {
+    "en": "Form requirement validator"
+   },
+   "subtitle": null,
+   "html": "<form class=\"fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4\">\n  <fieldset class=\"fieldset\">\n    <label class=\"label\">Email</label>\n    <input type=\"email\" class=\"input validator\" placeholder=\"Email\" required />\n    <p class=\"validator-hint hidden\">Required</p>\n  </fieldset>\n\n  <label class=\"fieldset\">\n    <span class=\"label\">Password</span>\n    <input type=\"password\" class=\"input validator\" placeholder=\"Password\" required />\n    <span class=\"validator-hint hidden\">Required</span>\n  </label>\n\n  <button class=\"btn btn-neutral mt-4\" type=\"submit\">Login</button>\n  <button class=\"btn btn-ghost mt-1\" type=\"reset\">Reset</button>\n</form>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

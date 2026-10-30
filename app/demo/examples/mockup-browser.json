@@ -1,0 +1,63 @@
+{
+ "name": "mockup-browser",
+ "title": {
+  "en": "Browser mockup"
+ },
+ "description": {
+  "en": "Browser mockup shows a box that looks like a browser window.",
+  "ca": "Les maquetes de navegador mostren una caixa que sembla una finestra de navegador.",
+  "es": "Browser mockup muestra un cuadro que parece una ventana de navegador."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "mockup-browser",
+     "description": {
+      "en": "Browser mockup"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "mockup-browser-toolbar",
+     "description": {
+      "en": "Toolbar part which can include addressbar, etc",
+      "ca": "Part de la barra d'eines que pot incloure la barra d'adreces, etc",
+      "es": "Parte de la barra de herramientas que puede incluir barra de direcciones, etc."
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "browser-mockup-with-border",
+   "section": null,
+   "title": {
+    "en": "browser mockup with border"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-browser border border-base-300 w-full\">\n  <div class=\"mockup-browser-toolbar\">\n    <div class=\"input\">https://daisyui.com</div>\n  </div>\n  <div class=\"grid place-content-center border-t border-base-300 h-80\">Hello!</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "browser-mockup-with-background-color",
+   "section": null,
+   "title": {
+    "en": "browser mockup with background color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-browser bg-base-100 w-full border border-base-300\">\n  <div class=\"mockup-browser-toolbar\">\n    <div class=\"input\">https://daisyui.com</div>\n  </div>\n  <div class=\"grid place-content-center h-80\">Hello!</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

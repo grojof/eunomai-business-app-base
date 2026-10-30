@@ -1,0 +1,9 @@
+{% from "ui/macros.html" import badge %}
+<p class="flex flex-wrap gap-2">
+  {{ badge(_("In service"), "success") }}
+  {{ badge(_("Due soon"), "warning") }}
+  {{ badge(_("Stopped"), "danger") }}
+  {{ badge(_("Planned"), "info") }}
+  {{ badge(_("Closed")) }}
+</p>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ badge(_("In service"), "success") }}{% endraw %}</code></pre>

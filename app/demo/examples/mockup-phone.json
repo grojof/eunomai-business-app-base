@@ -1,0 +1,71 @@
+{
+ "name": "mockup-phone",
+ "title": {
+  "en": "Phone mockup"
+ },
+ "description": {
+  "en": "Phone mockup shows a mockup of an iPhone.",
+  "ca": "Les maquetes de telèfon mostren una maqueta d'un iPhone.",
+  "es": "El Mockup de teléfono muestra una maqueta de un iPhone."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "mockup-phone",
+     "description": {
+      "en": "Phone mockup"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "mockup-phone-camera",
+     "description": {
+      "en": "Camera part",
+      "ca": "Part de càmera",
+      "es": "parte de la cámara"
+     }
+    },
+    {
+     "class": "mockup-phone-display",
+     "description": {
+      "en": "Display part",
+      "ca": "Part de visualització",
+      "es": "Parte de visualización"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "iphone-mockup",
+   "section": null,
+   "title": {
+    "en": "iPhone mockup"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-phone\">\n  <div class=\"mockup-phone-camera\"></div>\n  <div class=\"mockup-phone-display text-white grid place-content-center bg-neutral-900\">\n    It's Glowtime.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  },
+  {
+   "id": "with-color-and-wallpaper",
+   "section": null,
+   "title": {
+    "en": "With color and wallpaper"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-phone border-[#ff8938]\">\n  <div class=\"mockup-phone-camera\"></div>\n  <div class=\"mockup-phone-display\">\n    <img alt=\"wallpaper\" src=\"/static/ui/placeholders/photo-2.svg\" />\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

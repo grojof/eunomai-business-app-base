@@ -1,0 +1,120 @@
+{
+ "name": "label",
+ "title": {
+  "en": "Label"
+ },
+ "description": {
+  "en": "Label is used to provide a name or title for an input field. Label can be placed before or after the field.",
+  "ca": "Label s'utilitza per proporcionar un nom o títol per a un camp d'entrada. Label es pot col·locar abans o després del camp.",
+  "es": "Label se utiliza para proporcionar un nombre o título para un campo de entrada. Label se puede colocar antes o después del campo."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "label",
+     "description": {
+      "en": "For styling the text next to an input field (or select)",
+      "ca": "Per donar estil al text al costat d'un camp d'entrada (o Select)",
+      "es": "Para aplicar estilo al texto junto a un campo de entrada (o Select)"
+     }
+    },
+    {
+     "class": "floating-label",
+     "description": {
+      "en": "For the parent of an input field (or select) and a span that floats above the input field when the field is focused",
+      "ca": "Per al pare d'un camp d'entrada (o Select) i un abast que flota per sobre del camp d'entrada quan el camp està enfocat",
+      "es": "Para el padre de un campo de entrada (o Select) y un intervalo que flota sobre el campo de entrada cuando el campo está enfocado"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "label-for-input",
+   "section": null,
+   "title": {
+    "en": "Label for input"
+   },
+   "subtitle": null,
+   "html": "<label class=\"input\">\n  <span class=\"label\">https://</span>\n  <input type=\"text\" placeholder=\"URL\" />\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "label-for-input-at-the-end",
+   "section": null,
+   "title": {
+    "en": "Label for input at the end"
+   },
+   "subtitle": null,
+   "html": "<label class=\"input\">\n  <input type=\"text\" placeholder=\"domain name\" />\n  <span class=\"label\">.com</span>\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "label-for-select",
+   "section": null,
+   "title": {
+    "en": "Label for select"
+   },
+   "subtitle": null,
+   "html": "<label class=\"select\">\n  <span class=\"label\">Type</span>\n  <select>\n    <option>Personal</option>\n    <option>Business</option>\n  </select>\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "label-for-date-input",
+   "section": null,
+   "title": {
+    "en": "Label for date input"
+   },
+   "subtitle": null,
+   "html": "<label class=\"input\">\n  <span class=\"label\">Publish date</span>\n  <input type=\"date\" />\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "floating-label",
+   "section": null,
+   "title": {
+    "en": "Floating Label"
+   },
+   "subtitle": null,
+   "html": "<label class=\"floating-label\">\n  <span>Your Email</span>\n  <input type=\"text\" placeholder=\"mail@site.com\" class=\"input input-md\" />\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "floating-label-with-different-sizes",
+   "section": null,
+   "title": {
+    "en": "Floating Label with Different Sizes"
+   },
+   "subtitle": null,
+   "html": "<label class=\"floating-label\">\n  <input type=\"text\" placeholder=\"Extra Small\" class=\"input input-xs\" />\n  <span>Extra Small</span>\n</label>\n<label class=\"floating-label\">\n  <input type=\"text\" placeholder=\"Small\" class=\"input input-sm\" />\n  <span>Small</span>\n</label>\n<label class=\"floating-label\">\n  <input type=\"text\" placeholder=\"Medium\" class=\"input input-md\" />\n  <span>Medium</span>\n</label>\n<label class=\"floating-label\">\n  <input type=\"text\" placeholder=\"Large\" class=\"input input-lg\" />\n  <span>Large</span>\n</label>\n<label class=\"floating-label\">\n  <input type=\"text\" placeholder=\"Extra Large\" class=\"input input-xl\" />\n  <span>Extra Large</span>\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "responsive-size-floating-label",
+   "section": null,
+   "title": {
+    "en": "Responsive Size Floating Label"
+   },
+   "subtitle": null,
+   "html": "<label class=\"floating-label\">\n  <input type=\"text\" placeholder=\"Input\" class=\"input input-xs sm:input-sm md:input-md lg:input-lg xl:input-xl\" value=\"Placeholder\" />\n  <span>Input</span>\n</label>\n\n<label class=\"floating-label\">\n  <textarea placeholder=\"Textarea\" class=\"textarea textarea-xs sm:textarea-sm md:textarea-md lg:textarea-lg xl:textarea-xl\">Placeholder</textarea>\n  <span>Textarea</span>\n</label>\n\n<label class=\"floating-label\">\n  <select class=\"select select-xs sm:select-sm md:select-md lg:select-lg xl:select-xl\">\n    <option disabled selected>Placeholder</option>\n    <option>Option</option>\n  </select>\n  <span>Select</span>\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

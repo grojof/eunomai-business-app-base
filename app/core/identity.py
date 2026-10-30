@@ -36,6 +36,9 @@ def from_request(headers: Headers, client_host: str | None, settings: Settings) 
         return Person("demo.user", "Demo User", "demo.user@example.org", groups, _roles(groups, settings))
     if client_host not in settings.trusted_proxies:
         return None
+    names = (settings.header_username, settings.header_name, settings.header_email, settings.header_groups)
+    if any(len(headers.getlist(name)) > 1 for name in names):
+        return None  # a proxy sends each once: a repeated one may be a visitor's, passed through
     username = _text(headers.get(settings.header_username, ""))
     if not username:
         return None

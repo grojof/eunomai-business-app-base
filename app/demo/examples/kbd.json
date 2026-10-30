@@ -1,0 +1,158 @@
+{
+ "name": "kbd",
+ "title": {
+  "en": "Kbd"
+ },
+ "description": {
+  "en": "Kbd is used to display keyboard shortcuts.",
+  "ca": "Kbd s'utilitza per mostrar dreceres de teclat.",
+  "es": "Kbd se utiliza para mostrar atajos de teclado."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "kbd",
+     "description": {
+      "en": "Do show a keyboard key or a shortcut key",
+      "ca": "Mostra una tecla del teclat o una tecla de drecera",
+      "es": "Mostrar una tecla del teclado o una tecla de acceso directo"
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "kbd-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "kbd-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "kbd-md",
+     "description": {
+      "en": "Medium size",
+      "ca": "Talla mitjana",
+      "es": "tamaño mediano"
+     },
+     "default": true
+    },
+    {
+     "class": "kbd-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "kbd-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "kbd",
+   "section": null,
+   "title": {
+    "en": "Kbd"
+   },
+   "subtitle": null,
+   "html": "<kbd class=\"kbd\">K</kbd>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "kbd-sizes",
+   "section": null,
+   "title": {
+    "en": "Kbd sizes"
+   },
+   "subtitle": null,
+   "html": "<kbd class=\"kbd kbd-xs\">Xsmall</kbd>\n<kbd class=\"kbd kbd-sm\">Small</kbd>\n<kbd class=\"kbd kbd-md\">Medium</kbd>\n<kbd class=\"kbd kbd-lg\">Large</kbd>\n<kbd class=\"kbd kbd-xl\">Xlarge</kbd>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "in-text",
+   "section": null,
+   "title": {
+    "en": "In text"
+   },
+   "subtitle": null,
+   "html": "Press\n<kbd class=\"kbd kbd-sm\">F</kbd>\nto pay respects.",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "key-combination",
+   "section": null,
+   "title": {
+    "en": "Key combination"
+   },
+   "subtitle": null,
+   "html": "<kbd class=\"kbd\">ctrl</kbd>\n+\n<kbd class=\"kbd\">shift</kbd>\n+\n<kbd class=\"kbd\">del</kbd>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "function-keys",
+   "section": null,
+   "title": {
+    "en": "Function Keys"
+   },
+   "subtitle": null,
+   "html": "<kbd class=\"kbd\">⌘</kbd>\n<kbd class=\"kbd\">⌥</kbd>\n<kbd class=\"kbd\">⇧</kbd>\n<kbd class=\"kbd\">⌃</kbd>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "a-full-keyboard",
+   "section": null,
+   "title": {
+    "en": "A full keyboard"
+   },
+   "subtitle": null,
+   "html": "<div class=\"my-1 flex w-full justify-center gap-1\">\n  <kbd class=\"kbd\">q</kbd>\n  <kbd class=\"kbd\">w</kbd>\n  <kbd class=\"kbd\">e</kbd>\n  <kbd class=\"kbd\">r</kbd>\n  <kbd class=\"kbd\">t</kbd>\n  <kbd class=\"kbd\">y</kbd>\n  <kbd class=\"kbd\">u</kbd>\n  <kbd class=\"kbd\">i</kbd>\n  <kbd class=\"kbd\">o</kbd>\n  <kbd class=\"kbd\">p</kbd>\n</div>\n<div class=\"my-1 flex w-full justify-center gap-1\">\n  <kbd class=\"kbd\">a</kbd>\n  <kbd class=\"kbd\">s</kbd>\n  <kbd class=\"kbd\">d</kbd>\n  <kbd class=\"kbd\">f</kbd>\n  <kbd class=\"kbd\">g</kbd>\n  <kbd class=\"kbd\">h</kbd>\n  <kbd class=\"kbd\">j</kbd>\n  <kbd class=\"kbd\">k</kbd>\n  <kbd class=\"kbd\">l</kbd>\n</div>\n<div class=\"my-1 flex w-full justify-center gap-1\">\n  <kbd class=\"kbd\">z</kbd>\n  <kbd class=\"kbd\">x</kbd>\n  <kbd class=\"kbd\">c</kbd>\n  <kbd class=\"kbd\">v</kbd>\n  <kbd class=\"kbd\">b</kbd>\n  <kbd class=\"kbd\">n</kbd>\n  <kbd class=\"kbd\">m</kbd>\n  <kbd class=\"kbd\">/</kbd>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "arrow-keys",
+   "section": null,
+   "title": {
+    "en": "Arrow Keys"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex w-full justify-center\">\n  <kbd class=\"kbd\">▲</kbd>\n</div>\n<div class=\"flex w-full justify-center gap-12\">\n  <kbd class=\"kbd\">◀︎</kbd>\n  <kbd class=\"kbd\">▶︎</kbd>\n</div>\n<div class=\"flex w-full justify-center\">\n  <kbd class=\"kbd\">▼</kbd>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

@@ -1,0 +1,171 @@
+{
+ "name": "avatar",
+ "title": {
+  "en": "Avatar"
+ },
+ "description": {
+  "en": "Avatars are used to show a thumbnail representation of an individual or business in the interface.",
+  "ca": "Els avatars s'utilitzen per mostrar una representació en miniatura d'un individu o negoci a la interfície.",
+  "es": "Avatars se utilizan para mostrar una representación en miniatura de una persona o empresa en la interfaz."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "avatar",
+     "description": {
+      "en": "Avatar"
+     }
+    },
+    {
+     "class": "avatar-group",
+     "description": {
+      "en": "Container for multiple avatars",
+      "ca": "Contenidor per a múltiples avatars",
+      "es": "Contenedor para múltiples avatares"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "avatar-online",
+     "description": {
+      "en": "shows a green dot as online indicator",
+      "ca": "mostra un punt verd com a Indicator en línia",
+      "es": "muestra un punto verde como Indicator en línea"
+     }
+    },
+    {
+     "class": "avatar-offline",
+     "description": {
+      "en": "shows a gray dot as offline indicator",
+      "ca": "mostra un punt gris com a Indicator fora de línia",
+      "es": "muestra un punto gris como fuera de línea Indicator"
+     }
+    },
+    {
+     "class": "avatar-placeholder",
+     "description": {
+      "en": "To show letters as avatar placeholder",
+      "ca": "Per mostrar lletres com a marcador de posició d'avatar",
+      "es": "Para mostrar letras como marcador de posición de avatar"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "avatar",
+   "section": null,
+   "title": {
+    "en": "Avatar"
+   },
+   "subtitle": null,
+   "html": "<div class=\"avatar\">\n  <div class=\"w-24 rounded\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-3.svg\" />\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "avatar-in-custom-sizes",
+   "section": null,
+   "title": {
+    "en": "Avatar in custom sizes"
+   },
+   "subtitle": null,
+   "html": "<div class=\"avatar\">\n  <div class=\"w-32 rounded\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-2.svg\" />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"w-20 rounded\">\n    <img\n      src=\"/static/ui/placeholders/avatar-2.svg\"\n      alt=\"Tailwind-CSS-Avatar-component\"\n    />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"w-16 rounded\">\n    <img\n      src=\"/static/ui/placeholders/avatar-2.svg\"\n      alt=\"Tailwind-CSS-Avatar-component\"\n    />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"w-8 rounded\">\n    <img\n      src=\"/static/ui/placeholders/avatar-2.svg\"\n      alt=\"Tailwind-CSS-Avatar-component\"\n    />\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "avatar-rounded",
+   "section": null,
+   "title": {
+    "en": "Avatar rounded"
+   },
+   "subtitle": null,
+   "html": "<div class=\"avatar\">\n  <div class=\"w-24 rounded-xl\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-1.svg\" />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"w-24 rounded-full\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-2.svg\" />\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "avatar-with-mask",
+   "section": null,
+   "title": {
+    "en": "Avatar with mask"
+   },
+   "subtitle": null,
+   "html": "<div class=\"avatar\">\n  <div class=\"mask mask-heart w-24\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-3.svg\" />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"mask mask-squircle w-24\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-4.svg\" />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"mask mask-hexagon-2 w-24\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-1.svg\" />\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "avatar-group",
+   "section": null,
+   "title": {
+    "en": "Avatar group"
+   },
+   "subtitle": null,
+   "html": "<div class=\"avatar-group -space-x-6\">\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-3.svg\" />\n    </div>\n  </div>\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-1.svg\" />\n    </div>\n  </div>\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-3.svg\" />\n    </div>\n  </div>\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-1.svg\" />\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "avatar-group-with-counter",
+   "section": null,
+   "title": {
+    "en": "Avatar group with counter"
+   },
+   "subtitle": null,
+   "html": "<div class=\"avatar-group -space-x-6\">\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-3.svg\" />\n    </div>\n  </div>\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-1.svg\" />\n    </div>\n  </div>\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-3.svg\" />\n    </div>\n  </div>\n  <div class=\"avatar avatar-placeholder\">\n    <div class=\"bg-neutral text-neutral-content w-12\">\n      <span>+99</span>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "avatar-with-ring",
+   "section": null,
+   "title": {
+    "en": "Avatar with ring"
+   },
+   "subtitle": null,
+   "html": "<div class=\"avatar\">\n  <div class=\"ring-primary ring-offset-base-100 w-24 rounded-full ring-2 ring-offset-2\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-1.svg\" />\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "avatar-with-presence-indicator",
+   "section": null,
+   "title": {
+    "en": "Avatar with presence indicator"
+   },
+   "subtitle": null,
+   "html": "<div class=\"avatar avatar-online\">\n  <div class=\"w-24 rounded-full\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-3.svg\" />\n  </div>\n</div>\n<div class=\"avatar avatar-offline\">\n  <div class=\"w-24 rounded-full\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"/static/ui/placeholders/avatar-1.svg\" />\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "avatar-placeholder",
+   "section": null,
+   "title": {
+    "en": "Avatar placeholder"
+   },
+   "subtitle": null,
+   "html": "<div class=\"avatar avatar-placeholder\">\n  <div class=\"bg-neutral text-neutral-content w-24 rounded-full\">\n    <span class=\"text-3xl\">D</span>\n  </div>\n</div>\n<div class=\"avatar avatar-online avatar-placeholder\">\n  <div class=\"bg-neutral text-neutral-content w-16 rounded-full\">\n    <span class=\"text-xl\">AI</span>\n  </div>\n</div>\n<div class=\"avatar avatar-placeholder\">\n  <div class=\"bg-neutral text-neutral-content w-12 rounded-full\">\n    <span>SY</span>\n  </div>\n</div>\n<div class=\"avatar avatar-placeholder\">\n  <div class=\"bg-neutral text-neutral-content w-8 rounded-full\">\n    <span class=\"text-xs\">UI</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

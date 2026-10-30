@@ -1,0 +1,332 @@
+{
+ "name": "card",
+ "title": {
+  "en": "Card"
+ },
+ "description": {
+  "en": "Cards are used to group and display content in a way that is easily readable.",
+  "ca": "Les targetes s'utilitzen per agrupar i mostrar contingut de manera que sigui fàcil de llegir.",
+  "es": "Cards se utilizan para agrupar y mostrar contenido de una manera que sea fácil de leer."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "card",
+     "description": {
+      "en": "Card"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "card-title",
+     "description": {
+      "en": "Title part",
+      "ca": "Part del títol",
+      "es": "Parte del título"
+     }
+    },
+    {
+     "class": "card-body",
+     "description": {
+      "en": "Body part (content)",
+      "ca": "Part del cos (contingut)",
+      "es": "Parte del cuerpo (contenido)"
+     }
+    },
+    {
+     "class": "card-actions",
+     "description": {
+      "en": "Actions part (buttons, etc.)",
+      "ca": "Part d'accions (botons, etc.)",
+      "es": "Parte de acciones (botones, etc.)"
+     }
+    }
+   ]
+  },
+  {
+   "group": "style",
+   "items": [
+    {
+     "class": "card-border",
+     "description": {
+      "en": "Adds border to <card>",
+      "ca": "Afegeix una vora a <card>",
+      "es": "Agrega borde a <card>"
+     }
+    },
+    {
+     "class": "card-dash",
+     "description": {
+      "en": "dash style"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "card-side",
+     "description": {
+      "en": "The image in <figure> will be on to the side",
+      "ca": "La imatge de <figure> estarà al costat",
+      "es": "La imagen en <figure> estará al lado."
+     }
+    },
+    {
+     "class": "image-full",
+     "description": {
+      "en": "The image in <figure> element will be the background",
+      "ca": "La imatge de l'element <figure> serà el fons",
+      "es": "La imagen en el elemento <figure> será el fondo."
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "card-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "card-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "card-md",
+     "description": {
+      "en": "Medium size (default)",
+      "ca": "Mida mitjana (Default)",
+      "es": "Tamaño mediano (Default)"
+     }
+    },
+    {
+     "class": "card-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "card-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "card",
+   "section": null,
+   "title": {
+    "en": "Card"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card bg-base-100 w-96 shadow-sm\">\n  <figure>\n    <img\n      src=\"/static/ui/placeholders/photo-4.svg\"\n      alt=\"Shoes\" />\n  </figure>\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Card Title</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "pricing-card",
+   "section": null,
+   "title": {
+    "en": "Pricing Card"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card w-96 bg-base-100 shadow-sm\">\n  <div class=\"card-body\">\n    <span class=\"badge badge-xs badge-warning\">Most Popular</span>\n    <div class=\"flex justify-between\">\n      <h2 class=\"text-3xl font-bold\">Premium</h2>\n      <span class=\"text-xl\">$29/mo</span>\n    </div>\n    <ul class=\"mt-6 flex flex-col gap-2 text-xs\">\n      <li>\n        <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-success\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n        <span>High-resolution image generation</span>\n      </li>\n      <li>\n        <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-success\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n        <span>Customizable style templates</span>\n      </li>\n      <li>\n        <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-success\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n        <span>Batch processing capabilities</span>\n      </li>\n      <li>\n        <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-success\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n        <span>AI-driven image enhancements</span>\n      </li>\n      <li class=\"opacity-50\">\n        <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-base-content/50\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n        <span class=\"line-through\">Seamless cloud integration</span>\n      </li>\n      <li class=\"opacity-50\">\n        <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-base-content/50\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n        <span class=\"line-through\">Real-time collaboration tools</span>\n      </li>\n    </ul>\n    <div class=\"mt-6\">\n      <button class=\"btn btn-primary btn-block\">Subscribe</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-sizes",
+   "section": null,
+   "title": {
+    "en": "Card sizes"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card w-96 bg-base-100 card-xs shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Xsmall Card</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"justify-end card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>\n\n<div class=\"card w-96 bg-base-100 card-sm shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Small Card</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"justify-end card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>\n\n<div class=\"card w-96 bg-base-100 card-md shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Medium Card</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"justify-end card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>\n\n<div class=\"card w-96 bg-base-100 card-lg shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Large Card</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"justify-end card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>\n\n<div class=\"card w-96 bg-base-100 card-xl shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Xlarge Card</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"justify-end card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-with-a-card-border",
+   "section": null,
+   "title": {
+    "en": "Card with a card-border"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card card-border bg-base-100 w-96\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Card Title</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-with-a-dash-border",
+   "section": null,
+   "title": {
+    "en": "Card with a dash border"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card card-dash bg-base-100 w-96\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Card Title</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-with-badge",
+   "section": null,
+   "title": {
+    "en": "Card with badge"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card bg-base-100 w-96 shadow-sm\">\n  <figure>\n    <img\n      src=\"/static/ui/placeholders/photo-4.svg\"\n      alt=\"Shoes\" />\n  </figure>\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">\n      Card Title\n      <div class=\"badge badge-secondary\">NEW</div>\n    </h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"card-actions justify-end\">\n      <div class=\"badge badge-outline\">Fashion</div>\n      <div class=\"badge badge-outline\">Products</div>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-with-bottom-image",
+   "section": null,
+   "title": {
+    "en": "Card with bottom image"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card bg-base-100 w-96 shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Card Title</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n  </div>\n  <figure>\n    <img\n      src=\"/static/ui/placeholders/photo-4.svg\"\n      alt=\"Shoes\" />\n  </figure>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-with-centered-content-and-paddings",
+   "section": null,
+   "title": {
+    "en": "Card with centered content and paddings"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card bg-base-100 w-96 shadow-sm\">\n  <figure class=\"px-10 pt-10\">\n    <img\n      src=\"/static/ui/placeholders/photo-4.svg\"\n      alt=\"Shoes\"\n      class=\"rounded-xl\" />\n  </figure>\n  <div class=\"card-body items-center text-center\">\n    <h2 class=\"card-title\">Card Title</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-with-image-overlay",
+   "section": null,
+   "title": {
+    "en": "Card with image overlay"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card bg-base-100 image-full w-96 shadow-sm\">\n  <figure>\n    <img\n      src=\"/static/ui/placeholders/photo-4.svg\"\n      alt=\"Shoes\" />\n  </figure>\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Card Title</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-with-no-image",
+   "section": null,
+   "title": {
+    "en": "Card with no image"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card bg-base-100 w-96 shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Card title!</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-with-custom-color",
+   "section": null,
+   "title": {
+    "en": "Card with custom color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card bg-primary text-primary-content w-96\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Card title!</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn\">Buy Now</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "centered-card-with-neutral-color",
+   "section": null,
+   "title": {
+    "en": "Centered card with neutral color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card bg-neutral text-neutral-content w-96\">\n  <div class=\"card-body items-center text-center\">\n    <h2 class=\"card-title\">Cookies!</h2>\n    <p>We are using cookies for no reason.</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Accept</button>\n      <button class=\"btn btn-ghost\">Deny</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-with-action-on-top",
+   "section": null,
+   "title": {
+    "en": "Card with action on top"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card bg-base-100 w-96 shadow-sm\">\n  <div class=\"card-body\">\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-square btn-sm\">\n        <svg\n          aria-label=\"Close\"\n          xmlns=\"http://www.w3.org/2000/svg\"\n          class=\"h-6 w-6\"\n          fill=\"none\"\n          viewBox=\"0 0 24 24\"\n          stroke=\"currentColor\">\n          <path\n            stroke-linecap=\"round\"\n            stroke-linejoin=\"round\"\n            stroke-width=\"2\"\n            d=\"M6 18L18 6M6 6l12 12\" />\n        </svg>\n      </button>\n    </div>\n    <p>We are using cookies for no reason.</p>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "card-with-image-on-side",
+   "section": null,
+   "title": {
+    "en": "Card with image on side"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card card-side bg-base-100 shadow-sm\">\n  <figure>\n    <img\n      src=\"/static/ui/placeholders/photo-3.svg\"\n      alt=\"Movie\" />\n  </figure>\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">New movie is released!</h2>\n    <p>Click the button to watch on Jetflix app.</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Watch</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "responsive-card-vertical-on-small-screen-horizontal-on-large-screen",
+   "section": null,
+   "title": {
+    "en": "Responsive card (vertical on small screen, horizontal on large screen)"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card lg:card-side bg-base-100 shadow-sm\">\n  <figure>\n    <img\n      src=\"/static/ui/placeholders/photo-1.svg\"\n      alt=\"Album\" />\n  </figure>\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">New album is released!</h2>\n    <p>Click the button to listen on Spotiwhy app.</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Listen</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "selectable-cards",
+   "section": null,
+   "title": {
+    "en": "Selectable cards"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex flex-wrap items-start gap-3\">\n  <label class=\"card bg-accent text-accent-content\">\n    <input type=\"checkbox\" name=\"card-urgent-1\" />\n    <div class=\"card-body\">\n      <h2 class=\"card-title\">Urgent</h2>\n      <p>Same day delivery</p>\n    </div>\n  </label>\n\n  <div class=\"join bg-base-300 rounded-selector\">\n    <label class=\"join-item card\">\n      <input type=\"radio\" value=\"sm\" name=\"card-size-1\" />\n      <div class=\"card-body\">\n        <h2 class=\"card-title\">Size SM</h2>\n        <p>Available</p>\n      </div>\n    </label>\n\n    <label class=\"join-item card\">\n      <input type=\"radio\" value=\"md\" name=\"card-size-1\" disabled />\n      <div class=\"card-body opacity-60\">\n        <h2 class=\"card-title\">Size MD</h2>\n        <p>Not available</p>\n      </div>\n    </label>\n\n    <label class=\"join-item card\">\n      <input type=\"radio\" value=\"lg\" name=\"card-size-1\" />\n      <div class=\"card-body\">\n        <h2 class=\"card-title\">Size LG</h2>\n        <p>Short supply</p>\n      </div>\n    </label>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

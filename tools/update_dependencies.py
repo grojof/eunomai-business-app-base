@@ -2,7 +2,9 @@
 
     uv run python tools/update_dependencies.py --summary summary.md --problems problems.md
 
-Writes what changed, every package included, and the problems no allowed version solves.
+Writes what changed, every package included, and the problems no allowed version solves. A problem with one
+dependency never stops the others, so a security update is not lost: it goes to the problems, which keep an issue
+open, and the rest goes ahead.
 """
 
 import argparse
@@ -16,6 +18,8 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import components
+import gallery
 import vendor
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -112,6 +116,9 @@ def review(notes: list[str], current: dict[str, str]) -> list[tuple[str, str, st
                 current[name] = moment.strftime("%Y-%m-%dT%H:%M:%SZ")
                 write_overrides(current)
                 uv("lock", "--upgrade-package", name)
+                if installed().get(name) == version:
+                    problems.append((name, version, f"{fix} fixes {', '.join(found)}, but the limits refuse it"))
+                    continue
                 notes.append(f"`{name}` {version} to {fix}: fixes {', '.join(found)}")
                 moved = True
                 continue
@@ -129,6 +136,29 @@ def review(notes: list[str], current: dict[str, str]) -> list[tuple[str, str, st
     return problems
 
 
+def update_vendored(problems: list[tuple[str, str, str]]) -> list[str]:
+    """The copied files. If daisyUI's new files break docs/components/ or the gallery, such as a component that is not
+    in the catalogue or a documentation page that changed its structure, every daisyUI file stays where it was until a
+    person decides, and everything else goes ahead. So does one that moved without the others."""
+    daisyui = {name: e for name, e in vendor.read_entries().items() if e.get("package", name) == "daisyui"}
+    files = {ROOT / e["target"]: (ROOT / e["target"]).read_bytes() for e in daisyui.values()}
+    notes, refused = vendor.update()
+    problems += refused
+    try:
+        components.generate()
+        gallery.generate()
+        moved = {entry["version"] for name, entry in vendor.read_entries().items() if name in daisyui}
+        if len(moved) > 1:
+            raise ValueError(f"its files would be at different versions: {sorted(moved)}")
+    except ValueError as error:
+        for path, content in files.items():
+            path.write_bytes(content)
+        vendor.write_entries(vendor.read_entries() | daisyui)
+        problems.append(("daisyui", daisyui["daisyui"]["version"], f"not updated: {error}"))
+        notes = [note for note in notes if not note.startswith("`daisyui")]
+    return notes
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     parser.add_argument("--summary", type=Path, required=True)
@@ -137,17 +167,25 @@ def main() -> int:
     notes: list[str] = []
     before = pins()
 
-    current = overrides()
-    limit = datetime.now(UTC) - WINDOW
-    dropped = [name for name, date in current.items() if datetime.fromisoformat(date.replace("Z", "+00:00")) < limit]
-    for name in dropped:
-        del current[name]
-    write_overrides(current)
-    uv("lock", "--upgrade")
+    problems: list[tuple[str, str, str]] = []
+    finished = True
+    try:
+        current = overrides()
+        limit = datetime.now(UTC) - WINDOW
+        dropped = [n for n, date in current.items() if datetime.fromisoformat(date.replace("Z", "+00:00")) < limit]
+        for name in dropped:
+            del current[name]
+        write_overrides(current)
+        uv("lock", "--upgrade")
 
-    problems = review(notes, current)
-    notes += vendor.update()
-    notes += [f"`{name}`: the vulnerability exception is no longer needed" for name in dropped if name not in current]
+        problems += review(notes, current)
+        notes += update_vendored(problems)
+        notes += [
+            f"`{name}`: the vulnerability exception is no longer needed" for name in dropped if name not in current
+        ]
+    except Exception as error:  # what is known still reaches the issue: a silent stop is the worst outcome
+        problems.append(("the update", "-", f"stopped: {type(error).__name__}: {error}"))
+        finished = False
 
     after = pins()
     changed = [
@@ -162,7 +200,7 @@ def main() -> int:
     lines += [""] + [f"- {note}" for note in notes]
     args.summary.write_text("\n".join(lines).strip() + "\n", encoding="utf-8")
     args.problems.write_text("".join(f"- `{n}` {v}: {r}\n" for n, v, r in problems), encoding="utf-8")
-    return 0
+    return 0 if finished else 1
 
 
 if __name__ == "__main__":

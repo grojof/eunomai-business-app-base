@@ -1,0 +1,214 @@
+{
+ "name": "link",
+ "title": {
+  "en": "Link"
+ },
+ "description": {
+  "en": "Link adds the missing underline style to links.",
+  "ca": "L'enllaç afegeix l'estil subratllat que falta als enllaços.",
+  "es": "Link agrega el estilo de subrayado faltante a los enlaces."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "link",
+     "description": {
+      "en": "Adds underline",
+      "ca": "Afegeix subratllat",
+      "es": "Agrega subrayado"
+     }
+    }
+   ]
+  },
+  {
+   "group": "style",
+   "items": [
+    {
+     "class": "link-hover",
+     "description": {
+      "en": "Only shows underline on hover",
+      "ca": "Només mostra el subratllat al passar el cursor",
+      "es": "Solo muestra subrayado al pasar el cursor"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "link-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "link-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "link-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "link-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "link-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "link-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "link-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "link-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "link",
+   "section": null,
+   "title": {
+    "en": "Link"
+   },
+   "subtitle": null,
+   "html": "<a class=\"link\">Click me</a>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "link-2",
+   "section": null,
+   "title": {
+    "en": "Link"
+   },
+   "subtitle": null,
+   "html": "<p>\n  Tailwind CSS resets the style of links by default.\n  <br />\n  Add \"link\" class to make it look like a\n  <a class=\"link\">normal link</a>\n  again.\n</p>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "primary-color",
+   "section": null,
+   "title": {
+    "en": "Primary color"
+   },
+   "subtitle": null,
+   "html": "<a class=\"link link-primary\">Click me</a>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "secondary-color",
+   "section": null,
+   "title": {
+    "en": "Secondary color"
+   },
+   "subtitle": null,
+   "html": "<a class=\"link link-secondary\">Click me</a>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "accent-color",
+   "section": null,
+   "title": {
+    "en": "Accent color"
+   },
+   "subtitle": null,
+   "html": "<a class=\"link link-accent\">Click me</a>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "success-color",
+   "section": null,
+   "title": {
+    "en": "Success color"
+   },
+   "subtitle": null,
+   "html": "<a class=\"link link-success\">Click me</a>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "info-color",
+   "section": null,
+   "title": {
+    "en": "Info color"
+   },
+   "subtitle": null,
+   "html": "<a class=\"link link-info\">Click me</a>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "warning-color",
+   "section": null,
+   "title": {
+    "en": "Warning color"
+   },
+   "subtitle": null,
+   "html": "<a class=\"link link-warning\">Click me</a>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "error-color",
+   "section": null,
+   "title": {
+    "en": "Error color"
+   },
+   "subtitle": null,
+   "html": "<a class=\"link link-error\">Click me</a>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "show-underline-only-on-hover",
+   "section": null,
+   "title": {
+    "en": "Show underline only on hover"
+   },
+   "subtitle": null,
+   "html": "<a class=\"link link-hover\">Click me</a>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

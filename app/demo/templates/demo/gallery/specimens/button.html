@@ -1,0 +1,11 @@
+{% from "ui/macros.html" import button %}
+<div class="flex flex-wrap gap-2">
+  {{ button(_("Save"), "primary") }}
+  {{ button(_("Cancel")) }}
+  {{ button(_("Details"), "ghost") }}
+  {{ button(_("Delete"), "danger") }}
+  {{ button(_("Save"), small=true) }}
+  {{ button(_("Save"), attributes={"disabled": true}) }}
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ button(_("Save"), "primary") }}
+{{ button(_("Delete"), "danger", small=true) }}{% endraw %}</code></pre>

@@ -1,0 +1,6 @@
+{% from "ui/macros.html" import progress %}
+<div class="max-w-md space-y-4">
+  {{ progress(_("Preventive plan"), 72, 72|percent) }}
+  {{ progress(_("Safety checks"), 41, 41|percent, "warning") }}
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ progress(_("Preventive plan"), 72, 72|percent) }}{% endraw %}</code></pre>

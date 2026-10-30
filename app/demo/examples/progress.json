@@ -1,0 +1,201 @@
+{
+ "name": "progress",
+ "title": {
+  "en": "Progress"
+ },
+ "description": {
+  "en": "Progress bar can be used to show the progress of a task or to show the passing of time.",
+  "ca": "La barra de progrés s'utilitza per mostrar el progrés d'una tasca o per mostrar el pas del temps.",
+  "es": "Progress bar se puede utilizar para mostrar el progreso de una tarea o para mostrar el paso del tiempo."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "progress",
+     "description": {
+      "en": "For <progress> tag",
+      "ca": "Per a l'etiqueta <progress>",
+      "es": "Para etiqueta <progress>"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "progress-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "progress-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "progress-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "progress-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "progress-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "progress-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "progress-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "progress-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "progress",
+   "section": null,
+   "title": {
+    "en": "Progress"
+   },
+   "subtitle": null,
+   "html": "<progress class=\"progress w-56\" value=\"0\" max=\"100\"></progress>\n<progress class=\"progress w-56\" value=\"10\" max=\"100\"></progress>\n<progress class=\"progress w-56\" value=\"40\" max=\"100\"></progress>\n<progress class=\"progress w-56\" value=\"70\" max=\"100\"></progress>\n<progress class=\"progress w-56\" value=\"100\" max=\"100\"></progress>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "primary-color",
+   "section": null,
+   "title": {
+    "en": "Primary color"
+   },
+   "subtitle": null,
+   "html": "<progress class=\"progress progress-primary w-56\" value=\"0\" max=\"100\"></progress>\n<progress class=\"progress progress-primary w-56\" value=\"10\" max=\"100\"></progress>\n<progress class=\"progress progress-primary w-56\" value=\"40\" max=\"100\"></progress>\n<progress class=\"progress progress-primary w-56\" value=\"70\" max=\"100\"></progress>\n<progress class=\"progress progress-primary w-56\" value=\"100\" max=\"100\"></progress>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "secondary-color",
+   "section": null,
+   "title": {
+    "en": "Secondary color"
+   },
+   "subtitle": null,
+   "html": "<progress class=\"progress progress-secondary w-56\" value=\"0\" max=\"100\"></progress>\n<progress class=\"progress progress-secondary w-56\" value=\"10\" max=\"100\"></progress>\n<progress class=\"progress progress-secondary w-56\" value=\"40\" max=\"100\"></progress>\n<progress class=\"progress progress-secondary w-56\" value=\"70\" max=\"100\"></progress>\n<progress class=\"progress progress-secondary w-56\" value=\"100\" max=\"100\"></progress>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "accent-color",
+   "section": null,
+   "title": {
+    "en": "Accent color"
+   },
+   "subtitle": null,
+   "html": "<progress class=\"progress progress-accent w-56\" value=\"0\" max=\"100\"></progress>\n<progress class=\"progress progress-accent w-56\" value=\"10\" max=\"100\"></progress>\n<progress class=\"progress progress-accent w-56\" value=\"40\" max=\"100\"></progress>\n<progress class=\"progress progress-accent w-56\" value=\"70\" max=\"100\"></progress>\n<progress class=\"progress progress-accent w-56\" value=\"100\" max=\"100\"></progress>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "neutral-color",
+   "section": null,
+   "title": {
+    "en": "Neutral color"
+   },
+   "subtitle": null,
+   "html": "<progress class=\"progress progress-neutral w-56\" value=\"0\" max=\"100\"></progress>\n<progress class=\"progress progress-neutral w-56\" value=\"10\" max=\"100\"></progress>\n<progress class=\"progress progress-neutral w-56\" value=\"40\" max=\"100\"></progress>\n<progress class=\"progress progress-neutral w-56\" value=\"70\" max=\"100\"></progress>\n<progress class=\"progress progress-neutral w-56\" value=\"100\" max=\"100\"></progress>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "info-color",
+   "section": null,
+   "title": {
+    "en": "Info color"
+   },
+   "subtitle": null,
+   "html": "<progress class=\"progress progress-info w-56\" value=\"0\" max=\"100\"></progress>\n<progress class=\"progress progress-info w-56\" value=\"10\" max=\"100\"></progress>\n<progress class=\"progress progress-info w-56\" value=\"40\" max=\"100\"></progress>\n<progress class=\"progress progress-info w-56\" value=\"70\" max=\"100\"></progress>\n<progress class=\"progress progress-info w-56\" value=\"100\" max=\"100\"></progress>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "success-color",
+   "section": null,
+   "title": {
+    "en": "Success color"
+   },
+   "subtitle": null,
+   "html": "<progress class=\"progress progress-success w-56\" value=\"0\" max=\"100\"></progress>\n<progress class=\"progress progress-success w-56\" value=\"10\" max=\"100\"></progress>\n<progress class=\"progress progress-success w-56\" value=\"40\" max=\"100\"></progress>\n<progress class=\"progress progress-success w-56\" value=\"70\" max=\"100\"></progress>\n<progress class=\"progress progress-success w-56\" value=\"100\" max=\"100\"></progress>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "warning-color",
+   "section": null,
+   "title": {
+    "en": "Warning color"
+   },
+   "subtitle": null,
+   "html": "<progress class=\"progress progress-warning w-56\" value=\"0\" max=\"100\"></progress>\n<progress class=\"progress progress-warning w-56\" value=\"10\" max=\"100\"></progress>\n<progress class=\"progress progress-warning w-56\" value=\"40\" max=\"100\"></progress>\n<progress class=\"progress progress-warning w-56\" value=\"70\" max=\"100\"></progress>\n<progress class=\"progress progress-warning w-56\" value=\"100\" max=\"100\"></progress>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "error-color",
+   "section": null,
+   "title": {
+    "en": "Error color"
+   },
+   "subtitle": null,
+   "html": "<progress class=\"progress progress-error w-56\" value=\"0\" max=\"100\"></progress>\n<progress class=\"progress progress-error w-56\" value=\"10\" max=\"100\"></progress>\n<progress class=\"progress progress-error w-56\" value=\"40\" max=\"100\"></progress>\n<progress class=\"progress progress-error w-56\" value=\"70\" max=\"100\"></progress>\n<progress class=\"progress progress-error w-56\" value=\"100\" max=\"100\"></progress>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "indeterminate-without-value",
+   "section": null,
+   "title": {
+    "en": "Indeterminate (without value)"
+   },
+   "subtitle": null,
+   "html": "<progress class=\"progress w-56\"></progress>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

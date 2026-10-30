@@ -1,0 +1,322 @@
+{
+ "name": "mask",
+ "title": {
+  "en": "Mask"
+ },
+ "description": {
+  "en": "Mask crops the content of the element to common shapes.",
+  "ca": "La màscara retalla el contingut de l'element a formes comunes.",
+  "es": "Mask recorta el contenido del elemento a formas comunes."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "mask",
+     "description": {
+      "en": "Masks the content with shape",
+      "ca": "Oculta el contingut amb forma",
+      "es": "Enmascara el contenido con forma."
+     }
+    }
+   ]
+  },
+  {
+   "group": "style",
+   "items": [
+    {
+     "class": "mask-squircle",
+     "description": {
+      "en": "squircle"
+     }
+    },
+    {
+     "class": "mask-heart",
+     "description": {
+      "en": "heart",
+      "ca": "cor",
+      "es": "corazón"
+     }
+    },
+    {
+     "class": "mask-hexagon",
+     "description": {
+      "en": "hexagon vertical"
+     }
+    },
+    {
+     "class": "mask-hexagon-2",
+     "description": {
+      "en": "hexagon horizontal",
+      "ca": "hexàgon horitzontal",
+      "es": "hexágono horizontal"
+     }
+    },
+    {
+     "class": "mask-decagon",
+     "description": {
+      "en": "decagon"
+     }
+    },
+    {
+     "class": "mask-pentagon",
+     "description": {
+      "en": "pentagon"
+     }
+    },
+    {
+     "class": "mask-diamond",
+     "description": {
+      "en": "diamond",
+      "ca": "diamant",
+      "es": "diamante"
+     }
+    },
+    {
+     "class": "mask-circle",
+     "description": {
+      "en": "circle"
+     }
+    },
+    {
+     "class": "mask-star",
+     "description": {
+      "en": "star"
+     }
+    },
+    {
+     "class": "mask-star-2",
+     "description": {
+      "en": "star (bold)",
+      "ca": "estrella (negreta)",
+      "es": "estrella (negrita)"
+     }
+    },
+    {
+     "class": "mask-triangle",
+     "description": {
+      "en": "triangle pointing top",
+      "ca": "triangle apuntant cap amunt",
+      "es": "triángulo apuntando hacia arriba"
+     }
+    },
+    {
+     "class": "mask-triangle-2",
+     "description": {
+      "en": "triangle pointing down",
+      "ca": "triangle apuntant cap avall",
+      "es": "triangulo apuntando hacia abajo"
+     }
+    },
+    {
+     "class": "mask-triangle-3",
+     "description": {
+      "en": "triangle pointing left",
+      "ca": "triangle apuntant a l'esquerra",
+      "es": "triangulo apuntando hacia la izquierda"
+     }
+    },
+    {
+     "class": "mask-triangle-4",
+     "description": {
+      "en": "triangle pointing right",
+      "ca": "triangle apuntant a la dreta",
+      "es": "triángulo apuntando hacia la derecha"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "mask-half-1",
+     "description": {
+      "en": "Crops only the first half of mask",
+      "ca": "Recull només la primera meitat de Mask",
+      "es": "Recorta solo la primera mitad de Mask"
+     }
+    },
+    {
+     "class": "mask-half-2",
+     "description": {
+      "en": "Crops only the second half of mask",
+      "ca": "Recull només la segona meitat de Mask",
+      "es": "Cosecha solo la segunda mitad de Mask"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "squircle",
+   "section": null,
+   "title": {
+    "en": "Squircle"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-squircle\"\n  alt=\"Squircle CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "heart",
+   "section": null,
+   "title": {
+    "en": "Heart"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-heart\"\n  alt=\"Heart CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "hexagon",
+   "section": null,
+   "title": {
+    "en": "Hexagon"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-hexagon\"\n  alt=\"Hexagon CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "hexagon-2-horizontal-hexagon",
+   "section": null,
+   "title": {
+    "en": "Hexagon-2 (horizontal hexagon)"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-hexagon-2\"\n  alt=\"Hexagon-2 CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "decagon",
+   "section": null,
+   "title": {
+    "en": "Decagon"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-decagon\"\n  alt=\"Decagon CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "pentagon",
+   "section": null,
+   "title": {
+    "en": "Pentagon"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-pentagon\"\n  alt=\"Pentagon CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "diamond",
+   "section": null,
+   "title": {
+    "en": "Diamond"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-diamond\"\n  alt=\"Diamond CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "circle",
+   "section": null,
+   "title": {
+    "en": "Circle"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-circle\"\n  alt=\"Circle CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "star",
+   "section": null,
+   "title": {
+    "en": "Star"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-star\"\n  alt=\"Star CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "star-2-bold-star",
+   "section": null,
+   "title": {
+    "en": "Star-2 (bold star)"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-star-2\"\n  alt=\"Star-2 CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "triangle-pointing-top",
+   "section": null,
+   "title": {
+    "en": "Triangle (pointing top)"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-triangle\"\n  alt=\"Triangle CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "triangle-2-pointing-down",
+   "section": null,
+   "title": {
+    "en": "Triangle-2 (pointing down)"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-triangle-2\"\n  alt=\"Triangle-2 CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "triangle-3-pointing-left",
+   "section": null,
+   "title": {
+    "en": "Triangle-3 (pointing left)"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-triangle-3\"\n  alt=\"Triangle-3 CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "triangle-4-pointing-right",
+   "section": null,
+   "title": {
+    "en": "Triangle-4 (pointing right)"
+   },
+   "subtitle": null,
+   "html": "<img\n  class=\"mask mask-triangle-4\"\n  alt=\"Triangle-4 CSS mask\"\n  src=\"/static/ui/placeholders/photo-4.svg\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

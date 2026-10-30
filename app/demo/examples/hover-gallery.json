@@ -1,0 +1,56 @@
+{
+ "name": "hover-gallery",
+ "title": {
+  "en": "Hover Gallery"
+ },
+ "description": {
+  "en": "Hover Gallery is container of images. The first image is visible by default and when we hover it horizontally, other images show up. Hover Gallery is useful for product cards in ecommerce sites, portfolios or in image galleries. Hover Gallery can include up to 10 images.",
+  "ca": "Hover Gallery és un contenidor d'imatges. La primera imatge és visible com Default i quan la passem horitzontalment, apareixen altres imatges. Hover Gallery és útil per a targetes de productes en llocs de comerç electrònic, carteres o galeries d'imatges. Hover Gallery pot incloure fins a 10 imatges.",
+  "es": "Hover Gallery es un contenedor de imágenes. La primera imagen es visible como Default y cuando la colocamos horizontalmente, aparecen otras imágenes. Hover Gallery es útil para tarjetas de productos en sitios de comercio electrónico, portafolios o galerías de imágenes. Hover Gallery puede incluir hasta 10 imágenes."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "hover-gallery",
+     "description": {
+      "en": "Container <div> or <figure> that includes images",
+      "ca": "Contenidor <div> o <figure> que inclou imatges",
+      "es": "Contenedor <div> o <figure> que incluye imágenes"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "hover-gallery",
+   "section": null,
+   "title": {
+    "en": "Hover Gallery"
+   },
+   "subtitle": {
+    "en": "Move your mouse on the image horizontally",
+    "ca": "Mou el ratolí sobre la imatge horitzontalment",
+    "es": "Mueva el mouse sobre la imagen horizontalmente."
+   },
+   "html": "<figure class=\"hover-gallery max-w-60\">\n  <img alt=\"Tailwind CSS image hover gallery\" src=\"/static/ui/placeholders/photo-1.svg\" />\n  <img alt=\"Tailwind CSS image hover gallery\" src=\"/static/ui/placeholders/photo-3.svg\" />\n  <img alt=\"Tailwind CSS image hover gallery\" src=\"/static/ui/placeholders/photo-4.svg\" />\n  <img alt=\"Tailwind CSS image hover gallery\" src=\"/static/ui/placeholders/photo-4.svg\" />\n</figure>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "hover-gallery-in-a-card",
+   "section": null,
+   "title": {
+    "en": "Hover Gallery in a card"
+   },
+   "subtitle": null,
+   "html": "<div class=\"card card-sm bg-base-200 max-w-60 shadow\">\n  <figure class=\"hover-gallery\">\n    <img alt=\"Tailwind CSS image hover gallery\" src=\"/static/ui/placeholders/photo-1.svg\" />\n    <img alt=\"Tailwind CSS image hover gallery\" src=\"/static/ui/placeholders/photo-3.svg\" />\n    <img alt=\"Tailwind CSS image hover gallery\" src=\"/static/ui/placeholders/photo-4.svg\" />\n    <img alt=\"Tailwind CSS image hover gallery\" src=\"/static/ui/placeholders/photo-4.svg\" />\n  </figure>\n  <div class=\"card-body\">\n    <h2 class=\"card-title flex justify-between\">\n      daisyUI Hat\n      <span class=\"font-normal\">$25</span>\n    </h2>\n    <p>High Quality classic cap hat with stitch logo</p>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

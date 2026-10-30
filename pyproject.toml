@@ -9,14 +9,14 @@ dependencies = [
     "fastapi>=0.143,<1",
     "jinja2>=3.1.6,<4",
     "pydantic-settings>=2.6,<3",
-    "python-multipart>=0.0.32",
-    "tzdata>=2025.2",  # Windows has no time zone database of its own
+    "python-multipart>=0.0.32,<1",
+    "tzdata>=2025.2",  # Windows has no time zone database of its own. No upper limit: its versions are dates
     "uvicorn>=0.54,<1",
 ]
 
 [dependency-groups]
 dev = [
-    "httpx2>=2",
+    "httpx2>=2,<3",
     "mypy>=1.13,<3",
     "playwright>=1.64,<2",
     "pytest>=9,<10",

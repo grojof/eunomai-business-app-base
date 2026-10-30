@@ -1,0 +1,39 @@
+{#- The person's language, in the look the application chose: `variant` is one of settings.LAYOUTS["language_control"].
+    Each language is named in itself. The select has its own button: on a closed select, arrow keys change the value,
+    and sending the form on each one would change the language under a person who is only reading the list. -#}
+{% from "ui/macros.html" import icon %}
+<form method="post" action="/preferences" data-preferences="{{ place }}-language">
+  <input type="hidden" name="next" value="{{ here }}">
+  {% if variant == "select" %}
+  <div class="join">
+    <select class="select select-sm join-item w-28" name="language" aria-label="{{ _('Language') }}">
+      {% for code, label in languages %}
+      <option value="{{ code }}" lang="{{ code|replace('_', '-') }}"{% if code == language %} selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-sm join-item" type="submit">{{ _("Apply") }}</button>
+  </div>
+  {% elif variant == "menu" %}
+  <ul class="menu menu-horizontal menu-sm flex-nowrap gap-0.5 p-0" aria-label="{{ _('Language') }}">
+    {% for code, label in languages %}
+    <li><button class="{{ 'menu-active' if code == language else '' }}" type="submit" name="language" value="{{ code }}"
+                lang="{{ code|replace('_', '-') }}" aria-pressed="{{ 'true' if code == language else 'false' }}">{{ label }}</button></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <details class="dropdown dropdown-end" data-menu>
+    <summary class="btn btn-ghost btn-sm gap-1 px-2">
+      {{ icon("languages", "size-4") }}
+      <span class="sr-only">{{ _("Language") }}</span>
+      <span class="uppercase" lang="{{ language_tag }}" aria-hidden="true">{{ language[:2] }}</span>
+      {{ icon("chevron-down", "size-3") }}
+    </summary>
+    <ul class="dropdown-content menu z-40 mt-2 w-44 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
+      {% for code, label in languages %}
+      <li><button class="{{ 'menu-active' if code == language else '' }}" type="submit" name="language" value="{{ code }}"
+                  lang="{{ code|replace('_', '-') }}" aria-pressed="{{ 'true' if code == language else 'false' }}">{{ label }}</button></li>
+      {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+</form>

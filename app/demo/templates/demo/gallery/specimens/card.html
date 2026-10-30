@@ -1,0 +1,7 @@
+{% from "ui/macros.html" import card %}
+{% call card(_("Summary"), "specimen-card") %}
+<p>{{ _("A card with a title, ready for any content.") }}</p>
+{% endcall %}
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{% call card(_("Summary"), "summary-title") %}
+<p>Any content.</p>
+{% endcall %}{% endraw %}</code></pre>

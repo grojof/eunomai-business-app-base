@@ -118,7 +118,11 @@ class Languages:
         """The person's choice, then what their browser accepts, then the default."""
         if saved in self.offered or (self.allow_pseudo and saved == PSEUDO):
             return str(saved)
-        return negotiate_locale(_accepted(accept_language), self.offered) or self.default
+        found = negotiate_locale(_accepted(accept_language), self.offered)
+        if found is None:
+            return self.default
+        # It compares ignoring capitals but answers as the browser wrote it: `ES` must become the offered `es`.
+        return {code.lower(): code for code in self.offered}.get(found.lower(), self.default)
 
     def options(self) -> list[tuple[str, str]]:
         """Each language with its name in that language: a person looks for their own."""

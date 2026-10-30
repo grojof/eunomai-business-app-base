@@ -1,0 +1,115 @@
+{
+ "name": "fieldset",
+ "title": {
+  "en": "Fieldset"
+ },
+ "description": {
+  "en": "Fieldset is a container for grouping related form elements. It includes fieldset-legend as a title and label as a description."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "fieldset",
+     "description": {
+      "en": "for the fieldset container",
+      "ca": "per al contenidor Fieldset",
+      "es": "para el contenedor Fieldset"
+     }
+    },
+    {
+     "class": "label",
+     "description": {
+      "en": "label for inputs",
+      "ca": "Label per a les entrades",
+      "es": "Label para entradas"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "fieldset-legend",
+     "description": {
+      "en": "for the title of the fieldset",
+      "ca": "pel títol de la Fieldset",
+      "es": "por el título del Fieldset"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "fieldset-fieldset-legend-and-label",
+   "section": null,
+   "title": {
+    "en": "Fieldset fieldset-legend and label"
+   },
+   "subtitle": null,
+   "html": "<fieldset class=\"fieldset\">\n  <legend class=\"fieldset-legend\">Page title</legend>\n  <input type=\"text\" class=\"input\" placeholder=\"My awesome page\" />\n  <p class=\"label\">You can edit page title later on from settings</p>\n</fieldset>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "fieldset-with-background-and-border",
+   "section": null,
+   "title": {
+    "en": "Fieldset with background and border"
+   },
+   "subtitle": null,
+   "html": "<fieldset class=\"fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4\">\n  <legend class=\"fieldset-legend\">Page title</legend>\n  <input type=\"text\" class=\"input\" placeholder=\"My awesome page\" />\n  <p class=\"label\">You can edit page title later on from settings</p>\n</fieldset>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "fieldset-with-multiple-inputs",
+   "section": null,
+   "title": {
+    "en": "Fieldset with multiple inputs"
+   },
+   "subtitle": {
+    "en": "Add proper id and for attributes for accessibility. The id must be unique and depends on your context.",
+    "ca": "Afegiu l'identificador adequat i els atributs d'accessibilitat. L'identificador ha de ser únic i depèn del vostre context.",
+    "es": "Agregue la identificación adecuada y los atributos de accesibilidad. La identificación debe ser única y depende de su contexto."
+   },
+   "html": "<fieldset class=\"fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4\">\n  <legend class=\"fieldset-legend\">Page details</legend>\n\n  <label class=\"label\">Title</label>\n  <input type=\"text\" class=\"input\" placeholder=\"My awesome page\" />\n\n  <label class=\"label\">Slug</label>\n  <input type=\"text\" class=\"input\" placeholder=\"my-awesome-page\" />\n\n  <label class=\"label\">Author</label>\n  <input type=\"text\" class=\"input\" placeholder=\"Name\" />\n</fieldset>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "fieldset-with-multiple-join-items",
+   "section": null,
+   "title": {
+    "en": "Fieldset with multiple join items"
+   },
+   "subtitle": null,
+   "html": "<fieldset class=\"fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4\">\n  <legend class=\"fieldset-legend\">Settings</legend>\n  <div class=\"join\">\n    <input type=\"text\" class=\"input join-item\" placeholder=\"Product name\" />\n    <button class=\"btn join-item\">save</button>\n  </div>\n</fieldset>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "login-form-with-fieldset",
+   "section": null,
+   "title": {
+    "en": "Login form with fieldset"
+   },
+   "subtitle": {
+    "en": "Add proper id and for attributes for accessibility. The id must be unique and depends on your context.",
+    "ca": "Afegiu l'identificador adequat i els atributs d'accessibilitat. L'identificador ha de ser únic i depèn del vostre context.",
+    "es": "Agregue la identificación adecuada y los atributos de accesibilidad. La identificación debe ser única y depende de su contexto."
+   },
+   "html": "<fieldset class=\"fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4\">\n  <legend class=\"fieldset-legend\">Login</legend>\n\n  <label class=\"label\">Email</label>\n  <input type=\"email\" class=\"input\" placeholder=\"Email\" />\n\n  <label class=\"label\">Password</label>\n  <input type=\"password\" class=\"input\" placeholder=\"Password\" />\n\n  <button class=\"btn btn-neutral mt-4\">Login</button>\n</fieldset>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

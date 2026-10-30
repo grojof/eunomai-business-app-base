@@ -7,19 +7,18 @@ from typing import Annotated
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Form, Request
-from fastapi.responses import JSONResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
 from app.core import identity
 from app.core.i18n import Languages, _
-from app.core.settings import Settings
-from app.core.templating import LAYOUTS, UI, render
+from app.core.settings import LAYOUTS, Settings
+from app.core.templating import UI, SearchItem, register_search, render, search_items
 
 logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent.parent
 THEMES = ("system", "light", "dark")
-PUBLIC_PREFIXES = ("/static/", "/health")
 ONE_YEAR = 60 * 60 * 24 * 365
 
 CONTENT_SECURITY_POLICY = "; ".join(
@@ -48,6 +47,10 @@ def _cross_site(request: Request) -> bool:
     return origin is not None and urlsplit(origin).netloc != request.headers.get("host")
 
 
+def _is_public(path: str) -> bool:
+    return path == "/health" or path.startswith("/static/")
+
+
 async def _context(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
     state = request.app.state
     language = state.languages.choose(request.cookies.get("language"), request.headers.get("accept-language"))
@@ -55,7 +58,7 @@ async def _context(request: Request, call_next: Callable[[Request], Awaitable[Re
     theme = request.cookies.get("theme")
     request.state.theme = theme if theme in THEMES else "system"
 
-    if request.url.path.startswith(PUBLIC_PREFIXES):
+    if _is_public(request.url.path):
         response = await call_next(request)
     else:
         client = request.client.host if request.client else None
@@ -91,7 +94,9 @@ def _error_page(request: Request, status: int) -> Response:
 
 async def _on_http_error(request: Request, error: Exception) -> Response:
     assert isinstance(error, HTTPException)  # noqa: S101  # FastAPI only sends these here
-    return _error_page(request, error.status_code)
+    response = _error_page(request, error.status_code)
+    response.headers.update(error.headers or {})  # a 405 must say what is allowed, for example
+    return response
 
 
 def _safe_path(next_path: str) -> str:
@@ -108,6 +113,8 @@ async def _save_preferences(
     layout_sticky_header: Annotated[str, Form()] = "",
     layout_width: Annotated[str, Form()] = "",
     layout_density: Annotated[str, Form()] = "",
+    layout_theme_control: Annotated[str, Form()] = "",
+    layout_language_control: Annotated[str, Form()] = "",
 ) -> Response:
     response = RedirectResponse(_safe_path(next_path), status_code=303)
     secure = request.app.state.settings.environment == "production"
@@ -116,17 +123,70 @@ async def _save_preferences(
         response.set_cookie("language", language, **options)
     if theme in THEMES:
         response.set_cookie("theme", theme, **options)
-    if request.app.state.layout_preview:
-        chosen = {
-            "navigation": layout_navigation,
-            "sticky_header": layout_sticky_header,
-            "width": layout_width,
-            "density": layout_density,
-        }
-        for field, value in chosen.items():
-            if value in LAYOUTS[field]:
-                response.set_cookie(f"layout_{field}", value, **options)
+    chosen = {
+        "navigation": layout_navigation,
+        "sticky_header": layout_sticky_header,
+        "width": layout_width,
+        "density": layout_density,
+        "theme_control": layout_theme_control,
+        "language_control": layout_language_control,
+    }
+    for field in request.app.state.settings.layout_choices:
+        if chosen[field] in LAYOUTS[field]:
+            response.set_cookie(f"layout_{field}", chosen[field], **options)
     return response
+
+
+def _settings_item() -> list[SearchItem]:
+    return [
+        SearchItem(
+            _("Settings"),
+            "/settings",
+            _("Pages"),
+            _("Layout, theme, language and how their controls look."),
+            icon="sliders-horizontal",
+        )
+    ]
+
+
+async def _settings_page(request: Request) -> Response:
+    """Everything a person may change about how the application looks, each choice shown as it would be applied."""
+    groups = {
+        "navigation": (
+            _("Navigation"),
+            {"side": _("Side"), "compact": _("Icons only"), "top": _("Top"), "hidden": _("Hidden")},
+        ),
+        "sticky_header": (_("Fixed header"), {"on": _("Yes"), "off": _("No")}),
+        "width": (_("Width"), {"full": _("Full"), "centered": _("Centred")}),
+        "density": (_("Density"), {"normal": _("Normal"), "compact": _("Compact")}),
+    }
+    choices = request.app.state.settings.layout_choices
+    options = [
+        (field, title, [(value, labels[value]) for value in LAYOUTS[field]])
+        for field, (title, labels) in groups.items()
+        if field in choices
+    ]
+    return render(
+        request,
+        "settings.html",
+        options=options,
+        choices=choices,
+        theme_controls=[
+            ("dropdown", _("Dropdown")),
+            ("toggle", _("Toggle")),
+            ("swap", _("Swap")),
+            ("radio", _("Radio")),
+        ],
+        language_controls=[("dropdown", _("Dropdown")), ("select", _("Select")), ("menu", _("Menu list"))],
+    )
+
+
+async def _search(request: Request) -> HTMLResponse:
+    """What the command palette can find, as ready-made options: the browser only filters them."""
+    groups: dict[str, list[SearchItem]] = {}
+    for item in search_items(request):
+        groups.setdefault(item.group, []).append(item)
+    return render(request, "ui/palette_results.html", groups=groups)
 
 
 async def _health() -> JSONResponse:
@@ -137,7 +197,7 @@ def create_core(settings: Settings) -> FastAPI:
     application = FastAPI(title=settings.name, docs_url=None, redoc_url=None, openapi_url=None)
     application.state.settings = settings
     application.state.navigation = []
-    application.state.layout_preview = False
+    application.state.search = []
     application.state.languages = Languages(
         settings.languages, settings.default_language, allow_pseudo=settings.environment == "development"
     )
@@ -145,6 +205,10 @@ def create_core(settings: Settings) -> FastAPI:
     application.mount("/static/ui", StaticFiles(directory=UI / "static"), name="ui")
     application.mount("/static/brand", StaticFiles(directory=UI.parent / "brand"), name="brand")
     application.add_api_route("/preferences", _save_preferences, methods=["POST"], include_in_schema=False)
+    application.add_api_route("/search", _search, include_in_schema=False)
+    if settings.layout_choices:
+        application.add_api_route("/settings", _settings_page, include_in_schema=False)
+        register_search(application.state, _settings_item)
     application.add_api_route("/health", _health, include_in_schema=False)
     application.add_exception_handler(HTTPException, _on_http_error)
     application.middleware("http")(_context)

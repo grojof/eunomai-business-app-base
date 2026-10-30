@@ -1,0 +1,8 @@
+{% from "ui/macros.html" import message %}
+<div class="space-y-3">
+  {{ message("info", _("Your changes are saved as you type.")) }}
+  {{ message("success", _("The work order was saved.")) }}
+  {{ message("warning", _("This equipment is due for inspection.")) }}
+  {{ message("danger", _("The work order could not be saved. Try again.")) }}
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ message("success", _("The work order was saved.")) }}{% endraw %}</code></pre>

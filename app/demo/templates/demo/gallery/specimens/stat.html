@@ -1,0 +1,8 @@
+{% from "ui/macros.html" import stats, stat %}
+{% call stats() %}
+{{ stat(_("Open work orders"), 3|decimal, "clipboard-list", _("This month")) }}
+{{ stat(_("Hours worked"), 1250|decimal, "clock") }}
+{% endcall %}
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{% call stats() %}
+{{ stat(_("Hours worked"), hours|decimal, "clock", _("This month")) }}
+{% endcall %}{% endraw %}</code></pre>

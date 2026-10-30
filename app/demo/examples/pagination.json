@@ -1,0 +1,134 @@
+{
+ "name": "pagination",
+ "title": {
+  "en": "Pagination"
+ },
+ "description": {
+  "en": "Pagination is a group of buttons that allow the user to navigate between a set of related content.",
+  "ca": "La paginació és un grup de botons que permeten a l'usuari navegar entre un conjunt de contingut relacionat.",
+  "es": "La paginación es un grupo de botones que permiten al usuario navegar entre un conjunto de contenidos relacionados."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "join",
+     "description": {
+      "en": "For grouping multiple items",
+      "ca": "Per agrupar diversos elements",
+      "es": "Para agrupar varios elementos"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "join-item",
+     "description": {
+      "en": "Item inside join. Can be a button, input, etc.",
+      "ca": "Element dins de la unió. Pot ser un Button, entrada, etc.",
+      "es": "Elemento dentro de la unión. Puede ser un Button, entrada, etc."
+     }
+    }
+   ]
+  },
+  {
+   "group": "direction",
+   "items": [
+    {
+     "class": "join-vertical",
+     "description": {
+      "en": "Show items vertically",
+      "ca": "Mostra els elements verticalment",
+      "es": "Mostrar elementos verticalmente"
+     }
+    },
+    {
+     "class": "join-horizontal",
+     "description": {
+      "en": "Show items horizontally",
+      "ca": "Mostra els elements horitzontalment",
+      "es": "Mostrar elementos horizontalmente"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "pagination-with-an-active-button",
+   "section": null,
+   "title": {
+    "en": "Pagination with an active button"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join\">\n  <button class=\"join-item btn\">1</button>\n  <button class=\"join-item btn btn-active\">2</button>\n  <button class=\"join-item btn\">3</button>\n  <button class=\"join-item btn\">4</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "sizes",
+   "section": null,
+   "title": {
+    "en": "Sizes"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join\">\n  <button class=\"join-item btn btn-xs\">1</button>\n  <button class=\"join-item btn btn-xs btn-active\">2</button>\n  <button class=\"join-item btn btn-xs\">3</button>\n  <button class=\"join-item btn btn-xs\">4</button>\n</div>\n<div class=\"join\">\n  <button class=\"join-item btn btn-sm\">1</button>\n  <button class=\"join-item btn btn-sm btn-active\">2</button>\n  <button class=\"join-item btn btn-sm\">3</button>\n  <button class=\"join-item btn btn-sm\">4</button>\n</div>\n<div class=\"join\">\n  <button class=\"join-item btn btn-md\">1</button>\n  <button class=\"join-item btn btn-md btn-active\">2</button>\n  <button class=\"join-item btn btn-md\">3</button>\n  <button class=\"join-item btn btn-md\">4</button>\n</div>\n<div class=\"join\">\n  <button class=\"join-item btn btn-lg\">1</button>\n  <button class=\"join-item btn btn-lg btn-active\">2</button>\n  <button class=\"join-item btn btn-lg\">3</button>\n  <button class=\"join-item btn btn-lg\">4</button>\n</div>\n<div class=\"join\">\n  <button class=\"join-item btn btn-xl\">1</button>\n  <button class=\"join-item btn btn-xl btn-active\">2</button>\n  <button class=\"join-item btn btn-xl\">3</button>\n  <button class=\"join-item btn btn-xl\">4</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-a-disabled-button",
+   "section": null,
+   "title": {
+    "en": "With a disabled button"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join\">\n  <button class=\"join-item btn\">1</button>\n  <button class=\"join-item btn\">2</button>\n  <button class=\"join-item btn btn-disabled\">...</button>\n  <button class=\"join-item btn\">99</button>\n  <button class=\"join-item btn\">100</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "extra-small-buttons",
+   "section": null,
+   "title": {
+    "en": "Extra small buttons"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join\">\n  <button class=\"join-item btn\">«</button>\n  <button class=\"join-item btn\">Page 22</button>\n  <button class=\"join-item btn\">»</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "nexprev-outline-buttons-with-equal-width",
+   "section": null,
+   "title": {
+    "en": "Nex/Prev outline buttons with equal width"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join grid grid-cols-2\">\n  <button class=\"join-item btn btn-outline\">Previous page</button>\n  <button class=\"join-item btn btn-outline\">Next</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "using-radio-inputs",
+   "section": null,
+   "title": {
+    "en": "Using radio inputs"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join\">\n  <input\n    class=\"join-item btn btn-square\"\n    type=\"radio\"\n    name=\"options\"\n    aria-label=\"1\"\n    checked=\"checked\" />\n  <input class=\"join-item btn btn-square\" type=\"radio\" name=\"options\" aria-label=\"2\" />\n  <input class=\"join-item btn btn-square\" type=\"radio\" name=\"options\" aria-label=\"3\" />\n  <input class=\"join-item btn btn-square\" type=\"radio\" name=\"options\" aria-label=\"4\" />\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

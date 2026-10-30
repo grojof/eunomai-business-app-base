@@ -1,0 +1,197 @@
+{
+ "name": "chat",
+ "title": {
+  "en": "Chat bubble"
+ },
+ "description": {
+  "en": "Chat bubbles are used to show one line of conversation and all its data, including the author image, author name, time, etc.",
+  "ca": "Les bafarades s'utilitzen per mostrar una línia de conversa i totes les seves dades, incloent la imatge de l'autor, el nom de l'autor, l'hora, etc.",
+  "es": "Los bocadillos de chat se utilizan para mostrar una línea de conversación y todos sus datos, incluida la imagen del autor, el nombre del autor, la hora, etc."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "chat",
+     "description": {
+      "en": "Container for one line of conversation and its data",
+      "ca": "Contenidor per a una línia de conversa i les seves dades",
+      "es": "Contenedor para una línea de conversación y sus datos."
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "chat-image",
+     "description": {
+      "en": "Author image",
+      "ca": "Imatge de l'autor",
+      "es": "Imagen del autor"
+     }
+    },
+    {
+     "class": "chat-header",
+     "description": {
+      "en": "Text above the chat bubble",
+      "ca": "Text a sobre del Chat bubble",
+      "es": "Texto encima del Chat bubble"
+     }
+    },
+    {
+     "class": "chat-footer",
+     "description": {
+      "en": "Text below the chat bubble",
+      "ca": "Text a sota del Chat bubble",
+      "es": "Texto debajo del Chat bubble"
+     }
+    },
+    {
+     "class": "chat-bubble",
+     "description": {
+      "en": "Chat bubble"
+     }
+    }
+   ]
+  },
+  {
+   "group": "placement",
+   "items": [
+    {
+     "class": "chat-start",
+     "description": {
+      "en": "Aligns chat to start horizontally (required)",
+      "ca": "Alinea el xat per començar horitzontalment (obligatori)",
+      "es": "Alinea el chat para que comience horizontalmente (obligatorio)"
+     }
+    },
+    {
+     "class": "chat-end",
+     "description": {
+      "en": "Aligns chat to end horizontally (required)",
+      "ca": "Alinea el xat per acabar horitzontalment (obligatori)",
+      "es": "Alinea el chat para que finalice horizontalmente (obligatorio)"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "chat-bubble-neutral",
+     "description": {
+      "en": "neutral color for chat-bubble"
+     }
+    },
+    {
+     "class": "chat-bubble-primary",
+     "description": {
+      "en": "primary color for chat-bubble"
+     }
+    },
+    {
+     "class": "chat-bubble-secondary",
+     "description": {
+      "en": "secondary color for chat-bubble"
+     }
+    },
+    {
+     "class": "chat-bubble-accent",
+     "description": {
+      "en": "accent color for chat-bubble"
+     }
+    },
+    {
+     "class": "chat-bubble-info",
+     "description": {
+      "en": "info color for chat-bubble"
+     }
+    },
+    {
+     "class": "chat-bubble-success",
+     "description": {
+      "en": "success color for chat-bubble"
+     }
+    },
+    {
+     "class": "chat-bubble-warning",
+     "description": {
+      "en": "warning color for chat-bubble"
+     }
+    },
+    {
+     "class": "chat-bubble-error",
+     "description": {
+      "en": "error color for chat-bubble"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "chat-start-and-chat-end",
+   "section": null,
+   "title": {
+    "en": "chat-start and chat-end"
+   },
+   "subtitle": null,
+   "html": "<div class=\"chat chat-start\">\n  <div class=\"chat-bubble\">\n    It's over Anakin,\n    <br />\n    I have the high ground.\n  </div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-bubble\">You underestimate my power!</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "chat-with-image",
+   "section": null,
+   "title": {
+    "en": "Chat with image"
+   },
+   "subtitle": null,
+   "html": "<div class=\"chat chat-start\">\n  <div class=\"chat-image avatar\">\n    <div class=\"w-10 rounded-full\">\n      <img\n        alt=\"Tailwind CSS chat bubble component\"\n        src=\"/static/ui/placeholders/avatar-3.svg\"\n      />\n    </div>\n  </div>\n  <div class=\"chat-bubble\">It was said that you would, destroy the Sith, not join them.</div>\n</div>\n<div class=\"chat chat-start\">\n  <div class=\"chat-image avatar\">\n    <div class=\"w-10 rounded-full\">\n      <img\n        alt=\"Tailwind CSS chat bubble component\"\n        src=\"/static/ui/placeholders/avatar-3.svg\"\n      />\n    </div>\n  </div>\n  <div class=\"chat-bubble\">It was you who would bring balance to the Force</div>\n</div>\n<div class=\"chat chat-start\">\n  <div class=\"chat-image avatar\">\n    <div class=\"w-10 rounded-full\">\n      <img\n        alt=\"Tailwind CSS chat bubble component\"\n        src=\"/static/ui/placeholders/avatar-3.svg\"\n      />\n    </div>\n  </div>\n  <div class=\"chat-bubble\">Not leave it in Darkness</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "chat-with-image-header-and-footer",
+   "section": null,
+   "title": {
+    "en": "Chat with image, header and footer"
+   },
+   "subtitle": null,
+   "html": "<div class=\"chat chat-start\">\n  <div class=\"chat-image avatar\">\n    <div class=\"w-10 rounded-full\">\n      <img\n        alt=\"Tailwind CSS chat bubble component\"\n        src=\"/static/ui/placeholders/avatar-3.svg\"\n      />\n    </div>\n  </div>\n  <div class=\"chat-header\">\n    Obi-Wan Kenobi\n    <time class=\"text-xs opacity-50\">12:45</time>\n  </div>\n  <div class=\"chat-bubble\">You were the Chosen One!</div>\n  <div class=\"chat-footer opacity-50\">Delivered</div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-image avatar\">\n    <div class=\"w-10 rounded-full\">\n      <img\n        alt=\"Tailwind CSS chat bubble component\"\n        src=\"/static/ui/placeholders/avatar-1.svg\"\n      />\n    </div>\n  </div>\n  <div class=\"chat-header\">\n    Anakin\n    <time class=\"text-xs opacity-50\">12:46</time>\n  </div>\n  <div class=\"chat-bubble\">I hate you!</div>\n  <div class=\"chat-footer opacity-50\">Seen at 12:46</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "chat-with-header-and-footer",
+   "section": null,
+   "title": {
+    "en": "Chat with header and footer"
+   },
+   "subtitle": null,
+   "html": "<div class=\"chat chat-start\">\n  <div class=\"chat-header\">\n    Obi-Wan Kenobi\n    <time class=\"text-xs opacity-50\">2 hours ago</time>\n  </div>\n  <div class=\"chat-bubble\">You were the Chosen One!</div>\n  <div class=\"chat-footer opacity-50\">Seen</div>\n</div>\n<div class=\"chat chat-start\">\n  <div class=\"chat-header\">\n    Obi-Wan Kenobi\n    <time class=\"text-xs opacity-50\">2 hour ago</time>\n  </div>\n  <div class=\"chat-bubble\">I loved you.</div>\n  <div class=\"chat-footer opacity-50\">Delivered</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "chat-bubble-with-colors",
+   "section": null,
+   "title": {
+    "en": "Chat Bubble with colors"
+   },
+   "subtitle": null,
+   "html": "<div class=\"chat chat-start\">\n  <div class=\"chat-bubble chat-bubble-primary\">What kind of nonsense is this</div>\n</div>\n<div class=\"chat chat-start\">\n  <div class=\"chat-bubble chat-bubble-secondary\">\n    Put me on the Council and not make me a Master!??\n  </div>\n</div>\n<div class=\"chat chat-start\">\n  <div class=\"chat-bubble chat-bubble-accent\">\n    That's never been done in the history of the Jedi.\n  </div>\n</div>\n<div class=\"chat chat-start\">\n  <div class=\"chat-bubble chat-bubble-neutral\">It's insulting!</div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-bubble chat-bubble-info\">Calm down, Anakin.</div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-bubble chat-bubble-success\">You have been given a great honor.</div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-bubble chat-bubble-warning\">To be on the Council at your age.</div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-bubble chat-bubble-error\">It's never happened before.</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

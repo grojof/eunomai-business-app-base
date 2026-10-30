@@ -1,0 +1,286 @@
+{
+ "name": "aura",
+ "title": {
+  "en": "Aura"
+ },
+ "description": {
+  "en": "Aura is a border light effect that can wrap around any component. It is a great way to add a cool, eye-catching visual effect to your components. Aura is useful for the most important button, card, or div that you want to highlight.",
+  "ca": "Aura és un efecte de llum de vora que pot envoltar qualsevol Component. És una manera fantàstica d'afegir un efecte visual fresc i atractiu al vostre Components. Aura és útil per als Button, Card o div més importants que vulgueu destacar.",
+  "es": "Aura es un efecto de luz de borde que puede envolver cualquier Component. Es una excelente manera de agregar un efecto visual atractivo y atractivo a su Components. Aura es útil para los Button, Card o div más importantes que desee resaltar."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "aura",
+     "description": {
+      "en": "Container element to add a light effect aura around an element. By default it's a rotating border",
+      "ca": "Element contenidor per afegir un efecte de llum Aura al voltant d'un element. Per Default és una vora giratòria",
+      "es": "Elemento contenedor para agregar un efecto de luz Aura alrededor de un elemento. Por Default es un borde giratorio."
+     }
+    }
+   ]
+  },
+  {
+   "group": "style",
+   "items": [
+    {
+     "class": "aura-dual",
+     "description": {
+      "en": "Uses two light effects",
+      "ca": "Utilitza dos efectes de llum",
+      "es": "Utiliza dos efectos de luz."
+     }
+    },
+    {
+     "class": "aura-rainbow",
+     "description": {
+      "en": "Uses rainbow colors for the light effect",
+      "ca": "Utilitza colors de l'arc de Sant Martí per a l'efecte de llum",
+      "es": "Utiliza los colores del arcoíris para el efecto de luz."
+     }
+    },
+    {
+     "class": "aura-holo",
+     "description": {
+      "en": "Uses holographic colors for the light effect",
+      "ca": "Utilitza colors hologràfics per a l'efecte de llum",
+      "es": "Utiliza colores holográficos para el efecto de luz."
+     }
+    },
+    {
+     "class": "aura-gold",
+     "description": {
+      "en": "Uses gold colors for the light effect",
+      "ca": "Utilitza colors daurats per a l'efecte de llum",
+      "es": "Utiliza colores dorados para el efecto de luz."
+     }
+    },
+    {
+     "class": "aura-silver",
+     "description": {
+      "en": "Uses silver colors for the light effect",
+      "ca": "Utilitza colors platejats per a l'efecte de llum",
+      "es": "Utiliza colores plateados para el efecto de luz."
+     }
+    },
+    {
+     "class": "aura-glow",
+     "description": {
+      "en": "Uses a glowing effect for the light instead of a rotating border",
+      "ca": "Utilitza un efecte brillant per a la llum en lloc d'una vora giratòria",
+      "es": "Utiliza un efecto brillante para la luz en lugar de un borde giratorio."
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "aura-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "aura-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "aura-md",
+     "description": {
+      "en": "Medium size (default)",
+      "ca": "Mida mitjana (Default)",
+      "es": "Tamaño mediano (Default)"
+     }
+    },
+    {
+     "class": "aura-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "aura-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "aura",
+   "section": null,
+   "title": {
+    "en": "Aura"
+   },
+   "subtitle": {
+    "en": "Aura around a card",
+    "ca": "Aura al voltant d'un Card",
+    "es": "Aura alrededor de un Card"
+   },
+   "html": "<div class=\"aura\">\n  <div class=\"card bg-base-100\">\n    <div class=\"card-body\">\n      <p>This card has aura</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "aura-around-a-button",
+   "section": null,
+   "title": {
+    "en": "Aura around a button"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura\">\n  <button class=\"btn\">button with aura</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "aura-dual",
+   "section": null,
+   "title": {
+    "en": "Aura dual"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura aura-dual\">\n  <div class=\"card bg-base-100\">\n    <div class=\"card-body\">\n      <p>This card has dual aura</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "aura-rainbow",
+   "section": null,
+   "title": {
+    "en": "Aura rainbow"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura aura-rainbow\">\n  <div class=\"card bg-base-100\">\n    <div class=\"card-body\">\n      <p>This card has rainbow aura</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "aura-holo",
+   "section": null,
+   "title": {
+    "en": "Aura holo"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura aura-holo\">\n  <div class=\"card bg-base-100\">\n    <div class=\"card-body\">\n      <p>This card has holo aura</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "aura-glow",
+   "section": null,
+   "title": {
+    "en": "Aura glow"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura aura-glow\">\n  <div class=\"card bg-base-100\">\n    <div class=\"card-body\">\n      <p>This card has glow aura</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "aura-gold",
+   "section": null,
+   "title": {
+    "en": "Aura gold"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura aura-gold\">\n  <div class=\"card bg-base-100\">\n    <div class=\"card-body\">\n      <p>This card has gold aura</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "aura-silver",
+   "section": null,
+   "title": {
+    "en": "Aura silver"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura aura-silver\">\n  <div class=\"card bg-base-100\">\n    <div class=\"card-body\">\n      <p>This card has silver aura</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "aura-with-custom-color",
+   "section": null,
+   "title": {
+    "en": "Aura with custom color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura text-orange-600\">\n    <div class=\"card bg-base-100 text-base-content\">\n    <div class=\"card-body\">\n      <p>This card has custom color aura</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  },
+  {
+   "id": "aura-with-custom-color-and-custom-background-color",
+   "section": null,
+   "title": {
+    "en": "Aura with custom color and custom background color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura text-orange-600 bg-yellow-200\">\n    <div class=\"card bg-base-100 text-base-content\">\n    <div class=\"card-body\">\n      <p>This card has custom color and background aura</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  },
+  {
+   "id": "aura-rainbow-around-a-pricing-card",
+   "section": null,
+   "title": {
+    "en": "Aura rainbow around a pricing card"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura aura-rainbow\">\n  <div class=\"card w-96 bg-base-100 shadow-sm\">\n    <div class=\"card-body\">\n      <span class=\"badge badge-xs badge-warning\">Most Popular</span>\n      <div class=\"flex justify-between\">\n        <h2 class=\"text-3xl font-bold\">Premium</h2>\n        <span class=\"text-xl\">$29/mo</span>\n      </div>\n      <ul class=\"mt-6 flex flex-col gap-2 text-xs\">\n        <li>\n          <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-success\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n          <span>High-resolution image generation</span>\n        </li>\n        <li>\n          <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-success\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n          <span>Customizable style templates</span>\n        </li>\n        <li>\n          <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-success\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n          <span>Batch processing capabilities</span>\n        </li>\n        <li>\n          <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-success\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n          <span>AI-driven image enhancements</span>\n        </li>\n        <li class=\"opacity-50\">\n          <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-base-content/50\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n          <span class=\"line-through\">Seamless cloud integration</span>\n        </li>\n        <li class=\"opacity-50\">\n          <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-4 me-2 inline-block text-base-content/50\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 13l4 4L19 7\" /></svg>\n          <span class=\"line-through\">Real-time collaboration tools</span>\n        </li>\n      </ul>\n      <div class=\"mt-6\">\n        <button class=\"btn btn-primary btn-block\">Subscribe</button>\n      </div>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "aura-sizes",
+   "section": null,
+   "title": {
+    "en": "Aura sizes"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura aura-xs\">\n  <button class=\"btn\">XS</button>\n</div>\n<div class=\"aura aura-sm\">\n  <button class=\"btn\">SM</button>\n</div>\n<div class=\"aura\">\n  <button class=\"btn\">MD</button>\n</div>\n<div class=\"aura aura-lg\">\n  <button class=\"btn\">LG</button>\n</div>\n<div class=\"aura aura-xl\">\n  <button class=\"btn\">XL</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "aura-with-custom-animation-duration",
+   "section": null,
+   "title": {
+    "en": "Aura with custom animation duration"
+   },
+   "subtitle": null,
+   "html": "<div class=\"aura aura-rainbow duration-2000\">\n  <div class=\"card bg-base-100\">\n    <div class=\"card-body\">\n      <p>2000ms duration aura</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

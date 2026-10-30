@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading, button, card %}
+{% block title %}{{ _("Settings") }}{% endblock %}
+
+{% macro choice(field, value, label, active, section, language="") %}
+<form method="post" action="/preferences" data-preferences="{{ field }}-{{ value }}">
+  <input type="hidden" name="next" value="/settings#{{ section }}">
+  {{ button(label, "primary" if active else "default", "submit", small=true, attributes={"name": field, "value": value, "aria-pressed": "true" if active else "false", "lang": language or none}) }}
+</form>
+{% endmacro %}
+
+{% macro navigation_picture(value) %}
+<span class="flex h-14 w-20 overflow-hidden rounded-field border border-base-300 bg-base-200" aria-hidden="true">
+  {% if value in ("side", "compact") %}
+  <span class="{{ 'w-3' if value == 'compact' else 'w-6' }} shrink-0 bg-base-content/50"></span>
+  {% endif %}
+  <span class="flex grow flex-col">
+    <span class="h-2.5 {{ 'bg-base-content/50' if value == 'top' else 'bg-base-300' }}"></span>
+    <span class="m-1.5 grow rounded-sm bg-base-100"></span>
+  </span>
+</span>
+{% endmacro %}
+
+{% block content %}
+{{ page_heading(_("Settings"), _("Change how this application looks for you. Each choice applies at once and is remembered in this browser.")) }}
+
+{% if "navigation" in choices or options %}
+<section id="layout" class="scroll-mt-24 space-y-4" aria-labelledby="layout-title">
+  <h2 id="layout-title">{{ _("Layout") }}</h2>
+  {% for field, title, values in options %}
+  {% if field == "navigation" %}
+  {% call card(title, "setting-navigation") %}
+  <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    {% for value, label in values %}
+    {% set active = layout.navigation == value %}
+    <form method="post" action="/preferences" data-preferences="navigation-{{ value }}">
+      <input type="hidden" name="next" value="/settings#layout">
+      <button class="btn h-auto w-full flex-col gap-2 py-3 font-normal {{ 'btn-primary' if active else '' }}" type="submit" name="layout_navigation" value="{{ value }}" aria-pressed="{{ 'true' if active else 'false' }}">
+        {{ navigation_picture(value) }}
+        {{ label }}
+      </button>
+    </form>
+    {% endfor %}
+  </div>
+  {% endcall %}
+  {% endif %}
+  {% endfor %}
+  <div class="grid gap-4 lg:grid-cols-3">
+    {% for field, title, values in options %}
+    {% if field != "navigation" %}
+    {% call card(title, "setting-" ~ field) %}
+    <div class="flex flex-wrap gap-2">
+      {% for value, label in values %}
+      {{ choice("layout_" ~ field, value, label, layout[field] == value or (field == "sticky_header" and layout[field] == (value == "on")), "layout") }}
+      {% endfor %}
+    </div>
+    {% endcall %}
+    {% endif %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section id="appearance" class="scroll-mt-24 space-y-4" aria-labelledby="appearance-title">
+  <h2 id="appearance-title">{{ _("Theme and language") }}</h2>
+  <div class="grid gap-4 lg:grid-cols-2">
+    {% call card(_("Theme"), "setting-theme") %}
+    <div class="flex flex-wrap gap-2">
+      {% for value, label, _name in theme_options %}
+      {{ choice("theme", value, label, theme == value, "appearance") }}
+      {% endfor %}
+    </div>
+    {% endcall %}
+    {% call card(_("Language"), "setting-language") %}
+    <div class="flex flex-wrap gap-2">
+      {% for code, label in languages %}
+      {{ choice("language", code, label, language == code, "appearance", code|replace("_", "-")) }}
+      {% endfor %}
+    </div>
+    {% endcall %}
+  </div>
+</section>
+
+{% if "theme_control" in choices %}
+<section id="theme-control" class="scroll-mt-24 space-y-4" aria-labelledby="theme-control-title">
+  <div>
+    <h2 id="theme-control-title">{{ _("How the theme control looks") }}</h2>
+    <p>{{ _("Each one is real: try it here, then choose the one the header should show.") }}</p>
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    {% for value, label in theme_controls %}
+    {% set active = layout.theme_control == value %}
+    <div class="card border bg-base-100 {{ 'border-primary' if active else 'border-base-300' }}">
+      <div class="card-body items-center gap-4 text-center">
+        <h3 class="font-semibold">{{ label }}</h3>
+        <div class="grid min-h-14 place-items-center">
+          {% with variant=value, place="try-" ~ value %}{% include "ui/theme_control.html" %}{% endwith %}
+        </div>
+        {{ choice("layout_theme_control", value, _("In use") if active else _("Use this one"), active, "theme-control") }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if "language_control" in choices %}
+<section id="language-control" class="scroll-mt-24 space-y-4" aria-labelledby="language-control-title">
+  <h2 id="language-control-title">{{ _("How the language control looks") }}</h2>
+  <div class="grid gap-4 lg:grid-cols-3">
+    {% for value, label in language_controls %}
+    {% set active = layout.language_control == value %}
+    <div class="card border bg-base-100 {{ 'border-primary' if active else 'border-base-300' }}">
+      <div class="card-body items-center gap-4 text-center">
+        <h3 class="font-semibold">{{ label }}</h3>
+        <div class="grid min-h-14 place-items-center">
+          {% with variant=value, place="try-" ~ value %}{% include "ui/language_control.html" %}{% endwith %}
+        </div>
+        {{ choice("layout_language_control", value, _("In use") if active else _("Use this one"), active, "language-control") }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,162 @@
+{
+ "name": "stack",
+ "title": {
+  "en": "Stack"
+ },
+ "description": {
+  "en": "Stack visually puts elements on top of each other.",
+  "ca": "Una pila posa visualment els elements uns sobre els altres.",
+  "es": "Stack coloca elementos visualmente uno encima del otro."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "stack",
+     "description": {
+      "en": "Puts the children elements on top of each other",
+      "ca": "Posa els elements infantils uns sobre els altres",
+      "es": "Pone los elementos secundarios uno encima del otro."
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "stack-top",
+     "description": {
+      "en": "Aligns the children elements to the top",
+      "ca": "Alinea els elements infantils a la part superior",
+      "es": "Alinea los elementos secundarios con la parte superior."
+     }
+    },
+    {
+     "class": "stack-bottom",
+     "description": {
+      "en": "Aligns the children elements to the bottom",
+      "ca": "Alinea els elements infantils a la part inferior",
+      "es": "Alinea los elementos secundarios con la parte inferior."
+     },
+     "default": true
+    },
+    {
+     "class": "stack-start",
+     "description": {
+      "en": "Aligns the children elements to the start (horizontally)",
+      "ca": "Alinea els elements secundaris a l'inici (horitzontalment)",
+      "es": "Alinea los elementos secundarios al inicio (horizontalmente)"
+     }
+    },
+    {
+     "class": "stack-end",
+     "description": {
+      "en": "Aligns the children elements to the end (horizontally)",
+      "ca": "Alinea els elements infantils fins al final (horitzontalment)",
+      "es": "Alinea los elementos secundarios hasta el final (horizontalmente)"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "3-divs-in-a-stack",
+   "section": null,
+   "title": {
+    "en": "3 divs in a stack"
+   },
+   "subtitle": null,
+   "html": "<div class=\"stack h-20 w-32\">\n  <div class=\"bg-primary text-primary-content grid place-content-center rounded-box\">1</div>\n  <div class=\"bg-accent text-accent-content grid place-content-center rounded-box\">2</div>\n  <div class=\"bg-secondary text-secondary-content grid place-content-center rounded-box\">\n    3\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "stacked-images",
+   "section": null,
+   "title": {
+    "en": "stacked images"
+   },
+   "subtitle": null,
+   "html": "<div class=\"stack w-48\">\n  <img alt=\"Tailwind CSS example 1\" src=\"/static/ui/placeholders/photo-2.svg\" class=\"rounded-box\" />\n  <img alt=\"Tailwind CSS example 2\" src=\"/static/ui/placeholders/photo-2.svg\" class=\"rounded-box\" />\n  <img alt=\"Tailwind CSS example 3\" src=\"/static/ui/placeholders/photo-4.svg\" class=\"rounded-box\" />\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "stacked-cards",
+   "section": null,
+   "title": {
+    "en": "stacked cards"
+   },
+   "subtitle": null,
+   "html": "<div class=\"stack size-28\">\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">A</div>\n  </div>\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">B</div>\n  </div>\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">C</div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "stacked-cards-top-direction",
+   "section": null,
+   "title": {
+    "en": "stacked cards (top direction)"
+   },
+   "subtitle": null,
+   "html": "<div class=\"stack stack-top size-28\">\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">A</div>\n  </div>\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">B</div>\n  </div>\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">C</div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "stacked-cards-start-direction",
+   "section": null,
+   "title": {
+    "en": "stacked cards (start direction)"
+   },
+   "subtitle": null,
+   "html": "<div class=\"stack stack-start size-28\">\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">A</div>\n  </div>\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">B</div>\n  </div>\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">C</div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "stacked-cards-end-direction",
+   "section": null,
+   "title": {
+    "en": "stacked cards (end direction)"
+   },
+   "subtitle": null,
+   "html": "<div class=\"stack stack-end size-28\">\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">A</div>\n  </div>\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">B</div>\n  </div>\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">C</div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "stacked-cards-with-shadow",
+   "section": null,
+   "title": {
+    "en": "stacked cards with shadow"
+   },
+   "subtitle": null,
+   "html": "<div class=\"stack\">\n  <div class=\"card bg-base-200 text-center shadow-md\">\n    <div class=\"card-body\">A</div>\n  </div>\n  <div class=\"card bg-base-200 text-center shadow\">\n    <div class=\"card-body\">B</div>\n  </div>\n  <div class=\"card bg-base-200 text-center shadow-sm\">\n    <div class=\"card-body\">C</div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "stacked-cards-2",
+   "section": null,
+   "title": {
+    "en": "stacked cards"
+   },
+   "subtitle": null,
+   "html": "<div class=\"stack\">\n  <div class=\"card shadow-md bg-base-100\">\n    <div class=\"card-body\">\n      <h2 class=\"card-title\">Notification 1</h2>\n      <p>You have 3 unread messages. Tap here to see.</p>\n    </div>\n  </div>\n  <div class=\"card shadow-md bg-base-100\">\n    <div class=\"card-body\">\n      <h2 class=\"card-title\">Notification 2</h2>\n      <p>You have 3 unread messages. Tap here to see.</p>\n    </div>\n  </div>\n  <div class=\"card shadow-md bg-base-100\">\n    <div class=\"card-body\">\n      <h2 class=\"card-title\">Notification 3</h2>\n      <p>You have 3 unread messages. Tap here to see.</p>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

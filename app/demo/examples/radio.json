@@ -1,0 +1,271 @@
+{
+ "name": "radio",
+ "title": {
+  "en": "Radio"
+ },
+ "description": {
+  "en": "Radio buttons allow the user to select one option from a set.",
+  "ca": "Els botons de radio permeten a l'usuari seleccionar una opció d'un conjunt.",
+  "es": "Radio buttons permiten al usuario seleccionar una opción de un conjunto."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "radio",
+     "description": {
+      "en": "For radio input",
+      "ca": "Per a l'entrada Radio",
+      "es": "Para entrada de radio"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "radio-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "radio-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "radio-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "radio-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "radio-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "radio-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "radio-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "radio-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "radio-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "radio-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "radio-md",
+     "description": {
+      "en": "Medium size",
+      "ca": "Talla mitjana",
+      "es": "tamaño mediano"
+     },
+     "default": true
+    },
+    {
+     "class": "radio-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "radio-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "radio",
+   "section": null,
+   "title": {
+    "en": "Radio"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-1\" class=\"radio\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-1\" class=\"radio\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "radio-sizes",
+   "section": null,
+   "title": {
+    "en": "Radio sizes"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-2\" class=\"radio radio-xs\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-2\" class=\"radio radio-sm\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-2\" class=\"radio radio-md\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-2\" class=\"radio radio-lg\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-2\" class=\"radio radio-xl\" checked=\"checked\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "neutral-color",
+   "section": null,
+   "title": {
+    "en": "Neutral color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-3\" class=\"radio radio-neutral\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-3\" class=\"radio radio-neutral\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "primary-color",
+   "section": null,
+   "title": {
+    "en": "Primary color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-4\" class=\"radio radio-primary\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-4\" class=\"radio radio-primary\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "secondary-color",
+   "section": null,
+   "title": {
+    "en": "Secondary color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-5\" class=\"radio radio-secondary\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-5\" class=\"radio radio-secondary\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "accent-color",
+   "section": null,
+   "title": {
+    "en": "Accent color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-6\" class=\"radio radio-accent\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-6\" class=\"radio radio-accent\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "success-color",
+   "section": null,
+   "title": {
+    "en": "Success color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-7\" class=\"radio radio-success\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-7\" class=\"radio radio-success\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "warning-color",
+   "section": null,
+   "title": {
+    "en": "Warning color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-8\" class=\"radio radio-warning\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-8\" class=\"radio radio-warning\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "info-color",
+   "section": null,
+   "title": {
+    "en": "Info color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-9\" class=\"radio radio-info\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-9\" class=\"radio radio-info\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "error-color",
+   "section": null,
+   "title": {
+    "en": "Error color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-10\" class=\"radio radio-error\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-10\" class=\"radio radio-error\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "disabled",
+   "section": null,
+   "title": {
+    "en": "Disabled"
+   },
+   "subtitle": null,
+   "html": "<input type=\"radio\" name=\"radio-11\" class=\"radio\" disabled checked=\"checked\" />\n<input type=\"radio\" name=\"radio-11\" class=\"radio\" disabled />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "radio-with-custom-colors",
+   "section": null,
+   "title": {
+    "en": "Radio with custom colors"
+   },
+   "subtitle": null,
+   "html": "<input\n  type=\"radio\" name=\"radio-12\" checked=\"checked\"\n  class=\"radio bg-red-100 border-red-300 checked:bg-red-200 checked:text-red-600 checked:border-red-600\" />\n<input\n  type=\"radio\" name=\"radio-12\" checked=\"checked\"\n  class=\"radio bg-blue-100 border-blue-300 checked:bg-blue-200 checked:text-blue-600 checked:border-blue-600\" />",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  }
+ ]
+}

@@ -1,0 +1,76 @@
+{
+ "name": "hover-3d",
+ "title": {
+  "en": "Hover 3D Card"
+ },
+ "description": {
+  "en": "Hover 3D is a wrapper component that adds a 3D hover effect to its content. When we hover over the component, it tilts and rotates based on the mouse position, creating an interactive 3D effect.",
+  "ca": "Hover 3D és un component d'embolcall que afegeix un efecte de flotació 3D al seu contingut. Quan passem el cursor per sobre del component, aquest s'inclina i gira en funció de la posició del ratolí, creant un efecte 3D interactiu.",
+  "es": "Hover 3D es un componente contenedor que agrega un efecto de desplazamiento 3D a su contenido. Cuando pasamos el cursor sobre el componente, se inclina y gira según la posición del mouse, creando un efecto 3D interactivo."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "hover-3d",
+     "description": {
+      "en": "Hover 3D wrapper component",
+      "ca": "Hover component d'embolcall 3D",
+      "es": "Desplazar el componente contenedor 3D"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "3d-image-hover-effect",
+   "section": null,
+   "title": {
+    "en": "3D image hover effect"
+   },
+   "subtitle": {
+    "en": "Hover to see the 3D effect",
+    "ca": "Passeu el cursor per veure l'efecte 3D",
+    "es": "Coloca el cursor para ver el efecto 3D."
+   },
+   "html": "<div class=\"hover-3d\">\n  <!-- content -->\n  <figure class=\"max-w-100 rounded-2xl\">\n    <img src=\"/static/ui/placeholders/photo-2.svg\" alt=\"3D card\" />\n  </figure>\n  <!-- 8 empty divs needed for the 3D effect -->\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "3d-card-hover-effect",
+   "section": null,
+   "title": {
+    "en": "3D card hover effect"
+   },
+   "subtitle": {
+    "en": "The whole card can be a link",
+    "ca": "Tot el Card pot ser un Link",
+    "es": "Todo el Card puede ser un Link"
+   },
+   "html": "<a href=\"#\" class=\"hover-3d my-12 mx-2 cursor-pointer\">\n  \n  <!-- content -->\n  <div class=\"card w-96 bg-black text-white bg-[radial-gradient(circle_at_bottom_left,#ffffff04_35%,transparent_36%),radial-gradient(circle_at_top_right,#ffffff04_35%,transparent_36%)] bg-size-[4.95em_4.95em]\">\n    <div class=\"card-body\">\n      <div class=\"flex justify-between mb-10\">\n        <div class=\"font-bold\">BANK OF LATVERIA</div>\n        <div class=\"text-5xl opacity-10\">❁</div>\n      </div>\n      <div class=\"text-lg mb-4 opacity-40\">0210 8820 1150 0222</div>\n      <div class=\"flex justify-between\">\n        <div>\n          <div class=\"text-xs opacity-20\">CARD HOLDER</div>\n          <div>VICTOR VON D.</div>\n        </div>\n        <div>\n          <div class=\"text-xs opacity-20\">EXPIRES</div>\n          <div>29/08</div>\n        </div>\n      </div>\n    </div>\n  </div>\n  \n  <!-- 8 empty divs needed for the 3D effect -->\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n</a>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  },
+  {
+   "id": "3d-hover-effect-for-image-gallery",
+   "section": null,
+   "title": {
+    "en": "3D hover effect for image gallery"
+   },
+   "subtitle": {
+    "en": "Hover to see the 3D effect",
+    "ca": "Passeu el cursor per veure l'efecte 3D",
+    "es": "Coloca el cursor para ver el efecto 3D."
+   },
+   "html": "<div class=\"hover-3d\">\n  <!-- content -->\n  <figure class=\"w-60 rounded-2xl\">\n    <img src=\"/static/ui/placeholders/photo-2.svg\" alt=\"Tailwind CSS 3D card\" />\n  </figure>\n  <!-- 8 empty divs needed for the 3D effect -->\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n</div>\n\n<div class=\"hover-3d\">\n  <!-- content -->\n  <figure class=\"w-60 rounded-2xl\">\n    <img src=\"/static/ui/placeholders/photo-3.svg\" alt=\"Tailwind CSS 3D hover\" />\n  </figure>\n  <!-- 8 empty divs needed for the 3D effect -->\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n</div>\n\n<div class=\"hover-3d\">\n  <!-- content -->\n  <figure class=\"w-60 rounded-2xl\">\n    <img src=\"/static/ui/placeholders/photo-1.svg\" alt=\"Tailwind CSS 3D hover\" />\n  </figure>\n  <!-- 8 empty divs needed for the 3D effect -->\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

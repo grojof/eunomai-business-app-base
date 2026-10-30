@@ -1,0 +1,227 @@
+{
+ "name": "toggle",
+ "title": {
+  "en": "Toggle"
+ },
+ "description": {
+  "en": "Toggle is a checkbox that is styled to look like a switch button.",
+  "ca": "El toggle és una casella de selecció amb un estil que sembla un commutador.",
+  "es": "Toggle es una casilla de verificación diseñada para parecerse a un interruptor."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "toggle",
+     "description": {
+      "en": "For <input type=\"checkbox\">",
+      "ca": "Per a <input type=\"checkbox\">",
+      "es": "Para <input type=\"checkbox\">"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "toggle-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "toggle-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "toggle-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "toggle-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "toggle-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "toggle-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "toggle-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "toggle-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "toggle-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "toggle-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "toggle-md",
+     "description": {
+      "en": "Medium size",
+      "ca": "Talla mitjana",
+      "es": "tamaño mediano"
+     },
+     "default": true
+    },
+    {
+     "class": "toggle-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "toggle-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "toggle-switch",
+   "section": null,
+   "title": {
+    "en": "Toggle (switch)"
+   },
+   "subtitle": null,
+   "html": "<input type=\"checkbox\" checked=\"checked\" class=\"toggle\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-fieldset-and-label",
+   "section": null,
+   "title": {
+    "en": "With fieldset and label"
+   },
+   "subtitle": null,
+   "html": "<fieldset class=\"fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4\">\n  <legend class=\"fieldset-legend\">Login options</legend>\n  <label class=\"label\">\n    <input type=\"checkbox\" checked=\"checked\" class=\"toggle\" />\n    Remember me\n  </label>\n</fieldset>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "sizes",
+   "section": null,
+   "title": {
+    "en": "Sizes"
+   },
+   "subtitle": null,
+   "html": "<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-xs\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-sm\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-md\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-lg\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-xl\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "colors",
+   "section": null,
+   "title": {
+    "en": "Colors"
+   },
+   "subtitle": null,
+   "html": "<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-primary\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-secondary\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-accent\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-neutral\" />\n\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-info\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-success\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-warning\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-error\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "disabled",
+   "section": null,
+   "title": {
+    "en": "Disabled"
+   },
+   "subtitle": null,
+   "html": "<input type=\"checkbox\" class=\"toggle\" disabled />\n<input type=\"checkbox\" class=\"toggle\" disabled checked=\"checked\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "indeterminate",
+   "section": null,
+   "title": {
+    "en": "Indeterminate"
+   },
+   "subtitle": null,
+   "html": "<!-- You can make a checkbox indeterminate using JS -->\n<script>\n  document.getElementById(\"my-toggle\").indeterminate = true\n</script>\n<input type=\"checkbox\" class=\"toggle\" id=\"my-toggle\" />",
+   "runs": false,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "toggle-with-icons-inside",
+   "section": null,
+   "title": {
+    "en": "Toggle with icons inside"
+   },
+   "subtitle": {
+    "en": "Use toggle class for a label, put a checkbox and 2 icons inside it.",
+    "ca": "Utilitzeu la classe Toggle per a un Label, poseu-hi un Checkbox i 2 icones al seu interior.",
+    "es": "Use la clase Toggle para un Label, coloque un Checkbox y 2 íconos dentro de él."
+   },
+   "html": "<label class=\"toggle text-base-content\">\n  <input type=\"checkbox\" />\n  <svg aria-label=\"enabled\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <g\n      stroke-linejoin=\"round\"\n      stroke-linecap=\"round\"\n      stroke-width=\"4\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n    >\n      <path d=\"M20 6 9 17l-5-5\"></path>\n    </g>\n  </svg>\n  <svg\n    aria-label=\"disabled\"\n    xmlns=\"http://www.w3.org/2000/svg\"\n    viewBox=\"0 0 24 24\"\n    fill=\"none\"\n    stroke=\"currentColor\"\n    stroke-width=\"4\"\n    stroke-linecap=\"round\"\n    stroke-linejoin=\"round\"\n  >\n    <path d=\"M18 6 6 18\" />\n    <path d=\"m6 6 12 12\" />\n  </svg>\n</label>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "toggle-with-custom-colors",
+   "section": null,
+   "title": {
+    "en": "Toggle with custom colors"
+   },
+   "subtitle": null,
+   "html": "<input\n  type=\"checkbox\"\n  checked=\"checked\"\n  class=\"toggle border-indigo-600 bg-indigo-500 checked:border-orange-500 checked:bg-orange-400 checked:text-orange-800\"\n/>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  }
+ ]
+}

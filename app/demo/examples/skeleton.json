@@ -1,0 +1,89 @@
+{
+ "name": "skeleton",
+ "title": {
+  "en": "Skeleton"
+ },
+ "description": {
+  "en": "Skeleton is a component that can be used to show a loading state of a component.",
+  "ca": "Un esquelet és un component que es pot utilitzar per mostrar l'estat de càrrega d'un component.",
+  "es": "Skeleton es un Component que se puede utilizar para mostrar el estado Loading de un Component."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "skeleton",
+     "description": {
+      "en": "A placeholder div with loading animation",
+      "ca": "Un div de marcador de posició amb animació Loading",
+      "es": "Un div de marcador de posición con animación Loading"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "skeleton-text",
+     "description": {
+      "en": "Animates the text color instead of background color",
+      "ca": "Anima el color del text en lloc del color de fons",
+      "es": "Anima el color del texto en lugar del color de fondo."
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "skeleton",
+   "section": null,
+   "title": {
+    "en": "Skeleton"
+   },
+   "subtitle": null,
+   "html": "<div class=\"skeleton h-32 w-32\"></div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "skeleton---circle-with-content",
+   "section": null,
+   "title": {
+    "en": "Skeleton - circle with content"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex w-52 flex-col gap-4\">\n  <div class=\"flex items-center gap-4\">\n    <div class=\"skeleton h-16 w-16 shrink-0 rounded-full\"></div>\n    <div class=\"flex flex-col gap-4\">\n      <div class=\"skeleton h-4 w-20\"></div>\n      <div class=\"skeleton h-4 w-28\"></div>\n    </div>\n  </div>\n  <div class=\"skeleton h-32 w-full\"></div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "skeleton---rectangle-with-content",
+   "section": null,
+   "title": {
+    "en": "Skeleton - rectangle with content"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex w-52 flex-col gap-4\">\n  <div class=\"skeleton h-32 w-full\"></div>\n  <div class=\"skeleton h-4 w-28\"></div>\n  <div class=\"skeleton h-4 w-full\"></div>\n  <div class=\"skeleton h-4 w-full\"></div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "skeleton-text---animated-gradient-text",
+   "section": null,
+   "title": {
+    "en": "skeleton-text - animated gradient text"
+   },
+   "subtitle": null,
+   "html": "<span class=\"skeleton skeleton-text\">AI is thinking harder...</span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

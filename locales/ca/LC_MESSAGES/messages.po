@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 20:29+0100\n"
+"POT-Creation-Date: 2026-10-30 23:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -20,26 +20,99 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+msgid "Actions"
+msgstr "Accions"
+
+msgid "Apply"
+msgstr "Aplica"
+
+msgid "Approved"
+msgstr "Aprovat"
+
 msgid "As the system"
 msgstr "Com el sistema"
 
 msgid "Ask whoever manages this application if you need access."
 msgstr "Si necessites accés, demana'l a qui gestiona aquesta aplicació."
 
+msgid "Available"
+msgstr "Disponible"
+
 msgid "Back to the start"
 msgstr "Torna a l'inici"
+
+msgid "Centred"
+msgstr "Centrat"
+
+msgid ""
+"Change how this application looks for you. Each choice applies at once "
+"and is remembered in this browser."
+msgstr ""
+"Canvia com es veu aquesta aplicació per a tu. Cada opció s'aplica de "
+"seguida i es recorda en aquest navegador."
 
 msgid "Check the address, or go back to the start."
 msgstr "Comprova l'adreça o torna a l'inici."
 
+msgid "Close"
+msgstr "Tanca"
+
+msgid "Compact"
+msgstr "Compacta"
+
 msgid "Dark"
 msgstr "Fosc"
+
+msgid "Dark theme"
+msgstr "Tema fosc"
+
+msgid "Data display"
+msgstr "Mostrar dades"
+
+msgid "Data input"
+msgstr "Entrada de dades"
+
+msgid "Decorative"
+msgstr "Decoratiu"
+
+msgid "Density"
+msgstr "Densitat"
 
 msgid "Done"
 msgstr "Fet"
 
+msgid "Dropdown"
+msgstr "Desplegable"
+
+msgid "Each one is real: try it here, then choose the one the header should show."
+msgstr "Cada un és real: prova'l aquí i tria el que ha de mostrar la capçalera."
+
 msgid "Error"
 msgstr "Error"
+
+msgid "Feedback"
+msgstr "Avisos"
+
+msgid "Fixed header"
+msgstr "Capçalera fixa"
+
+msgid "Full"
+msgstr "Completa"
+
+msgid "Hidden"
+msgstr "Oculta"
+
+msgid "How the language control looks"
+msgstr "Com es veu el control d'idioma"
+
+msgid "How the theme control looks"
+msgstr "Com es veu el control de tema"
+
+msgid "Icons only"
+msgstr "Només icones"
+
+msgid "In use"
+msgstr "En ús"
 
 msgid "Information"
 msgstr "Informació"
@@ -47,8 +120,28 @@ msgstr "Informació"
 msgid "It is not your fault. Try again in a moment."
 msgstr "No és culpa teva. Torna-ho a provar d'aquí a un moment."
 
+msgid ""
+"It only styles a calendar library, which is not included. Use a date "
+"field."
+msgstr ""
+"Només dona estil a una biblioteca de calendari, que no hi és inclosa. Fes"
+" servir un camp de data."
+
+msgid ""
+"Its button is a label, which a keyboard cannot reach: WCAG 2.1.1. The "
+"shell uses a popover instead."
+msgstr ""
+"El seu botó és una etiqueta, que no s'abasta amb el teclat: WCAG 2.1.1. "
+"L'estructura fa servir un plafó emergent."
+
 msgid "Language"
 msgstr "Idioma"
+
+msgid "Layout"
+msgstr "Estructura"
+
+msgid "Layout, theme, language and how their controls look."
+msgstr "Disposició, tema, idioma i com es veuen els seus controls."
 
 msgid "Light"
 msgstr "Clar"
@@ -56,14 +149,75 @@ msgstr "Clar"
 msgid "Main"
 msgstr "Principal"
 
+msgid "Menu list"
+msgstr "Llista de menú"
+
+msgid "Mockups"
+msgstr "Maquetes"
+
+msgid "Moves on its own and only a pointer can pause it: WCAG 2.2.2."
+msgstr "Es mou sol i només un punter el pot aturar: WCAG 2.2.2."
+
+msgid "Navigation"
+msgstr "Navegació"
+
+msgid "No"
+msgstr "No"
+
+msgid "No results"
+msgstr "Sense resultats"
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "Not recommended"
+msgstr "No recomanat"
+
+msgid ""
+"On its own it changes the theme without saving it, and it cannot say that"
+" the theme should follow the system. The shell uses its class inside a "
+"form that saves the choice: see Settings."
+msgstr ""
+"Per si sol canvia el tema sense desar-lo i no pot indicar que el tema "
+"segueixi el sistema. L'aplicació fa servir la seva classe dins d'un "
+"formulari que desa l'elecció: consulta Configuració."
+
 msgid "Open menu"
 msgstr "Obre el menú"
 
 msgid "Page not found"
 msgstr "No s'ha trobat la pàgina"
 
+msgid "Pages"
+msgstr "Pàgines"
+
 msgid "Preferences"
 msgstr "Preferències"
+
+msgid "Radio"
+msgstr "Opció"
+
+msgid "Results"
+msgstr "Resultats"
+
+#, python-format
+msgid "Results: %(count)s"
+msgstr "Resultats: %(count)s"
+
+msgid "Search"
+msgstr "Cerca"
+
+msgid "Search is not available right now. Try again in a moment."
+msgstr "La cerca no està disponible ara. Torna-ho a provar d'aquí a un moment."
+
+msgid "Select"
+msgstr "Llista"
+
+msgid "Settings"
+msgstr "Configuració"
+
+msgid "Side"
+msgstr "Lateral"
 
 msgid "Sign-in required"
 msgstr "Cal iniciar sessió"
@@ -77,13 +231,34 @@ msgstr "Alguna cosa ha fallat"
 msgid "Start"
 msgstr "Inici"
 
+msgid "Swap"
+msgstr "Intercanvi"
+
 msgid "Theme"
 msgstr "Tema"
+
+msgid "Theme and language"
+msgstr "Tema i idioma"
 
 msgid "This application is ready. Replace this page with your first screen."
 msgstr ""
 "Aquesta aplicació està a punt. Substitueix aquesta pàgina per la teva "
 "primera pantalla."
+
+msgid "Toggle"
+msgstr "Interruptor"
+
+msgid "Top"
+msgstr "Superior"
+
+msgid "Try another word, or a shorter one."
+msgstr "Prova amb una altra paraula, o amb una de més curta."
+
+msgid "Type to search"
+msgstr "Escriu per cercar"
+
+msgid "Use this one"
+msgstr "Fes servir aquest"
 
 #, python-format
 msgid "Version %(version)s"
@@ -95,6 +270,21 @@ msgstr "Avís"
 msgid "We could not tell who you are. Open the application from your portal."
 msgstr "No hem pogut saber qui ets. Obre l'aplicació des del teu portal."
 
+msgid "Width"
+msgstr "Amplada"
+
+msgid "Yes"
+msgstr "Sí"
+
 msgid "You do not have permission"
 msgstr "No tens permís"
+
+msgid "to close"
+msgstr "per tancar"
+
+msgid "to move"
+msgstr "per moure't"
+
+msgid "to open"
+msgstr "per obrir"
 

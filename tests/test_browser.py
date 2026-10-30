@@ -3,7 +3,7 @@
 import pytest
 
 from app.core.i18n import PSEUDO
-from tests.helpers import overflows_sideways, run_axe
+from tests.helpers import focus_order, overflows_sideways, run_axe
 
 pytestmark = pytest.mark.browser
 PAGES = ["/", "/missing"]
@@ -48,6 +48,20 @@ def test_every_control_is_reached_by_keyboard_with_visible_focus(open_page):
         if page.evaluate("document.activeElement.id") != "main":
             assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") != "none"
     assert reached >= expected
+
+
+@pytest.mark.rule("A11Y-04")
+def test_the_scroll_padding_clears_the_sticky_header(open_page):
+    page = open_page("/")
+    padding = page.evaluate("parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)")
+    assert padding >= page.evaluate("document.querySelector('body header').getBoundingClientRect().height")
+
+
+@pytest.mark.rule("A11Y-02")
+def test_focus_follows_the_order_of_the_page(open_page):
+    expected, reached = focus_order(open_page("/"))
+    assert len(expected) > 1
+    assert reached == expected
 
 
 @pytest.mark.rule("A11Y-12")
@@ -104,17 +118,18 @@ def test_htmx_has_evaluation_turned_off(open_page):
 @pytest.mark.rule("A11Y-02")
 def test_escape_closes_the_user_menu_and_returns_to_its_button(open_page):
     page = open_page("/")
-    summary = page.locator("details[data-menu] summary")
+    summary = page.get_by_text("Demo User").locator("xpath=ancestor::summary")
+    link = page.locator('details[data-menu] a[href="/settings"]')
     summary.press("Enter")
-    assert page.locator('button[name="theme"][value="dark"]').is_visible()
+    assert link.is_visible()
     page.keyboard.press("Escape")
-    assert not page.locator('button[name="theme"][value="dark"]').is_visible()
+    assert not link.is_visible()
     assert summary.evaluate("element => element === document.activeElement")
 
 
 def test_a_person_can_change_the_language_with_the_keyboard(open_page):
     page = open_page("/", language="en")
-    page.locator("details[data-menu] summary").press("Enter")
+    page.locator("[data-preferences='header-language'] summary").press("Enter")
     with page.expect_navigation():
-        page.locator('button[name="language"][value="es"]').press("Enter")
+        page.locator('[data-preferences="header-language"] button[value="es"]').press("Enter")
     assert page.locator("html").get_attribute("lang") == "es"

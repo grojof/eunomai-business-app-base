@@ -1,0 +1,203 @@
+{
+ "name": "toast",
+ "title": {
+  "en": "Toast"
+ },
+ "description": {
+  "en": "Toast is a wrapper to stack elements, positioned on the corner of page.",
+  "ca": "Toast és un contenidor per apilar elements, situat a la cantonada de la pàgina.",
+  "es": "Toast es un envoltorio para apilar elementos, posicionados en la esquina de la página."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "toast",
+     "description": {
+      "en": "Container element that sticks to the corner of page",
+      "ca": "Element contenidor que s'enganxa a la cantonada de la pàgina",
+      "es": "Elemento contenedor que se adhiere a la esquina de la página."
+     }
+    }
+   ]
+  },
+  {
+   "group": "placement",
+   "items": [
+    {
+     "class": "toast-start",
+     "description": {
+      "en": "align horizontally to the left",
+      "ca": "alinear horitzontalment a l'esquerra",
+      "es": "alinear horizontalmente a la izquierda"
+     }
+    },
+    {
+     "class": "toast-center",
+     "description": {
+      "en": "align horizontally to the center",
+      "ca": "alinear horitzontalment al centre",
+      "es": "alinear horizontalmente al centro"
+     }
+    },
+    {
+     "class": "toast-end",
+     "description": {
+      "en": "align horizontally to the right",
+      "ca": "alinear horitzontalment a la dreta",
+      "es": "alinear horizontalmente a la derecha"
+     },
+     "default": true
+    },
+    {
+     "class": "toast-top",
+     "description": {
+      "en": "align vertically to top",
+      "ca": "alinear verticalment cap a dalt",
+      "es": "alinear verticalmente hacia arriba"
+     }
+    },
+    {
+     "class": "toast-middle",
+     "description": {
+      "en": "align vertically to middle",
+      "ca": "alinear verticalment al mig",
+      "es": "alinear verticalmente al medio"
+     }
+    },
+    {
+     "class": "toast-bottom",
+     "description": {
+      "en": "align vertically to bottom",
+      "ca": "alinear verticalment a baix",
+      "es": "alinear verticalmente hacia abajo"
+     },
+     "default": true
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "toast-with-alert-inside",
+   "section": null,
+   "title": {
+    "en": "toast with alert inside"
+   },
+   "subtitle": null,
+   "html": "<div class=\"toast\">\n  <div class=\"alert alert-info\">\n    <span>New message arrived.</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "toast-top-toast-start",
+   "section": null,
+   "title": {
+    "en": "toast-top toast-start"
+   },
+   "subtitle": null,
+   "html": "<div class=\"toast toast-top toast-start\">\n  <div class=\"alert alert-info\">\n    <span>New mail arrived.</span>\n  </div>\n  <div class=\"alert alert-success\">\n    <span>Message sent successfully.</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "toast-top-toast-center",
+   "section": null,
+   "title": {
+    "en": "toast-top toast-center"
+   },
+   "subtitle": null,
+   "html": "<div class=\"toast toast-top toast-center\">\n  <div class=\"alert alert-info\">\n    <span>New mail arrived.</span>\n  </div>\n  <div class=\"alert alert-success\">\n    <span>Message sent successfully.</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "toast-top-toast-end",
+   "section": null,
+   "title": {
+    "en": "toast-top toast-end"
+   },
+   "subtitle": null,
+   "html": "<div class=\"toast toast-top toast-end\">\n  <div class=\"alert alert-info\">\n    <span>New mail arrived.</span>\n  </div>\n  <div class=\"alert alert-success\">\n    <span>Message sent successfully.</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "toast-start-toast-middle",
+   "section": null,
+   "title": {
+    "en": "toast-start toast-middle"
+   },
+   "subtitle": null,
+   "html": "<div class=\"toast toast-start toast-middle\">\n  <div class=\"alert alert-info\">\n    <span>New mail arrived.</span>\n  </div>\n  <div class=\"alert alert-success\">\n    <span>Message sent successfully.</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "toast-center-toast-middle",
+   "section": null,
+   "title": {
+    "en": "toast-center toast-middle"
+   },
+   "subtitle": null,
+   "html": "<div class=\"toast toast-center toast-middle\">\n  <div class=\"alert alert-info\">\n    <span>New mail arrived.</span>\n  </div>\n  <div class=\"alert alert-success\">\n    <span>Message sent successfully.</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "toast-end-toast-middle",
+   "section": null,
+   "title": {
+    "en": "toast-end toast-middle"
+   },
+   "subtitle": null,
+   "html": "<div class=\"toast toast-end toast-middle\">\n  <div class=\"alert alert-info\">\n    <span>New mail arrived.</span>\n  </div>\n  <div class=\"alert alert-success\">\n    <span>Message sent successfully.</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "toast-start-toast-bottom-default",
+   "section": null,
+   "title": {
+    "en": "toast-start toast-bottom (default)"
+   },
+   "subtitle": null,
+   "html": "<div class=\"toast toast-start\">\n  <div class=\"alert alert-info\">\n    <span>New mail arrived.</span>\n  </div>\n  <div class=\"alert alert-success\">\n    <span>Message sent successfully.</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "toast-center-toast-bottom-default",
+   "section": null,
+   "title": {
+    "en": "toast-center toast-bottom (default)"
+   },
+   "subtitle": null,
+   "html": "<div class=\"toast toast-center\">\n  <div class=\"alert alert-info\">\n    <span>New mail arrived.</span>\n  </div>\n  <div class=\"alert alert-success\">\n    <span>Message sent successfully.</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "toast-end-default-toast-bottom-default",
+   "section": null,
+   "title": {
+    "en": "toast-end (default) toast-bottom (default)"
+   },
+   "subtitle": null,
+   "html": "<div class=\"toast toast-end\">\n  <div class=\"alert alert-info\">\n    <span>New mail arrived.</span>\n  </div>\n  <div class=\"alert alert-success\">\n    <span>Message sent successfully.</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  }
+ ]
+}

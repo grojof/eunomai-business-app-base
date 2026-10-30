@@ -1,0 +1,210 @@
+{
+ "name": "textarea",
+ "title": {
+  "en": "Textarea"
+ },
+ "description": {
+  "en": "Textarea allows users to enter text in multiple lines.",
+  "ca": "L'àrea de text permet als usuaris introduir text en diverses línies.",
+  "es": "Textarea permite a los usuarios ingresar texto en varias líneas."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "textarea",
+     "description": {
+      "en": "For <textarea> element",
+      "ca": "Per a l'element <textarea>",
+      "es": "Para el elemento <textarea>"
+     }
+    }
+   ]
+  },
+  {
+   "group": "style",
+   "items": [
+    {
+     "class": "textarea-ghost",
+     "description": {
+      "en": "ghost style"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "textarea-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "textarea-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "textarea-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "textarea-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "textarea-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "textarea-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "textarea-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "textarea-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "textarea-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "textarea-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "textarea-md",
+     "description": {
+      "en": "Medium size",
+      "ca": "Talla mitjana",
+      "es": "tamaño mediano"
+     },
+     "default": true
+    },
+    {
+     "class": "textarea-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "textarea-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "textarea",
+   "section": null,
+   "title": {
+    "en": "Textarea"
+   },
+   "subtitle": null,
+   "html": "<textarea class=\"textarea\" placeholder=\"Bio\"></textarea>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "ghost-no-background",
+   "section": null,
+   "title": {
+    "en": "Ghost (no background)"
+   },
+   "subtitle": null,
+   "html": "<textarea class=\"textarea textarea-ghost\" placeholder=\"Bio\"></textarea>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-form-control-and-labels",
+   "section": null,
+   "title": {
+    "en": "With form control and labels"
+   },
+   "subtitle": null,
+   "html": "<fieldset class=\"fieldset\">\n  <legend class=\"fieldset-legend\">Your bio</legend>\n  <textarea class=\"textarea h-24\" placeholder=\"Bio\"></textarea>\n  <div class=\"label\">Optional</div>\n</fieldset>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "textarea-colors",
+   "section": null,
+   "title": {
+    "en": "Textarea colors"
+   },
+   "subtitle": null,
+   "html": "<textarea placeholder=\"Primary\" class=\"textarea textarea-primary\"></textarea>\n<textarea placeholder=\"Secondary\" class=\"textarea textarea-secondary\"></textarea>\n<textarea placeholder=\"Accent\" class=\"textarea textarea-accent\"></textarea>\n<textarea placeholder=\"Neutral\" class=\"textarea textarea-neutral\"></textarea>\n<textarea placeholder=\"Info\" class=\"textarea textarea-info\"></textarea>\n<textarea placeholder=\"Success\" class=\"textarea textarea-success\"></textarea>\n<textarea placeholder=\"Warning\" class=\"textarea textarea-warning\"></textarea>\n<textarea placeholder=\"Error\" class=\"textarea textarea-error\"></textarea>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "sizes",
+   "section": null,
+   "title": {
+    "en": "Sizes"
+   },
+   "subtitle": null,
+   "html": "<textarea placeholder=\"Bio\" class=\"textarea textarea-xs\"></textarea>\n\n<textarea placeholder=\"Bio\" class=\"textarea textarea-sm\"></textarea>\n\n<textarea placeholder=\"Bio\" class=\"textarea textarea-md\"></textarea>\n\n<textarea placeholder=\"Bio\" class=\"textarea textarea-lg\"></textarea>\n\n<textarea placeholder=\"Bio\" class=\"textarea textarea-xl\"></textarea>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "disabled",
+   "section": null,
+   "title": {
+    "en": "Disabled"
+   },
+   "subtitle": null,
+   "html": "<textarea class=\"textarea\" placeholder=\"Bio\" disabled></textarea>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

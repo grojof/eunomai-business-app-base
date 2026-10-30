@@ -1,5 +1,5 @@
 {#- Components: one macro each. Applications call these, so the look can change here without touching a screen.
-    Each one has its page in the catalogue. -#}
+    Each one appears on its component's page in the gallery. -#}
 
 {% macro icon(name, size="size-5") %}
 <span class="icon inline-flex shrink-0 {{ size }}" aria-hidden="true">{% include "ui/icons/" ~ name ~ ".svg" %}</span>
@@ -8,8 +8,16 @@
 {% macro page_heading(title, description="") %}
 <header class="space-y-1">
   <h1>{{ title }}</h1>
-  {% if description %}<p>{{ description }}</p>{% endif %}
+  {% if description %}<p class="max-w-3xl">{{ description }}</p>{% endif %}
 </header>
+{% endmacro %}
+
+{% macro button(text, kind="default", type="button", small=false, attributes={}, loading="") %}
+{% set classes = {"default": "", "primary": "btn-primary", "ghost": "btn-ghost", "danger": "btn-error"} %}
+<button class="btn {{ classes[kind] }}{{ ' btn-sm' if small else '' }}" type="{{ type }}"{{ attributes|xmlattr }}>
+  {{- text -}}
+  {%- if loading %} <span class="htmx-indicator">{{ loading }}</span>{% endif -%}
+</button>
 {% endmacro %}
 
 {% macro message(kind, text) %}
@@ -28,21 +36,58 @@
 </section>
 {% endmacro %}
 
-{% macro stat(label, value, name) %}
-<div class="card bg-base-100 border border-base-300">
-  <div class="card-body flex-row items-center gap-4 p-4">
-    <span class="rounded-field bg-base-200 p-2 text-primary">{{ icon(name) }}</span>
-    <div class="min-w-0">
-      <p class="text-sm">{{ label }}</p>
-      <p class="text-xl font-semibold">{{ value }}</p>
-    </div>
+{% macro stats() %}
+<div class="@container">
+  <div class="grid gap-4 @lg:grid-cols-2 @5xl:grid-cols-4">
+    {{ caller() }}
   </div>
 </div>
 {% endmacro %}
 
+{% macro stat(label, value, name, note="") %}
+<div class="stats w-full border border-base-300 bg-base-100">
+  <div class="stat">
+    <div class="stat-figure text-primary">{{ icon(name, "size-7") }}</div>
+    <div class="stat-title">{{ label }}</div>
+    <div class="stat-value text-2xl">{{ value }}</div>
+    {% if note %}<div class="stat-desc whitespace-normal">{{ note }}</div>{% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro badge(text, kind="neutral") %}
+{% set classes = {"neutral": "badge-neutral", "info": "badge-info", "success": "badge-success", "warning": "badge-warning", "danger": "badge-error"} %}
+<span class="badge badge-sm whitespace-nowrap {{ classes[kind] }}">{{ text }}</span>
+{% endmacro %}
+
+{% macro progress(label, value, text, kind="primary") %}
+{% set classes = {"primary": "progress-primary", "success": "progress-success", "warning": "progress-warning"} %}
+<div class="space-y-1">
+  <div class="flex justify-between gap-2 text-sm"><span>{{ label }}</span><span class="font-medium">{{ text }}</span></div>
+  <progress class="progress {{ classes[kind] }} w-full" value="{{ value }}" max="100" aria-label="{{ label }}"></progress>
+</div>
+{% endmacro %}
+
+{% macro steps(items, current) %}
+<ol class="steps w-full">
+  {% for item in items %}
+  <li class="step{{ ' step-primary' if loop.index0 <= current else '' }}"{% if loop.index0 == current %} aria-current="step"{% endif %}>{{ item }}</li>
+  {% endfor %}
+</ol>
+{% endmacro %}
+
+{% macro table(caption, identifier) %}
+<div class="overflow-x-auto" role="region" tabindex="0" aria-labelledby="{{ identifier }}">
+  <table class="table">
+    <caption id="{{ identifier }}" class="sr-only">{{ caption }}</caption>
+    {{ caller() }}
+  </table>
+</div>
+{% endmacro %}
+
 {% macro empty_state(title, advice) %}
-<div class="py-10 text-center">
-  <h2>{{ title }}</h2>
-  <p>{{ advice }}</p>
+<div class="py-8 text-center">
+  <h3 class="font-semibold">{{ title }}</h3>
+  <p class="text-sm">{{ advice }}</p>
 </div>
 {% endmacro %}

@@ -6,6 +6,16 @@ from typing import Literal, Self
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+LAYOUTS: dict[str, tuple[str, ...]] = {
+    "navigation": ("side", "compact", "top", "hidden"),
+    "sticky_header": ("on", "off"),
+    "width": ("full", "centered"),
+    "density": ("normal", "compact"),
+    "theme_control": ("dropdown", "toggle", "swap", "radio"),
+    "language_control": ("dropdown", "select", "menu"),
+}
+"""What the settings menu offers, and the only values the server accepts. See docs/specification.md#layouts"""
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="APP_", env_file=".env", extra="ignore")
@@ -16,15 +26,20 @@ class Settings(BaseSettings):
     # Languages: the first one the person accepts wins; `default_language` is the last resort.
     default_language: str = "en"
     languages: list[str] = ["en", "es", "ca"]
-    time_zone: str = "Europe/Madrid"
+    time_zone: str = "UTC"
 
     # How the application is arranged. See docs/specification.md#layouts
     layout_navigation: Literal["side", "compact", "top", "hidden"] = "side"
     layout_sticky_header: bool = True
     layout_width: Literal["full", "centered"] = "full"
     layout_density: Literal["normal", "compact"] = "normal"
+    layout_theme_control: Literal["dropdown", "toggle", "swap", "radio"] = "dropdown"
+    layout_language_control: Literal["dropdown", "select", "menu"] = "dropdown"
+    # What each person may change in the settings menu. What is left out stays as set above; empty hides the menu.
+    layout_choices: list[str] = list(LAYOUTS)
 
-    # Identity: who is allowed to send these headers, and what they are called.
+    # Identity: who is allowed to send these headers, and what they are called. Uvicorn must run with
+    # --no-proxy-headers: otherwise X-Forwarded-For replaces the proxy's address, and nobody is believed.
     trusted_proxies: list[str] = ["127.0.0.1", "::1"]
     header_username: str = "X-Remote-User"
     header_name: str = "X-Remote-Name"
@@ -43,6 +58,9 @@ class Settings(BaseSettings):
             raise ValueError("fake_identity works only in development")
         if self.default_language not in self.languages:
             raise ValueError("default_language must be one of languages")
+        unknown = set(self.layout_choices) - set(LAYOUTS)
+        if unknown:
+            raise ValueError(f"layout_choices has unknown names: {sorted(unknown)}")
         return self
 
 

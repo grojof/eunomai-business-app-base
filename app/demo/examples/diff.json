@@ -1,0 +1,77 @@
+{
+ "name": "diff",
+ "title": {
+  "en": "Diff"
+ },
+ "description": {
+  "en": "Diff component shows a side-by-side comparison of two items.",
+  "ca": "El component Diff compara dos elements un al costat de l'altre.",
+  "es": "El componente Diff muestra una comparación lado a lado de dos elementos."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "diff",
+     "description": {
+      "en": "Container element",
+      "ca": "Element contenidor",
+      "es": "Elemento contenedor"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "diff-item-1",
+     "description": {
+      "en": "First item"
+     }
+    },
+    {
+     "class": "diff-item-2",
+     "description": {
+      "en": "Second item"
+     }
+    },
+    {
+     "class": "diff-resizer",
+     "description": {
+      "en": "The resizer control",
+      "ca": "El control de redimensionament",
+      "es": "El control de cambio de tamaño"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "diff",
+   "section": null,
+   "title": {
+    "en": "Diff"
+   },
+   "subtitle": null,
+   "html": "<figure class=\"diff aspect-16/9\" tabindex=\"0\">\n  <div class=\"diff-item-1\" role=\"img\" tabindex=\"0\">\n    <img alt=\"daisy\" src=\"/static/ui/placeholders/photo-1.svg\" />\n  </div>\n  <div class=\"diff-item-2\" role=\"img\">\n    <img\n      alt=\"daisy\"\n      src=\"/static/ui/placeholders/photo-2.svg\" />\n  </div>\n  <div class=\"diff-resizer\"></div>\n</figure>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "diff-text",
+   "section": null,
+   "title": {
+    "en": "Diff text"
+   },
+   "subtitle": null,
+   "html": "<figure class=\"diff aspect-16/9\" tabindex=\"0\">\n  <div class=\"diff-item-1\" role=\"img\" tabindex=\"0\">\n    <div class=\"bg-primary text-primary-content grid place-content-center text-9xl font-black\">\n      DAISY\n    </div>\n  </div>\n  <div class=\"diff-item-2\" role=\"img\">\n    <div class=\"bg-base-200 grid place-content-center text-9xl font-black\">DAISY</div>\n  </div>\n  <div class=\"diff-resizer\"></div>\n</figure>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

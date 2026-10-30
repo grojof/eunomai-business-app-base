@@ -1,0 +1,52 @@
+{
+ "name": "mockup-window",
+ "title": {
+  "en": "Window mockup"
+ },
+ "description": {
+  "en": "Window mockup shows a box that looks like an operating system window.",
+  "ca": "Les maquetes de finestra mostren una caixa que sembla una finestra d'un sistema operatiu.",
+  "es": "El Mockup de ventana muestra un cuadro que parece una ventana del sistema operativo."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "mockup-window",
+     "description": {
+      "en": "OS window mockup",
+      "ca": "OS Window mockup",
+      "es": "SO Window mockup"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "window-mockup-with-border",
+   "section": null,
+   "title": {
+    "en": "window mockup with border"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-window border border-base-300 w-full\">\n  <div class=\"grid place-content-center border-t border-base-300 h-80\">Hello!</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "window-mockup-with-background-color",
+   "section": null,
+   "title": {
+    "en": "window mockup with background color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-window bg-base-100 border border-base-300\">\n  <div class=\"grid place-content-center h-80\">Hello!</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

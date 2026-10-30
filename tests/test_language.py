@@ -9,12 +9,15 @@ from fastapi.testclient import TestClient
 
 from app.core import formatters
 from app.core.i18n import PSEUDO, Languages, _, ngettext
+from app.core.settings import Settings
 from app.main import create_app
 from tests.conftest import build_settings
 from tests.helpers import ROOT, untranslated
 from tools import translations
 
-ALLOWED = ("Business App", "Demo Person", "Mar 15, 2027")
+ALLOWED = ("Business App", "Demo Person", "Mar 15, 2027", "Nov 20, 2026", "Jan 12, 2027", "Nov 9, 2026", "May 3, 2027")
+SOURCE_LANGUAGE = "en"  # the language of the texts in the code: it has no folder
+OFFERED = [SOURCE_LANGUAGE, *translations.REQUIRED]
 
 
 def activate(language: str) -> None:
@@ -50,7 +53,7 @@ def test_the_pseudo_language_does_not_exist_in_production(person):
 
 
 @pytest.mark.rule("LANG-10")
-@pytest.mark.parametrize("language", ["en", "es", "ca"])
+@pytest.mark.parametrize("language", OFFERED)
 def test_the_page_declares_its_language(client, person, language):
     client.cookies.set("language", language)
     assert f'<html lang="{language}"' in client.get("/", headers=person).text
@@ -71,6 +74,8 @@ def test_each_language_option_declares_its_own(client, person):
         (None, "de-DE,de;q=0.9", "en"),
         (None, None, "en"),
         ("xx", "ca", "ca"),
+        (None, "ES", "es"),
+        (None, "ES-es,CA;q=0.5", "es"),
     ],
 )
 def test_the_language_is_chosen_in_order(saved, accept, expected):
@@ -124,7 +129,7 @@ def test_dates_follow_the_language():
 
 
 @pytest.mark.rule("LANG-08")
-@pytest.mark.parametrize("language", ["en", "es", "ca"])
+@pytest.mark.parametrize("language", OFFERED)
 @pytest.mark.parametrize(
     "value",
     [Decimal("0.00000000000000000001"), Decimal("123456789012345678.12345678901234567890"), Decimal("-1250.10")],
@@ -186,7 +191,7 @@ def test_the_grouping_data_is_from_the_cldr_version_babel_uses():
 
 
 @pytest.mark.rule("LANG-08")
-@pytest.mark.parametrize("language", ["en", "es", "ca"])
+@pytest.mark.parametrize("language", OFFERED)
 def test_no_length_of_decimal_is_cut(language):
     activate(language)
     value = Decimal("1" * 150 + "." + "2" * 150)
@@ -240,7 +245,23 @@ def test_the_browser_preference_follows_its_weights(header, expected):
     assert Languages(["en", "es", "ca"], "en").choose(None, header) == expected
 
 
-@pytest.mark.rule("LANG-12")
+def test_every_folder_in_locales_is_a_required_language(tmp_path):
+    assert translations.REQUIRED == translations.languages_in(ROOT / "locales")
+    (tmp_path / "fr").mkdir()
+    (tmp_path / "de").mkdir()
+    (tmp_path / "notes.txt").write_text("not a language", encoding="utf-8")
+    assert translations.languages_in(tmp_path) == ["de", "fr"]
+
+
+def test_every_default_language_has_its_folder_or_is_the_source_language():
+    assert set(Settings.model_fields["languages"].default) - set(translations.REQUIRED) == {SOURCE_LANGUAGE}
+
+
+def test_the_time_zone_is_neutral_until_an_application_sets_it():
+    assert build_settings().time_zone == "UTC"
+    assert "APP_TIME_ZONE=" in (ROOT / ".env.example").read_text(encoding="utf-8")
+
+
 def test_a_language_name_keeps_its_own_capitals():
     names = dict(Languages(["pt_BR", "de_CH"], "pt_BR").options())
     assert names == {"pt_BR": "Português (Brasil)", "de_CH": "Deutsch (Schweiz)"}
@@ -260,3 +281,10 @@ def test_a_regional_language_uses_a_valid_tag(person):
 def test_small_and_whole_numbers_format_without_error(value):
     activate("es")
     assert formatters.parse_decimal(formatters.format_decimal(value)) == Decimal(value)
+
+
+@pytest.mark.rule("LANG-01")
+def test_no_template_has_text_outside_translation_even_if_no_test_visits_it():
+    for template in (ROOT / "app").rglob("*.html"):
+        text = re.sub(r"\{#.*?#\}|\{%.*?%\}|\{\{.*?\}\}", "", template.read_text(encoding="utf-8"), flags=re.S)
+        assert untranslated(text, ("AB", "example.org")) == [], template

@@ -1,0 +1,18 @@
+{#- The palette's options. Each is a real link, so a click, a tap or Enter all go to the same place. -#}
+{% from "ui/macros.html" import icon %}
+{% for group, items in groups.items() %}
+{% set group_index = loop.index %}
+<div role="group" aria-labelledby="palette-group-{{ group_index }}" data-palette-group>
+  <div id="palette-group-{{ group_index }}" class="px-3 pt-3 pb-1 text-xs font-semibold tracking-wide uppercase" role="presentation">{{ group }}</div>
+  {% for item in items %}
+  <a id="palette-option-{{ group_index }}-{{ loop.index }}" class="flex items-center gap-3 rounded-field px-3 py-2" role="option" href="{{ item.path }}" tabindex="-1" aria-selected="false"
+     data-palette-option data-search="{{ item.label }} {{ item.keywords }} {{ item.description }}">
+    <span class="grid size-8 shrink-0 place-items-center rounded-field bg-base-200">{{ icon(item.icon or "hash", "size-4") }}</span>
+    <span class="min-w-0 grow">
+      <span class="block font-medium" data-palette-label>{{ item.label }}</span>
+      {% if item.description %}<span class="block truncate text-sm">{{ item.description }}</span>{% endif %}
+    </span>
+  </a>
+  {% endfor %}
+</div>
+{% endfor %}
