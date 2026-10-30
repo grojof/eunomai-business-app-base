@@ -1,0 +1,108 @@
+{
+ "name": "text-rotate",
+ "title": {
+  "en": "Text Rotate"
+ },
+ "description": {
+  "en": "Text Rotate can show up to 6 lines of text, one at a time, with an infinite loop animation. Duration is 10 seconds by default. The animation will pause on hover.",
+  "ca": "Text Rotate pot mostrar fins a 6 línies de text, una a la vegada, amb una animació de bucle infinit. La durada és de 10 segons per Default. L'animació s'aturarà al passar el cursor.",
+  "es": "Text Rotate puede mostrar hasta 6 líneas de texto, una a la vez, con una animación en bucle infinito. La duración es de 10 segundos por Default. La animación se detendrá al pasar el mouse."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "text-rotate",
+     "description": {
+      "en": "Wrapper for texts",
+      "ca": "Embolcall per a textos",
+      "es": "Envoltorio para textos"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "text-rotate",
+   "section": null,
+   "title": {
+    "en": "Text Rotate"
+   },
+   "subtitle": {
+    "en": "Rotates through 3 words, in 10 seconds",
+    "ca": "Gira 3 paraules, en 10 segons",
+    "es": "Gira 3 palabras, en 10 segundos."
+   },
+   "html": "<span class=\"text-rotate\">\n  <span>\n    <span>ONE</span>\n    <span>TWO</span>\n    <span>THREE</span>\n  </span>\n</span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "rotating-6-words",
+   "section": null,
+   "title": {
+    "en": "Rotating 6 words"
+   },
+   "subtitle": {
+    "en": "Big font size, horizontally centered",
+    "ca": "Mida de lletra gran, centrat horitzontalment",
+    "es": "Tamaño de fuente grande, centrado horizontalmente."
+   },
+   "html": "<span class=\"text-rotate text-7xl\">\n  <span class=\"justify-items-center\">\n    <span>DESIGN</span>\n    <span>DEVELOP</span>\n    <span>DEPLOY</span>\n    <span>SCALE</span>\n    <span>MAINTAIN</span>\n    <span>REPEAT</span>\n  </span>\n</span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "rotating-words-in-a-sentence",
+   "section": null,
+   "title": {
+    "en": "Rotating words in a sentence"
+   },
+   "subtitle": {
+    "en": "Different colors for each word",
+    "ca": "Diferents colors per a cada paraula",
+    "es": "Diferentes colores para cada palabra."
+   },
+   "html": "<span>\n  Providing AI Agents for \n  <span class=\"text-rotate\">\n    <span>\n      <span class=\"bg-teal-400 text-teal-800 px-2\">Designers</span>\n      <span class=\"bg-red-400 text-red-800 px-2\">Developers</span>\n      <span class=\"bg-blue-400 text-blue-800 px-2\">Managers</span>\n    </span>\n  </span>\n</span>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  },
+  {
+   "id": "rotating-3-words-with-custom-duration",
+   "section": null,
+   "title": {
+    "en": "Rotating 3 words with custom duration"
+   },
+   "subtitle": {
+    "en": "Big font size, horizontally centered, 6 seconds duration instead of 10 seconds",
+    "ca": "Mida de lletra gran, centrada horitzontalment, durada de 6 segons en lloc de 10 segons",
+    "es": "Tamaño de fuente grande, centrado horizontalmente, duración de 6 segundos en lugar de 10 segundos"
+   },
+   "html": "<span class=\"text-rotate text-7xl duration-6000\">\n  <span class=\"justify-items-center\">\n  <span>BLAZING</span>\n  <span class=\"font-bold italic px-2\">FAST ▶︎▶︎</span>\n  </span>\n</span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "custom-line-height",
+   "section": null,
+   "title": {
+    "en": "Custom line height"
+   },
+   "subtitle": {
+    "en": "In case you have a tall font or need more vertical spacing between lines",
+    "ca": "En cas que tingueu una font alta o necessiteu més espai vertical entre línies",
+    "es": "En caso de que tengas una fuente alta o necesites más espacio vertical entre líneas"
+   },
+   "html": "<span class=\"text-rotate text-7xl leading-[2]\">\n  <span class=\"justify-items-center\">\n    <span>📐 DESIGN</span>\n    <span>⌨️ DEVELOP</span>\n    <span>🌎 DEPLOY</span>\n    <span>🌱 SCALE</span>\n    <span>🔧 MAINTAIN</span>\n    <span>♻️ REPEAT</span>\n  </span>\n</span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

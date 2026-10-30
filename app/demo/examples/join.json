@@ -1,0 +1,133 @@
+{
+ "name": "join",
+ "title": {
+  "en": "Join (group items)"
+ },
+ "description": {
+  "en": "Join is a container for grouping multiple items, it can be used to group buttons, inputs, etc. Join applies border radius to the first and last item. Join can be used to create a horizontal or vertical list of items.",
+  "ca": "Unir és un contenidor per agrupar diversos elements, es pot utilitzar per agrupar botons, entrades, etc. Unir aplica un radi de vora al primer i a l'últim element. La unió es pot utilitzar per crear una llista horitzontal o vertical d'elements.",
+  "es": "Unirse es un contenedor para agrupar varios elementos, se puede utilizar para agrupar botones, entradas, etc. Unir aplica el radio del borde al primer y último elemento. Unirse se puede utilizar para crear una lista horizontal o vertical de elementos."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "join",
+     "description": {
+      "en": "For grouping multiple items",
+      "ca": "Per agrupar diversos elements",
+      "es": "Para agrupar varios elementos"
+     }
+    },
+    {
+     "class": "join-item",
+     "description": {
+      "en": "Item inside join. Can be a button, input, etc.",
+      "ca": "Element dins de la unió. Pot ser un Button, entrada, etc.",
+      "es": "Elemento dentro de la unión. Puede ser un Button, entrada, etc."
+     }
+    }
+   ]
+  },
+  {
+   "group": "direction",
+   "items": [
+    {
+     "class": "join-vertical",
+     "description": {
+      "en": "Show items vertically",
+      "ca": "Mostra els elements verticalment",
+      "es": "Mostrar elementos verticalmente"
+     }
+    },
+    {
+     "class": "join-horizontal",
+     "description": {
+      "en": "Show items horizontally",
+      "ca": "Mostra els elements horitzontalment",
+      "es": "Mostrar elementos horizontalmente"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "join",
+   "section": null,
+   "title": {
+    "en": "Join"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join\">\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "group-items-vertically",
+   "section": null,
+   "title": {
+    "en": "Group items vertically"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join join-vertical\">\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "responsive-its-vertical-on-small-screen-and-horizontal-on-large-screen",
+   "section": null,
+   "title": {
+    "en": "Responsive: it's vertical on small screen and horizontal on large screen"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join join-vertical lg:join-horizontal\">\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-extra-elements-in-the-group",
+   "section": null,
+   "title": {
+    "en": "With extra elements in the group"
+   },
+   "subtitle": {
+    "en": "Even if join-item is not a direct child of the group, it still gets the style",
+    "ca": "Fins i tot si join-item no és un fill directe del grup, encara té l'estil",
+    "es": "Incluso si el elemento de unión no es un elemento secundario directo del grupo, aún obtiene el estilo."
+   },
+   "html": "<div class=\"join\">\n  <div>\n    <div>\n      <input class=\"input join-item\" placeholder=\"Search\" />\n    </div>\n  </div>\n  <select class=\"select join-item\">\n    <option disabled selected>Filter</option>\n    <option>Sci-fi</option>\n    <option>Drama</option>\n    <option>Action</option>\n  </select>\n  <div class=\"indicator\">\n    <span class=\"indicator-item badge badge-secondary\">new</span>\n    <button class=\"btn join-item\">Search</button>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "custom-border-radius",
+   "section": null,
+   "title": {
+    "en": "Custom border radius"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join\">\n  <input class=\"input join-item\" placeholder=\"Email\" />\n  <button class=\"btn join-item rounded-r-full\">Subscribe</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "join-radio-inputs-with-btn-style",
+   "section": null,
+   "title": {
+    "en": "Join radio inputs with btn style"
+   },
+   "subtitle": null,
+   "html": "<div class=\"join\">\n  <input class=\"join-item btn\" type=\"radio\" name=\"options\" aria-label=\"Radio 1\" />\n  <input class=\"join-item btn\" type=\"radio\" name=\"options\" aria-label=\"Radio 2\" />\n  <input class=\"join-item btn\" type=\"radio\" name=\"options\" aria-label=\"Radio 3\" />\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

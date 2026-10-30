@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 22:32+0100\n"
+"POT-Creation-Date: 2026-10-30 23:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -22,6 +22,9 @@ msgstr ""
 
 msgid "Actions"
 msgstr "Acciones"
+
+msgid "Apply"
+msgstr "Aplicar"
 
 msgid "Approved"
 msgstr "Aprobado"
@@ -38,11 +41,30 @@ msgstr "Disponible"
 msgid "Back to the start"
 msgstr "Volver al inicio"
 
+msgid "Centred"
+msgstr "Centrado"
+
+msgid ""
+"Change how this application looks for you. Each choice applies at once "
+"and is remembered in this browser."
+msgstr ""
+"Cambia cómo se ve esta aplicación para ti. Cada opción se aplica al "
+"momento y se recuerda en este navegador."
+
 msgid "Check the address, or go back to the start."
 msgstr "Comprueba la dirección o vuelve al inicio."
 
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Compact"
+msgstr "Compacta"
+
 msgid "Dark"
 msgstr "Oscuro"
+
+msgid "Dark theme"
+msgstr "Tema oscuro"
 
 msgid "Data display"
 msgstr "Mostrar datos"
@@ -53,8 +75,17 @@ msgstr "Entrada de datos"
 msgid "Decorative"
 msgstr "Decorativo"
 
+msgid "Density"
+msgstr "Densidad"
+
 msgid "Done"
 msgstr "Hecho"
+
+msgid "Dropdown"
+msgstr "Desplegable"
+
+msgid "Each one is real: try it here, then choose the one the header should show."
+msgstr "Cada uno es real: pruébalo aquí y elige el que debe mostrar la cabecera."
 
 msgid "Error"
 msgstr "Error"
@@ -62,11 +93,29 @@ msgstr "Error"
 msgid "Feedback"
 msgstr "Avisos"
 
+msgid "Fixed header"
+msgstr "Cabecera fija"
+
+msgid "Full"
+msgstr "Completa"
+
+msgid "Hidden"
+msgstr "Oculta"
+
+msgid "How the language control looks"
+msgstr "Cómo se ve el control de idioma"
+
+msgid "How the theme control looks"
+msgstr "Cómo se ve el control de tema"
+
+msgid "Icons only"
+msgstr "Solo iconos"
+
+msgid "In use"
+msgstr "En uso"
+
 msgid "Information"
 msgstr "Información"
-
-msgid "It changes the theme without saving it. The user menu does this properly."
-msgstr "Cambia el tema sin guardarlo. El menú de usuario lo hace correctamente."
 
 msgid "It is not your fault. Try again in a moment."
 msgstr "No es culpa tuya. Vuelve a intentarlo en un momento."
@@ -91,11 +140,17 @@ msgstr "Idioma"
 msgid "Layout"
 msgstr "Estructura"
 
+msgid "Layout, theme, language and how their controls look."
+msgstr "Disposición, tema, idioma y cómo se ven sus controles."
+
 msgid "Light"
 msgstr "Claro"
 
 msgid "Main"
 msgstr "Principal"
+
+msgid "Menu list"
+msgstr "Lista de menú"
 
 msgid "Mockups"
 msgstr "Maquetas"
@@ -106,8 +161,26 @@ msgstr "Se mueve solo y solo un puntero puede pausarlo: WCAG 2.2.2."
 msgid "Navigation"
 msgstr "Navegación"
 
+msgid "No"
+msgstr "No"
+
+msgid "No results"
+msgstr "Sin resultados"
+
+msgid "Normal"
+msgstr "Normal"
+
 msgid "Not recommended"
 msgstr "No recomendado"
+
+msgid ""
+"On its own it changes the theme without saving it, and it cannot say that"
+" the theme should follow the system. The shell uses its class inside a "
+"form that saves the choice: see Settings."
+msgstr ""
+"Por sí solo cambia el tema sin guardarlo y no puede indicar que el tema "
+"siga al sistema. La aplicación usa su clase dentro de un formulario que "
+"guarda la elección: consulta Ajustes."
 
 msgid "Open menu"
 msgstr "Abrir el menú"
@@ -115,8 +188,36 @@ msgstr "Abrir el menú"
 msgid "Page not found"
 msgstr "Página no encontrada"
 
+msgid "Pages"
+msgstr "Páginas"
+
 msgid "Preferences"
 msgstr "Preferencias"
+
+msgid "Radio"
+msgstr "Opción"
+
+msgid "Results"
+msgstr "Resultados"
+
+#, python-format
+msgid "Results: %(count)s"
+msgstr "Resultados: %(count)s"
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Search is not available right now. Try again in a moment."
+msgstr "La búsqueda no está disponible ahora. Inténtalo de nuevo en un momento."
+
+msgid "Select"
+msgstr "Lista"
+
+msgid "Settings"
+msgstr "Ajustes"
+
+msgid "Side"
+msgstr "Lateral"
 
 msgid "Sign-in required"
 msgstr "Hay que iniciar sesión"
@@ -130,11 +231,32 @@ msgstr "Algo ha fallado"
 msgid "Start"
 msgstr "Inicio"
 
+msgid "Swap"
+msgstr "Intercambio"
+
 msgid "Theme"
 msgstr "Tema"
 
+msgid "Theme and language"
+msgstr "Tema e idioma"
+
 msgid "This application is ready. Replace this page with your first screen."
 msgstr "Esta aplicación está lista. Sustituye esta página por tu primera pantalla."
+
+msgid "Toggle"
+msgstr "Interruptor"
+
+msgid "Top"
+msgstr "Superior"
+
+msgid "Try another word, or a shorter one."
+msgstr "Prueba con otra palabra, o con una más corta."
+
+msgid "Type to search"
+msgstr "Escribe para buscar"
+
+msgid "Use this one"
+msgstr "Usar este"
 
 #, python-format
 msgid "Version %(version)s"
@@ -146,6 +268,21 @@ msgstr "Aviso"
 msgid "We could not tell who you are. Open the application from your portal."
 msgstr "No hemos podido saber quién eres. Abre la aplicación desde tu portal."
 
+msgid "Width"
+msgstr "Anchura"
+
+msgid "Yes"
+msgstr "Sí"
+
 msgid "You do not have permission"
 msgstr "No tienes permiso"
+
+msgid "to close"
+msgstr "para cerrar"
+
+msgid "to move"
+msgstr "para moverse"
+
+msgid "to open"
+msgstr "para abrir"
 

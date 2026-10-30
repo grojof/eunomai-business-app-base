@@ -1,0 +1,308 @@
+{
+ "name": "modal",
+ "title": {
+  "en": "Modal"
+ },
+ "description": {
+  "en": "Modal is used to show a dialog or a box when you click a button.",
+  "ca": "Els modals s'utilitzen per mostrar un diàleg o una caixa quan fas clic en un botó.",
+  "es": "Modal se usa para mostrar un cuadro de diálogo o un cuadro cuando hace clic en un botón."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "modal",
+     "description": {
+      "en": "Modal"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "modal-box",
+     "description": {
+      "en": "The content part",
+      "ca": "La part de contingut",
+      "es": "La parte del contenido"
+     }
+    },
+    {
+     "class": "modal-action",
+     "description": {
+      "en": "Actions part (buttons, etc.)",
+      "ca": "Part d'accions (botons, etc.)",
+      "es": "Parte de acciones (botones, etc.)"
+     }
+    },
+    {
+     "class": "modal-backdrop",
+     "description": {
+      "en": "Label that covers the page when modal is open so we can close the modal by clicking outside",
+      "ca": "Label que cobreix la pàgina quan el modal està obert perquè puguem tancar el modal fent clic a fora",
+      "es": "Label que cubre la página cuando el modal está abierto para que podamos cerrar el modal haciendo clic afuera"
+     }
+    },
+    {
+     "class": "modal-toggle",
+     "description": {
+      "en": "Hidden checkbox that controls the state of modal",
+      "ca": "Checkbox ocult que controla l'estat de Modal",
+      "es": "Checkbox oculto que controla el estado de Modal"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "modal-open",
+     "description": {
+      "en": "Keeps the modal open (you can add this class using JS)",
+      "ca": "Manté el modal obert (pots afegir aquesta classe mitjançant JS)",
+      "es": "Mantiene el modal abierto (puedes agregar esta clase usando JS)"
+     }
+    }
+   ]
+  },
+  {
+   "group": "placement",
+   "items": [
+    {
+     "class": "modal-top",
+     "description": {
+      "en": "Moves the modal to top",
+      "ca": "Mou el modal cap a dalt",
+      "es": "Mueve el modal hacia arriba"
+     }
+    },
+    {
+     "class": "modal-middle",
+     "description": {
+      "en": "Moves the modal to middle",
+      "ca": "Mou el modal al mig",
+      "es": "Mueve el modal al medio."
+     },
+     "default": true
+    },
+    {
+     "class": "modal-bottom",
+     "description": {
+      "en": "Moves the modal to bottom",
+      "ca": "Mou el modal cap avall",
+      "es": "Mueve el modal hacia abajo."
+     }
+    },
+    {
+     "class": "modal-start",
+     "description": {
+      "en": "Moves the modal to start horizontally",
+      "ca": "Mou el modal per començar horitzontalment",
+      "es": "Mueve el modal para comenzar horizontalmente."
+     }
+    },
+    {
+     "class": "modal-end",
+     "description": {
+      "en": "Moves the modal to end horizontally",
+      "ca": "Mou el modal per acabar horitzontalment",
+      "es": "Mueve el modal para terminar horizontalmente."
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "dialog-modal",
+   "section": {
+    "en": "Method 1. HTML dialog element `recommended`",
+    "ca": "Mètode 1. Element de diàleg HTML `recommended`",
+    "es": "Método 1. Elemento de diálogo HTML \"recomendado\" (`recommended`)"
+   },
+   "title": {
+    "en": "Dialog modal"
+   },
+   "subtitle": {
+    "en": "opens on click using ID.showModal() method. can be closed using ID.close() method",
+    "ca": "S'obre en fer clic utilitzant el mètode ID.showModal(). Es pot tancar utilitzant el mètode ID.close()",
+    "es": "se abre al hacer clic usando el método ID.showModal(). se puede cerrar usando el método ID.close()"
+   },
+   "html": "<!-- Open the modal using ID.showModal() method -->\n<button class=\"btn\" data-dialog=\"my_modal_1\">open modal</button>\n<dialog id=\"my_modal_1\" class=\"modal\">\n  <div class=\"modal-box\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">Press ESC key or click the button below to close</p>\n    <div class=\"modal-action\">\n      <form method=\"dialog\">\n        <!-- if there is a button in form, it will close the modal -->\n        <button class=\"btn\">Close</button>\n      </form>\n    </div>\n  </div>\n</dialog>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "dialog-modal-closes-when-clicked-outside",
+   "section": {
+    "en": "Method 1. HTML dialog element `recommended`",
+    "ca": "Mètode 1. Element de diàleg HTML `recommended`",
+    "es": "Método 1. Elemento de diálogo HTML \"recomendado\" (`recommended`)"
+   },
+   "title": {
+    "en": "Dialog modal, closes when clicked outside"
+   },
+   "subtitle": {
+    "en": "there is a second form with 'modal-backdrop' class and it covers the screen so we can close the modal when clicked outside",
+    "ca": "hi ha un segon formulari amb la classe 'modal-backdrop' que cobreix la pantalla perquè puguem tancar el modal quan fem clic fora",
+    "es": "Hay un segundo formulario con la clase 'modal-backdrop' y cubre la pantalla para que podamos cerrar el modal cuando hacemos clic afuera."
+   },
+   "html": "<!-- Open the modal using ID.showModal() method -->\n<button class=\"btn\" data-dialog=\"my_modal_2\">open modal</button>\n<dialog id=\"my_modal_2\" class=\"modal\">\n  <div class=\"modal-box\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">Press ESC key or click outside to close</p>\n  </div>\n  <form method=\"dialog\" class=\"modal-backdrop\">\n    <button>close</button>\n  </form>\n</dialog>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "dialog-modal-with-a-close-button-at-corner",
+   "section": {
+    "en": "Method 1. HTML dialog element `recommended`",
+    "ca": "Mètode 1. Element de diàleg HTML `recommended`",
+    "es": "Método 1. Elemento de diálogo HTML \"recomendado\" (`recommended`)"
+   },
+   "title": {
+    "en": "Dialog modal with a close button at corner",
+    "ca": "Modal de diàleg amb un botó de tancament a la cantonada.",
+    "es": "Diálogo Modal con un cierre Button en la esquina"
+   },
+   "subtitle": null,
+   "html": "<!-- You can open the modal using ID.showModal() method -->\n<button class=\"btn\" data-dialog=\"my_modal_3\">open modal</button>\n<dialog id=\"my_modal_3\" class=\"modal\">\n  <div class=\"modal-box\">\n    <form method=\"dialog\">\n      <button class=\"btn btn-sm btn-circle btn-ghost absolute right-2 top-2\">✕</button>\n    </form>\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">Press ESC key or click on ✕ button to close</p>\n  </div>\n</dialog>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "dialog-modal-with-custom-width",
+   "section": {
+    "en": "Method 1. HTML dialog element `recommended`",
+    "ca": "Mètode 1. Element de diàleg HTML `recommended`",
+    "es": "Método 1. Elemento de diálogo HTML \"recomendado\" (`recommended`)"
+   },
+   "title": {
+    "en": "Dialog modal with custom width",
+    "ca": "Modal de diàleg amb amplada personalitzada",
+    "es": "Diálogo modal con ancho personalizado."
+   },
+   "subtitle": {
+    "en": "You can use any w-* and max-w-* utility class to customize the width",
+    "ca": "Pots utilitzar qualsevol classe d'utilitat w-* i max-w-* per personalitzar l'amplada.",
+    "es": "Puede utilizar cualquier clase de utilidad w-* y max-w-* para personalizar el ancho"
+   },
+   "html": "<!-- You can open the modal using ID.showModal() method -->\n<button class=\"btn\" data-dialog=\"my_modal_4\">open modal</button>\n<dialog id=\"my_modal_4\" class=\"modal\">\n  <div class=\"modal-box w-11/12 max-w-5xl\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">Click the button below to close</p>\n    <div class=\"modal-action\">\n      <form method=\"dialog\">\n        <!-- if there is a button, it will close the modal -->\n        <button class=\"btn\">Close</button>\n      </form>\n    </div>\n  </div>\n</dialog>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "responsive",
+   "section": {
+    "en": "Method 1. HTML dialog element `recommended`",
+    "ca": "Mètode 1. Element de diàleg HTML `recommended`",
+    "es": "Método 1. Elemento de diálogo HTML \"recomendado\" (`recommended`)"
+   },
+   "title": {
+    "en": "Responsive"
+   },
+   "subtitle": {
+    "en": "Modal goes bottom on SM screen size, goes middle on MD screen size",
+    "ca": "Modal va a la part inferior a la mida de la pantalla SM, va al mig a la mida de la pantalla MD",
+    "es": "Modal va al fondo en el tamaño de pantalla SM, va al medio en el tamaño de pantalla MD"
+   },
+   "html": "<!-- Open the modal using ID.showModal() method -->\n<button class=\"btn\" data-dialog=\"my_modal_5\">open modal</button>\n<dialog id=\"my_modal_5\" class=\"modal modal-bottom sm:modal-middle\">\n  <div class=\"modal-box\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">Press ESC key or click the button below to close</p>\n    <div class=\"modal-action\">\n      <form method=\"dialog\">\n        <!-- if there is a button in form, it will close the modal -->\n        <button class=\"btn\">Close</button>\n      </form>\n    </div>\n  </div>\n</dialog>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "popover-modal",
+   "section": {
+    "en": "Method 2. HTML popover",
+    "ca": "Mètode 2. Popover HTML",
+    "es": "Método 2. Ventana emergente HTML"
+   },
+   "title": {
+    "en": "Popover modal"
+   },
+   "subtitle": null,
+   "html": "<!-- The button's popovertarget attribute points to the modal's ID. ID must be unique for each modal -->\n<button class=\"btn\" popovertarget=\"my-modal-1\">Open</button>\n\n<div class=\"modal\" id=\"my-modal-1\" popover>\n  <div class=\"modal-box\">\n    <h3 class=\"font-bold text-lg\">Hello!</h3>\n    <p class=\"py-4\">Press ESC key or click the button below to close</p>\n    <div class=\"modal-action\">\n      <button popovertarget=\"my-modal-1\" popovertargetaction=\"hide\">close</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "popover-modal-closes-when-clicked-outside",
+   "section": {
+    "en": "Method 2. HTML popover",
+    "ca": "Mètode 2. Popover HTML",
+    "es": "Método 2. Ventana emergente HTML"
+   },
+   "title": {
+    "en": "Popover modal closes when clicked outside"
+   },
+   "subtitle": null,
+   "html": "<!-- The button's popovertarget attribute points to the modal's ID. ID must be unique for each modal -->\n<button class=\"btn\" popovertarget=\"my-modal-2\">Open</button>\n\n<div class=\"modal\" id=\"my-modal-2\" popover>\n  <div class=\"modal-box\">\n    <h3 class=\"font-bold text-lg\">Hello!</h3>\n    <p class=\"py-4\">Press ESC key or click the button below to close</p>\n  </div>\n  <div class=\"modal-backdrop\">\n    <button popovertarget=\"my-modal-2\" popovertargetaction=\"hide\">close</button>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "modal-using-checkbox",
+   "section": {
+    "en": "Method 3. checkbox `legacy`",
+    "ca": "Mètode 3. Checkbox `legacy`",
+    "es": "Método 3. Checkbox \"heredado\" (`legacy`)"
+   },
+   "title": {
+    "en": "Modal using checkbox"
+   },
+   "subtitle": null,
+   "html": "<!-- The button to open modal -->\n<label for=\"my_modal_6\" class=\"btn\">open modal</label>\n\n<!-- Put this part before </body> tag -->\n<input type=\"checkbox\" id=\"my_modal_6\" class=\"modal-toggle\" />\n<div class=\"modal\" role=\"dialog\">\n  <div class=\"modal-box\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">This modal works with a hidden checkbox!</p>\n    <div class=\"modal-action\">\n      <label for=\"my_modal_6\" class=\"btn\">Close!</label>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "modal-that-closes-when-clicked-outside",
+   "section": {
+    "en": "Method 3. checkbox `legacy`",
+    "ca": "Mètode 3. Checkbox `legacy`",
+    "es": "Método 3. Checkbox \"heredado\" (`legacy`)"
+   },
+   "title": {
+    "en": "Modal that closes when clicked outside"
+   },
+   "subtitle": {
+    "en": "Modal works with a hidden checkbox and labels can toggle the checkbox so we can use another label tag with 'modal-backdrop' class that covers the screen so we can close the modal when clicked outside",
+    "ca": "Modal funciona amb una casella de selecció oculta i els labels poden activar la casella de selecció perquè puguem utilitzar un altre label amb la classe 'modal-backdrop' que cobreix la pantalla perquè puguem tancar el modal quan fem clic fora",
+    "es": "Modal funciona con un Checkbox oculto y los Label pueden Toggle el Checkbox, por lo que podemos usar otra etiqueta Label con la clase 'Modal-backdrop' que cubre la pantalla para que podamos cerrar el Modal cuando se hace clic afuera."
+   },
+   "html": "<!-- The button to open modal -->\n<label for=\"my_modal_7\" class=\"btn\">open modal</label>\n\n<!-- Put this part before </body> tag -->\n<input type=\"checkbox\" id=\"my_modal_7\" class=\"modal-toggle\" />\n<div class=\"modal\" role=\"dialog\">\n  <div class=\"modal-box\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">This modal works with a hidden checkbox!</p>\n  </div>\n  <label class=\"modal-backdrop\" for=\"my_modal_7\">Close</label>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "modal-using-anchor-link",
+   "section": {
+    "en": "Method 3. checkbox `legacy`",
+    "ca": "Mètode 3. Checkbox `legacy`",
+    "es": "Método 3. Checkbox \"heredado\" (`legacy`)"
+   },
+   "title": {
+    "en": "Modal using anchor link",
+    "ca": "Modal mitjançant l'enllaç d'àncora",
+    "es": "Modal usando el anclaje Link"
+   },
+   "subtitle": null,
+   "html": "<!-- The button to open modal -->\n<a href=\"#my_modal_8\" class=\"btn\">open modal</a>\n\n<!-- Put this part before </body> tag -->\n<div class=\"modal\" role=\"dialog\" id=\"my_modal_8\">\n  <div class=\"modal-box\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">This modal works with anchor links</p>\n    <div class=\"modal-action\">\n      <a href=\"#\" class=\"btn\">Yay!</a>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  }
+ ]
+}

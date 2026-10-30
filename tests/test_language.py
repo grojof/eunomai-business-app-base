@@ -15,7 +15,7 @@ from tests.conftest import build_settings
 from tests.helpers import ROOT, untranslated
 from tools import translations
 
-ALLOWED = ("Business App", "Demo Person", "Mar 15, 2027")
+ALLOWED = ("Business App", "Demo Person", "Mar 15, 2027", "Nov 20, 2026", "Jan 12, 2027", "Nov 9, 2026", "May 3, 2027")
 SOURCE_LANGUAGE = "en"  # the language of the texts in the code: it has no folder
 OFFERED = [SOURCE_LANGUAGE, *translations.REQUIRED]
 

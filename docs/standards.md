@@ -52,11 +52,11 @@ passes by hand: keyboard only, then a screen reader (NVDA with a Chromium browse
 
 | ID | Rule | Source | Check |
 |---|---|---|---|
-| A11Y-01 | Real headings, labels, tables, buttons and links: the scan finds no failure on the pages it visits | [WCAG 1.3.1](https://www.w3.org/TR/WCAG22/#info-and-relationships), [4.1.2](https://www.w3.org/TR/WCAG22/#name-role-value) | Automatic |
+| A11Y-01 | Real headings, labels, tables, buttons and links: the scan finds no failure on real screens | [WCAG 1.3.1](https://www.w3.org/TR/WCAG22/#info-and-relationships), [4.1.2](https://www.w3.org/TR/WCAG22/#name-role-value) | Automatic |
 | A11Y-02 | The Tab key reaches every visible control of the start page, in the order of the page, and Escape closes a menu and returns focus to its button | [WCAG 2.1.1](https://www.w3.org/TR/WCAG22/#keyboard), [2.4.3](https://www.w3.org/TR/WCAG22/#focus-order) | Automatic |
 | A11Y-03 | The keyboard is never trapped | [WCAG 2.1.2](https://www.w3.org/TR/WCAG22/#no-keyboard-trap) | By hand |
 | A11Y-04 | Focus is visible on every control the Tab key reaches, and `scroll-padding-top` keeps it clear of the sticky header | [WCAG 2.4.7](https://www.w3.org/TR/WCAG22/#focus-visible), [2.4.11](https://www.w3.org/TR/WCAG22/#focus-not-obscured-minimum) | Automatic |
-| A11Y-05 | Contrast of 4.5:1 for text and 3:1 for large text, by the scan on the pages it visits. It measures text against its own background, not whether a shape stands out from the page: that is USE-10. With daisyUI's themes as they come, coloured links, `btn-link`, `menu-title`, `chat-bubble-primary` and `chat-bubble-secondary` can fall below it, are not used on real screens, and are left out of the scan by name. A theme added to `theme.css` is computed too | [WCAG 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum) | Automatic |
+| A11Y-05 | Contrast of 4.5:1 for text and 3:1 for large text, by the scan on the pages it visits. It measures text against its own background, not whether a shape stands out from the page: that is USE-10. With daisyUI's themes as they come, coloured links, `btn-link`, `menu-title`, `chat-bubble-primary` and `chat-bubble-secondary` can fall below it, and are not used on real screens. A theme added to `theme.css` is computed too | [WCAG 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum) | Automatic |
 | A11Y-06 | Targets of at least 24 by 24 pixels | [WCAG 2.5.8](https://www.w3.org/TR/WCAG22/#target-size-minimum) | Automatic |
 | A11Y-07 | A status is never shown by colour alone | [WCAG 1.4.1](https://www.w3.org/TR/WCAG22/#use-of-color) | By hand |
 | A11Y-08 | Every field has a label; errors are listed in a summary, linked to the field, and say how to fix them | [WCAG 3.3.1](https://www.w3.org/TR/WCAG22/#error-identification), [3.3.2](https://www.w3.org/TR/WCAG22/#labels-or-instructions), [3.3.3](https://www.w3.org/TR/WCAG22/#error-suggestion), [GOV.UK error summary](https://design-system.service.gov.uk/components/error-summary/) | Milestone 3 |
@@ -69,6 +69,20 @@ passes by hand: keyboard only, then a screen reader (NVDA with a Chromium browse
 | A11Y-15 | ARIA only where HTML has no answer | [WCAG 4.1.2](https://www.w3.org/TR/WCAG22/#name-role-value) | By hand |
 | A11Y-16 | Every screen works with a keyboard alone, in an order that makes sense | [WCAG 2.1.1](https://www.w3.org/TR/WCAG22/#keyboard), [2.4.3](https://www.w3.org/TR/WCAG22/#focus-order) | By hand |
 | A11Y-17 | Usable at 200 % zoom | [WCAG 1.4.4](https://www.w3.org/TR/WCAG22/#resize-text) | By hand |
+
+### Official examples
+
+daisyUI's examples in the gallery are reference material, not our screens. The scan is no gate on them and never decides
+what is shown: a person who asks to see what daisyUI offers sees all of it. It stays a gate on real screens: the shell,
+the dashboard, the settings menu with every look of its controls, the gallery's index, the frame of component pages,
+error pages and the palette.
+
+So **Available is not a promise of accessibility.** It means an official example, shown as published, not audited by us.
+**Approved** means our macro, tests and a review. **Decorative** and **Not recommended** stay, with their notes. Before an
+Available component reaches a real screen it gets a macro, and then it answers to these rules like any other.
+
+Text inside an official example is left as published, in English, under `lang="en"`. The language checks skip those
+regions, marked in the page, and not our frame around them.
 
 ## Usability
 
@@ -132,16 +146,16 @@ Catalan.
 | Check | Catches |
 |---|---|
 | `tools/translations.py check` | Texts missing from a catalogue, unfinished or fuzzy translations, different placeholders |
-| A pseudo-language marks every translated text and lengthens it by 40 % | Any unmarked text was never translated; layouts that break with longer languages |
+| A pseudo-language marks every translated text and lengthens it by 40 % | Any unmarked text was never translated, except inside [official examples](#official-examples); layouts that break with longer languages |
 | Values fixed per language, written and read back | Formats, and decimals that change |
 
 ## Components
 
 | ID | Rule | Source | Check |
 |---|---|---|---|
-| COMP-01 | The catalogue lists every official component, plus an organization's own, each of those with a hand-written page; official pages match the official file | [daisyUI llms.txt](https://daisyui.com/llms.txt) | Automatic |
+| COMP-01 | The catalogue lists every official component, plus an organization's own, each of those with a hand-written page; official pages match the official file. These pages are a reference for assistants; the gallery's examples come from daisyUI's documentation source | [daisyUI llms.txt](https://daisyui.com/llms.txt) | Automatic |
 | COMP-02 | Every component has a page with frontmatter and a description; each official page shows its status; one with problems says why | Project decision | Automatic |
-| COMP-03 | The gallery shows every component with its status in the catalogue, every specimen has content, and only those marked not recommended may fail the accessibility scan | Project decision | Automatic |
+| COMP-03 | The gallery shows every component with its status and every official example, counted from daisyUI's documentation, and generated data matches that documentation. A macro appears on the page of its component | Project decision | Automatic |
 | COMP-04 | A class in use must exist, read from real pages, macro arguments, `{% set %}` values and the catalogue; values such as `[color:#ff0000]` are refused. Component classes outside what Tailwind reads are caught; Tailwind utilities in Python files are not | Project decision | Automatic |
 
 ## Security
@@ -153,7 +167,7 @@ Catalan.
 | SEC-03 | Input is validated at the edge | [ASVS V2](https://asvs.owasp.org/), [Top 10 A05](https://top10.owasp.org/2025/) | Milestone 3 |
 | SEC-04 | Escaping is always on; user data is never marked as safe | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Automatic |
 | SEC-05 | Queries are parameterised; no text built from input | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Milestone 2 |
-| SEC-06 | A Content Security Policy without inline scripts | [CSP 3](https://www.w3.org/TR/CSP3/), [OWASP CSP](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html) | Automatic |
+| SEC-06 | A Content Security Policy without inline scripts or styles, on every page, official examples included: none reaches a page with `style=`, `on*=` or an address on another server, and a browser opening each page finds no violation | [CSP 3](https://www.w3.org/TR/CSP3/), [OWASP CSP](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html) | Automatic |
 | SEC-07 | Changes from another site are refused | [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html), [Fetch Metadata](https://www.w3.org/TR/fetch-metadata/) | Automatic |
 | SEC-08 | Only the personal data needed; none in logs or URLs | [ASVS V14](https://asvs.owasp.org/), [OWASP Logging](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) | By hand |
 | SEC-09 | Secrets stay out of the repository: every text file git tracks is scanned for obvious ones, and `.env` is ignored | [ASVS V13](https://asvs.owasp.org/) | Automatic |

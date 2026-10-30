@@ -77,7 +77,6 @@ def test_going_back_never_leaves_the_application(client, person, target):
 @pytest.mark.rule("SEC-13")
 def test_every_cookie_is_secure_in_production(person):
     application = create_app(build_settings(environment="production"))
-    application.state.layout_preview = True
     chosen = {"theme": "dark", "language": "es", "layout_navigation": "top", "layout_density": "compact"}
     response = TestClient(application).post("/preferences", data=chosen, headers=person, follow_redirects=False)
     cookies = [cookie.lower() for cookie in response.headers.get_list("set-cookie")]

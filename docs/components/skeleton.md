@@ -9,7 +9,7 @@ tags: [component, feedback, available]
 
 # Skeleton
 
-**Status:** available. **Category:** feedback.
+**Status:** available. **Category:** feedback. **In the demo:** `/gallery/skeleton`.
 
 This repository's rules come first. Where this page disagrees with [Standards](../standards.md) or
 [AGENTS.md](../../AGENTS.md), they win: no CDN, no npm, no images from other servers, no inline `style` or `onclick`.

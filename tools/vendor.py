@@ -10,6 +10,8 @@ Nothing runs npm. How each file is pinned:
   the hash recorded here on first download: a later download of the same version must give exactly those bytes.
 - daisyUI's llms.txt: daisyui.com serves only the latest one, so it is rebuilt from the skill files at the version's git
   tag, the way the site builds it. The result was compared with the site for 5.7.50: byte for byte the same.
+- daisyUI's documentation source: the gallery's examples and daisyUI's own translations of them. daisyui.com has no
+  file for this, so its pages are collected from the same tag into one file, pinned by the hash recorded here.
 - Tailwind's executables: the hashes come from the release's sha256sums.txt, and tools/css.py checks them on every run.
 
 Every version passes the same rules: nothing younger than two weeks, unless it fixes a known vulnerability.
@@ -24,6 +26,7 @@ import sys
 import tarfile
 import urllib.parse
 import urllib.request
+from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -34,6 +37,9 @@ WINDOW = timedelta(days=14)
 LLMS_URL = "https://daisyui.com/llms.txt"
 LLMS_RECIPE = "packages/docs/src/routes/llms.txt/+server.js"
 """Where daisyUI builds its llms.txt. `assemble_llms` follows it, so a change there must be read by a person."""
+DOCS_PAGE = re.compile(r"packages/docs/src/routes/\(routes\)/components/([a-z0-9-]+)/\+page\.md")
+DOCS_TRANSLATION = re.compile(r"packages/docs/src/translation/([a-z]+)\.components\.json")
+DOCS_LICENCE = "LICENSE"
 
 
 class Refused(RuntimeError):
@@ -164,30 +170,56 @@ def assemble_llms(skills: dict[str, str]) -> str:
     return _frontmatter("\n\n".join(part for part in parts if part))
 
 
-def daisyui_llms(version: str, recipe: str) -> bytes:
-    """llms.txt for one version, from the tag's archive, refused if the site's way of building it has changed."""
+def tag_files(version: str) -> Iterator[tuple[str, bytes]]:
+    """Each file of a version's git tag, with its path inside the repository."""
     url = f"https://codeload.github.com/saadeghi/daisyui/tar.gz/refs/tags/v{version}"
-    prefix = f"daisyui-{version}/"
-    skills: dict[str, str] = {}
-    found_recipe = b""
     with tarfile.open(fileobj=io.BytesIO(download(url))) as archive:
         for member in archive.getmembers():
             extracted = archive.extractfile(member) if member.isfile() else None
-            if extracted is None:
-                continue
-            path = member.name.removeprefix(prefix)
-            if path == LLMS_RECIPE:
-                found_recipe = extracted.read()
-            elif re.fullmatch(r"skills/daisyui/(SKILL\.md|[a-z]+/SKILL\.md|components/[a-z0-9-]+\.md)", path):
-                skills[path.removeprefix("skills/daisyui/")] = extracted.read().decode("utf-8")
+            if extracted is not None:
+                yield member.name.removeprefix(f"daisyui-{version}/"), extracted.read()
+
+
+def daisyui_llms(version: str, recipe: str) -> bytes:
+    """llms.txt for one version, from the tag's archive, refused if the site's way of building it has changed."""
+    skills: dict[str, str] = {}
+    found_recipe = b""
+    for path, content in tag_files(version):
+        if path == LLMS_RECIPE:
+            found_recipe = content
+        elif re.fullmatch(r"skills/daisyui/(SKILL\.md|[a-z]+/SKILL\.md|components/[a-z0-9-]+\.md)", path):
+            skills[path.removeprefix("skills/daisyui/")] = content.decode("utf-8")
     if sha384(found_recipe) != recipe:
         raise Refused(f"daisyui-llms {version}: {LLMS_RECIPE} changed: compare it with vendor.assemble_llms")
     return assemble_llms(skills).encode("utf-8")
 
 
+def daisyui_docs(version: str, languages: list[str]) -> bytes:
+    """The documentation's component pages and their translations, from the tag, as one repeatable file."""
+    pages: dict[str, str] = {}
+    translations: dict[str, dict[str, str]] = {}
+    licence = ""
+    for path, content in tag_files(version):
+        page = DOCS_PAGE.fullmatch(path)
+        translation = DOCS_TRANSLATION.fullmatch(path)
+        if page:
+            pages[page[1]] = content.decode("utf-8")
+        elif translation and translation[1] in languages:
+            translations[translation[1]] = json.loads(content)
+        elif path == DOCS_LICENCE:
+            licence = content.decode("utf-8")
+    missing = sorted(set(languages) - set(translations))
+    if not pages or not licence or missing:
+        raise Refused(f"daisyui-docs {version}: pages, licence or translations {missing} not where they were")
+    bundle = {"version": version, "licence": licence, "pages": pages, "translations": translations}
+    return (json.dumps(bundle, indent=1, ensure_ascii=False, sort_keys=True) + "\n").encode("utf-8")
+
+
 def content_of(name: str, entry: dict[str, Any], version: str) -> bytes:
     if "recipe" in entry:
         return daisyui_llms(version, entry["recipe"])
+    if "languages" in entry:
+        return daisyui_docs(version, entry["languages"])
     if "url" in entry:
         return download(entry["url"].format(version=version))
     return fetch(name, version, entry["file"])

@@ -1,0 +1,357 @@
+{
+ "name": "tooltip",
+ "title": {
+  "en": "Tooltip"
+ },
+ "description": {
+  "en": "Tooltip can be used to show a message when hovering over an element.",
+  "ca": "El tooltip es pot utilitzar per mostrar un missatge quan es passa el cursor per sobre d'un element.",
+  "es": "Tooltip se puede utilizar para mostrar un mensaje al pasar el cursor sobre un elemento."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "tooltip",
+     "description": {
+      "en": "Container element",
+      "ca": "Element contenidor",
+      "es": "Elemento contenedor"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "tooltip-content",
+     "description": {
+      "en": "Optional. Setting a div as the content of the tooltip instead of the `data-tip` text",
+      "ca": "Opcional. Configuració d'un div com a contingut del Tooltip en lloc del text `data-tip`.",
+      "es": "Opcional. Establecer un div como contenido del Tooltip en lugar del texto de \"consejo de datos\" (`data-tip`)"
+     }
+    }
+   ]
+  },
+  {
+   "group": "placement",
+   "items": [
+    {
+     "class": "tooltip-top",
+     "description": {
+      "en": "Put tooltip on top",
+      "ca": "Posa Tooltip a sobre",
+      "es": "Pon Tooltip encima"
+     },
+     "default": true
+    },
+    {
+     "class": "tooltip-bottom",
+     "description": {
+      "en": "Put tooltip on bottom",
+      "ca": "Posa Tooltip a la part inferior",
+      "es": "Pon Tooltip en la parte inferior."
+     }
+    },
+    {
+     "class": "tooltip-left",
+     "description": {
+      "en": "Put tooltip on left",
+      "ca": "Posa Tooltip a l'esquerra",
+      "es": "Pon Tooltip a la izquierda."
+     }
+    },
+    {
+     "class": "tooltip-right",
+     "description": {
+      "en": "Put tooltip on right",
+      "ca": "Posa Tooltip a la dreta",
+      "es": "Pon Tooltip a la derecha"
+     }
+    },
+    {
+     "class": "tooltip-start",
+     "description": {
+      "en": "Align tooltip on start",
+      "ca": "Alineeu Tooltip a l'inici",
+      "es": "Alinear Tooltip al inicio"
+     }
+    },
+    {
+     "class": "tooltip-center",
+     "description": {
+      "en": "Align tooltip on center",
+      "ca": "Alineeu Tooltip al centre",
+      "es": "Alinear Tooltip en el centro"
+     }
+    },
+    {
+     "class": "tooltip-end",
+     "description": {
+      "en": "Align tooltip on end",
+      "ca": "Alineeu Tooltip al final",
+      "es": "Alinear Tooltip al final"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "tooltip-open",
+     "description": {
+      "en": "Force open tooltip",
+      "ca": "Força l'obertura Tooltip",
+      "es": "Forzar apertura Tooltip"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "tooltip-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "tooltip-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "tooltip-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "tooltip-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "tooltip-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "tooltip-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "tooltip-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "tooltip",
+   "section": null,
+   "title": {
+    "en": "Tooltip"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip\" data-tip=\"hello\">\n  <button class=\"btn\">Hover me</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "tooltip-with-tooltip-content",
+   "section": null,
+   "title": {
+    "en": "Tooltip with tooltip-content"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip\">\n  <div class=\"tooltip-content\">\n    <div class=\"animate-bounce text-orange-400 -rotate-10 text-2xl font-black\">Wow!</div>\n  </div>\n  <button class=\"btn\">Hover me</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": true
+  },
+  {
+   "id": "force-open",
+   "section": null,
+   "title": {
+    "en": "Force open",
+    "ca": "Força d'obertura",
+    "es": "Forzar apertura"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open\" data-tip=\"hello\">\n  <button class=\"btn\">Force open</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "top",
+   "section": null,
+   "title": {
+    "en": "Top"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-top tooltip-start\" data-tip=\"hello\">\n  <button class=\"btn\">Top start</button>\n</div>\n<div class=\"tooltip tooltip-open tooltip-top\" data-tip=\"hello\">\n  <button class=\"btn\">Top</button>\n</div>\n<div class=\"tooltip tooltip-open tooltip-top tooltip-end\" data-tip=\"hello\">\n  <button class=\"btn\">Top end</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "bottom",
+   "section": null,
+   "title": {
+    "en": "Bottom"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-bottom tooltip-start\" data-tip=\"hello\">\n  <button class=\"btn\">Bottom start</button>\n</div>\n<div class=\"tooltip tooltip-open tooltip-bottom\" data-tip=\"hello\">\n  <button class=\"btn\">Bottom</button>\n</div>\n<div class=\"tooltip tooltip-open tooltip-bottom tooltip-end\" data-tip=\"hello\">\n  <button class=\"btn\">Bottom end</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "left",
+   "section": null,
+   "title": {
+    "en": "Left"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-left tooltip-start\" data-tip=\"hello\">\n  <button class=\"btn\">Left start</button>\n</div>\n<div class=\"tooltip tooltip-open tooltip-left\" data-tip=\"hello\">\n  <button class=\"btn\">Left</button>\n</div>\n<div class=\"tooltip tooltip-open tooltip-left tooltip-end\" data-tip=\"hello\">\n  <button class=\"btn\">Left end</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "right",
+   "section": null,
+   "title": {
+    "en": "Right"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-right tooltip-start\" data-tip=\"hello\">\n  <button class=\"btn\">Right start</button>\n</div>\n<div class=\"tooltip tooltip-open tooltip-right\" data-tip=\"hello\">\n  <button class=\"btn\">Right</button>\n</div>\n<div class=\"tooltip tooltip-open tooltip-right tooltip-end\" data-tip=\"hello\">\n  <button class=\"btn\">Right end</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "primary-color",
+   "section": null,
+   "title": {
+    "en": "Primary color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-primary\" data-tip=\"primary\">\n  <button class=\"btn btn-primary\">primary</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "secondary-color",
+   "section": null,
+   "title": {
+    "en": "Secondary color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-secondary\" data-tip=\"secondary\">\n  <button class=\"btn btn-secondary\">secondary</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "accent-color",
+   "section": null,
+   "title": {
+    "en": "Accent color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-accent\" data-tip=\"accent\">\n  <button class=\"btn btn-accent\">accent</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "info-color",
+   "section": null,
+   "title": {
+    "en": "Info color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-info\" data-tip=\"info\">\n  <button class=\"btn btn-info\">info</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "success-color",
+   "section": null,
+   "title": {
+    "en": "Success color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-success\" data-tip=\"success\">\n  <button class=\"btn btn-success\">success</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "warning-color",
+   "section": null,
+   "title": {
+    "en": "Warning color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-warning\" data-tip=\"warning\">\n  <button class=\"btn btn-warning\">warning</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "error-color",
+   "section": null,
+   "title": {
+    "en": "Error color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-open tooltip-error\" data-tip=\"error\">\n  <button class=\"btn btn-error\">error</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "responsive-tooltip-only-show-for-large-screen",
+   "section": null,
+   "title": {
+    "en": "Responsive tooltip. only show for large screen"
+   },
+   "subtitle": null,
+   "html": "<div class=\"lg:tooltip\" data-tip=\"hello\">\n  <button class=\"btn\">Hover me</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "responsive-tooltip-position",
+   "section": null,
+   "title": {
+    "en": "Responsive tooltip position"
+   },
+   "subtitle": null,
+   "html": "<div class=\"tooltip tooltip-start md:tooltip-right md:tooltip-center\" data-tip=\"hello\">\n  <button class=\"btn\">Hover me</button>\n</div>",
+   "runs": true,
+   "kind": "floats",
+   "palette": false
+  }
+ ]
+}

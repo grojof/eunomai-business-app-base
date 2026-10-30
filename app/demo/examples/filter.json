@@ -1,0 +1,87 @@
+{
+ "name": "filter",
+ "title": {
+  "en": "Filter"
+ },
+ "description": {
+  "en": "Filter is a group of radio buttons. Choosing one of the options will hide the others and shows a reset button next to the chosen option."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "filter",
+     "description": {
+      "en": "For a HTML <form> or a <div> element that includes radio buttons for filtering items",
+      "ca": "Per a un element HTML <form> o <div> que inclou botons Radio per filtrar elements",
+      "es": "Para un elemento HTML <form> o <div> que incluye botones Radio para filtrar elementos"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "filter-reset",
+     "description": {
+      "en": "An alternative to the reset button if you can't use a HTML form",
+      "ca": "Una alternativa al restabliment de Button si no podeu utilitzar un formulari HTML",
+      "es": "Una alternativa al reinicio Button si no puedes usar un formulario HTML"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "filter-using-html-form-radio-buttons-and-reset-button",
+   "section": null,
+   "title": {
+    "en": "Filter using HTML form, radio buttons and reset button"
+   },
+   "subtitle": {
+    "en": "A HTML form for filtering items",
+    "ca": "Un HTML de per filtrar elements",
+    "es": "Un HTML para filtrar elementos."
+   },
+   "html": "<form class=\"filter\">\n  <input class=\"btn btn-square\" type=\"reset\" value=\"×\"/>\n  <input class=\"btn\" type=\"radio\" name=\"frameworks\" aria-label=\"Svelte\"/>\n  <input class=\"btn\" type=\"radio\" name=\"frameworks\" aria-label=\"Vue\"/>\n  <input class=\"btn\" type=\"radio\" name=\"frameworks\" aria-label=\"React\"/>\n</form>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "filter-without-html-form",
+   "section": null,
+   "title": {
+    "en": "Filter without HTML form"
+   },
+   "subtitle": {
+    "en": "Use this if you can't use a HTML form for some reason",
+    "ca": "Utilitzeu-ho si no podeu utilitzar un formulari HTML per algun motiu",
+    "es": "Utilice esto si no puede utilizar un formulario HTML por algún motivo"
+   },
+   "html": "<div class=\"filter\">\n  <input class=\"btn filter-reset\" type=\"radio\" name=\"metaframeworks\" aria-label=\"All\"/>\n  <input class=\"btn\" type=\"radio\" name=\"metaframeworks\" aria-label=\"Sveltekit\"/>\n  <input class=\"btn\" type=\"radio\" name=\"metaframeworks\" aria-label=\"Nuxt\"/>\n  <input class=\"btn\" type=\"radio\" name=\"metaframeworks\" aria-label=\"Next.js\"/>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "filter-using-html-form-checkboxes-and-a-reset-button",
+   "section": null,
+   "title": {
+    "en": "Filter using HTML form, checkboxes, and a reset button"
+   },
+   "subtitle": {
+    "en": "For having multiple choices, use checkboxes.",
+    "ca": "Per tenir diverses opcions, utilitzeu les caselles de selecció.",
+    "es": "Para tener múltiples opciones, use casillas de verificación."
+   },
+   "html": "<form class=\"filter\">\n  <input class=\"btn\" type=\"checkbox\" name=\"frameworks\" aria-label=\"Svelte\"/>\n  <input class=\"btn\" type=\"checkbox\" name=\"frameworks\" aria-label=\"Vue\"/>\n  <input class=\"btn\" type=\"checkbox\" name=\"frameworks\" aria-label=\"React\"/>\n  <input class=\"btn btn-square\" type=\"reset\" value=\"×\"/>\n</form>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

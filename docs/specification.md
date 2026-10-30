@@ -17,19 +17,19 @@ Success means three things, each testable:
 |---|---|
 | Adapting it to an organization is cheap | Changing only `app/brand/` and the settings gives that organization's look |
 | A new application starts clean | With `app/demo/` deleted, every tool check and the tests still pass |
-| The components hold the [standards](standards.md) | Only components marked *Not recommended* may fail the [gallery](#gallery)'s scan |
+| The components hold the [standards](standards.md) | Real screens pass the scan in both themes, and approved components have tests and a review. Official examples in the [gallery](#gallery) are reference material: no gate |
 
 ## Structure
 
 ```text
 app/
   core/      identity, roles, settings, languages, formatters, errors, health
-  ui/        components: catalog.py, Jinja macros, the stylesheet's source, app.js, vendored htmx
+  ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, vendored htmx
   brand/     theme.css, logo.svg
-  demo/      screens, their fixed values, translations
+  demo/      screens, their fixed values, the gallery with its generated examples/, translations
 locales/     the translations of core and ui
 tests/
-tools/       stylesheet, component pages, translations, CLDR data, copied files, dependency update, demo removal
+tools/       stylesheet, component pages, gallery data, translations, CLDR data, copied files, dependency update, demo removal
 docs/
   components/  one page per component, generated, and catalog.json
 ```
@@ -97,8 +97,9 @@ open. *Reported* below means exactly that: the problem goes to the issue, the ve
 | New major version | Never automatic for a direct dependency: `pyproject.toml` sets its upper limit, except for tzdata, whose versions are dates. A package only others need moves as far as they allow | Never automatic: it takes a decision, as htmx 4 does |
 | Older version | Not checked | Never: a file stays where it is rather than go back |
 
-If a new daisyUI file breaks `docs/components/`, such as a new or removed component or a changed format, daisyUI stays
-at its version, an issue says why, and everything else goes ahead. Any failed update opens the issue too. The job that
+If a new daisyUI file breaks `docs/components/` or the [gallery](#gallery), such as a new or removed component or a
+changed format, every daisyUI file stays at its version, an issue says why, and everything else goes ahead. They move
+together or not at all. Any failed update opens the issue too. The job that
 runs upgraded code can only read; a separate job, which runs no project code, opens the pull request, and accepts only
 the files the update produces.
 
@@ -110,6 +111,7 @@ Each copied file is pinned, and the same version with different bytes is refused
 | Tailwind's executables | The release's `sha256sums.txt` |
 | daisyUI's `.mjs` files | A hash recorded on first download: daisyUI publishes no checksum for them |
 | daisyUI's `llms.txt` | A hash of what [the rebuild](#documentation-for-assistants) gives |
+| daisyUI's documentation source | A hash of the file collected from the version's tag, for the [gallery](#gallery) |
 
 A new version of any of these files is accepted on the two-week rule. Its checksum proves it is what was published, not
 that it is good, and the `.mjs` files do not have even that.
@@ -127,7 +129,7 @@ A visitor without identity gets the 401 page, with no navigation, version or use
 
 ## Layouts
 
-An application chooses its arrangement in its settings. The demo's *Layouts* page shows each one live.
+An application chooses its arrangement in its settings. The [settings menu](#settings-menu) shows each one live.
 
 | Setting | Options | Typical use |
 |---|---|---|
@@ -135,19 +137,60 @@ An application chooses its arrangement in its settings. The demo's *Layouts* pag
 | `APP_LAYOUT_STICKY_HEADER` | `true`, `false` | Fixed for long tables |
 | `APP_LAYOUT_WIDTH` | `full`, `centered` | Full for tables; centred for forms |
 | `APP_LAYOUT_DENSITY` | `normal`, `compact` | Compact for data-heavy screens |
+| `APP_LAYOUT_THEME_CONTROL` | `dropdown`, `toggle`, `swap`, `radio` | How the header's theme control looks |
+| `APP_LAYOUT_LANGUAGE_CONTROL` | `dropdown`, `select`, `menu` | How the header's language control looks |
+| `APP_LAYOUT_CHOICES` | A list of `navigation`, `sticky_header`, `width`, `density`, `theme_control`, `language_control`; all by default | What each person may change. What is left out stays as set above; `[]` hides the menu |
 
-On a phone the navigation is always a panel opened from a button.
+On a phone the navigation is always a panel opened from a button, and the theme and language controls move into the user
+menu.
+
+## Settings menu
+
+`/settings` belongs to the shell, in `app/core/` and `app/ui/`, so a clone keeps it. It is reached from the user menu and
+the [command palette](#command-palette), and in the demo from the sidebar too. Each choice is a form sent to
+`/preferences`, which accepts only the values in `LAYOUTS`, saves them in cookies as theme and language are saved, and
+sends the person back. No inline script or style is needed, and focus returns to the control that was used.
+
+| Section | Offers |
+|---|---|
+| Layout | Navigation, fixed header, width, density |
+| Theme and language | Theme: as the system, light, dark. Language |
+| How the theme control looks | daisyUI's `theme-controller` as a dropdown, toggle, swap or radio, each live on the page |
+| How the language control looks | A dropdown, a select with its own button, or a menu list, each live on the page |
+
+The two last sections exist so that an organization can compare what daisyUI offers on real controls, then fix one with
+`APP_LAYOUT_THEME_CONTROL` and `APP_LAYOUT_LANGUAGE_CONTROL` and leave it out of `APP_LAYOUT_CHOICES`. A toggle and a swap
+have two states, so they cannot choose *as the system*: they show what is on screen, and the first change fixes a theme.
+The select has a button because arrow keys change a closed select, and sending the form on each would change the
+language under a person who is only reading the list.
+
+## Command palette
+
+Ctrl+K, Cmd+K or the header's search button open a native `<dialog>` with the ARIA combobox and listbox pattern: arrow
+keys, Enter, Escape, focus returned, grouped results, a state for no results, by click and by touch, translated. It is
+part of the shell, so every application has it, and it calls no service: `/search` gives the options, ready-made and
+already filtered by role, the first time it opens, and `palette.js` filters them in the page.
+
+It finds navigation items, the settings menu, and whatever is registered:
+
+```python
+register_search(application.state, lambda: [SearchItem(_("Invoices"), "/invoices", _("Records"), _("Sent and paid"))])
+```
+
+The function runs inside each request, so it can use the person's language. The demo registers every component this way,
+with daisyUI's translated names and descriptions, and its class names as keywords.
 
 ## Components
 
 A component is one Jinja macro or one piece of the shell, using only the brand's colours. Screens call macros, not
-daisyUI classes, so the look can change in one place. Each macro appears in the demo's *Component catalogue*, and has
-tests. The macros today are `icon`, `page_heading`, `message`, `button`, `card`, `stat` and `empty_state`.
+daisyUI classes, so the look can change in one place. Each macro appears on the page of its component in the
+[gallery](#gallery), and has tests. The macros today are `icon`, `page_heading`, `message`, `button`, `card`, `stats`,
+`stat`, `badge`, `progress`, `steps`, `table` and `empty_state`.
 
 | Group | Components | Since |
 |---|---|---|
-| Structure | Page layout, header, navigation, skip link, page heading, user menu (identity, language, theme, version), button, card, icon | Milestone 1 |
-| Data | Indicator tile | Milestone 1 |
+| Structure | Page layout, header, navigation, skip link, page heading, user menu (identity, settings, version), theme control, language control, settings menu, command palette, button, card, icon | Milestone 1 |
+| Data | Stat, badge, progress, steps, table with a caption | Milestone 1 |
 | Feedback | Message banner, announcement region, empty state | Milestone 1 |
 | Pages | No identity (401), no permission, not found, server error | Milestone 1 |
 | Structure | Breadcrumbs | Milestone 2 |
@@ -166,10 +209,8 @@ A fictional company maintains its equipment. The scenario needs no real data:
 
 | Screen | What it exercises | Since |
 |---|---|---|
-| Dashboard | Indicators, formats, content replaced with focus and an announcement. Charts with their tables arrive in milestone 2 | Milestone 1 |
-| Layouts | Every setting of the [layouts](#layouts), live | Milestone 1 |
-| Component catalogue | This base's own macros, in their states | Milestone 1 |
-| Gallery | [Every component on offer](#gallery), by category, with its status | Milestone 1 |
+| Dashboard | Stats, a table, badges, progress, steps, an empty state, formats, content replaced with focus and an announcement. Charts with their tables arrive in milestone 2 | Milestone 1 |
+| Gallery | [Every component on offer](#gallery), by category, with its status, its macro and every official example | Milestone 1 |
 | Administration | Visible only to one role, proving permissions | Milestone 1 |
 | Equipment list | Server table with 50,000 rows, filters, sorting, Excel export | Milestone 2 |
 | Equipment detail | Description list, tabs, history | Milestone 2 |
@@ -181,31 +222,74 @@ Demo values are fixed in the code, not generated. One fictional role exists, `ad
 
 ## Gallery
 
-The gallery shows every free daisyUI component, live and in the current theme, so a person can see what is available and
-ask for it by name.
+There is one gallery, at `/gallery`: every free daisyUI component, live and in the current theme, so a person can see what
+is available and ask for it by name.
+
+| Page | Shows |
+|---|---|
+| `/gallery` | Each component as a card with a small live example, by category, with its status and a live filter |
+| `/gallery/<name>` | Name, description, status and note, our macro where there is one, the class table by group, then every official example with a Preview and Code switch and a copy button. Previous and next component, and on wide screens an index of the page |
 
 | Status | Meaning |
 |---|---|
-| Approved | A macro, tests and a review. This is what applications should use. Today: `alert`, `button` and `card` |
-| Available | Passes the automatic scan. Usable with care |
+| Approved | Our macro, tests and a review. This is what applications should use. Today: `alert`, `button` and `card` |
+| Available | An official example, shown as published, not audited by us. It is not a promise of accessibility |
 | Decorative | Not meant for management applications |
-| Not recommended | Fails a standard; its note states why |
+| Not recommended | Fails a standard, or has a better option in this base; its note states why |
+
+A macro can exist before its component is approved: `badge`, `progress`, `stat`, `steps` and `table` have tests and are on
+the dashboard, and wait for a person's review.
 
 `app/ui/catalog.py` is the one list. It survives deleting the demo, and it feeds the gallery, the documentation and
 `catalog.json`.
 
-The checks prove that an *Available* component passes the automatic scan. They cannot prove the opposite: *Decorative*
-and most of *Not recommended* are a person's judgement, such as text that moves on its own, and *Approved* needs the review
-its name says.
+### Where the examples come from
 
-For most components the gallery shows every colour, style and size daisyUI offers. Those lists are not written by hand: `tools/components.py` takes them from the official file into `app/demo/variants.json`, so a new variant appears by itself. *Not recommended* components have a better option in this base, and their note names it.
+Nothing in the gallery is written by hand, so a new daisyUI version updates it by itself. daisyUI's documentation pages,
+at the version's git tag, hold 68 components and 590 `html` examples, and daisyUI publishes translations of them.
+`tools/vendor.py` collects them into `tools/tailwind/daisyui-docs.json`, pinned in `vendor.json` at daisyUI's own version.
+`tools/gallery.py` turns that file into `app/demo/examples/`: for each component its title, description, class tables and
+every example, with the Spanish and Catalan daisyUI publishes, and daisyUI's MIT notice beside them. `tools/gallery.py
+check` fails if that folder is out of date.
 
-A component in the gallery is available to use, not yet used: real screens use only `alert`, `button`, `card`, `dropdown`, `menu`, `navbar` and `stat` until milestones 2 to 4 bring the rest.
+daisyUI translates nearly all descriptions and most class descriptions, but only a few example titles. Text it leaves in
+English stays in English, marked with `lang="en"`. Text inside an example is left as published, as is its language.
+
+`transform`, in `tools/gallery.py`, is the only place an example changes, and always so that it runs under the Content
+Security Policy, which is not weakened for it:
+
+| In the official example | In the gallery |
+|---|---|
+| `$$`, a placeholder for a class prefix | Removed |
+| An image on another server | A local neutral placeholder under `app/ui/static/placeholders/`, keeping its size and classes |
+| `style="..."`, or a `<style>` inside an SVG | `data-style`, applied by `app.js` through the CSSOM |
+| `onclick="x.showModal()"`, `x.close()` | `data-dialog`, `data-dialog-close`, handled by `app.js` |
+| A repeated id, radio group or anchor name on a page | A new name, with `for`, `popovertarget`, `aria-*`, links and calls in step |
+| A `<script>` | Shown as code with a note, not run. Its text keeps the address it was published with |
+| The year its documentation computes in place | `YYYY` |
+
+The Code tab shows, and the copy button copies, the transformed code: what ran is what a person gets, and it works here.
+What is fixed to the screen (dock, FAB, toast, drawer, a modal without `<dialog>`) stays inside its preview box, because
+the box contains layout. A native `<dialog>` or popover opens in the browser's top layer, over the page, as a modal should.
+
+Tailwind's own colours are [removed from this base](decisions.md), so an example that uses them, such as
+`checked:bg-blue-200`, shows the theme's colour instead, and says so. Theme names other than `light` and `dark` are not in
+the stylesheet, so `theme-controller` examples for them do nothing visible.
+
+The generator stops rather than guess, and the update then holds daisyUI back:
+
+| Case | Why it needs a person |
+|---|---|
+| A page with no frontmatter, title, description or class table, or a line it cannot read | The format changed |
+| An example heading with no `html` block, a block with no heading, or two under one heading | The format changed |
+| A documentation page with no place in `app/ui/catalog.py` | Its status is a decision |
+| An inline handler other than `showModal` and `close`, an address on another server that is not an image, or a `<style>` it cannot move | It would break the policy |
 
 ## Documentation for assistants
 
-An assistant should load only what it needs. `tools/components.py` cuts daisyUI's official `llms.txt`, about 20,000
-tokens, into one page per component of about 375 tokens on average, counting 4 characters per token, each with OKF-style
+An assistant should load only what it needs. The pages below come from daisyUI's `llms.txt` and are a reference for
+assistants; the [gallery](#gallery)'s examples come from daisyUI's documentation source. `tools/components.py` cuts
+`llms.txt`, about 20,000 tokens, into one page per component of about 375 tokens on average, counting 4 characters per token, each with OKF-style
 frontmatter. Nothing is interpreted: the file is cut at its headings, and a test fails if a page drifts from it.
 
 | File | Read |
@@ -241,8 +325,10 @@ each page says so.
 | Your languages | Each folder under `locales/` is a required language: add yours, run `tools/translations.py update` and translate it. Change `APP_LANGUAGES` too |
 | Your time zone | `APP_TIME_ZONE`; the default is UTC |
 | Your identity proxy | Settings: `APP_TRUSTED_PROXIES`, `APP_HEADER_*`, `APP_GROUPS_SEPARATOR`, `APP_ROLE_GROUPS` |
-| Start an application | Clone your copy and run `tools/remove_demo.py`, then `tools/css.py`. It deletes the demo with its tests and icons, renames `demo-admins` in `.env.example`, and turns the rules only the demo proved to *By hand* |
-| Add your own component | A macro in `app/ui/`, its line in `app/ui/catalog.py`, and a page in `docs/components/`. Only `description` is required in the page's frontmatter; do not put the `Generated by tools/components.py` marker in it. `tools/components.py` keeps your page and adds it to the index. An approved component needs `macro=` in its line. In your organization's base, add its specimen to the gallery; applications have no gallery |
+| Start an application | Clone your copy and run `tools/remove_demo.py`, then `tools/css.py`. It deletes the demo with its tests and icons, the gallery's source and placeholders, renames `demo-admins` in `.env.example`, and turns the rules only the demo proved to *By hand*. The application keeps the settings menu and the palette, and its stylesheet shrinks by more than a quarter. `tools/gallery.py` stays, with nothing to do |
+| Add your own component | A macro in `app/ui/`, its line in `app/ui/catalog.py`, and a page in `docs/components/`. Only `description` is required in the page's frontmatter; do not put the `Generated by tools/components.py` marker in it. `tools/components.py` keeps your page and adds it to the index. An approved component needs `macro=` in its line. In your organization's base, add `app/demo/templates/demo/gallery/specimens/<name>.html` and it appears on its gallery page; applications have no gallery |
+| Fix or hide the settings menu | `APP_LAYOUT_*` for the look, `APP_LAYOUT_CHOICES` for what people may change; `[]` hides the menu |
+| Add to the search | `register_search`, as [the palette](#command-palette) shows |
 
 An application that needs something different changes it: the code belongs to whoever cloned it. There is no update
 mechanism. When the base improves, an application compares versions and takes what it wants.
@@ -256,9 +342,9 @@ still runs.
 |---|---|
 | Unit and integration tests | Behaviour, including permissions per role |
 | Tests with `app/demo/` deleted | In a copy without the demo, the stylesheet builds, every tool check passes and the tests pass, browser tests included |
-| Accessibility scan, in both themes | No automatically detectable failure on the start, error, catalogue, layouts, administration and gallery pages, or in any layout. Components marked *Not recommended* are left out |
+| Accessibility scan, in both themes | No automatically detectable failure on real screens: the start, error, settings and administration pages, every layout, each look of the theme and language controls, the open palette, the gallery's index and the frame of its pages. Official examples are left out: see [Standards](standards.md#official-examples) |
 | Brand contrast | Each text colour of a theme added to `theme.css` against its background |
-| Keyboard tests | Every control of the start page is reached with visible focus; focus stops clear of the sticky header; Escape closes the user menu, the phone menu and a dialog, and returns focus |
+| Keyboard tests | Every control of the start page is reached with visible focus; focus stops clear of the sticky header; Escape closes the user menu, the phone menu, a dialog and the palette, and returns focus; each look of the theme and language controls, the Preview and Code switch and the copy button work with a keyboard |
 | Tab order | The Tab key visits the visible controls in the order of the page, on the start page and on a page full of controls |
 | Language checks | See [Standards](standards.md#how-language-is-checked) |
 | Rule tracing | Every rule has a source and a check. Tests are read from pytest's collection, so a comment or a string cannot pass as one, and no *Automatic* rule lacks its test |
@@ -266,6 +352,7 @@ still runs.
 | Invented classes | Every class in use generates CSS, as [COMP-04](standards.md#components) says |
 | Generated stylesheet | `tools/css.py check`: `app.css` matches the templates |
 | Component pages | `tools/components.py check`: `docs/components/` matches the official file and the catalogue |
+| Gallery data | `tools/gallery.py check`: `app/demo/examples/` matches daisyUI's documentation. A browser opens every component page and fails on console errors, policy violations and failed requests. Every official example appears, counted from the source; no inline style, handler or other server reaches a page; ids are unique per page |
 | Copied files | `tools/vendor.py check`: each file matches its recorded hash |
 | Linter, type checker, lock file, [dependency rules](#dependencies) | The code and its dependencies |
 
@@ -285,7 +372,8 @@ real platform.
 | 0 | Specification | Reviewed | Done |
 | 1 | Skeleton | Identity, languages, themes, every check and the dependency workflow running on one screen | Done |
 | 1 | Shell and layouts | The application's shell behind macros, with every layout setting shown live | Done |
-| 1 | Gallery and generated documentation | Every free daisyUI component shown with its status, and one generated page for each | Done |
+| 1 | Gallery and generated documentation | Every free daisyUI component shown with its status and every official example, and one generated page for each | Done |
+| 1 | Settings and search | A settings menu to try layouts and control styles live, and a command palette, both in the shell | Done |
 | 2 | Data | Server table with 50,000 rows, filters, export, indicators, charts | Planned |
 | 3 | Forms | Every field, with validation in three languages | Planned |
 | 4 | Feedback and long tasks | Every state in the catalogue | Planned |

@@ -1,0 +1,223 @@
+{
+ "name": "alert",
+ "title": {
+  "en": "Alert"
+ },
+ "description": {
+  "en": "Alert informs users about important events.",
+  "ca": "Les alertes informen els usuaris sobre esdeveniments importants.",
+  "es": "Alert informa a los usuarios sobre eventos importantes."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "alert",
+     "description": {
+      "en": "Container element",
+      "ca": "Element contenidor",
+      "es": "Elemento contenedor"
+     }
+    }
+   ]
+  },
+  {
+   "group": "style",
+   "items": [
+    {
+     "class": "alert-outline",
+     "description": {
+      "en": "outline style"
+     }
+    },
+    {
+     "class": "alert-dash",
+     "description": {
+      "en": "dash outline style",
+      "ca": "estil de contorn guionat",
+      "es": "estilo de contorno de guión"
+     }
+    },
+    {
+     "class": "alert-soft",
+     "description": {
+      "en": "soft style"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "alert-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "alert-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "alert-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "alert-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  },
+  {
+   "group": "direction",
+   "items": [
+    {
+     "class": "alert-vertical",
+     "description": {
+      "en": "Vertical layout, good for mobile",
+      "ca": "Disseny vertical, bo per a mòbils",
+      "es": "Diseño vertical, bueno para dispositivos móviles"
+     }
+    },
+    {
+     "class": "alert-horizontal",
+     "description": {
+      "en": "Horizontal layout, good for desktop",
+      "ca": "Disseny horitzontal, bo per a escriptori",
+      "es": "Diseño horizontal, bueno para escritorio"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "alert",
+   "section": null,
+   "title": {
+    "en": "Alert"
+   },
+   "subtitle": null,
+   "html": "<div role=\"alert\" class=\"alert\">\n  <svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" class=\"stroke-current text-info h-6 w-6 shrink-0\">\n    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z\"></path>\n  </svg>\n  <span>12 unread messages. Tap to see.</span>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "info-color",
+   "section": null,
+   "title": {
+    "en": "Info color"
+   },
+   "subtitle": null,
+   "html": "<div role=\"alert\" class=\"alert alert-info\">\n  <svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" class=\"h-6 w-6 shrink-0 stroke-current\">\n    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z\"></path>\n  </svg>\n  <span>New software update available.</span>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "success-color",
+   "section": null,
+   "title": {
+    "en": "Success color"
+   },
+   "subtitle": null,
+   "html": "<div role=\"alert\" class=\"alert alert-success\">\n  <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-6 w-6 shrink-0 stroke-current\" fill=\"none\" viewBox=\"0 0 24 24\">\n    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\" />\n  </svg>\n  <span>Your purchase has been confirmed!</span>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "warning-color",
+   "section": null,
+   "title": {
+    "en": "Warning color"
+   },
+   "subtitle": null,
+   "html": "<div role=\"alert\" class=\"alert alert-warning\">\n  <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-6 w-6 shrink-0 stroke-current\" fill=\"none\" viewBox=\"0 0 24 24\">\n    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z\" />\n  </svg>\n  <span>Warning: Invalid email address!</span>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "error-color",
+   "section": null,
+   "title": {
+    "en": "Error color"
+   },
+   "subtitle": null,
+   "html": "<div role=\"alert\" class=\"alert alert-error\">\n  <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-6 w-6 shrink-0 stroke-current\" fill=\"none\" viewBox=\"0 0 24 24\">\n    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z\" />\n  </svg>\n  <span>Error! Task failed successfully.</span>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "alert-soft-style",
+   "section": null,
+   "title": {
+    "en": "Alert soft style"
+   },
+   "subtitle": null,
+   "html": "<div role=\"alert\" class=\"alert alert-info alert-soft\">\n  <span>12 unread messages. Tap to see.</span>\n</div>\n<div role=\"alert\" class=\"alert alert-success alert-soft\">\n  <span>Your purchase has been confirmed!</span>\n</div>\n<div role=\"alert\" class=\"alert alert-warning alert-soft\">\n  <span>Warning: Invalid email address!</span>\n</div>\n<div role=\"alert\" class=\"alert alert-error alert-soft\">\n  <span>Error! Task failed successfully.</span>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "alert-outline-style",
+   "section": null,
+   "title": {
+    "en": "Alert outline style"
+   },
+   "subtitle": null,
+   "html": "<div role=\"alert\" class=\"alert alert-info alert-outline\">\n  <span>12 unread messages. Tap to see.</span>\n</div>\n<div role=\"alert\" class=\"alert alert-success alert-outline\">\n  <span>Your purchase has been confirmed!</span>\n</div>\n<div role=\"alert\" class=\"alert alert-warning alert-outline\">\n  <span>Warning: Invalid email address!</span>\n</div>\n<div role=\"alert\" class=\"alert alert-error alert-outline\">\n  <span>Error! Task failed successfully.</span>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "alert-dash-style",
+   "section": null,
+   "title": {
+    "en": "Alert dash style"
+   },
+   "subtitle": null,
+   "html": "<div role=\"alert\" class=\"alert alert-info alert-dash\">\n  <span>12 unread messages. Tap to see.</span>\n</div>\n<div role=\"alert\" class=\"alert alert-success alert-dash\">\n  <span>Your purchase has been confirmed!</span>\n</div>\n<div role=\"alert\" class=\"alert alert-warning alert-dash\">\n  <span>Warning: Invalid email address!</span>\n</div>\n<div role=\"alert\" class=\"alert alert-error alert-dash\">\n  <span>Error! Task failed successfully.</span>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "alert-with-buttons--responsive",
+   "section": null,
+   "title": {
+    "en": "Alert with buttons + responsive"
+   },
+   "subtitle": null,
+   "html": "<div role=\"alert\" class=\"alert alert-vertical sm:alert-horizontal\">\n  <svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" class=\"stroke-current text-info h-6 w-6 shrink-0\">\n    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z\"></path>\n  </svg>\n  <span>we use cookies for no reason.</span>\n  <div>\n    <button class=\"btn btn-sm\">Deny</button>\n    <button class=\"btn btn-sm btn-primary\">Accept</button>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "alert-with-title-and-description",
+   "section": null,
+   "title": {
+    "en": "Alert with title and description"
+   },
+   "subtitle": null,
+   "html": "<div role=\"alert\" class=\"alert alert-vertical sm:alert-horizontal\">\n  <svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" class=\"stroke-current text-info h-6 w-6 shrink-0\">\n    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z\"></path>\n  </svg>\n  <div>\n    <h3 class=\"font-bold\">New message!</h3>\n    <div class=\"text-xs\">You have 1 unread message</div>\n  </div>\n  <button class=\"btn btn-sm\">See</button>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

@@ -293,6 +293,42 @@ def test_the_official_file_comes_from_the_versions_tag(monkeypatch):
     assert content == vendor.assemble_llms(SKILLS)
 
 
+def docs_archive(version: str, pages: bool = True) -> bytes:
+    page = "packages/docs/src/routes/(routes)/components/alpha/+page.md"
+    files = {
+        "LICENSE": b"MIT",
+        page if pages else "packages/docs/other.md": b"---\ntitle: Alpha\n---\n",
+        "packages/docs/src/translation/es.components.json": b'{"Alpha": "Alfa"}',
+        "packages/docs/src/translation/de.components.json": b'{"Alpha": "Nein"}',
+    }
+    buffer = io.BytesIO()
+    with tarfile.open(fileobj=buffer, mode="w:gz") as archive:
+        for name, content in files.items():
+            member = tarfile.TarInfo(f"daisyui-{version}/{name}")
+            member.size = len(content)
+            archive.addfile(member, io.BytesIO(content))
+    return buffer.getvalue()
+
+
+def test_the_documentation_comes_from_the_versions_tag_and_is_repeatable(monkeypatch):
+    monkeypatch.setattr(vendor, "download", lambda url: docs_archive("5.0.0"))
+    content = vendor.daisyui_docs("5.0.0", ["es"])
+    assert content == vendor.daisyui_docs("5.0.0", ["es"])
+    assert json.loads(content) == {
+        "version": "5.0.0",
+        "licence": "MIT",
+        "pages": {"alpha": "---\ntitle: Alpha\n---\n"},
+        "translations": {"es": {"Alpha": "Alfa"}},
+    }
+
+
+@pytest.mark.parametrize(("languages", "pages"), [(["fr"], True), (["es"], False)])
+def test_documentation_that_is_not_where_it_was_is_refused(monkeypatch, languages, pages):
+    monkeypatch.setattr(vendor, "download", lambda url: docs_archive("5.0.0", pages))
+    with pytest.raises(vendor.Refused, match="not where they were"):
+        vendor.daisyui_docs("5.0.0", languages)
+
+
 def test_a_change_in_how_the_site_builds_the_file_is_refused(monkeypatch):
     monkeypatch.setattr(vendor, "download", lambda url: tag_archive("5.0.0", b"a new recipe"))
     with pytest.raises(vendor.Refused, match="changed"):
@@ -378,6 +414,35 @@ def test_a_new_official_component_is_reported_and_stops_nothing(repository, monk
     assert (folder / "llms.txt").read_bytes() == source
     assert (folder / "daisyui.mjs").read_bytes() == b"old daisyui"
     assert (folder / "other.js").read_bytes() == b"new other"
+
+
+def test_a_daisyui_file_left_behind_holds_all_of_them_back(repository, monkeypatch):
+    folder, _source = repository
+    tools_vendor = update_dependencies.vendor
+
+    def update():
+        (folder / "daisyui.mjs").write_bytes(b"new daisyui")
+        entries = tools_vendor.read_entries()
+        entries["daisyui"]["version"] = "2.0.0"
+        tools_vendor.write_entries(entries)
+        return ["`daisyui` 1.0.0 to 2.0.0"], [("daisyui-llms", "1.0.0", "refused")]
+
+    monkeypatch.setattr(tools_vendor, "update", update)
+    problems = []
+    assert update_dependencies.update_vendored(problems) == []
+    assert tools_vendor.read_entries()["daisyui"]["version"] == "1.0.0"
+    assert (folder / "daisyui.mjs").read_bytes() == b"old daisyui"
+    assert any("different versions" in reason for _name, _version, reason in problems)
+
+
+def test_every_daisyui_file_is_at_one_version():
+    entries = vendor.read_entries().values()
+    assert len({entry["version"] for entry in entries if entry.get("package", "") == "daisyui"} | set()) == 1
+
+
+def test_the_gallerys_data_reaches_the_pull_request():
+    assert "tools/gallery.py\n" in job("update")
+    assert "app/demo/examples/" in job("propose")
 
 
 def test_an_update_without_surprises_keeps_everything(repository, monkeypatch):

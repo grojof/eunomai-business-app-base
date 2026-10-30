@@ -3,6 +3,7 @@
 uv run python tools/remove_demo.py
 """
 
+import json
 import re
 import shutil
 from pathlib import Path
@@ -13,12 +14,13 @@ ONLY_ON_DEMO = {"A11Y-09", "COMP-03"}
 they become `By hand` until the application has a screen, and a test, of its own. A test keeps this set exact."""
 DEMO_ICONS = (
     "calendar",
+    "chevron-left",
+    "chevron-right",
     "clipboard-list",
     "clock",
     "component",
-    "layout-dashboard",
-    "layout-grid",
-    "layout-panel-left",
+    "copy",
+    "gauge",
     "shield",
     "wallet",
 )
@@ -30,7 +32,7 @@ def rewrite(path: Path, content: str) -> None:
 
 
 def main() -> None:
-    for folder in (ROOT / "app" / "demo", ROOT / "tests" / "demo"):
+    for folder in (ROOT / "app" / "demo", ROOT / "tests" / "demo", ROOT / "app" / "ui" / "static" / "placeholders"):
         if folder.exists():
             shutil.rmtree(folder)
     for icon in DEMO_ICONS:
@@ -39,6 +41,17 @@ def main() -> None:
     main_file = ROOT / "app" / "main.py"
     lines = main_file.read_text(encoding="utf-8").splitlines(keepends=True)
     rewrite(main_file, "".join(line for line in lines if not line.rstrip().endswith("# demo")))
+
+    stylesheet = ROOT / "app" / "ui" / "styles" / "app.css"
+    lines = stylesheet.read_text(encoding="utf-8").splitlines(keepends=True)
+    rewrite(stylesheet, "".join(line for line in lines if not line.rstrip().endswith("/* demo */")))
+
+    # The gallery's source. tools/gallery.py stays, with nothing to do, so the update workflow needs no second form.
+    (ROOT / "tools" / "tailwind" / "daisyui-docs.json").unlink(missing_ok=True)
+    vendored = ROOT / "vendor.json"
+    entries = json.loads(vendored.read_text(encoding="utf-8"))
+    entries.pop("daisyui-docs", None)
+    rewrite(vendored, json.dumps(entries, indent=2) + "\n")
 
     example = ROOT / ".env.example"
     rewrite(example, example.read_text(encoding="utf-8").replace("demo-admins", "admins"))

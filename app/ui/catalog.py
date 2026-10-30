@@ -1,6 +1,7 @@
 """Every component on offer, with an honest status. The gallery and docs/components/ are built from this list.
 
-An organization adds its own components here, with their page in docs/components/ and their specimen in the gallery.
+An organization adds its own components here, with their page in docs/components/ and, in its base, a specimen in
+app/demo/templates/demo/gallery/specimens/.
 """
 
 from dataclasses import dataclass
@@ -8,21 +9,24 @@ from dataclasses import dataclass
 from app.core.i18n import N_
 
 APPROVED = "approved"  # a macro, tests and a review
-AVAILABLE = "available"  # passes the automatic scan: use with care
+AVAILABLE = "available"  # an official example, shown as published, not audited here
 DECORATIVE = "decorative"  # not meant for management applications
 PROBLEMS = "problems"  # fails a standard: its note says why
 
 STATUSES = {
     APPROVED: (N_("Approved"), "badge-success"),
     AVAILABLE: (N_("Available"), "badge-info"),
-    DECORATIVE: (N_("Decorative"), "badge-ghost"),
+    DECORATIVE: (N_("Decorative"), "badge-ghost border-base-300"),
     PROBLEMS: (N_("Not recommended"), "badge-warning"),
 }
 
 MOTION = N_("Moves on its own and only a pointer can pause it: WCAG 2.2.2.")
 KEYBOARD = N_("Its button is a label, which a keyboard cannot reach: WCAG 2.1.1. The shell uses a popover instead.")
 LIBRARY = N_("It only styles a calendar library, which is not included. Use a date field.")
-THEME = N_("It changes the theme without saving it. The user menu does this properly.")
+THEME = N_(
+    "On its own it changes the theme without saving it, and it cannot say that the theme should follow the system. "
+    "The shell uses its class inside a form that saves the choice: see Settings."
+)
 
 
 @dataclass(frozen=True)
@@ -30,7 +34,7 @@ class Component:
     name: str
     status: str = AVAILABLE
     note: str = ""
-    macro: str = ""  # an approved component's macro, in app/ui/templates/ui/macros.html
+    macro: str = ""  # its macro, if it has one, in app/ui/templates/ui/macros.html
 
 
 CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
@@ -42,7 +46,7 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("fab"),
             Component("modal"),
             Component("swap"),
-            Component("theme-controller", PROBLEMS, THEME),
+            Component("theme-controller", AVAILABLE, THEME),
         ),
     ),
     "data-display": (
@@ -50,7 +54,7 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
         (
             Component("accordion"),
             Component("avatar"),
-            Component("badge"),
+            Component("badge", macro="badge"),
             Component("card", APPROVED, macro="card"),
             Component("carousel"),
             Component("chat"),
@@ -61,9 +65,9 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("hover-gallery", DECORATIVE),
             Component("kbd"),
             Component("list"),
-            Component("stat"),
+            Component("stat", macro="stat"),
             Component("status"),
-            Component("table"),
+            Component("table", macro="table"),
             Component("text-rotate", PROBLEMS, MOTION),
             Component("timeline"),
         ),
@@ -77,7 +81,7 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("menu"),
             Component("navbar"),
             Component("pagination"),
-            Component("steps"),
+            Component("steps", macro="steps"),
             Component("tab"),
         ),
     ),
@@ -86,7 +90,7 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
         (
             Component("alert", APPROVED, macro="message"),
             Component("loading"),
-            Component("progress"),
+            Component("progress", macro="progress"),
             Component("radial-progress"),
             Component("skeleton"),
             Component("toast"),

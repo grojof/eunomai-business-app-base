@@ -42,8 +42,8 @@
   {
     "name": "theme-controller",
     "category": "actions",
-    "status": "problems",
-    "note": "It changes the theme without saving it. The user menu does this properly.",
+    "status": "available",
+    "note": "On its own it changes the theme without saving it, and it cannot say that the theme should follow the system. The shell uses its class inside a form that saves the choice: see Settings.",
     "use": "If a checked checkbox or radio input has the `theme-controller` class, the page uses the theme in the input value.",
     "page": "docs/components/theme-controller.md"
   },

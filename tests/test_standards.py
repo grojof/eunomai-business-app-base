@@ -253,8 +253,9 @@ def test_no_class_lives_where_tailwind_does_not_look():
     for source in (ROOT / "app").rglob("*.py"):
         if source.name != "catalog.py":
             found[source.name] = classes.misplaced_classes(source.read_text(encoding="utf-8"), python=True)
-    script = (ROOT / "app" / "ui" / "static" / "app.js").read_text(encoding="utf-8")
-    found["app.js"] = classes.misplaced_classes(script, python=False)
+    for script in (ROOT / "app").rglob("*.js"):
+        if "vendor" not in script.parts:
+            found[script.name] = classes.misplaced_classes(script.read_text(encoding="utf-8"), python=False)
     assert {name: words for name, words in found.items() if words} == {}
 
 
@@ -313,7 +314,13 @@ def test_the_whole_base_works_with_the_demo_deleted(tmp_path):
     }
     assert {rows[rule] for rule in remove_demo.ONLY_ON_DEMO} == {"By hand"}
 
-    shell = "".join(path.read_text(encoding="utf-8") for path in (copy / "app").rglob("*.html"))
+    assert not (copy / "tools" / "tailwind" / "daisyui-docs.json").exists()
+    assert "daisyui-docs" not in (copy / "vendor.json").read_text(encoding="utf-8")
+    assert not (copy / "app" / "ui" / "static" / "placeholders").exists()
+    assert "/* demo */" not in (copy / "app" / "ui" / "styles" / "app.css").read_text(encoding="utf-8")
+
+    sources = [*(copy / "app").rglob("*.html"), *(copy / "app").rglob("*.py")]
+    shell = "".join(path.read_text(encoding="utf-8") for path in sources)
     icons = copy / "app" / "ui" / "templates" / "ui" / "icons"
     assert [icon.stem for icon in icons.glob("*.svg") if f'"{icon.stem}"' not in shell] == []
 
@@ -321,9 +328,13 @@ def test_the_whole_base_works_with_the_demo_deleted(tmp_path):
         ["tools/css.py"],
         ["tools/css.py", "check"],
         ["tools/components.py", "check"],
+        ["tools/gallery.py", "check"],
         ["tools/translations.py", "check"],
         ["tools/vendor.py", "check"],
         ["-m", "pytest", "-q", "-x"],
     ):
         result = run_in(copy, *command)
         assert result.returncode == 0, f"{command}: {result.stdout[-2000:]} {result.stderr[-1000:]}"
+    built = copy / "app" / "ui" / "static" / "app.css"
+    assert built.stat().st_size < (ROOT / "app" / "ui" / "static" / "app.css").stat().st_size * 0.75
+    assert "example-preview" not in built.read_text(encoding="utf-8")

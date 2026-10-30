@@ -9,7 +9,7 @@ tags: [component, actions, available]
 
 # Dropdown
 
-**Status:** available. **Category:** actions.
+**Status:** available. **Category:** actions. **In the demo:** `/gallery/dropdown`.
 
 This repository's rules come first. Where this page disagrees with [Standards](../standards.md) or
 [AGENTS.md](../../AGENTS.md), they win: no CDN, no npm, no images from other servers, no inline `style` or `onclick`.

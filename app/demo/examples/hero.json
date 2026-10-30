@@ -1,0 +1,109 @@
+{
+ "name": "hero",
+ "title": {
+  "en": "Hero"
+ },
+ "description": {
+  "en": "Hero is a component for displaying a large box or image with a title and description.",
+  "ca": "El Hero és un component per mostrar una caixa o imatge gran amb un títol i una descripció.",
+  "es": "Hero es un componente para mostrar un cuadro grande o una imagen con un título y una descripción."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "hero",
+     "description": {
+      "en": "Hero container",
+      "ca": "Contenidor heroi",
+      "es": "Contenedor Hero"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "hero-content",
+     "description": {
+      "en": "content part",
+      "ca": "part de contingut",
+      "es": "parte del contenido"
+     }
+    },
+    {
+     "class": "hero-overlay",
+     "description": {
+      "en": "Overlay that covers the background image",
+      "ca": "Superposició que cobreix la imatge de fons",
+      "es": "Superposición que cubre la imagen de fondo."
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "centered-hero",
+   "section": null,
+   "title": {
+    "en": "Centered hero"
+   },
+   "subtitle": null,
+   "html": "<div class=\"hero bg-base-200 min-h-screen\">\n  <div class=\"hero-content text-center\">\n    <div class=\"max-w-md\">\n      <h1 class=\"text-5xl font-bold\">Hello there</h1>\n      <p class=\"py-6\">\n        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem\n        quasi. In deleniti eaque aut repudiandae et a id nisi.\n      </p>\n      <button class=\"btn btn-primary\">Get Started</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "hero-with-figure",
+   "section": null,
+   "title": {
+    "en": "Hero with figure"
+   },
+   "subtitle": null,
+   "html": "<div class=\"hero bg-base-200 min-h-screen\">\n  <div class=\"hero-content flex-col lg:flex-row\">\n    <img\n      alt=\"Tailwind CSS hero component\"\n      src=\"/static/ui/placeholders/photo-3.svg\"\n      class=\"max-w-sm rounded-lg shadow-2xl\"\n    />\n    <div>\n      <h1 class=\"text-5xl font-bold\">Box Office News!</h1>\n      <p class=\"py-6\">\n        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem\n        quasi. In deleniti eaque aut repudiandae et a id nisi.\n      </p>\n      <button class=\"btn btn-primary\">Get Started</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "hero-with-figure-but-reverse-order",
+   "section": null,
+   "title": {
+    "en": "Hero with figure but reverse order"
+   },
+   "subtitle": null,
+   "html": "<div class=\"hero bg-base-200 min-h-screen\">\n  <div class=\"hero-content flex-col lg:flex-row-reverse\">\n    <img\n      alt=\"Tailwind CSS hero component\"\n      src=\"/static/ui/placeholders/photo-3.svg\"\n      class=\"max-w-sm rounded-lg shadow-2xl\"\n    />\n    <div>\n      <h1 class=\"text-5xl font-bold\">Box Office News!</h1>\n      <p class=\"py-6\">\n        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem\n        quasi. In deleniti eaque aut repudiandae et a id nisi.\n      </p>\n      <button class=\"btn btn-primary\">Get Started</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "hero-with-form",
+   "section": null,
+   "title": {
+    "en": "Hero with form"
+   },
+   "subtitle": null,
+   "html": "<div class=\"hero bg-base-200 min-h-screen\">\n  <div class=\"hero-content flex-col lg:flex-row-reverse\">\n    <div class=\"text-center lg:text-left\">\n      <h1 class=\"text-5xl font-bold\">Login now!</h1>\n      <p class=\"py-6\">\n        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem\n        quasi. In deleniti eaque aut repudiandae et a id nisi.\n      </p>\n    </div>\n    <div class=\"card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl\">\n      <div class=\"card-body\">\n        <fieldset class=\"fieldset\">\n          <label class=\"label\">Email</label>\n          <input type=\"email\" class=\"input\" placeholder=\"Email\" />\n          <label class=\"label\">Password</label>\n          <input type=\"password\" class=\"input\" placeholder=\"Password\" />\n          <div><a class=\"link link-hover\">Forgot password?</a></div>\n          <button class=\"btn btn-neutral mt-4\">Login</button>\n        </fieldset>\n      </div>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "hero-with-overlay-image",
+   "section": null,
+   "title": {
+    "en": "Hero with overlay image"
+   },
+   "subtitle": null,
+   "html": "<div\n  class=\"hero min-h-screen\"\n  data-style=\"background-image: url(/static/ui/placeholders/photo-1.svg);\"\n>\n  <div class=\"hero-overlay\"></div>\n  <div class=\"hero-content text-neutral-content text-center\">\n    <div class=\"max-w-md\">\n      <h1 class=\"mb-5 text-5xl font-bold\">Hello there</h1>\n      <p class=\"mb-5\">\n        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem\n        quasi. In deleniti eaque aut repudiandae et a id nisi.\n      </p>\n      <button class=\"btn btn-primary\">Get Started</button>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

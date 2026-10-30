@@ -9,7 +9,7 @@ tags: [component, data-display, problems]
 
 # Text rotate
 
-**Status:** problems. **Category:** data-display.
+**Status:** problems. **Category:** data-display. **In the demo:** `/gallery/text-rotate`.
 
 > Moves on its own and only a pointer can pause it: WCAG 2.2.2.
 

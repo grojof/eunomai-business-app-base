@@ -1,0 +1,211 @@
+{
+ "name": "loading",
+ "title": {
+  "en": "Loading"
+ },
+ "description": {
+  "en": "Loading shows an animation to indicate that something is loading.",
+  "ca": "La càrrega mostra una animació per indicar que alguna cosa s'està carregant.",
+  "es": "Loading muestra una animación para indicar que algo se está cargando."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "loading",
+     "description": {
+      "en": "Loading element",
+      "ca": "Element Loading",
+      "es": "Elemento Loading"
+     }
+    }
+   ]
+  },
+  {
+   "group": "style",
+   "items": [
+    {
+     "class": "loading-spinner",
+     "description": {
+      "en": "spinner animation",
+      "ca": "animació de spinner",
+      "es": "animación giratoria"
+     }
+    },
+    {
+     "class": "loading-dots",
+     "description": {
+      "en": "dots animation",
+      "ca": "animació de punts",
+      "es": "animación de puntos"
+     }
+    },
+    {
+     "class": "loading-ring",
+     "description": {
+      "en": "ring animation",
+      "ca": "animació d'anell",
+      "es": "animación de anillo"
+     }
+    },
+    {
+     "class": "loading-ball",
+     "description": {
+      "en": "ball animation",
+      "ca": "animació de pilota",
+      "es": "animacion de pelota"
+     }
+    },
+    {
+     "class": "loading-bars",
+     "description": {
+      "en": "bars animation",
+      "ca": "animació de barres",
+      "es": "animación de barras"
+     }
+    },
+    {
+     "class": "loading-infinity",
+     "description": {
+      "en": "infinity animation",
+      "ca": "animació infinita",
+      "es": "animación infinita"
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "loading-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "loading-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "loading-md",
+     "description": {
+      "en": "Medium size",
+      "ca": "Talla mitjana",
+      "es": "tamaño mediano"
+     },
+     "default": true
+    },
+    {
+     "class": "loading-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "loading-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "loading-spinner",
+   "section": null,
+   "title": {
+    "en": "Loading spinner"
+   },
+   "subtitle": null,
+   "html": "<span class=\"loading loading-spinner loading-xs\"></span>\n<span class=\"loading loading-spinner loading-sm\"></span>\n<span class=\"loading loading-spinner loading-md\"></span>\n<span class=\"loading loading-spinner loading-lg\"></span>\n<span class=\"loading loading-spinner loading-xl\"></span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "loading-dots",
+   "section": null,
+   "title": {
+    "en": "Loading dots"
+   },
+   "subtitle": null,
+   "html": "<span class=\"loading loading-dots loading-xs\"></span>\n<span class=\"loading loading-dots loading-sm\"></span>\n<span class=\"loading loading-dots loading-md\"></span>\n<span class=\"loading loading-dots loading-lg\"></span>\n<span class=\"loading loading-dots loading-xl\"></span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "loading-ring",
+   "section": null,
+   "title": {
+    "en": "Loading ring"
+   },
+   "subtitle": null,
+   "html": "<span class=\"loading loading-ring loading-xs\"></span>\n<span class=\"loading loading-ring loading-sm\"></span>\n<span class=\"loading loading-ring loading-md\"></span>\n<span class=\"loading loading-ring loading-lg\"></span>\n<span class=\"loading loading-ring loading-xl\"></span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "loading-ball",
+   "section": null,
+   "title": {
+    "en": "Loading ball"
+   },
+   "subtitle": null,
+   "html": "<span class=\"loading loading-ball loading-xs\"></span>\n<span class=\"loading loading-ball loading-sm\"></span>\n<span class=\"loading loading-ball loading-md\"></span>\n<span class=\"loading loading-ball loading-lg\"></span>\n<span class=\"loading loading-ball loading-xl\"></span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "loading-bars",
+   "section": null,
+   "title": {
+    "en": "Loading bars"
+   },
+   "subtitle": null,
+   "html": "<span class=\"loading loading-bars loading-xs\"></span>\n<span class=\"loading loading-bars loading-sm\"></span>\n<span class=\"loading loading-bars loading-md\"></span>\n<span class=\"loading loading-bars loading-lg\"></span>\n<span class=\"loading loading-bars loading-xl\"></span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "loading-infinity",
+   "section": null,
+   "title": {
+    "en": "Loading infinity"
+   },
+   "subtitle": null,
+   "html": "<span class=\"loading loading-infinity loading-xs\"></span>\n<span class=\"loading loading-infinity loading-sm\"></span>\n<span class=\"loading loading-infinity loading-md\"></span>\n<span class=\"loading loading-infinity loading-lg\"></span>\n<span class=\"loading loading-infinity loading-xl\"></span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "loading-with-colors",
+   "section": null,
+   "title": {
+    "en": "Loading with colors"
+   },
+   "subtitle": null,
+   "html": "<span class=\"loading loading-spinner text-primary\"></span>\n<span class=\"loading loading-spinner text-secondary\"></span>\n<span class=\"loading loading-spinner text-accent\"></span>\n<span class=\"loading loading-spinner text-neutral\"></span>\n<span class=\"loading loading-spinner text-info\"></span>\n<span class=\"loading loading-spinner text-success\"></span>\n<span class=\"loading loading-spinner text-warning\"></span>\n<span class=\"loading loading-spinner text-error\"></span>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

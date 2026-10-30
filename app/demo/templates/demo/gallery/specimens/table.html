@@ -1,0 +1,9 @@
+{% from "ui/macros.html" import table, badge %}
+{% call table(_("Equipment, where it is, its next inspection and its state"), "specimen-table") %}
+<thead><tr><th scope="col">{{ _("Equipment") }}</th><th scope="col">{{ _("State") }}</th></tr></thead>
+<tbody><tr><th scope="row">{{ _("Forklift") }}</th><td>{{ badge(_("In service"), "success") }}</td></tr></tbody>
+{% endcall %}
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{% call table(_("Equipment"), "equipment-caption") %}
+<thead>...</thead>
+<tbody>...</tbody>
+{% endcall %}{% endraw %}</code></pre>

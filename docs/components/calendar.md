@@ -9,7 +9,7 @@ tags: [component, data-input, problems]
 
 # Calendar
 
-**Status:** problems. **Category:** data-input.
+**Status:** problems. **Category:** data-input. **In the demo:** `/gallery/calendar`.
 
 > It only styles a calendar library, which is not included. Use a date field.
 

@@ -1,0 +1,93 @@
+{
+ "name": "list",
+ "title": {
+  "en": "List"
+ },
+ "description": {
+  "en": "List is a vertical layout to display information in rows.",
+  "ca": "La llista és un disseny vertical per mostrar informació en files.",
+  "es": "La lista es un diseño vertical para mostrar información en filas."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "list",
+     "description": {
+      "en": "A vertical flex layout to include list rows",
+      "ca": "Un disseny flexible vertical per incloure files de llista",
+      "es": "Un diseño flexible vertical para incluir filas de lista"
+     }
+    },
+    {
+     "class": "list-row",
+     "description": {
+      "en": "The item inside list. A horizontal grid layout to include data",
+      "ca": "L'element dins de la llista. Un disseny de quadrícula horitzontal per incloure dades",
+      "es": "El elemento dentro de la lista. Un diseño de cuadrícula horizontal para incluir datos."
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "list-col-wrap",
+     "description": {
+      "en": "For one of direct children of list-row to push it to the next line",
+      "ca": "Perquè un dels fills directes de list-row l'enviï a la línia següent",
+      "es": "Para que uno de los hijos directos de list-row lo empuje a la siguiente línea"
+     }
+    },
+    {
+     "class": "list-col-grow",
+     "description": {
+      "en": "For one of direct children of list-row to make it fill the remaining space",
+      "ca": "Per a un dels fills directes de list-row perquè ompli l'espai restant",
+      "es": "Para que uno de los hijos directos de list-row llene el espacio restante"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "list-second-column-grows---default",
+   "section": null,
+   "title": {
+    "en": "List (second column grows - default)"
+   },
+   "subtitle": null,
+   "html": "<ul class=\"list bg-base-100 rounded-box shadow-md\">\n  \n  <li class=\"p-4 pb-2 text-xs opacity-60 tracking-wide\">Most played songs this week</li>\n  \n  <li class=\"list-row\">\n    <div><img class=\"size-10 rounded-box\" alt=\"Tailwind CSS list item\" src=\"/static/ui/placeholders/avatar-1.svg\"/></div>\n    <div>\n      <div>Dio Lupa</div>\n      <div class=\"text-xs uppercase font-semibold opacity-60\">Remaining Reason</div>\n    </div>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Play\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M6 3L20 12 6 21 6 3z\"></path></g></svg>\n    </button>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Favorite\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"></path></g></svg>\n    </button>\n  </li>\n  \n  <li class=\"list-row\">\n    <div><img class=\"size-10 rounded-box\" alt=\"Tailwind CSS list item\" src=\"/static/ui/placeholders/avatar-4.svg\"/></div>\n    <div>\n      <div>Ellie Beilish</div>\n      <div class=\"text-xs uppercase font-semibold opacity-60\">Bears of a fever</div>\n    </div>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Play\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M6 3L20 12 6 21 6 3z\"></path></g></svg>\n    </button>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Favorite\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"></path></g></svg>\n    </button>\n  </li>\n  \n  <li class=\"list-row\">\n    <div><img class=\"size-10 rounded-box\" alt=\"Tailwind CSS list item\" src=\"/static/ui/placeholders/avatar-3.svg\"/></div>\n    <div>\n      <div>Sabrino Gardener</div>\n      <div class=\"text-xs uppercase font-semibold opacity-60\">Cappuccino</div>\n    </div>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Play\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M6 3L20 12 6 21 6 3z\"></path></g></svg>\n    </button>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Favorite\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"></path></g></svg>\n    </button>\n  </li>\n  \n</ul>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "list-third-column-grows",
+   "section": null,
+   "title": {
+    "en": "List (third column grows)"
+   },
+   "subtitle": null,
+   "html": "<ul class=\"list bg-base-100 rounded-box shadow-md\">\n  \n  <li class=\"p-4 pb-2 text-xs opacity-60 tracking-wide\">Most played songs this week</li>\n  \n  <li class=\"list-row\">\n    <div class=\"text-4xl font-thin opacity-30 tabular-nums\">01</div>\n    <div><img class=\"size-10 rounded-box\" alt=\"Tailwind CSS list item\" src=\"/static/ui/placeholders/avatar-1.svg\"/></div>\n    <div class=\"list-col-grow\">\n      <div>Dio Lupa</div>\n      <div class=\"text-xs uppercase font-semibold opacity-60\">Remaining Reason</div>\n    </div>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Play\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M6 3L20 12 6 21 6 3z\"></path></g></svg>\n    </button>\n  </li>\n  \n  <li class=\"list-row\">\n    <div class=\"text-4xl font-thin opacity-30 tabular-nums\">02</div>\n    <div><img class=\"size-10 rounded-box\" alt=\"Tailwind CSS list item\" src=\"/static/ui/placeholders/avatar-4.svg\"/></div>\n    <div class=\"list-col-grow\">\n      <div>Ellie Beilish</div>\n      <div class=\"text-xs uppercase font-semibold opacity-60\">Bears of a fever</div>\n    </div>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Play\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M6 3L20 12 6 21 6 3z\"></path></g></svg>\n    </button>\n  </li>\n  \n  <li class=\"list-row\">\n    <div class=\"text-4xl font-thin opacity-30 tabular-nums\">03</div>\n    <div><img class=\"size-10 rounded-box\" alt=\"Tailwind CSS list item\" src=\"/static/ui/placeholders/avatar-3.svg\"/></div>\n    <div class=\"list-col-grow\">\n      <div>Sabrino Gardener</div>\n      <div class=\"text-xs uppercase font-semibold opacity-60\">Cappuccino</div>\n    </div>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Play\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M6 3L20 12 6 21 6 3z\"></path></g></svg>\n    </button>\n  </li>\n  \n</ul>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "list-third-column-wraps-to-next-row",
+   "section": null,
+   "title": {
+    "en": "List (third column wraps to next row)"
+   },
+   "subtitle": null,
+   "html": "<ul class=\"list bg-base-100 rounded-box shadow-md\">\n  \n  <li class=\"p-4 pb-2 text-xs opacity-60 tracking-wide\">Most played songs this week</li>\n  \n  <li class=\"list-row\">\n    <div><img class=\"size-10 rounded-box\" alt=\"Tailwind CSS list item\" src=\"/static/ui/placeholders/avatar-1.svg\"/></div>\n    <div>\n      <div>Dio Lupa</div>\n      <div class=\"text-xs uppercase font-semibold opacity-60\">Remaining Reason</div>\n    </div>\n    <p class=\"list-col-wrap text-xs\">\n      \"Remaining Reason\" became an instant hit, praised for its haunting sound and emotional depth. A viral performance brought it widespread recognition, making it one of Dio Lupa’s most iconic tracks.\n    </p>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Play\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M6 3L20 12 6 21 6 3z\"></path></g></svg>\n    </button>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Favorite\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"></path></g></svg>\n    </button>\n  </li>\n  \n  <li class=\"list-row\">\n    <div><img class=\"size-10 rounded-box\" alt=\"Tailwind CSS list item\" src=\"/static/ui/placeholders/avatar-4.svg\"/></div>\n    <div>\n      <div>Ellie Beilish</div>\n      <div class=\"text-xs uppercase font-semibold opacity-60\">Bears of a fever</div>\n    </div>\n    <p class=\"list-col-wrap text-xs\">\n      \"Bears of a Fever\" captivated audiences with its intense energy and mysterious lyrics. Its popularity skyrocketed after fans shared it widely online, earning Ellie critical acclaim.\n    </p>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Play\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M6 3L20 12 6 21 6 3z\"></path></g></svg>\n    </button>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Favorite\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"></path></g></svg>\n    </button>\n  </li>\n  \n  <li class=\"list-row\">\n    <div><img class=\"size-10 rounded-box\" alt=\"Tailwind CSS list item\" src=\"/static/ui/placeholders/avatar-3.svg\"/></div>\n    <div>\n      <div>Sabrino Gardener</div>\n      <div class=\"text-xs uppercase font-semibold opacity-60\">Cappuccino</div>\n    </div>\n    <p class=\"list-col-wrap text-xs\">\n      \"Cappuccino\" quickly gained attention for its smooth melody and relatable themes. The song’s success propelled Sabrino into the spotlight, solidifying their status as a rising star.\n    </p>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Play\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M6 3L20 12 6 21 6 3z\"></path></g></svg>\n    </button>\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Favorite\" class=\"size-[1.2em]\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><g stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\"><path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\"></path></g></svg>\n    </button>\n  </li>\n  \n</ul>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

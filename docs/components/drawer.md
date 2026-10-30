@@ -9,7 +9,7 @@ tags: [component, layout, problems]
 
 # Drawer
 
-**Status:** problems. **Category:** layout.
+**Status:** problems. **Category:** layout. **In the demo:** `/gallery/drawer`.
 
 > Its button is a label, which a keyboard cannot reach: WCAG 2.1.1. The shell uses a popover instead.
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 22:32+0100\n"
+"POT-Creation-Date: 2026-10-30 23:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -21,10 +21,12 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #, python-format
-msgid "%(num)d component"
-msgid_plural "%(num)d components"
-msgstr[0] "%(num)d component"
-msgstr[1] "%(num)d components"
+msgid ""
+"%(components)s components, %(examples)s official examples, daisyUI "
+"%(version)s"
+msgstr ""
+"%(components)s components, %(examples)s exemples oficials, daisyUI "
+"%(version)s"
 
 #, python-format
 msgid "%(num)d inspection is due"
@@ -38,203 +40,290 @@ msgid_plural "%(num)d open work orders"
 msgstr[0] "%(num)d ordre de treball oberta"
 msgstr[1] "%(num)d ordres de treball obertes"
 
+msgid "A card with a title, ready for any content."
+msgstr "Una targeta amb títol, a punt per a qualsevol contingut."
+
 msgid "A fictional company that maintains its equipment."
 msgstr "Una empresa fictícia que manté els seus equips."
-
-msgid "A short description."
-msgstr "Una descripció breu."
-
-msgid "Action"
-msgstr "Acció"
 
 msgid "Administration"
 msgstr "Administració"
 
-msgid "Back to the gallery"
-msgstr "Torna a la galeria"
+msgid "Air compressor"
+msgstr "Compressor d'aire"
+
+msgid ""
+"Available: official examples, shown as published and not audited here. "
+"This is not a promise of accessibility. Ask for a macro before using it "
+"on a real screen."
+msgstr ""
+"Disponible: exemples oficials, mostrats tal com es van publicar i sense "
+"auditar aquí. No és una promesa d'accessibilitat. Demana una macro abans "
+"de fer-lo servir en una pantalla real."
+
+msgid "Behaviour"
+msgstr "Comportament"
 
 msgid "Breadcrumbs"
 msgstr "Ruta de navegació"
 
-msgid "Buttons"
-msgstr "Botons"
-
 msgid "Cancel"
 msgstr "Cancel·la"
 
-msgid "Centred"
-msgstr "Centrat"
+msgid "Checked"
+msgstr "Revisat"
 
-msgid "Close"
-msgstr "Tanca"
+msgid "Class name"
+msgstr "Classe"
+
+msgid "Class names"
+msgstr "Classes"
+
+msgid "Closed"
+msgstr "Tancat"
 
 msgid "Code"
 msgstr "Codi"
 
-msgid "Colours"
-msgstr "Colors"
+msgid "Colour"
+msgstr "Color"
 
-msgid "Comments"
-msgstr "Comentaris"
+msgid "Component"
+msgstr "Component"
 
-msgid "Compact"
-msgstr "Compacta"
+msgid "Components"
+msgstr "Components"
 
-msgid "Component catalogue"
-msgstr "Catàleg de components"
+#, python-format
+msgid "Components shown: %(count)s"
+msgstr "Components mostrats: %(count)s"
+
+msgid "Conveyor belt"
+msgstr "Cinta transportadora"
+
+msgid "Cooling tower"
+msgstr "Torre de refrigeració"
+
+msgid "Copied"
+msgstr "Copiat"
+
+msgid "Copy"
+msgstr "Copia"
 
 msgid "Cost to date"
 msgstr "Cost fins avui"
 
-msgid "Dark"
-msgstr "Fosc"
-
 msgid "Dashboard"
 msgstr "Tauler"
 
-msgid "Date"
-msgstr "Data"
+msgid "Decorative: not meant for management applications."
+msgstr "Decoratiu: no pensat per a aplicacions de gestió."
 
 msgid "Delete"
 msgstr "Suprimeix"
 
-msgid "Density"
-msgstr "Densitat"
-
 msgid "Details"
 msgstr "Detalls"
 
-msgid "Directions"
-msgstr "Direccions"
+msgid "Direction"
+msgstr "Direcció"
 
-msgid "Done"
-msgstr "Fet"
+msgid "Due soon"
+msgstr "Venç aviat"
 
-msgid "Email"
-msgstr "Correu electrònic"
+msgid "Equipment"
+msgstr "Equips"
 
-msgid "Empty state"
-msgstr "Estat buit"
+msgid "Equipment, where it is, its next inspection and its state"
+msgstr "Equips, on són, la seva pròxima inspecció i el seu estat"
 
-msgid "Enter a valid email address."
-msgstr "Escriu un correu electrònic vàlid."
+msgid ""
+"Every component on offer, with an honest status, and every official "
+"example of each."
+msgstr ""
+"Tots els components disponibles, amb un estat honest, i tots els exemples"
+" oficials de cadascun."
 
-msgid "Error"
-msgstr "Error"
+#, python-format
+msgid "Exactly %(value)s"
+msgstr "Exactament %(value)s"
 
-msgid "Every component in every state."
-msgstr "Cada component en cada estat."
+msgid ""
+"Examples and their translations come from daisyUI's documentation, under "
+"the MIT licence. Available means an official example, shown as published "
+"and not audited here: it is not a promise of accessibility."
+msgstr ""
+"Els exemples i les seves traduccions provenen de la documentació de "
+"daisyUI, amb llicència MIT. Disponible vol dir un exemple oficial, "
+"mostrat tal com es va publicar i sense auditar aquí: no és una promesa "
+"d'accessibilitat."
 
-msgid "Every component, with its status. Ask for any of them by name."
-msgstr "Cada component, amb el seu estat. Demana'n qualsevol pel nom."
+msgid "Filter components"
+msgstr "Filtra els components"
 
-msgid "File"
-msgstr "Fitxer"
-
-msgid "Filter"
-msgstr "Filtre"
-
-msgid "First"
-msgstr "Primer"
-
-msgid "Fixed header"
-msgstr "Capçalera fixa"
-
-msgid "Full"
-msgstr "Complet"
+msgid "Forklift"
+msgstr "Carretó elevador"
 
 msgid "Gallery"
 msgstr "Galeria"
 
-msgid "Hidden"
-msgstr "Oculta"
-
 msgid "Hours worked"
 msgstr "Hores treballades"
 
-msgid "Icons only"
-msgstr "Només icones"
+msgid "In progress"
+msgstr "En curs"
 
-msgid "Indicators"
-msgstr "Indicadors"
+msgid "In service"
+msgstr "En servei"
 
 msgid "Inspections"
 msgstr "Inspeccions"
 
-msgid "Layouts"
-msgstr "Disposicions"
+msgid ""
+"It uses Tailwind's own colours, which this base removes, so some colours "
+"differ from the published example."
+msgstr ""
+"Fa servir els colors propis de Tailwind, que aquesta base elimina, de "
+"manera que alguns colors difereixen de l'exemple publicat."
+
+msgid "Link to this example"
+msgstr "Enllaç a aquest exemple"
 
 msgid "Loading"
 msgstr "S'està carregant"
 
-msgid "Message"
-msgstr "Missatge"
+msgid "Location"
+msgstr "Ubicació"
 
-msgid "Messages"
-msgstr "Missatges"
+msgid "Maintenance plan"
+msgstr "Pla de manteniment"
 
-msgid "Name"
-msgstr "Nom"
+msgid "Modifier"
+msgstr "Modificador"
 
-msgid "Navigation"
-msgstr "Navegació"
+msgid "Next"
+msgstr "Següent"
 
 msgid "Next inspection"
 msgstr "Propera inspecció"
 
-msgid "No"
-msgstr "No"
+msgid "No component matches"
+msgstr "Cap component no coincideix"
 
-msgid "No work orders yet"
-msgstr "Encara no hi ha ordres de treball"
+msgid "Nothing overdue"
+msgstr "Res vençut"
 
-msgid "Normal"
-msgstr "Normal"
+msgid "Official examples"
+msgstr "Exemples oficials"
+
+msgid "On this page"
+msgstr "En aquesta pàgina"
 
 msgid "Only people with the administrator role can open this page."
 msgstr "Només poden obrir aquesta pàgina les persones amb el rol d'administrador."
 
-msgid "Open"
-msgstr "Obre"
-
 msgid "Open work orders"
 msgstr "Ordres de treball obertes"
 
-msgid "Option one"
-msgstr "Opció u"
+msgid "Other components"
+msgstr "Altres components"
 
-msgid "Option two"
-msgstr "Opció dos"
+msgid "Our macro"
+msgstr "La nostra macro"
 
-msgid "Pages"
-msgstr "Pàgines"
+msgid "Overdue"
+msgstr "Vençuts"
 
-msgid "Placements"
-msgstr "Posicions"
+msgid "Packing"
+msgstr "Embalatge"
 
-msgid "Rating"
-msgstr "Valoració"
+msgid "Part"
+msgstr "Part"
+
+msgid "Placement"
+msgstr "Posició"
+
+msgid "Planned"
+msgstr "Planificat"
+
+msgid "Plant room"
+msgstr "Sala de màquines"
+
+msgid "Preventive plan"
+msgstr "Pla preventiu"
+
+msgid "Preview"
+msgstr "Previsualització"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid ""
+"Published by daisyUI, in English. Their text is left as it is. Pictures "
+"are replaced by a neutral placeholder."
+msgstr ""
+"Publicats per daisyUI, en anglès. El seu text es deixa tal qual. Les "
+"imatges se substitueixen per una imatge neutra."
+
+msgid "Reported"
+msgstr "Comunicat"
+
+msgid "Roof"
+msgstr "Coberta"
+
+msgid "Safety checks"
+msgstr "Controls de seguretat"
 
 msgid "Save"
 msgstr "Desa"
 
-msgid "Second"
-msgstr "Segon"
+msgid ""
+"Screens call this macro, with tests and a review behind it. Use it "
+"instead of the classes below."
+msgstr ""
+"Les pantalles criden aquesta macro, amb proves i una revisió al darrere. "
+"Fes-la servir en lloc de les classes de sota."
+
+msgid ""
+"Screens call this macro. It has tests, and a person's review is still to "
+"come."
+msgstr ""
+"Les pantalles criden aquesta macro. Té proves, i falta la revisió d'una "
+"persona."
+
+msgid "Settings"
+msgstr "Configuració"
 
 msgid "Show inspections"
 msgstr "Mostra les inspeccions"
 
-msgid "Side"
-msgstr "Lateral"
+msgid ""
+"Shown as code and not run: it needs a script, and this application runs "
+"none of its own and loads nothing from another server."
+msgstr ""
+"Es mostra com a codi i no s'executa: necessita un script, i aquesta "
+"aplicació no n'executa cap d'aliè ni carrega res d'un altre servidor."
 
-msgid "Sizes"
-msgstr "Mides"
+msgid "Size"
+msgstr "Mida"
 
-msgid "Status"
+msgid "Spare parts in stock"
+msgstr "Recanvis en estoc"
+
+msgid "Standby generator"
+msgstr "Generador de reserva"
+
+msgid "State"
 msgstr "Estat"
 
-msgid "Styles"
-msgstr "Estils"
+msgid "Statuses"
+msgstr "Estats"
+
+msgid "Stopped"
+msgstr "Aturat"
+
+msgid "Style"
+msgstr "Estil"
 
 msgid "Summary"
 msgstr "Resum"
@@ -245,42 +334,36 @@ msgstr "L'ordre de treball no s'ha pogut desar. Torna-ho a provar."
 msgid "The work order was saved."
 msgstr "L'ordre de treball s'ha desat."
 
-msgid "Theme"
-msgstr "Tema"
-
-msgid "Third"
-msgstr "Tercer"
-
 msgid "This equipment is due for inspection."
 msgstr "Aquest equip ha de passar la inspecció."
 
-msgid "Title"
-msgstr "Títol"
+msgid "This month"
+msgstr "Aquest mes"
 
-msgid "Top"
-msgstr "Superior"
+msgid "Try another word, or look through the categories."
+msgstr "Prova amb una altra paraula, o mira les categories."
 
-msgid "Try each arrangement. An application fixes its own in its settings."
-msgstr "Prova cada disposició. Cada aplicació fixa la seva als ajustos."
+msgid "Type"
+msgstr "Tipus"
 
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualitzat: %(moment)s"
 
-msgid "Volume"
-msgstr "Volum"
+msgid "Warehouse"
+msgstr "Magatzem"
 
-msgid "Warning"
-msgstr "Avís"
+msgid "What it does"
+msgstr "Què fa"
 
-msgid "Width"
-msgstr "Amplada"
+msgid "Work order for the cooling tower"
+msgstr "Ordre de treball de la torre de refrigeració"
 
-msgid "Work orders appear here when someone creates one."
-msgstr "Les ordres de treball apareixen aquí quan algú en crea una."
+msgid "Work orders appear here when their date passes."
+msgstr "Les ordres de treball apareixen aquí quan passa la seva data."
 
-msgid "Yes"
-msgstr "Sí"
+msgid "Workshop"
+msgstr "Taller"
 
 msgid "Your changes are saved as you type."
 msgstr "Els canvis es desen mentre escrius."

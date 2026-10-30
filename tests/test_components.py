@@ -102,7 +102,7 @@ def test_every_generated_page_has_its_status_and_this_repositorys_rules(name):
 @pytest.mark.rule("COMP-02")
 def test_a_component_with_problems_says_why():
     for component in catalog.components().values():
-        assert bool(component.note) == (component.status == catalog.PROBLEMS), component.name
+        assert component.status != catalog.PROBLEMS or component.note, component.name
 
 
 def test_the_catalogue_can_be_read_by_a_program():
@@ -250,12 +250,8 @@ def test_the_promised_way_to_add_a_component_passes_the_checks(tmp_path, demo):
     (copy / "docs" / "components" / "signature.md").write_text(OWN_PAGE, encoding="utf-8", newline="\n")
     tests = ["tests/test_components.py"]
     if demo:
-        specimen = (
-            '{% from "demo/gallery/macros.html" import specimen %}\n'
-            '{% call specimen(c["signature"], statuses) %}<p>{{ _("Title") }}</p>{% endcall %}\n'
-        )
-        gallery = copy / "app" / "demo" / "templates" / "demo" / "gallery" / "own.html"
-        gallery.write_text(specimen, encoding="utf-8", newline="\n")
+        specimen = copy / "app" / "demo" / "templates" / "demo" / "gallery" / "specimens" / "signature.html"
+        specimen.write_text('<p>{{ _("Save") }}</p>\n', encoding="utf-8", newline="\n")
         tests.append("tests/demo/test_gallery.py")
 
     assert run_in(copy, "tools/components.py").returncode == 0

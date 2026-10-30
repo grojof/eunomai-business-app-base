@@ -1,0 +1,296 @@
+{
+ "name": "range",
+ "title": {
+  "en": "Range slider"
+ },
+ "description": {
+  "en": "Range slider is used to select a value by sliding a handle.",
+  "ca": "El control lliscant d'interval s'utilitza per seleccionar un valor fent lliscar un control·lador.",
+  "es": "Range slider se utiliza para seleccionar un valor deslizando un controlador."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "range",
+     "description": {
+      "en": "For <input type=\"range\"> tag",
+      "ca": "Per a l'etiqueta <input type=\"range\">",
+      "es": "Para la etiqueta <input type=\"range\">"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "range-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "range-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "range-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "range-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "range-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "range-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "range-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "range-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "range-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "range-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "range-md",
+     "description": {
+      "en": "Medium size",
+      "ca": "Talla mitjana",
+      "es": "tamaño mediano"
+     },
+     "default": true
+    },
+    {
+     "class": "range-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "range-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  },
+  {
+   "group": "direction",
+   "items": [
+    {
+     "class": "range-vertical",
+     "description": {
+      "en": "Vertical slider",
+      "ca": "Control lliscant vertical",
+      "es": "control deslizante vertical"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "range",
+   "section": null,
+   "title": {
+    "en": "Range"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-steps-and-measure",
+   "section": null,
+   "title": {
+    "en": "With steps and measure"
+   },
+   "subtitle": null,
+   "html": "<div class=\"w-full max-w-xs\">\n  <input type=\"range\" min=\"0\" max=\"100\" value=\"25\" class=\"range\" step=\"25\" />\n  <div class=\"flex justify-between px-2.5 mt-2 text-xs\">\n    <span>|</span>\n    <span>|</span>\n    <span>|</span>\n    <span>|</span>\n    <span>|</span>\n  </div>\n  <div class=\"flex justify-between px-2.5 mt-2 text-xs\">\n    <span>1</span>\n    <span>2</span>\n    <span>3</span>\n    <span>4</span>\n    <span>5</span>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "neutral-color",
+   "section": null,
+   "title": {
+    "en": "Neutral color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-neutral\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "primary-color",
+   "section": null,
+   "title": {
+    "en": "Primary color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-primary\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "secondary-color",
+   "section": null,
+   "title": {
+    "en": "Secondary color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-secondary\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "accent-color",
+   "section": null,
+   "title": {
+    "en": "Accent color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-accent\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "success-color",
+   "section": null,
+   "title": {
+    "en": "Success color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-success\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "warning-color",
+   "section": null,
+   "title": {
+    "en": "Warning color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-warning\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "info-color",
+   "section": null,
+   "title": {
+    "en": "Info color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-info\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "error-color",
+   "section": null,
+   "title": {
+    "en": "Error color"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-error\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "sizes",
+   "section": null,
+   "title": {
+    "en": "Sizes"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"30\" class=\"range range-xs\" />\n<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-sm\" />\n<input type=\"range\" min=\"0\" max=\"100\" value=\"50\" class=\"range range-md\" />\n<input type=\"range\" min=\"0\" max=\"100\" value=\"60\" class=\"range range-lg\" />\n<input type=\"range\" min=\"0\" max=\"100\" value=\"70\" class=\"range range-xl\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "range-with-custom-color-and-no-fill",
+   "section": null,
+   "title": {
+    "en": "Range with custom color and no fill"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" \n  class=\"range text-blue-300 [--range-bg:orange] [--range-thumb:blue] [--range-fill:0]\" />",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  },
+  {
+   "id": "vertical",
+   "section": null,
+   "title": {
+    "en": "Vertical"
+   },
+   "subtitle": null,
+   "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-vertical\" />",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

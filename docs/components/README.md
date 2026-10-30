@@ -20,7 +20,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`fab`](fab.md) | available | A FAB is a floating action button that stays in a bottom corner of the screen. It contains a focusable, accessible element with a button role. When the user clicks or focuses it, more speed-dial buttons appear. These buttons have a vertical or quarter-circle arrangement. |
 | [`modal`](modal.md) | available | A modal shows a dialog or box when the user clicks a button. |
 | [`swap`](swap.md) | available | Use the swap component to change the visibility of two elements. Control the swap with a checkbox or a class name. |
-| [`theme-controller`](theme-controller.md) | problems | If a checked checkbox or radio input has the `theme-controller` class, the page uses the theme in the input value. |
+| [`theme-controller`](theme-controller.md) | available | If a checked checkbox or radio input has the `theme-controller` class, the page uses the theme in the input value. |
 
 ## Data display
 

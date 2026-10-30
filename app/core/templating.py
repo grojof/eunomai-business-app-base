@@ -1,6 +1,7 @@
 """Pages: Jinja2 with escaping always on, the translation functions and the locale's formatters."""
 
 import json
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -12,14 +13,9 @@ from jinja2 import ChoiceLoader, Environment, FileSystemLoader, StrictUndefined
 
 from app import __version__
 from app.core import formatters, i18n
-from app.core.i18n import current_language
+from app.core.i18n import N_, current_language
+from app.core.settings import LAYOUTS
 
-LAYOUTS = {
-    "navigation": ("side", "compact", "top", "hidden"),
-    "sticky_header": ("on", "off"),
-    "width": ("full", "centered"),
-    "density": ("normal", "compact"),
-}
 UI = Path(__file__).resolve().parent.parent / "ui"
 ROOT = UI.parent.parent
 _loaders: list[FileSystemLoader] = [FileSystemLoader(UI / "templates")]
@@ -40,6 +36,15 @@ cast(Any, environment).install_gettext_callables(
 )
 environment.filters["decimal"] = formatters.format_decimal
 environment.filters["date"] = formatters.format_date
+environment.filters["percent"] = formatters.format_percent
+
+
+@dataclass(frozen=True)
+class NavigationGroup:
+    """Links shown under a navigation item while a person is inside it, already in their language."""
+
+    title: str
+    links: Sequence[tuple[str, str]]  # (label, path)
 
 
 @dataclass(frozen=True)
@@ -48,22 +53,56 @@ class NavigationItem:
     path: str
     icon: str
     role: str | None = None
+    children: Callable[[], Sequence[NavigationGroup]] | None = None
+
+
+@dataclass(frozen=True)
+class SearchItem:
+    """One result of the command palette, already in the person's language."""
+
+    label: str
+    path: str
+    group: str
+    description: str = ""
+    keywords: str = ""
+    icon: str = ""
+
+
+SearchProvider = Callable[[], Iterable[SearchItem]]
+"""Called on each search, inside the request, so it can use the person's language."""
+
+
+def register_search(state: Any, provider: SearchProvider) -> None:
+    """Adds results to the command palette. Navigation items are always in it."""
+    state.search.append(provider)
+
+
+def visible_navigation(request: Request) -> list[NavigationItem]:
+    person = getattr(request.state, "person", None)
+    roles = person.roles if person else frozenset()
+    return [item for item in request.app.state.navigation if person and (item.role is None or item.role in roles)]
+
+
+def search_items(request: Request) -> list[SearchItem]:
+    """Everything the palette can find for this person: what they may open, once each, navigation first."""
+    items = [
+        SearchItem(i18n._(item.label), item.path, i18n._(N_("Pages")), icon=item.icon)
+        for item in visible_navigation(request)
+    ]
+    for provider in request.app.state.search:
+        items += provider()
+    seen: set[str] = set()
+    return [item for item in items if not (item.path in seen or seen.add(item.path))]  # type: ignore[func-returns-value]
 
 
 def layout_for(request: Request) -> dict[str, Any]:
     """The application's arrangement; where the demo lets people try others, their choice."""
     settings = request.app.state.settings
-    layout: dict[str, Any] = {
-        "navigation": settings.layout_navigation,
-        "sticky_header": settings.layout_sticky_header,
-        "width": settings.layout_width,
-        "density": settings.layout_density,
-    }
-    if request.app.state.layout_preview:
-        for field, allowed in LAYOUTS.items():
-            value = request.cookies.get(f"layout_{field}")
-            if value in allowed:
-                layout[field] = value == "on" if field == "sticky_header" else value
+    layout: dict[str, Any] = {field: getattr(settings, f"layout_{field}") for field in LAYOUTS}
+    for field in settings.layout_choices:
+        value = request.cookies.get(f"layout_{field}")
+        if value in LAYOUTS[field]:
+            layout[field] = value == "on" if field == "sticky_header" else value
     return layout
 
 
@@ -75,7 +114,6 @@ def add_templates(folder: Path) -> None:
 def _render(request: Request, name: str, status_code: int, context: dict[str, Any]) -> HTMLResponse:
     state = request.app.state
     person = getattr(request.state, "person", None)
-    roles = person.roles if person else frozenset()
     query = f"?{request.url.query}" if request.url.query else ""
 
     def local_datetime(value: datetime) -> str:
@@ -90,7 +128,13 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
         theme=getattr(request.state, "theme", "system"),
         layout=layout_for(request),
         person=person,
-        navigation=[item for item in state.navigation if person and (item.role is None or item.role in roles)],
+        navigation=visible_navigation(request),
+        settings_menu=bool(state.settings.layout_choices),
+        theme_options=[
+            ("system", i18n._("As the system"), "monitor"),
+            ("light", i18n._("Light"), "sun"),
+            ("dark", i18n._("Dark"), "moon"),
+        ],
         current_path=request.url.path,
         here=request.url.path + query,
         vendor_scripts=_VENDOR_SCRIPTS,

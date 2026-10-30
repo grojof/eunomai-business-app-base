@@ -1,0 +1,3 @@
+{% from "ui/macros.html" import steps %}
+{{ steps([_("Reported"), _("Planned"), _("In progress"), _("Checked"), _("Closed")], 2) }}
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ steps([_("Reported"), _("Planned"), _("Closed")], 1) }}{% endraw %}</code></pre>

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 22:32+0100\n"
+"POT-Creation-Date: 2026-10-30 23:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -21,10 +21,12 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #, python-format
-msgid "%(num)d component"
-msgid_plural "%(num)d components"
-msgstr[0] "%(num)d componente"
-msgstr[1] "%(num)d componentes"
+msgid ""
+"%(components)s components, %(examples)s official examples, daisyUI "
+"%(version)s"
+msgstr ""
+"%(components)s componentes, %(examples)s ejemplos oficiales, daisyUI "
+"%(version)s"
 
 #, python-format
 msgid "%(num)d inspection is due"
@@ -38,203 +40,289 @@ msgid_plural "%(num)d open work orders"
 msgstr[0] "%(num)d orden de trabajo abierta"
 msgstr[1] "%(num)d órdenes de trabajo abiertas"
 
+msgid "A card with a title, ready for any content."
+msgstr "Una tarjeta con título, lista para cualquier contenido."
+
 msgid "A fictional company that maintains its equipment."
 msgstr "Una empresa ficticia que mantiene sus equipos."
-
-msgid "A short description."
-msgstr "Una descripción breve."
-
-msgid "Action"
-msgstr "Acción"
 
 msgid "Administration"
 msgstr "Administración"
 
-msgid "Back to the gallery"
-msgstr "Volver a la galería"
+msgid "Air compressor"
+msgstr "Compresor de aire"
+
+msgid ""
+"Available: official examples, shown as published and not audited here. "
+"This is not a promise of accessibility. Ask for a macro before using it "
+"on a real screen."
+msgstr ""
+"Disponible: ejemplos oficiales, mostrados tal como se publicaron y sin "
+"auditar aquí. No es una promesa de accesibilidad. Pide una macro antes de"
+" usarlo en una pantalla real."
+
+msgid "Behaviour"
+msgstr "Comportamiento"
 
 msgid "Breadcrumbs"
 msgstr "Ruta de navegación"
 
-msgid "Buttons"
-msgstr "Botones"
-
 msgid "Cancel"
 msgstr "Cancelar"
 
-msgid "Centred"
-msgstr "Centrado"
+msgid "Checked"
+msgstr "Revisado"
 
-msgid "Close"
-msgstr "Cerrar"
+msgid "Class name"
+msgstr "Clase"
+
+msgid "Class names"
+msgstr "Clases"
+
+msgid "Closed"
+msgstr "Cerrado"
 
 msgid "Code"
 msgstr "Código"
 
-msgid "Colours"
-msgstr "Colores"
+msgid "Colour"
+msgstr "Color"
 
-msgid "Comments"
-msgstr "Comentarios"
+msgid "Component"
+msgstr "Componente"
 
-msgid "Compact"
-msgstr "Compacta"
+msgid "Components"
+msgstr "Componentes"
 
-msgid "Component catalogue"
-msgstr "Catálogo de componentes"
+#, python-format
+msgid "Components shown: %(count)s"
+msgstr "Componentes mostrados: %(count)s"
+
+msgid "Conveyor belt"
+msgstr "Cinta transportadora"
+
+msgid "Cooling tower"
+msgstr "Torre de refrigeración"
+
+msgid "Copied"
+msgstr "Copiado"
+
+msgid "Copy"
+msgstr "Copiar"
 
 msgid "Cost to date"
 msgstr "Coste hasta la fecha"
 
-msgid "Dark"
-msgstr "Oscuro"
-
 msgid "Dashboard"
 msgstr "Panel"
 
-msgid "Date"
-msgstr "Fecha"
+msgid "Decorative: not meant for management applications."
+msgstr "Decorativo: no pensado para aplicaciones de gestión."
 
 msgid "Delete"
 msgstr "Eliminar"
 
-msgid "Density"
-msgstr "Densidad"
-
 msgid "Details"
 msgstr "Detalles"
 
-msgid "Directions"
-msgstr "Direcciones"
+msgid "Direction"
+msgstr "Dirección"
 
-msgid "Done"
-msgstr "Hecho"
+msgid "Due soon"
+msgstr "Vence pronto"
 
-msgid "Email"
-msgstr "Correo electrónico"
+msgid "Equipment"
+msgstr "Equipos"
 
-msgid "Empty state"
-msgstr "Estado vacío"
+msgid "Equipment, where it is, its next inspection and its state"
+msgstr "Equipos, dónde están, su próxima inspección y su estado"
 
-msgid "Enter a valid email address."
-msgstr "Escribe un correo electrónico válido."
+msgid ""
+"Every component on offer, with an honest status, and every official "
+"example of each."
+msgstr ""
+"Todos los componentes disponibles, con un estado honesto, y todos los "
+"ejemplos oficiales de cada uno."
 
-msgid "Error"
-msgstr "Error"
+#, python-format
+msgid "Exactly %(value)s"
+msgstr "Exactamente %(value)s"
 
-msgid "Every component in every state."
-msgstr "Cada componente en cada estado."
+msgid ""
+"Examples and their translations come from daisyUI's documentation, under "
+"the MIT licence. Available means an official example, shown as published "
+"and not audited here: it is not a promise of accessibility."
+msgstr ""
+"Los ejemplos y sus traducciones proceden de la documentación de daisyUI, "
+"con licencia MIT. Disponible significa un ejemplo oficial, mostrado tal "
+"como se publicó y sin auditar aquí: no es una promesa de accesibilidad."
 
-msgid "Every component, with its status. Ask for any of them by name."
-msgstr "Cada componente, con su estado. Pide cualquiera por su nombre."
+msgid "Filter components"
+msgstr "Filtrar componentes"
 
-msgid "File"
-msgstr "Archivo"
-
-msgid "Filter"
-msgstr "Filtro"
-
-msgid "First"
-msgstr "Primero"
-
-msgid "Fixed header"
-msgstr "Cabecera fija"
-
-msgid "Full"
-msgstr "Completo"
+msgid "Forklift"
+msgstr "Carretilla elevadora"
 
 msgid "Gallery"
 msgstr "Galería"
 
-msgid "Hidden"
-msgstr "Oculta"
-
 msgid "Hours worked"
 msgstr "Horas trabajadas"
 
-msgid "Icons only"
-msgstr "Solo iconos"
+msgid "In progress"
+msgstr "En curso"
 
-msgid "Indicators"
-msgstr "Indicadores"
+msgid "In service"
+msgstr "En servicio"
 
 msgid "Inspections"
 msgstr "Inspecciones"
 
-msgid "Layouts"
-msgstr "Disposiciones"
+msgid ""
+"It uses Tailwind's own colours, which this base removes, so some colours "
+"differ from the published example."
+msgstr ""
+"Usa los colores propios de Tailwind, que esta base elimina, así que "
+"algunos colores difieren del ejemplo publicado."
+
+msgid "Link to this example"
+msgstr "Enlace a este ejemplo"
 
 msgid "Loading"
 msgstr "Cargando"
 
-msgid "Message"
-msgstr "Mensaje"
+msgid "Location"
+msgstr "Ubicación"
 
-msgid "Messages"
-msgstr "Mensajes"
+msgid "Maintenance plan"
+msgstr "Plan de mantenimiento"
 
-msgid "Name"
-msgstr "Nombre"
+msgid "Modifier"
+msgstr "Modificador"
 
-msgid "Navigation"
-msgstr "Navegación"
+msgid "Next"
+msgstr "Siguiente"
 
 msgid "Next inspection"
 msgstr "Próxima inspección"
 
-msgid "No"
-msgstr "No"
+msgid "No component matches"
+msgstr "Ningún componente coincide"
 
-msgid "No work orders yet"
-msgstr "Aún no hay órdenes de trabajo"
+msgid "Nothing overdue"
+msgstr "Nada vencido"
 
-msgid "Normal"
-msgstr "Normal"
+msgid "Official examples"
+msgstr "Ejemplos oficiales"
+
+msgid "On this page"
+msgstr "En esta página"
 
 msgid "Only people with the administrator role can open this page."
 msgstr "Solo pueden abrir esta página las personas con el rol de administrador."
 
-msgid "Open"
-msgstr "Abrir"
-
 msgid "Open work orders"
 msgstr "Órdenes de trabajo abiertas"
 
-msgid "Option one"
-msgstr "Opción uno"
+msgid "Other components"
+msgstr "Otros componentes"
 
-msgid "Option two"
-msgstr "Opción dos"
+msgid "Our macro"
+msgstr "Nuestra macro"
 
-msgid "Pages"
-msgstr "Páginas"
+msgid "Overdue"
+msgstr "Vencidos"
 
-msgid "Placements"
-msgstr "Posiciones"
+msgid "Packing"
+msgstr "Embalaje"
 
-msgid "Rating"
-msgstr "Valoración"
+msgid "Part"
+msgstr "Parte"
+
+msgid "Placement"
+msgstr "Posición"
+
+msgid "Planned"
+msgstr "Planificado"
+
+msgid "Plant room"
+msgstr "Sala de máquinas"
+
+msgid "Preventive plan"
+msgstr "Plan preventivo"
+
+msgid "Preview"
+msgstr "Vista previa"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid ""
+"Published by daisyUI, in English. Their text is left as it is. Pictures "
+"are replaced by a neutral placeholder."
+msgstr ""
+"Publicados por daisyUI, en inglés. Su texto se deja tal cual. Las "
+"imágenes se sustituyen por una imagen neutra."
+
+msgid "Reported"
+msgstr "Comunicado"
+
+msgid "Roof"
+msgstr "Cubierta"
+
+msgid "Safety checks"
+msgstr "Controles de seguridad"
 
 msgid "Save"
 msgstr "Guardar"
 
-msgid "Second"
-msgstr "Segundo"
+msgid ""
+"Screens call this macro, with tests and a review behind it. Use it "
+"instead of the classes below."
+msgstr ""
+"Las pantallas llaman a esta macro, con pruebas y una revisión detrás. "
+"Úsala en lugar de las clases de abajo."
+
+msgid ""
+"Screens call this macro. It has tests, and a person's review is still to "
+"come."
+msgstr ""
+"Las pantallas llaman a esta macro. Tiene pruebas, y falta la revisión de "
+"una persona."
+
+msgid "Settings"
+msgstr "Ajustes"
 
 msgid "Show inspections"
 msgstr "Mostrar inspecciones"
 
-msgid "Side"
-msgstr "Lateral"
+msgid ""
+"Shown as code and not run: it needs a script, and this application runs "
+"none of its own and loads nothing from another server."
+msgstr ""
+"Se muestra como código y no se ejecuta: necesita un script, y esta "
+"aplicación no ejecuta ninguno ajeno ni carga nada de otro servidor."
 
-msgid "Sizes"
-msgstr "Tamaños"
+msgid "Size"
+msgstr "Tamaño"
 
-msgid "Status"
+msgid "Spare parts in stock"
+msgstr "Repuestos en existencias"
+
+msgid "Standby generator"
+msgstr "Generador de reserva"
+
+msgid "State"
 msgstr "Estado"
 
-msgid "Styles"
-msgstr "Estilos"
+msgid "Statuses"
+msgstr "Estados"
+
+msgid "Stopped"
+msgstr "Parado"
+
+msgid "Style"
+msgstr "Estilo"
 
 msgid "Summary"
 msgstr "Resumen"
@@ -245,42 +333,36 @@ msgstr "La orden de trabajo no se ha podido guardar. Vuelve a intentarlo."
 msgid "The work order was saved."
 msgstr "La orden de trabajo se ha guardado."
 
-msgid "Theme"
-msgstr "Tema"
-
-msgid "Third"
-msgstr "Tercero"
-
 msgid "This equipment is due for inspection."
 msgstr "A este equipo le toca inspección."
 
-msgid "Title"
-msgstr "Título"
+msgid "This month"
+msgstr "Este mes"
 
-msgid "Top"
-msgstr "Superior"
+msgid "Try another word, or look through the categories."
+msgstr "Prueba con otra palabra, o mira las categorías."
 
-msgid "Try each arrangement. An application fixes its own in its settings."
-msgstr "Prueba cada disposición. Cada aplicación fija la suya en sus ajustes."
+msgid "Type"
+msgstr "Tipo"
 
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualizado: %(moment)s"
 
-msgid "Volume"
-msgstr "Volumen"
+msgid "Warehouse"
+msgstr "Almacén"
 
-msgid "Warning"
-msgstr "Aviso"
+msgid "What it does"
+msgstr "Qué hace"
 
-msgid "Width"
-msgstr "Ancho"
+msgid "Work order for the cooling tower"
+msgstr "Orden de trabajo de la torre de refrigeración"
 
-msgid "Work orders appear here when someone creates one."
-msgstr "Las órdenes de trabajo aparecen aquí cuando alguien crea una."
+msgid "Work orders appear here when their date passes."
+msgstr "Las órdenes de trabajo aparecen aquí cuando pasa su fecha."
 
-msgid "Yes"
-msgstr "Sí"
+msgid "Workshop"
+msgstr "Taller"
 
 msgid "Your changes are saved as you type."
 msgstr "Tus cambios se guardan mientras escribes."

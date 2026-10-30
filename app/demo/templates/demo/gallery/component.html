@@ -1,0 +1,143 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import icon, message %}
+{% block title %}{{ title.text }}{% endblock %}
+{% block scripts %}<script src="/static/demo/gallery.js" defer></script>{% endblock %}
+
+{% block content %}
+<div class="flex items-start gap-10">
+  <div class="min-w-0 max-w-5xl grow space-y-10">
+    <header class="space-y-3">
+      <nav class="breadcrumbs text-sm" aria-label="{{ _('Breadcrumbs') }}">
+        <ul>
+          <li><a href="/gallery">{{ _("Gallery") }}</a></li>
+          <li>{{ category }}</li>
+        </ul>
+      </nav>
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-4xl"{% if title.lang %} lang="{{ title.lang }}"{% endif %}>{{ title.text }}</h1>
+        <span class="badge {{ status.classes }}" data-status="{{ status.status }}">{{ status.label }}</span>
+      </div>
+      {% if description %}<p class="max-w-3xl text-lg"{% if description.lang %} lang="{{ description.lang }}"{% endif %}>{{ description.text }}</p>{% endif %}
+      {% if status.status == "problems" %}
+      {{ message("warning", note) }}
+      {% elif note %}
+      {{ message("info", note) }}
+      {% elif status.status == "available" %}
+      <p class="max-w-3xl text-sm">{{ _("Available: official examples, shown as published and not audited here. This is not a promise of accessibility. Ask for a macro before using it on a real screen.") }}</p>
+      {% elif status.status == "decorative" %}
+      <p class="max-w-3xl text-sm">{{ _("Decorative: not meant for management applications.") }}</p>
+      {% endif %}
+    </header>
+
+    {% if specimen %}
+    <section class="space-y-3" aria-labelledby="macro-title">
+      <h2 id="macro-title" class="text-xl">{{ _("Our macro") }}</h2>
+      <p>{% if status.status == "approved" %}{{ _("Screens call this macro, with tests and a review behind it. Use it instead of the classes below.") }}{% else %}{{ _("Screens call this macro. It has tests, and a person's review is still to come.") }}{% endif %}</p>
+      <div class="rounded-box border border-base-300 bg-base-100 p-6">
+        {% include specimen %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if classes %}
+    <section class="space-y-3" aria-labelledby="classes-title">
+      <h2 id="classes-title" class="text-xl">{{ _("Class names") }}</h2>
+      <div class="max-h-96 overflow-auto rounded-box border border-base-300 bg-base-100" role="region" tabindex="0" aria-labelledby="classes-title">
+        <table class="table table-sm table-pin-rows">
+          <thead>
+            <tr><th scope="col">{{ _("Class name") }}</th><th scope="col">{{ _("Type") }}</th><th scope="col">{{ _("What it does") }}</th></tr>
+          </thead>
+          <tbody>
+            {% for group, rows in classes %}
+            {% for class_name, what in rows %}
+            <tr>
+              <th scope="row" class="whitespace-nowrap"><code class="font-medium">{{ class_name }}</code></th>
+              <td><span class="badge badge-ghost badge-sm whitespace-nowrap">{{ group }}</span></td>
+              <td{% if what.lang %} lang="{{ what.lang }}"{% endif %}>{{ what.text }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    {% endif %}
+
+    {% if examples %}
+    <section class="space-y-10" aria-labelledby="examples-title">
+      <div>
+        <h2 id="examples-title" class="text-xl">{{ _("Official examples") }}</h2>
+        <p class="text-sm">{{ _("Published by daisyUI, in English. Their text is left as it is. Pictures are replaced by a neutral placeholder.") }}</p>
+      </div>
+      {% set shown = namespace(section="") %}
+      {% for example in examples %}
+      {% if example.section and example.section.text != shown.section %}
+      {% set shown.section = example.section.text %}
+      <h3 class="border-b border-base-300 pb-2 text-lg font-semibold"{% if example.section.lang %} lang="{{ example.section.lang }}"{% endif %}>{{ example.section.text|inline_code }}</h3>
+      {% endif %}
+      <section id="{{ example.id }}" class="scroll-mt-24 space-y-2" aria-labelledby="{{ example.id }}-title" data-example>
+        <div class="flex items-center gap-2">
+          <a class="btn btn-ghost btn-square btn-xs" href="#{{ example.id }}" aria-label="{{ _('Link to this example') }}">{{ icon("hash", "size-3") }}</a>
+          <h4 id="{{ example.id }}-title" class="font-semibold"{% if example.title.lang %} lang="{{ example.title.lang }}"{% endif %}>{{ example.title.text|inline_code }}</h4>
+        </div>
+        {% if example.subtitle %}<p class="text-sm"{% if example.subtitle.lang %} lang="{{ example.subtitle.lang }}"{% endif %}>{{ example.subtitle.text|inline_code }}</p>{% endif %}
+        {% if example.palette %}<p class="text-sm">{{ _("It uses Tailwind's own colours, which this base removes, so some colours differ from the published example.") }}</p>{% endif %}
+
+        {% macro copy_button() %}
+        <button class="btn btn-ghost btn-xs gap-1" type="button" data-copy="{{ example.id }}-source" data-copied="{{ _('Copied') }}">
+          {{ icon("copy", "size-3") }}<span data-copy-label>{{ _("Copy") }}</span>
+        </button>
+        {% endmacro %}
+
+        {% if example.runs %}
+        <div class="flex items-end justify-between gap-2">
+          <div class="tabs tabs-lift tabs-sm" role="tablist" aria-label="{{ example.title.text }}">
+            <button id="{{ example.id }}-tab-preview" class="tab text-base-content" type="button" role="tab" aria-selected="true" aria-controls="{{ example.id }}-preview">{{ _("Preview") }}</button>
+            <button id="{{ example.id }}-tab-code" class="tab text-base-content" type="button" role="tab" aria-selected="false" aria-controls="{{ example.id }}-code" tabindex="-1">{{ _("Code") }}</button>
+          </div>
+          {{ copy_button() }}
+        </div>
+        <div id="{{ example.id }}-preview" role="tabpanel" aria-labelledby="{{ example.id }}-tab-preview">
+          <!--official-->
+          <div class="example-preview" data-kind="{{ example.kind }}" data-official lang="en">
+            {{ example.html }}
+          </div>
+          <!--/official-->
+        </div>
+        <div id="{{ example.id }}-code" role="tabpanel" aria-labelledby="{{ example.id }}-tab-code" hidden>
+          <pre class="example-code" tabindex="0"><code id="{{ example.id }}-source">{{ example.code }}</code></pre>
+        </div>
+        {% else %}
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-sm">{{ _("Shown as code and not run: it needs a script, and this application runs none of its own and loads nothing from another server.") }}</p>
+          {{ copy_button() }}
+        </div>
+        <pre class="example-code" role="region" tabindex="0" aria-label="{{ example.title.text }}"><code id="{{ example.id }}-source">{{ example.code }}</code></pre>
+        {% endif %}
+      </section>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    <nav class="grid gap-3 border-t border-base-300 pt-6 sm:grid-cols-2" aria-label="{{ _('Other components') }}">
+      {% if previous %}
+      <a class="btn h-auto justify-start py-3" href="/gallery/{{ previous[0] }}" rel="prev">{{ icon("chevron-left", "size-4") }}<span class="text-start"><span class="block text-xs font-normal">{{ _("Previous") }}</span>{{ previous[1].text }}</span></a>
+      {% else %}<span></span>{% endif %}
+      {% if following %}
+      <a class="btn h-auto justify-end py-3" href="/gallery/{{ following[0] }}" rel="next"><span class="text-end"><span class="block text-xs font-normal">{{ _("Next") }}</span>{{ following[1].text }}</span>{{ icon("chevron-right", "size-4") }}</a>
+      {% endif %}
+    </nav>
+  </div>
+
+  {% if examples %}
+  <aside class="gallery-index sticky top-20 hidden w-56 shrink-0 overflow-y-auto xl:block" aria-labelledby="index-title">
+    <h2 id="index-title" class="px-3 pb-2 text-sm font-semibold">{{ _("On this page") }}</h2>
+    <ul class="menu menu-sm w-full p-0" data-gallery-index>
+      {% for example in examples %}
+      <li><a href="#{{ example.id }}"{% if example.title.lang %} lang="{{ example.title.lang }}"{% endif %}>{{ example.title.text|replace("`", "") }}</a></li>
+      {% endfor %}
+    </ul>
+  </aside>
+  {% endif %}
+</div>
+{% endblock %}

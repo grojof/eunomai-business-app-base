@@ -9,7 +9,7 @@ tags: [component, navigation, available]
 
 # Steps
 
-**Status:** available. **Category:** navigation.
+**Status:** available. **Category:** navigation. **In the demo:** `/gallery/steps`.
 
 This repository's rules come first. Where this page disagrees with [Standards](../standards.md) or
 [AGENTS.md](../../AGENTS.md), they win: no CDN, no npm, no images from other servers, no inline `style` or `onclick`.

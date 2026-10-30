@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
-{% from "ui/macros.html" import page_heading %}
+{% from "ui/macros.html" import icon %}
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
-{{ page_heading(title, advice) }}
-{% if status != 401 %}<p><a href="/">{{ _("Back to the start") }}</a></p>{% endif %}
+<div class="mx-auto flex max-w-md flex-col items-center gap-3 py-16 text-center">
+  <span class="grid size-16 place-items-center rounded-full bg-base-100">{{ icon("triangle-alert", "size-8") }}</span>
+  <h1>{{ title }}</h1>
+  <p>{{ advice }}</p>
+  {% if status != 401 %}<a class="btn btn-primary mt-2" href="/">{{ _("Back to the start") }}</a>{% endif %}
+</div>
 {% endblock %}

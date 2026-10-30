@@ -1,0 +1,118 @@
+{
+ "name": "calendar",
+ "title": {
+  "en": "Calendar"
+ },
+ "description": {
+  "en": "Calendar includes styles for different calendar libraries.",
+  "ca": "Calendar inclou estils per a diferents biblioteques de calendari.",
+  "es": "Calendario incluye estilos para diferentes bibliotecas de calendario."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "cally",
+     "description": {
+      "en": "for Cally web component",
+      "ca": "per al component web de Cally",
+      "es": "para el componente web Cally"
+     }
+    },
+    {
+     "class": "react-day-picker",
+     "description": {
+      "en": "for the DayPicker component",
+      "ca": "per al component DayPicker",
+      "es": "para el componente DayPicker"
+     }
+    },
+    {
+     "class": "vc",
+     "description": {
+      "en": "for Vanilla Calendar Pro",
+      "ca": "per a Vanilla Calendar Pro",
+      "es": "para Calendario Vainilla Pro"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "cally-calendar-example",
+   "section": {
+    "en": "1. Cally Calendar",
+    "ca": "1. Calendari Cally",
+    "es": "1. Calendario de llamadas"
+   },
+   "title": {
+    "en": "Cally calendar example"
+   },
+   "subtitle": {
+    "en": "Example using daisyUI styles",
+    "ca": "Exemple amb estils daisyUI",
+    "es": "Ejemplo usando estilos daisyUI"
+   },
+   "html": "<!--\n* Import Cally web component from CDN\n<script type=\"module\" src=\"https://unpkg.com/cally\"></script>\n\n* Or install as a dependency:\nnpm i cally\n* and import it in JS\nimport \"cally\";\n-->\n\n<calendar-date class=\"cally bg-base-100 border border-base-300 shadow-lg rounded-box\">\n  <svg aria-label=\"Previous\" class=\"fill-current size-4\" slot=\"previous\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"M15.75 19.5 8.25 12l7.5-7.5\"></path></svg>\n  <svg aria-label=\"Next\" class=\"fill-current size-4\" slot=\"next\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"m8.25 4.5 7.5 7.5-7.5 7.5\"></path></svg>\n  <calendar-month></calendar-month>\n</calendar-date>",
+   "runs": false,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "cally-date-picker-example",
+   "section": {
+    "en": "1. Cally Calendar",
+    "ca": "1. Calendari Cally",
+    "es": "1. Calendario de llamadas"
+   },
+   "title": {
+    "en": "Cally date picker example"
+   },
+   "subtitle": {
+    "en": "Example using daisyUI styles and daisyUI dropdown",
+    "ca": "Exemple amb estils daisyUI i daisyUI Dropdown",
+    "es": "Ejemplo usando estilos daisyUI y daisyUI Dropdown"
+   },
+   "html": "<!--\n* Import Cally web component from CDN\n<script type=\"module\" src=\"https://unpkg.com/cally\"></script>\n\n* Or install as a dependency:\nnpm i cally\n* and import it in JS\nimport \"cally\";\n-->\n\n<button popovertarget=\"cally-popover1\" class=\"input\" id=\"cally1\" data-style=\"anchor-name:--cally1\">\n  Pick a date\n</button>\n<div popover id=\"cally-popover1\" class=\"dropdown bg-base-100 rounded-box shadow-lg\" data-style=\"position-anchor:--cally1\">\n  <calendar-date class=\"cally\" onchange=\"document.getElementById('cally1').innerText = this.value\">\n    <svg aria-label=\"Previous\" class=\"fill-current size-4\" slot=\"previous\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M15.75 19.5 8.25 12l7.5-7.5\"></path></svg>\n    <svg aria-label=\"Next\" class=\"fill-current size-4\" slot=\"next\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"m8.25 4.5 7.5 7.5-7.5 7.5\"></path></svg>\n    <calendar-month></calendar-month>\n  </calendar-date>\n</div>",
+   "runs": false,
+   "kind": "floats",
+   "palette": false
+  },
+  {
+   "id": "vanilla-calendar-pro-example",
+   "section": {
+    "en": "3. Vanilla Calendar Pro",
+    "es": "3. Calendario vainilla Pro"
+   },
+   "title": {
+    "en": "Vanilla Calendar Pro Example",
+    "ca": "Exemple de Vanilla Calendar Pro",
+    "es": "Ejemplo de Calendario Vainilla Pro"
+   },
+   "subtitle": null,
+   "html": "<div id=\"calendar\" class=\"vc\"></div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "vanilla-calendar-pro-cdn-example",
+   "section": {
+    "en": "3. Vanilla Calendar Pro",
+    "es": "3. Calendario vainilla Pro"
+   },
+   "title": {
+    "en": "Vanilla Calendar Pro CDN Example",
+    "ca": "Exemple de Vanilla Calendar Pro CDN",
+    "es": "Ejemplo de CDN de Vanilla Calendar Pro"
+   },
+   "subtitle": null,
+   "html": "<script src=\"https://cdn.jsdelivr.net/npm/vanilla-calendar-pro/index.js\" defer></script>\n\n<div id=\"calendar\" class=\"vc\"></div>\n\n<script>\n  document.addEventListener(\"DOMContentLoaded\", () => {\n    const { Calendar } = window.VanillaCalendarPro\n    const calendar = new Calendar(\"#calendar\")\n    calendar.init()\n  })\n</script>",
+   "runs": false,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

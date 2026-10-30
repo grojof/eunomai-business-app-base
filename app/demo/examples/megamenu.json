@@ -1,0 +1,195 @@
+{
+ "name": "megamenu",
+ "title": {
+  "en": "Megamenu"
+ },
+ "description": {
+  "en": "A megamenu is a large, horizontal menu where each item opens a popover to show a large block of navigation links. Megamenu must be used once, on top of the page. Inside each popover, you can use a daisyUI menu, or any custom content. Megamenu fits better on large screens only, and for small screens, you can hide the megamenu and show the content in a dropdown or a drawer.",
+  "ca": "Un Megamenu és un Menu gran i horitzontal on cada element obre una finestra emergent per mostrar un gran bloc d'enllaços de navegació. Megamenu s'ha d'utilitzar una vegada, a la part superior de la pàgina. Dins de cada popover, podeu utilitzar un daisyUI Menu o qualsevol contingut personalitzat. Megamenu només s'adapta millor a pantalles grans i, per a pantalles petites, podeu amagar el Megamenu i mostrar el contingut en un Dropdown o un calaix.",
+  "es": "Un Megamenu es un Menu horizontal grande donde cada elemento abre una ventana emergente para mostrar un gran bloque de enlaces de navegación. Megamenu debe usarse una vez, en la parte superior de la página. Dentro de cada ventana emergente, puede usar un daisyUI Menu o cualquier contenido personalizado. Megamenu se adapta mejor solo a pantallas grandes y, para pantallas pequeñas, puede ocultar el Megamenu y mostrar el contenido en un Dropdown o en un cajón."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "megamenu",
+     "description": {
+      "en": "For the container div",
+      "ca": "Per al contenidor div",
+      "es": "Para el contenedor div"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "megamenu-active",
+     "description": {
+      "en": "Indicator"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "megamenu-wide",
+     "description": {
+      "en": "megamenu dropdown will be as wide as the megamenu container",
+      "ca": "Megamenu Dropdown serà tan ample com el contenidor Megamenu",
+      "es": "Megamenu Dropdown será tan ancho como el contenedor Megamenu"
+     }
+    },
+    {
+     "class": "megamenu-full",
+     "description": {
+      "en": "megamenu dropdown will fill the entire width of the page",
+      "ca": "Megamenu Dropdown omplirà tota l'amplada de la pàgina",
+      "es": "Megamenu Dropdown llenará todo el ancho de la página"
+     }
+    }
+   ]
+  },
+  {
+   "group": "direction",
+   "items": [
+    {
+     "class": "megamenu-vertical",
+     "description": {
+      "en": "Hides horizontal megamenu so we can open a vertical megamenu in small screens",
+      "ca": "Amaga el Megamenu horitzontal perquè puguem obrir un Megamenu vertical en pantalles petites",
+      "es": "Oculta Megamenu horizontal para que podamos abrir un Megamenu vertical en pantallas pequeñas"
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "megamenu-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "megamenu-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "megamenu-md",
+     "description": {
+      "en": "Medium size",
+      "ca": "Talla mitjana",
+      "es": "tamaño mediano"
+     },
+     "default": true
+    },
+    {
+     "class": "megamenu-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "megamenu-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "responsive-megamenu-with-small-vertical-menus",
+   "section": null,
+   "title": {
+    "en": "Responsive megamenu with small vertical menus"
+   },
+   "subtitle": {
+    "en": "Each button must have a corresponding popover with the same id as the popovertarget value. HTML IDs must be unique.",
+    "ca": "Cada Button ha de tenir un popover corresponent amb el mateix identificador que el valor popovertarget. Els identificadors HTML han de ser únics.",
+    "es": "Cada Button debe tener un popover correspondiente con la misma identificación que el valor popovertarget. Los ID HTML deben ser únicos."
+   },
+   "html": "<!-- popovertarget must match the ID of the corresponding popover, and each ID must be unique -->\n<button class=\"btn sm:hidden\" popovertarget=\"my-megamenu-1\">Menu</button>\n\n<div class=\"megamenu max-sm:megamenu-vertical p-2 border border-base-300\" id=\"my-megamenu-1\" popover>\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"a1\">Services</button>\n  <div id=\"a1\" popover>\n    <ul class=\"menu\">\n      <li><a>Enterprise</a></li>\n      <li><a>CRM software</a></li>\n      <li><a>Security</a></li>\n      <li><a>Consulting</a></li>\n    </ul>\n  </div>\n\n  <button popovertarget=\"a2\">AI</button>\n  <div id=\"a2\" popover>\n    <ul class=\"menu\">\n      <li><a>AI infrastructure</a></li>\n      <li><a>Image generation</a></li>\n      <li><a>MCP servers</a></li>\n    </ul>\n  </div>\n\n  <button popovertarget=\"a3\">Cloud Solutions</button>\n  <div id=\"a3\" popover>\n    <ul class=\"menu\">\n      <li><a>Cloud computing</a></li>\n      <li><a>Storage solutions</a></li>\n      <li><a>Database services</a></li>\n      <li><a>CDN performance</a></li>\n    </ul>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "megamenu-with-wide-popovers-and-horizontal-menus",
+   "section": null,
+   "title": {
+    "en": "Megamenu with wide popovers and horizontal menus"
+   },
+   "subtitle": null,
+   "html": "<button class=\"btn sm:hidden\" popovertarget=\"my-megamenu-2\">Menu</button>\n<div class=\"megamenu max-sm:megamenu-vertical megamenu-wide p-2 border border-base-300\" id=\"my-megamenu-2\" popover>\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"b1\">One</button>\n  <div id=\"b1\" popover>\n    <ul class=\"menu menu-horizontal\">\n      <li><a>Enterprise</a></li>\n      <li><a>CRM software</a></li>\n      <li><a>Security</a></li>\n      <li><a>Consulting</a></li>\n    </ul>\n  </div>\n\n  <button popovertarget=\"b2\">Two</button>\n  <div id=\"b2\" popover>\n    <ul class=\"menu menu-horizontal\">\n      <li><a>AI infrastructure</a></li>\n      <li><a>Image generation</a></li>\n      <li><a>MCP servers</a></li>\n    </ul>\n  </div>\n\n  <button popovertarget=\"b3\">Three</button>\n  <div id=\"b3\" popover>\n    <ul class=\"menu menu-horizontal\">\n      <li><a>Cloud computing</a></li>\n      <li><a>Storage solutions</a></li>\n      <li><a>Database services</a></li>\n      <li><a>CDN performance</a></li>\n    </ul>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "megamenu-with-a-menus-and-lots-of-links",
+   "section": null,
+   "title": {
+    "en": "Megamenu with a menus and lots of links"
+   },
+   "subtitle": null,
+   "html": "<button class=\"btn sm:hidden\" popovertarget=\"my-megamenu-3\">Menu</button>\n<div class=\"megamenu max-sm:megamenu-vertical megamenu-wide p-2 border border-base-300\" id=\"my-megamenu-3\" popover>\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"c1\">One</button>\n  <div id=\"c1\" popover>\n    <div class=\"flex max-sm:flex-col items-start\">\n      <ul class=\"menu w-full md:menu-horizontal\">\n        <li>\n          <a>Enterprise</a>\n          <ul>\n            <li><a>CRM software</a></li>\n            <li><a>Marketing management</a></li>\n            <li><a>Security</a></li>\n            <li><a>Consulting</a></li>\n          </ul>\n        </li>\n        <li>\n          <a>Company</a>\n          <ul>\n            <li><a>About us</a></li>\n            <li><a>Contact us</a></li>\n            <li><a>Privacy policy</a></li>\n            <li><a>Press kit</a></li>\n          </ul>\n        </li>\n      </ul>\n      <img src=\"/static/ui/placeholders/photo-3.svg\" class=\"md:max-w-sm max-md:w-auto\" alt=\"Tailwind CSS megamenu\" />\n    </div>\n  </div>\n\n  <button popovertarget=\"c2\">Two</button>\n  <div id=\"c2\" popover>\n    <div class=\"flex max-sm:flex-col items-start\">\n      <ul class=\"menu w-full md:menu-horizontal\">\n        <li>\n          <a>Enterprise</a>\n          <ul>\n            <li><a>CRM software</a></li>\n            <li><a>Marketing management</a></li>\n            <li><a>Security</a></li>\n            <li><a>Consulting</a></li>\n            <li><a>Privacy policy</a></li>\n            <li><a>Press kit</a></li>\n          </ul>\n        </li>\n        <li>\n          <a>Products</a>\n          <ul>\n            <li><a>UI Kit</a></li>\n            <li><a>WordPress themes</a></li>\n            <li><a>WordPress plugins</a></li>\n            <li><a>Color picker app</a></li>\n            <li><a>About us</a></li>\n            <li><a>Contact us</a></li>\n          </ul>\n        </li>\n      </ul>\n      <img src=\"/static/ui/placeholders/photo-2.svg\" class=\"md:max-w-sm max-md:w-auto\" alt=\"Tailwind CSS megamenu component\" />\n    </div>\n  </div>\n\n  <button popovertarget=\"c3\">Three</button>\n  <div id=\"c3\" popover>\n    <div class=\"flex max-sm:flex-col items-start\">\n      <ul class=\"menu w-full md:menu-horizontal\">\n        <li>\n          <ul>\n            <li class=\"menu-title\">Solutions</li>\n            <li><a>Design</a></li>\n            <li><a>Development</a></li>\n            <li><a>Hosting</a></li>\n            <li><a>Domain register</a></li>\n          </ul>\n        </li>\n        <li>\n          <ul>\n            <li class=\"menu-title\">Products</li>\n            <li><a>UI Kit</a></li>\n            <li><a>Cloud Platform</a></li>\n            <li><a>Open source</a></li>\n            <li>\n              <ul>\n                <li><a>Auth management system</a></li>\n                <li><a>VScode theme</a></li>\n                <li><a>Color picker app</a></li>\n              </ul>\n            </li>\n          </ul>\n        </li>\n        <li>\n          <ul>\n            <li class=\"menu-title\">Enterprise</li>\n            <li><a>CRM software</a></li>\n            <li><a>Marketing management</a></li>\n            <li><a>Security</a></li>\n            <li><a>Consulting</a></li>\n          </ul>\n        </li>\n        <li>\n          <ul>\n            <li class=\"menu-title\">Company</li>\n            <li><a>About us</a></li>\n            <li><a>Contact us</a></li>\n            <li><a>Privacy policy</a></li>\n            <li><a>Press kit</a></li>\n          </ul>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "megamenu-in-a-navbar",
+   "section": null,
+   "title": {
+    "en": "Megamenu in a navbar"
+   },
+   "subtitle": null,
+   "html": "<div class=\"navbar bg-base-100 shadow-sm\">\n  <div class=\"navbar-start\">\n    <a class=\"btn btn-ghost text-xl\">daisyUI</a>\n  </div>\n  <div class=\"navbar-center\">\n    <div class=\"megamenu max-sm:megamenu-vertical megamenu-full\" id=\"my-megamenu-4\" popover>\n      <span class=\"megamenu-active\"></span>\n      <button popovertarget=\"d1\">One</button>\n      <div id=\"d1\" popover>\n        <div class=\"flex max-sm:flex-col items-start\">\n          <ul class=\"menu w-full md:menu-horizontal\">\n            <li>\n              <a>Enterprise</a>\n              <ul>\n                <li><a>CRM software</a></li>\n                <li><a>Marketing management</a></li>\n                <li><a>Security</a></li>\n                <li><a>Consulting</a></li>\n              </ul>\n            </li>\n            <li>\n              <a>Company</a>\n              <ul>\n                <li><a>About us</a></li>\n                <li><a>Contact us</a></li>\n                <li><a>Privacy policy</a></li>\n                <li><a>Press kit</a></li>\n              </ul>\n            </li>\n          </ul>\n          <img src=\"/static/ui/placeholders/photo-3.svg\" class=\"md:max-w-sm max-md:hidden\" alt=\"Tailwind CSS megamenu\" />\n        </div>\n      </div>\n      <button popovertarget=\"d2\">Two</button>\n      <div id=\"d2\" popover>\n        <div class=\"flex max-sm:flex-col items-start\">\n          <ul class=\"menu w-full md:menu-horizontal\">\n            <li>\n              <a>Enterprise</a>\n              <ul>\n                <li><a>CRM software</a></li>\n                <li><a>Marketing management</a></li>\n                <li><a>Security</a></li>\n                <li><a>Consulting</a></li>\n                <li><a>Privacy policy</a></li>\n                <li><a>Press kit</a></li>\n              </ul>\n            </li>\n            <li>\n              <a>Products</a>\n              <ul>\n                <li><a>UI Kit</a></li>\n                <li><a>WordPress themes</a></li>\n                <li><a>WordPress plugins</a></li>\n                <li><a>Color picker app</a></li>\n                <li><a>About us</a></li>\n                <li><a>Contact us</a></li>\n              </ul>\n            </li>\n          </ul>\n          <img src=\"/static/ui/placeholders/photo-2.svg\" class=\"md:max-w-sm max-md:hidden\" alt=\"Tailwind CSS megamenu component\" />\n        </div>\n      </div>\n      <button popovertarget=\"d3\">Three</button>\n      <div id=\"d3\" popover>\n        <div class=\"flex max-sm:flex-col items-start\">\n          <ul class=\"menu w-full md:menu-horizontal\">\n            <li>\n              <a>Solutions</a>\n              <ul>\n                <li><a>Design</a></li>\n                <li><a>Development</a></li>\n                <li><a>Hosting</a></li>\n                <li><a>Domain register</a></li>\n              </ul>\n            </li>\n            <li>\n              <a>Products</a>\n              <ul>\n                <li><a>UI Kit</a></li>\n                <li>\n                  <a>Open source</a>\n                  <ul>\n                    <li><a>Auth management system</a></li>\n                    <li><a>VScode theme</a></li>\n                    <li><a>Color picker app</a></li>\n                  </ul>\n                </li>\n              </ul>\n            </li>\n            <li>\n              <a>Company</a>\n              <ul>\n                <li><a>About us</a></li>\n                <li><a>Contact us</a></li>\n                <li><a>Privacy policy</a></li>\n                <li><a>Press kit</a></li>\n              </ul>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div class=\"navbar-end\">\n    <a class=\"btn\">Login</a>\n    <button class=\"btn sm:hidden\" popovertarget=\"my-megamenu-4\">Menu</button>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "megamenu-without-arrows",
+   "section": null,
+   "title": {
+    "en": "megamenu without arrows"
+   },
+   "subtitle": null,
+   "html": "<div class=\"megamenu p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button class=\"after:content-none\" popovertarget=\"e1\">One</button>\n  <div id=\"e1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button class=\"after:content-none\" popovertarget=\"e2\">Two</button>\n  <div id=\"e2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "megamenu-in-different-sizes",
+   "section": null,
+   "title": {
+    "en": "Megamenu in different sizes"
+   },
+   "subtitle": null,
+   "html": "<div class=\"megamenu megamenu-xs p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"f1\">One</button>\n  <div id=\"f1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button popovertarget=\"f2\">Two</button>\n  <div id=\"f2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n\n  <button popovertarget=\"f3\">Three</button>\n  <div id=\"f3\" popover>\n    <div class=\"p-4\">Content for the third item</div>\n  </div>\n</div>\n<div class=\"megamenu megamenu-sm p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"g1\">One</button>\n  <div id=\"g1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button popovertarget=\"g2\">Two</button>\n  <div id=\"g2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n\n  <button popovertarget=\"g3\">Three</button>\n  <div id=\"g3\" popover>\n    <div class=\"p-4\">Content for the third item</div>\n  </div>\n</div>\n<div class=\"megamenu megamenu-md p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"h1\">One</button>\n  <div id=\"h1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button popovertarget=\"h2\">Two</button>\n  <div id=\"h2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n\n  <button popovertarget=\"h3\">Three</button>\n  <div id=\"h3\" popover>\n    <div class=\"p-4\">Content for the third item</div>\n  </div>\n</div>\n<div class=\"megamenu megamenu-lg p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"i1\">One</button>\n  <div id=\"i1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button popovertarget=\"i2\">Two</button>\n  <div id=\"i2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n\n  <button popovertarget=\"i3\">Three</button>\n  <div id=\"i3\" popover>\n    <div class=\"p-4\">Content for the third item</div>\n  </div>\n</div>\n<div class=\"megamenu megamenu-xl p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"j1\">One</button>\n  <div id=\"j1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button popovertarget=\"j2\">Two</button>\n  <div id=\"j2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n\n  <button popovertarget=\"j3\">Three</button>\n  <div id=\"j3\" popover>\n    <div class=\"p-4\">Content for the third item</div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

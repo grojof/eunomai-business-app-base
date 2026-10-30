@@ -1,0 +1,100 @@
+{
+ "name": "mockup-code",
+ "title": {
+  "en": "Code mockup"
+ },
+ "description": {
+  "en": "Code mockup is used to show a block of code in a box that looks like a code editor.",
+  "ca": "Les maquetes de codi s'utilitzen per mostrar un bloc de codi en una caixa que sembla un editor de codi.",
+  "es": "El Mockup de código se usa para mostrar un bloque de código en un cuadro que parece un editor de código."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "mockup-code",
+     "description": {
+      "en": "Code terminal mockup",
+      "ca": "Maqueta de terminal de codi",
+      "es": "Maqueta de terminal de código"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "mockup-code-with-line-prefix",
+   "section": null,
+   "title": {
+    "en": "mockup code with line prefix"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-code w-full\">\n  <pre data-prefix=\"$\"><code>npm i daisyui</code></pre>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "multi-line",
+   "section": null,
+   "title": {
+    "en": "Multi line"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-code w-full\">\n  <pre data-prefix=\"$\"><code>npm i daisyui</code></pre>\n  <pre data-prefix=\">\" class=\"text-warning\"><code>installing...</code></pre>\n  <pre data-prefix=\">\" class=\"text-success\"><code>Done!</code></pre>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "highlighted-line",
+   "section": null,
+   "title": {
+    "en": "Highlighted line"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-code w-full\">\n  <pre data-prefix=\"1\"><code>npm i daisyui</code></pre>\n  <pre data-prefix=\"2\"><code>installing...</code></pre>\n  <pre data-prefix=\"3\" class=\"bg-warning text-warning-content\"><code>Error!</code></pre>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "long-line-will-scroll",
+   "section": null,
+   "title": {
+    "en": "Long line will scroll"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-code w-full\">\n  <pre\n    data-prefix=\"~\"><code>Magnam dolore beatae necessitatibus nemopsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "without-prefix",
+   "section": null,
+   "title": {
+    "en": "Without prefix"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-code w-full\">\n  <pre><code>without prefix</code></pre>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-color",
+   "section": null,
+   "title": {
+    "en": "With color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"mockup-code bg-primary text-primary-content w-full\">\n  <pre><code>can be any color!</code></pre>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

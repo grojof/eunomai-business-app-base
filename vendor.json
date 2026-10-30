@@ -48,5 +48,16 @@
     "target": "tools/tailwind/daisyui-llms.txt",
     "script": false,
     "sha384": "0Wm57l4frQIAhE4vCCVr9Q6o4Piz/al/8jzk1SSFL5MczMeWMY2+odNT4U2hj/fV"
+  },
+  "daisyui-docs": {
+    "package": "daisyui",
+    "version": "5.7.50",
+    "languages": [
+      "ca",
+      "es"
+    ],
+    "target": "tools/tailwind/daisyui-docs.json",
+    "script": false,
+    "sha384": "I2ONUDQdmD8ANCUlc8SAVSEgse4Wrmfm3spZ7Pgn0DZcj8Ez5SviOOAFHchTaPib"
   }
 }

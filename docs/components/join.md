@@ -9,7 +9,7 @@ tags: [component, layout, available]
 
 # Join
 
-**Status:** available. **Category:** layout.
+**Status:** available. **Category:** layout. **In the demo:** `/gallery/join`.
 
 This repository's rules come first. Where this page disagrees with [Standards](../standards.md) or
 [AGENTS.md](../../AGENTS.md), they win: no CDN, no npm, no images from other servers, no inline `style` or `onclick`.

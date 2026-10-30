@@ -8,16 +8,17 @@ person or real system: it stays neutral so anyone can clone it.
 | Folder | Contents | Rule |
 |---|---|---|
 | `app/core/` | Identity, roles, settings, languages, formatters, errors, health | Never imports from `app/demo/` |
-| `app/ui/` | Components as macros, the stylesheet's source, the few JavaScript files | Screens call macros; daisyUI classes stay here where possible |
+| `app/ui/` | Components as macros, the settings menu, the command palette, the stylesheet's source, the few JavaScript files | Screens call macros; daisyUI classes stay here where possible |
 | `app/brand/` | The theme, logos | The only folder an organization must change |
-| `app/demo/` | Demo screens, data and their translations | Deleting it leaves a working application |
+| `app/demo/` | Demo screens, data, the gallery and their translations | Deleting it leaves a working application |
 
 ## Components
 
 Before using a component, read [`docs/components/README.md`](docs/components/README.md), then
 [`rules.md`](docs/components/rules.md) once, and only the page of each component you use: never the whole official file.
 Prefer `approved` components; an approved component needs a macro. Those pages are generated: change
-`app/ui/catalog.py`, then run `tools/components.py`.
+`app/ui/catalog.py`, then run `tools/components.py`. `app/demo/examples/` is generated too, from daisyUI's documentation:
+never edit it, run `tools/gallery.py`. To see a component live, open `/gallery/<name>` in the demo.
 Add your own components as [the specification](docs/specification.md#adapting-it) says.
 
 ## Rules
@@ -30,8 +31,9 @@ Add your own components as [the specification](docs/specification.md#adapting-it
 - Every text a user can see goes through translation. Every number, date and time goes through the locale's formatter.
 - Colours come from the brand. No invented values such as `bg-[#ff0000]`, `text-[13px]` or `[color:#ff0000]`: a test
   refuses them.
-- Use the existing macros before writing anything new: screens call `button`, not a raw `.btn`. Gallery specimens stay
-  raw on purpose. After changing templates, run `uv run python tools/css.py`.
+- Use the existing macros before writing anything new: screens call `button`, not a raw `.btn`. daisyUI's examples in
+  the gallery are reference material, not a model for a screen. After changing templates, run
+  `uv run python tools/css.py`.
 - Each screen handles its empty, loading, error and no-permission states.
 - A new component needs its page in the demo and its tests, in the same change.
 - Add a dependency only if the [stack](docs/specification.md#stack) needs it. Pin it and check it for known
@@ -49,6 +51,7 @@ uv run ruff check && uv run ruff format --check && uv run mypy
 uv run python tools/vendor.py check
 uv run python tools/css.py check
 uv run python tools/components.py check     # after changing the catalogue: tools/components.py
+uv run python tools/gallery.py check        # generated from daisyUI's documentation: tools/gallery.py
 uv run python tools/translations.py check   # after changing texts: tools/translations.py update
 uv run pytest -q
 ```

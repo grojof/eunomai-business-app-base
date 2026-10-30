@@ -19,6 +19,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import components
+import gallery
 import vendor
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -136,14 +137,19 @@ def review(notes: list[str], current: dict[str, str]) -> list[tuple[str, str, st
 
 
 def update_vendored(problems: list[tuple[str, str, str]]) -> list[str]:
-    """The copied files. If daisyUI's new file breaks docs/components/, such as a component that is not in the
-    catalogue, daisyUI stays where it was until a person decides, and everything else goes ahead."""
+    """The copied files. If daisyUI's new files break docs/components/ or the gallery, such as a component that is not
+    in the catalogue or a documentation page that changed its structure, every daisyUI file stays where it was until a
+    person decides, and everything else goes ahead. So does one that moved without the others."""
     daisyui = {name: e for name, e in vendor.read_entries().items() if e.get("package", name) == "daisyui"}
     files = {ROOT / e["target"]: (ROOT / e["target"]).read_bytes() for e in daisyui.values()}
     notes, refused = vendor.update()
     problems += refused
     try:
         components.generate()
+        gallery.generate()
+        moved = {entry["version"] for name, entry in vendor.read_entries().items() if name in daisyui}
+        if len(moved) > 1:
+            raise ValueError(f"its files would be at different versions: {sorted(moved)}")
     except ValueError as error:
         for path, content in files.items():
             path.write_bytes(content)

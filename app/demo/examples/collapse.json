@@ -1,0 +1,260 @@
+{
+ "name": "collapse",
+ "title": {
+  "en": "Collapse"
+ },
+ "description": {
+  "en": "Collapse is used for showing and hiding content.",
+  "ca": "El Collapse s'utilitza per mostrar i amagar contingut.",
+  "es": "Collapse se utiliza para mostrar y ocultar contenido."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "collapse",
+     "description": {
+      "en": "Collapse"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "collapse-title",
+     "description": {
+      "en": "Title part",
+      "ca": "Part del títol",
+      "es": "Parte del título"
+     }
+    },
+    {
+     "class": "collapse-content",
+     "description": {
+      "en": "Content part",
+      "ca": "Part de contingut",
+      "es": "parte del contenido"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "collapse-arrow",
+     "description": {
+      "en": "Adds arrow icon",
+      "ca": "Afegeix una icona de fletxa",
+      "es": "Agrega icono de flecha"
+     }
+    },
+    {
+     "class": "collapse-plus",
+     "description": {
+      "en": "Adds plus/minus icon",
+      "ca": "Afegeix la icona més/menys",
+      "es": "Agrega ícono más/menos"
+     }
+    },
+    {
+     "class": "collapse-open",
+     "description": {
+      "en": "Force open",
+      "ca": "Força d'obertura",
+      "es": "Forzar apertura"
+     }
+    },
+    {
+     "class": "collapse-close",
+     "description": {
+      "en": "Force close",
+      "ca": "Tancament forçat",
+      "es": "Forzar cierre"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "collapse-with-focus",
+   "section": null,
+   "title": {
+    "en": "Collapse with focus"
+   },
+   "subtitle": {
+    "en": "This collapse works with focus. When div loses focus, it gets closed",
+    "ca": "Aquest collapse funciona amb focus. Quan el div perd el focus, es tanca",
+    "es": "Este Collapse funciona con enfoque. Cuando div pierde el foco, se cierra"
+   },
+   "html": "<div tabindex=\"0\" class=\"collapse bg-base-100 border-base-300 border\">\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "collapse-with-checkbox",
+   "section": null,
+   "title": {
+    "en": "Collapse with checkbox"
+   },
+   "subtitle": {
+    "en": "This collapse works with checkbox instead of focus. It needs to get clicked again to get closed.",
+    "ca": "Aquest collapse funciona amb la casella de selecció en lloc del focus. S'ha de tornar a fer clic per tancar-lo.",
+    "es": "Este Collapse funciona con Checkbox en lugar de enfocar. Es necesario hacer clic nuevamente para cerrarlo."
+   },
+   "html": "<div class=\"collapse bg-base-100 border border-base-300\">\n  <input type=\"checkbox\" />\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "collapse-with-checkbox-and-close-on-click-outside",
+   "section": null,
+   "title": {
+    "en": "Collapse with checkbox and close on click outside"
+   },
+   "subtitle": {
+    "en": "An alternative where you can also click outside to close it.",
+    "ca": "Una alternativa on també podeu fer clic fora per tancar-lo.",
+    "es": "Una alternativa donde también puedes hacer clic fuera para cerrarla."
+   },
+   "html": "<div class=\"collapse bg-base-100 border border-base-300\">\n  <input id=\"collapse-1-toggle\" type=\"checkbox\" class=\"peer\" />\n  <label for=\"collapse-1-toggle\" class=\"fixed inset-0 hidden peer-checked:block\"></label>\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm z-1\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "-collapse-using-details-and-summary-tag",
+   "section": null,
+   "title": {
+    "en": "Collapse using details and summary tag"
+   },
+   "subtitle": {
+    "en": "collapse-open and collapse-close doesn't work with this method. You can add/remove open attribute to the details instead",
+    "ca": "collapse-open i collapse-close no funcionen amb aquest mètode. Podeu afegir/eliminar l'atribut obert als detalls",
+    "es": "Collapse-open y Collapse-close no funcionan con este método. En su lugar, puede agregar/eliminar el atributo abierto a los detalles."
+   },
+   "html": "<details class=\"collapse bg-base-100 border-base-300 border\">\n  <summary class=\"collapse-title font-semibold\">How do I create an account?</summary>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</details>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "without-border-and-background-color",
+   "section": null,
+   "title": {
+    "en": "Without border and background color"
+   },
+   "subtitle": null,
+   "html": "<div tabindex=\"0\" class=\"collapse\">\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-arrow-icon",
+   "section": null,
+   "title": {
+    "en": "With arrow icon"
+   },
+   "subtitle": null,
+   "html": "<div tabindex=\"0\" class=\"collapse collapse-arrow bg-base-100 border-base-300 border\">\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-arrow-plusminus-icon",
+   "section": null,
+   "title": {
+    "en": "With arrow plus/minus icon"
+   },
+   "subtitle": null,
+   "html": "<div tabindex=\"0\" class=\"collapse collapse-plus bg-base-100 border-base-300 border\">\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "moving-collapse-icon-to-the-start",
+   "section": null,
+   "title": {
+    "en": "Moving collapse icon to the start"
+   },
+   "subtitle": {
+    "en": "We can move the icon using utility classes like `after:start-5 after:end-auto` and we can customize the padding like `pe-4 ps-12`",
+    "ca": "Podem moure la icona utilitzant classes d'utilitat com `after:start-5 after:end-auto` i podem personalitzar el farciment com `pe-4 ps-12`",
+    "es": "Podemos mover el ícono usando clases de utilidad como `after:start-5 after:end-auto` y podemos personalizar el relleno como `pe-4 ps-12`"
+   },
+   "html": "<div tabindex=\"0\" class=\"collapse collapse-arrow bg-base-100 border-base-300 border\">\n  <div class=\"collapse-title font-semibold after:start-5 after:end-auto pe-4 ps-12\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "force-open",
+   "section": null,
+   "title": {
+    "en": "Force open",
+    "ca": "Força d'obertura",
+    "es": "Forzar apertura"
+   },
+   "subtitle": null,
+   "html": "<div tabindex=\"0\" class=\"collapse collapse-open bg-base-100 border-base-300 border\">\n  <div class=\"collapse-title font-semibold\">I have collapse-open class</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "force-close",
+   "section": null,
+   "title": {
+    "en": "Force close",
+    "ca": "Tancament forçat",
+    "es": "Forzar cierre"
+   },
+   "subtitle": null,
+   "html": "<div tabindex=\"0\" class=\"collapse collapse-close bg-base-100 border-base-300 border\">\n  <div class=\"collapse-title font-semibold\">I have collapse-close class</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "custom-colors-for-collapse-that-works-with-focus",
+   "section": null,
+   "title": {
+    "en": "Custom colors for collapse that works with focus"
+   },
+   "subtitle": {
+    "en": "Use Tailwind CSS `group` and `group-focus` utilities to apply style when parent div is focused",
+    "ca": "Utilitza les utilitats `group` i `group-focus` de Tailwind CSS per aplicar un estil quan el div pare està en estat focus",
+    "es": "Utilice las utilidades `group` y `group-focus` de Tailwind CSS para aplicar estilo cuando el div principal está enfocado"
+   },
+   "html": "<div\n  tabindex=\"0\"\n  class=\"bg-primary text-primary-content focus:bg-secondary focus:text-secondary-content collapse\"\n>\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "custom-colors-for-collapse-that-works-with-checkbox",
+   "section": null,
+   "title": {
+    "en": "Custom colors for collapse that works with checkbox"
+   },
+   "subtitle": {
+    "en": "Use Tailwind CSS `peer` and `peer-checked` utilities to apply style when sibling checkbox is checked",
+    "ca": "Use Tailwind CSS `peer` and `peer-checked` utilities to apply style when same-level checkbox is checked",
+    "es": "Use Tailwind CSS `peer` and `peer-checked` utilities to apply style when same-level checkbox is checked"
+   },
+   "html": "<div class=\"bg-base-100 border-base-300 collapse border\">\n  <input type=\"checkbox\" class=\"peer\" />\n  <div\n    class=\"collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content\"\n  >\n    How do I create an account?\n  </div>\n  <div\n    class=\"collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content\"\n  >\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

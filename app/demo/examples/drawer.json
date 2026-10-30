@@ -1,0 +1,190 @@
+{
+ "name": "drawer",
+ "title": {
+  "en": "Drawer sidebar"
+ },
+ "description": {
+  "en": "Drawer is a grid layout that can show/hide a sidebar on the left or right side of the page.",
+  "ca": "El Drawer és un disseny de quadrícula que pot mostrar o amagar una barra lateral al costat esquerra o dreta de la pàgina.",
+  "es": "Drawer es un diseño de cuadrícula que puede mostrar/ocultar una barra lateral en el lado izquierdo o derecho de la página."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "drawer",
+     "description": {
+      "en": "The wrapper for sidebar and content",
+      "ca": "L'embolcall de la barra lateral i el contingut",
+      "es": "El contenedor para la barra lateral y el contenido."
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "drawer-toggle",
+     "description": {
+      "en": "The hidden checkbox that controls the state of drawer",
+      "ca": "El Checkbox ocult que controla l'estat del calaix",
+      "es": "El Checkbox oculto que controla el estado del cajón."
+     }
+    },
+    {
+     "class": "drawer-content",
+     "description": {
+      "en": "Content part",
+      "ca": "Part de contingut",
+      "es": "parte del contenido"
+     }
+    },
+    {
+     "class": "drawer-side",
+     "description": {
+      "en": "Sidebar part",
+      "ca": "Part de la barra lateral",
+      "es": "Parte de la barra lateral"
+     }
+    },
+    {
+     "class": "drawer-overlay",
+     "description": {
+      "en": "Label that covers the page when drawer is open",
+      "ca": "Label que cobreix la pàgina quan el calaix està obert",
+      "es": "Label que cubre la página cuando el cajón está abierto"
+     }
+    },
+    {
+     "class": "drawer-button",
+     "description": {
+      "en": "Toggle"
+     }
+    }
+   ]
+  },
+  {
+   "group": "placement",
+   "items": [
+    {
+     "class": "drawer-end",
+     "description": {
+      "en": "puts drawer to the other side",
+      "ca": "posa el calaix a l'altre costat",
+      "es": "pone el cajón al otro lado"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "drawer-open",
+     "description": {
+      "en": "Forces the drawer to be open",
+      "ca": "Obliga el calaix a obrir-se",
+      "es": "Fuerza la apertura del cajón"
+     }
+    }
+   ]
+  },
+  {
+   "group": "variant",
+   "items": [
+    {
+     "class": "is-drawer-open:",
+     "description": {
+      "en": "Applies styles when the drawer is open",
+      "ca": "Aplica estils quan el calaix està obert",
+      "es": "Aplica estilos cuando el cajón está abierto."
+     }
+    },
+    {
+     "class": "is-drawer-close:",
+     "description": {
+      "en": "Applies styles when the drawer is closed",
+      "ca": "Aplica estils quan el calaix està tancat",
+      "es": "Aplica estilos cuando el cajón está cerrado."
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "drawer-sidebar",
+   "section": null,
+   "title": {
+    "en": "Drawer sidebar"
+   },
+   "subtitle": null,
+   "html": "<div class=\"drawer\">\n  <input id=\"my-drawer-1\" type=\"checkbox\" class=\"drawer-toggle\" />\n  <div class=\"drawer-content\">\n    <!-- Page content here -->\n    <label for=\"my-drawer-1\" class=\"btn drawer-button\">Open drawer</label>\n  </div>\n  <div class=\"drawer-side\">\n    <label for=\"my-drawer-1\" aria-label=\"close sidebar\" class=\"drawer-overlay\"></label>\n    <ul class=\"menu bg-base-200 min-h-full w-80 p-4\">\n      <!-- Sidebar content here -->\n      <li><a>Sidebar Item 1</a></li>\n      <li><a>Sidebar Item 2</a></li>\n    </ul>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "navbar-menu-for-desktop--sidebar-drawer-for-mobile",
+   "section": null,
+   "title": {
+    "en": "Navbar menu for desktop + sidebar drawer for mobile"
+   },
+   "subtitle": {
+    "en": "Change screen size to show/hide menu",
+    "ca": "Canvia la mida de la pantalla per mostrar/amagar Menu",
+    "es": "Cambiar el tamaño de la pantalla para mostrar/ocultar Menu"
+   },
+   "html": "<div class=\"drawer\">\n  <input id=\"my-drawer-2\" type=\"checkbox\" class=\"drawer-toggle lg:hidden\" />\n  <div class=\"drawer-content flex flex-col\">\n    <!-- Navbar -->\n    <div class=\"navbar bg-base-300 w-full\">\n      <div class=\"flex-none lg:hidden\">\n        <label for=\"my-drawer-2\" aria-label=\"open sidebar\" class=\"btn btn-square btn-ghost drawer-button\">\n          <svg\n            xmlns=\"http://www.w3.org/2000/svg\"\n            fill=\"none\"\n            viewBox=\"0 0 24 24\"\n            class=\"inline-block h-6 w-6 stroke-current\"\n          >\n            <path\n              stroke-linecap=\"round\"\n              stroke-linejoin=\"round\"\n              stroke-width=\"2\"\n              d=\"M4 6h16M4 12h16M4 18h16\"\n            ></path>\n          </svg>\n        </label>\n      </div>\n      <div class=\"mx-2 flex-1 px-2\">Navbar Title</div>\n      <div class=\"hidden flex-none lg:block\">\n        <ul class=\"menu menu-horizontal\">\n          <!-- Navbar menu content here -->\n          <li><a>Navbar Item 1</a></li>\n          <li><a>Navbar Item 2</a></li>\n        </ul>\n      </div>\n    </div>\n    <!-- Page content here -->\n    Content\n  </div>\n  <div class=\"drawer-side\">\n    <label for=\"my-drawer-2\" aria-label=\"close sidebar\" class=\"drawer-overlay\"></label>\n    <ul class=\"menu bg-base-200 min-h-full w-80 p-4\">\n      <!-- Sidebar content here -->\n      <li><a>Sidebar Item 1</a></li>\n      <li><a>Sidebar Item 2</a></li>\n    </ul>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "responsive-sidebar-is-always-visible-on-large-screen-can-be-toggled-on-small-screen",
+   "section": null,
+   "title": {
+    "en": "Responsive: Sidebar is always visible on large screen, can be toggled on small screen"
+   },
+   "subtitle": {
+    "en": "Sidebar is always visible on large screen, can be toggled on small screen because of lg:drawer-open class",
+    "ca": "La barra lateral sempre és visible a la pantalla gran, es pot canviar a la pantalla petita a causa de la classe lg:drawer-open",
+    "es": "La barra lateral siempre está visible en la pantalla grande, se puede alternar en la pantalla pequeña debido a la clase lg:drawer-open"
+   },
+   "html": "<div class=\"drawer lg:drawer-open\">\n  <input id=\"my-drawer-3\" type=\"checkbox\" class=\"drawer-toggle\" />\n  <div class=\"drawer-content flex flex-col items-center justify-center\">\n    <!-- Page content here -->\n    <label for=\"my-drawer-3\" class=\"btn drawer-button lg:hidden\">\n      Open drawer\n    </label>\n  </div>\n  <div class=\"drawer-side\">\n    <label for=\"my-drawer-3\" aria-label=\"close sidebar\" class=\"drawer-overlay\"></label>\n    <ul class=\"menu bg-base-200 min-h-full w-80 p-4\">\n      <!-- Sidebar content here -->\n      <li><a>Sidebar Item 1</a></li>\n      <li><a>Sidebar Item 2</a></li>\n    </ul>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "responsive-collapsible-icon-only-drawer-sidebar-using-is-drawer-close-and-is-drawer-open",
+   "section": null,
+   "title": {
+    "en": "Responsive collapsible Icon-only drawer sidebar. Using is-drawer-close and is-drawer-open"
+   },
+   "subtitle": {
+    "en": "In this example instead of completely hiding the drawer sidebar, we only show the icons when the drawer is closed. To add styles based on the state of the drawer, we use the `is-drawer-open` and `is-drawer-close` variants. For example `is-drawer-close:hidden` or `is-drawer-open:w-80`. Also we have tooltips when the drawer is closed and a switch button to open/close the drawer and rotates the button icon based on the state of the drawer.",
+    "ca": "En aquest exemple, en lloc d'amagar completament el Drawer sidebar, només mostrem les icones quan el calaix està tancat. Per afegir estils basats en l'estat del calaix, utilitzem les variants `is-drawer-open` i `is-drawer-close`. Per exemple, `is-drawer-close:hidden` o `is-drawer-open:w-80`. També tenim consells sobre eines quan el calaix està tancat i un interruptor Button per obrir/tancar el calaix i gira la icona Button en funció de l'estat del calaix.",
+    "es": "En este ejemplo, en lugar de ocultar completamente el Drawer sidebar, solo mostramos los íconos cuando el cajón está cerrado. Para agregar estilos según el estado del cajón, utilizamos las variantes `is-drawer-open` y `is-drawer-close`. Por ejemplo, \"está-cajón-cerrado: oculto\" o \"está-cajón-abierto: w-80\". También tenemos información sobre herramientas cuando el cajón está cerrado y un interruptor Button para abrir/cerrar el cajón y gira el icono Button según el estado del cajón. (`is-drawer-close:hidden`, `is-drawer-open:w-80`)"
+   },
+   "html": "<div class=\"drawer lg:drawer-open\">\n  <input id=\"my-drawer-4\" type=\"checkbox\" class=\"drawer-toggle inline\" />\n  <div class=\"drawer-content\">\n    <!-- Navbar -->\n    <nav class=\"navbar w-full bg-base-300\">\n      <label for=\"my-drawer-4\" aria-label=\"open sidebar\" class=\"btn btn-square btn-ghost drawer-button\">\n        <!-- Sidebar toggle icon -->\n        <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\" class=\"my-1.5 inline-block size-4\"><path d=\"M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z\"></path><path d=\"M9 4v16\"></path><path d=\"M14 10l2 2l-2 2\"></path></svg>\n      </label>\n      <div class=\"px-4\">Navbar Title</div>\n    </nav>\n    <!-- Page content here -->\n    <div class=\"p-4\">Page Content</div>\n  </div>\n\n  <div class=\"drawer-side is-drawer-close:overflow-visible\">\n    <label for=\"my-drawer-4\" aria-label=\"close sidebar\" class=\"drawer-overlay\"></label>\n    <div class=\"flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64\">\n      <!-- Sidebar content here -->\n      <ul class=\"menu w-full grow\">\n        <!-- List item -->\n        <li>\n          <button class=\"is-drawer-close:tooltip is-drawer-close:tooltip-right\" data-tip=\"Homepage\">\n            <!-- Home icon -->\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\" class=\"my-1.5 inline-block size-4\"><path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"></path><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"></path></svg>\n            <span class=\"is-drawer-close:hidden\">Homepage</span>\n          </button>\n        </li>\n\n        <!-- List item -->\n        <li>\n          <button class=\"is-drawer-close:tooltip is-drawer-close:tooltip-right\" data-tip=\"Settings\">\n            <!-- Settings icon -->\n            <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\" fill=\"none\" stroke=\"currentColor\" class=\"my-1.5 inline-block size-4\"><path d=\"M20 7h-9\"></path><path d=\"M14 17H5\"></path><circle cx=\"17\" cy=\"17\" r=\"3\"></circle><circle cx=\"7\" cy=\"7\" r=\"3\"></circle></svg>\n            <span class=\"is-drawer-close:hidden\">Settings</span>\n          </button>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  },
+  {
+   "id": "drawer-sidebar-that-opens-from-right-side-of-page",
+   "section": null,
+   "title": {
+    "en": "Drawer sidebar that opens from right side of page"
+   },
+   "subtitle": null,
+   "html": "<div class=\"drawer drawer-end\">\n  <input id=\"my-drawer-5\" type=\"checkbox\" class=\"drawer-toggle\" />\n  <div class=\"drawer-content\">\n    <!-- Page content here -->\n    <label for=\"my-drawer-5\" class=\"drawer-button btn btn-primary\">Open drawer</label>\n  </div>\n  <div class=\"drawer-side\">\n    <label for=\"my-drawer-5\" aria-label=\"close sidebar\" class=\"drawer-overlay\"></label>\n    <ul class=\"menu bg-base-200 min-h-full w-80 p-4\">\n      <!-- Sidebar content here -->\n      <li><a>Sidebar Item 1</a></li>\n      <li><a>Sidebar Item 2</a></li>\n    </ul>\n  </div>\n</div>",
+   "runs": true,
+   "kind": "stage",
+   "palette": false
+  }
+ ]
+}

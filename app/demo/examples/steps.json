@@ -1,0 +1,208 @@
+{
+ "name": "steps",
+ "title": {
+  "en": "Steps"
+ },
+ "description": {
+  "en": "Steps can be used to show a list of steps in a process.",
+  "ca": "Els Steps es poden utilitzar per mostrar una llista de passos d'un procés.",
+  "es": "Steps se pueden utilizar para mostrar una lista de pasos en un proceso."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "steps",
+     "description": {
+      "en": "Container of multiple step nodes",
+      "ca": "Contenidor de múltiples nodes de pas",
+      "es": "Contenedor de múltiples nodos de pasos"
+     }
+    }
+   ]
+  },
+  {
+   "group": "part",
+   "items": [
+    {
+     "class": "step",
+     "description": {
+      "en": "A single step node",
+      "ca": "Un node d'un sol pas",
+      "es": "Un nodo de un solo paso"
+     }
+    },
+    {
+     "class": "step-icon",
+     "description": {
+      "en": "For custom icon inside step",
+      "ca": "Per a la icona personalitzada dins del pas",
+      "es": "Para icono personalizado dentro del paso"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "step-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "step-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "step-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "step-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "step-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "step-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "step-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "step-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  },
+  {
+   "group": "direction",
+   "items": [
+    {
+     "class": "steps-vertical",
+     "description": {
+      "en": "Vertical layout",
+      "ca": "Distribució vertical",
+      "es": "diseño vertical"
+     }
+    },
+    {
+     "class": "steps-horizontal",
+     "description": {
+      "en": "Makes steps horizontal",
+      "ca": "Fa Steps horitzontal",
+      "es": "Hace que Steps sea horizontal"
+     },
+     "default": true
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "horizontal",
+   "section": null,
+   "title": {
+    "en": "Horizontal"
+   },
+   "subtitle": null,
+   "html": "<ul class=\"steps\">\n  <li class=\"step step-primary\">Register</li>\n  <li class=\"step step-primary\">Choose plan</li>\n  <li class=\"step\">Purchase</li>\n  <li class=\"step\">Receive Product</li>\n</ul>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "vertical",
+   "section": null,
+   "title": {
+    "en": "Vertical"
+   },
+   "subtitle": null,
+   "html": "<ul class=\"steps steps-vertical\">\n  <li class=\"step step-primary\">Register</li>\n  <li class=\"step step-primary\">Choose plan</li>\n  <li class=\"step\">Purchase</li>\n  <li class=\"step\">Receive Product</li>\n</ul>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "responsive-vertical-on-small-screen-horizontal-on-large-screen",
+   "section": null,
+   "title": {
+    "en": "responsive (vertical on small screen, horizontal on large screen)"
+   },
+   "subtitle": null,
+   "html": "<ul class=\"steps steps-vertical lg:steps-horizontal\">\n  <li class=\"step step-primary\">Register</li>\n  <li class=\"step step-primary\">Choose plan</li>\n  <li class=\"step\">Purchase</li>\n  <li class=\"step\">Receive Product</li>\n</ul>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-custom-content-in-step-icon",
+   "section": null,
+   "title": {
+    "en": "With custom content in step-icon"
+   },
+   "subtitle": null,
+   "html": "<ul class=\"steps\">\n  <li class=\"step step-neutral\">\n    <span class=\"step-icon\">😕</span>Step 1\n  </li>\n  <li class=\"step step-neutral\">\n    <span class=\"step-icon\">😃</span>Step 2\n  </li>\n  <li class=\"step\">\n    <span class=\"step-icon\">😍</span>Step 3\n  </li>\n</ul>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-data-content",
+   "section": null,
+   "title": {
+    "en": "With data-content"
+   },
+   "subtitle": null,
+   "html": "<ul class=\"steps\">\n  <li data-content=\"?\" class=\"step step-neutral\">Step 1</li>\n  <li data-content=\"!\" class=\"step step-neutral\">Step 2</li>\n  <li data-content=\"✓\" class=\"step step-neutral\">Step 3</li>\n  <li data-content=\"✕\" class=\"step step-neutral\">Step 4</li>\n  <li data-content=\"★\" class=\"step step-neutral\">Step 5</li>\n  <li data-content=\"\" class=\"step step-neutral\">Step 6</li>\n  <li data-content=\"●\" class=\"step step-neutral\">Step 7</li>\n</ul>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "custom-colors",
+   "section": null,
+   "title": {
+    "en": "Custom colors"
+   },
+   "subtitle": null,
+   "html": "<ul class=\"steps\">\n  <li class=\"step step-info\">Fly to moon</li>\n  <li class=\"step step-info\">Shrink the moon</li>\n  <li class=\"step step-info\">Grab the moon</li>\n  <li class=\"step step-error\" data-content=\"?\">Sit on toilet</li>\n</ul>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-scrollable-wrapper",
+   "section": null,
+   "title": {
+    "en": "With scrollable wrapper"
+   },
+   "subtitle": null,
+   "html": "<div class=\"overflow-x-auto\">\n  <ul class=\"steps\">\n    <li class=\"step\">start</li>\n    <li class=\"step step-secondary\">2</li>\n    <li class=\"step step-secondary\">3</li>\n    <li class=\"step step-secondary\">4</li>\n    <li class=\"step\">5</li>\n    <li class=\"step step-accent\">6</li>\n    <li class=\"step step-accent\">7</li>\n    <li class=\"step\">8</li>\n    <li class=\"step step-error\">9</li>\n    <li class=\"step step-error\">10</li>\n    <li class=\"step\">11</li>\n    <li class=\"step\">12</li>\n    <li class=\"step step-warning\">13</li>\n    <li class=\"step step-warning\">14</li>\n    <li class=\"step\">15</li>\n    <li class=\"step step-neutral\">16</li>\n    <li class=\"step step-neutral\">17</li>\n    <li class=\"step step-neutral\">18</li>\n    <li class=\"step step-neutral\">19</li>\n    <li class=\"step step-neutral\">20</li>\n    <li class=\"step step-neutral\">21</li>\n    <li class=\"step step-neutral\">22</li>\n    <li class=\"step step-neutral\">23</li>\n    <li class=\"step step-neutral\">end</li>\n  </ul>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

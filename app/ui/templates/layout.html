@@ -11,6 +11,8 @@
   <script src="{{ script.src }}" integrity="{{ script.integrity }}" crossorigin="anonymous" defer></script>
   {% endfor %}
   <script src="/static/ui/app.js" defer></script>
+  <script src="/static/ui/palette.js" defer></script>
+  {% block scripts %}{% endblock %}
 </head>
 <body class="min-h-dvh bg-base-200 text-base-content">
   {% from "ui/macros.html" import icon %}
@@ -18,9 +20,9 @@
   {% set menu_button = "" if layout.navigation == "hidden" else "lg:hidden" %}
   <a class="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:start-2 focus:top-2 focus:z-50" href="#main">{{ _("Skip to content") }}</a>
   <div class="flex min-h-dvh">
-    {% if side %}{% include "ui/navigation.html" %}{% endif %}
+    {% if side %}<div class="contents lg:block lg:shrink-0 lg:border-e lg:border-base-300 lg:bg-base-100">{% include "ui/navigation.html" %}</div>{% endif %}
     <div class="flex min-w-0 flex-1 flex-col">
-      <header class="navbar z-20 min-h-0 gap-2 border-b border-base-300 bg-base-100 px-4 py-2{{ ' sticky top-0' if layout.sticky_header else '' }}">
+      <header class="navbar z-20 min-h-0 flex-wrap gap-2 border-b border-base-300 bg-base-100 px-4 py-2{{ ' sticky top-0' if layout.sticky_header else '' }}">
         {% if navigation %}
         <button class="btn btn-ghost btn-square {{ menu_button }}" type="button" popovertarget="navigation" aria-label="{{ _('Open menu') }}">{{ icon("menu") }}</button>
         {% endif %}
@@ -28,13 +30,28 @@
         <a class="flex items-center gap-2 font-semibold" href="/"><img class="size-8" src="/static/brand/logo.svg" alt=""> {{ app_name }}</a>
         {% endif %}
         {% if navigation and not side %}{% include "ui/navigation.html" %}{% endif %}
-        {% if person %}<div class="ms-auto">{% include "ui/user_menu.html" %}</div>{% endif %}
+        {% if person %}
+        <div class="ms-auto flex items-center gap-1 sm:gap-2">
+          <button class="btn btn-ghost btn-square noscript:hidden sm:hidden" type="button" data-palette-open aria-haspopup="dialog" aria-label="{{ _('Search') }}" aria-keyshortcuts="Control+K Meta+K">{{ icon("search") }}</button>
+          <button class="btn btn-sm hidden w-52 justify-start gap-2 border-base-300 bg-base-200 font-normal shadow-none noscript:hidden sm:inline-flex" type="button" data-palette-open aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K">
+            {{ icon("search", "size-4") }}
+            <span class="grow text-start">{{ _("Search") }}</span>
+            <kbd class="kbd kbd-xs" data-shortcut>Ctrl K</kbd>
+          </button>
+          <div class="hidden items-center gap-1 lg:flex">
+            {% with variant=layout.theme_control, place="header" %}{% include "ui/theme_control.html" %}{% endwith %}
+            {% with variant=layout.language_control, place="header" %}{% include "ui/language_control.html" %}{% endwith %}
+          </div>
+          {% include "ui/user_menu.html" %}
+        </div>
+        {% endif %}
       </header>
-      <main id="main" tabindex="-1" class="w-full space-y-6 p-4 lg:p-8{{ ' mx-auto max-w-5xl' if layout.width == 'centered' else '' }}">
+      <main id="main" tabindex="-1" class="w-full grow space-y-6 p-4 lg:p-8{{ ' mx-auto max-w-7xl' if layout.width == 'centered' else '' }}">
         {% block content %}{% endblock %}
       </main>
     </div>
   </div>
+  {% if person %}{% include "ui/palette.html" %}{% endif %}
   <div id="announcements" class="sr-only" role="status" aria-live="polite"></div>
 </body>
 </html>

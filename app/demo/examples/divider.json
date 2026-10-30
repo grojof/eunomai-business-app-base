@@ -1,0 +1,208 @@
+{
+ "name": "divider",
+ "title": {
+  "en": "Divider"
+ },
+ "description": {
+  "en": "Divider will be used to separate content vertically or horizontally.",
+  "ca": "Els divisors s'utilitzen per separar contingut verticalment o horitzontalment.",
+  "es": "Divider se utilizará para separar el contenido vertical u horizontalmente."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "divider",
+     "description": {
+      "en": "A divider line between two elements",
+      "ca": "Una línia Divider entre dos elements",
+      "es": "Una línea Divider entre dos elementos."
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "divider-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "divider-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "divider-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "divider-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "divider-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "divider-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "divider-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "divider-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  },
+  {
+   "group": "direction",
+   "items": [
+    {
+     "class": "divider-vertical",
+     "description": {
+      "en": "Divide vertical elements (on top of each other)",
+      "ca": "Dividiu els elements verticals (uns sobre els altres)",
+      "es": "Dividir elementos verticales (uno encima del otro)"
+     },
+     "default": true
+    },
+    {
+     "class": "divider-horizontal",
+     "description": {
+      "en": "Divide horizontal elements (next to each other)",
+      "ca": "Dividiu els elements horitzontals (uns al costat de l'altre)",
+      "es": "Dividir elementos horizontales (uno al lado del otro)"
+     }
+    }
+   ]
+  },
+  {
+   "group": "placement",
+   "items": [
+    {
+     "class": "divider-start",
+     "description": {
+      "en": "Pushes the divider text to the start",
+      "ca": "Empenja el text Divider al principi",
+      "es": "Empuja el texto Divider al inicio."
+     }
+    },
+    {
+     "class": "divider-end",
+     "description": {
+      "en": "Pushes the divider text to the end",
+      "ca": "Empenja el text Divider fins al final",
+      "es": "Empuja el texto Divider hasta el final."
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "divider",
+   "section": null,
+   "title": {
+    "en": "Divider"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex w-full flex-col\">\n  <div class=\"card bg-base-300 rounded-box grid h-20 place-items-center\">content</div>\n  <div class=\"divider\">OR</div>\n  <div class=\"card bg-base-300 rounded-box grid h-20 place-items-center\">content</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "divider-horizontal",
+   "section": null,
+   "title": {
+    "en": "Divider horizontal"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex w-full\">\n  <div class=\"card bg-base-300 rounded-box grid h-20 grow place-items-center\">content</div>\n  <div class=\"divider divider-horizontal\">OR</div>\n  <div class=\"card bg-base-300 rounded-box grid h-20 grow place-items-center\">content</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "divider-with-no-text",
+   "section": null,
+   "title": {
+    "en": "Divider with no text"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex w-full flex-col\">\n  <div class=\"card bg-base-300 rounded-box grid h-20 place-items-center\">content</div>\n  <div class=\"divider\"></div>\n  <div class=\"card bg-base-300 rounded-box grid h-20 place-items-center\">content</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "responsive-lgdivider-horizontal",
+   "section": null,
+   "title": {
+    "en": "responsive (lg:divider-horizontal)"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex w-full flex-col lg:flex-row\">\n  <div class=\"card bg-base-300 rounded-box grid h-32 grow place-items-center\">content</div>\n  <div class=\"divider lg:divider-horizontal\">OR</div>\n  <div class=\"card bg-base-300 rounded-box grid h-32 grow place-items-center\">content</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "divider-with-colors",
+   "section": null,
+   "title": {
+    "en": "Divider with colors"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex w-full flex-col\">\n  <div class=\"divider\">Default</div>\n  <div class=\"divider divider-neutral\">Neutral</div>\n  <div class=\"divider divider-primary\">Primary</div>\n  <div class=\"divider divider-secondary\">Secondary</div>\n  <div class=\"divider divider-accent\">Accent</div>\n  <div class=\"divider divider-success\">Success</div>\n  <div class=\"divider divider-warning\">Warning</div>\n  <div class=\"divider divider-info\">Info</div>\n  <div class=\"divider divider-error\">Error</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "divider-in-different-positions",
+   "section": null,
+   "title": {
+    "en": "Divider in different positions"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex w-full flex-col\">\n  <div class=\"divider divider-start\">Start</div>\n  <div class=\"divider\">Default</div>\n  <div class=\"divider divider-end\">End</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "divider-in-different-positions-horizontal",
+   "section": null,
+   "title": {
+    "en": "Divider in different positions (horizontal)"
+   },
+   "subtitle": null,
+   "html": "<div class=\"flex w-full\">\n  <div class=\"divider divider-horizontal divider-start\">Start</div>\n  <div class=\"divider divider-horizontal\">Default</div>\n  <div class=\"divider divider-horizontal divider-end\">End</div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

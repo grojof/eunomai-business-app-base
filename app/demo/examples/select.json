@@ -1,0 +1,318 @@
+{
+ "name": "select",
+ "title": {
+  "en": "Select"
+ },
+ "description": {
+  "en": "Select is used to pick a value from a list of options.",
+  "ca": "El selector s'utilitza per triar un valor d'una llista d'opcions.",
+  "es": "Select se utiliza para elegir un valor de una lista de opciones."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "select",
+     "description": {
+      "en": "For <select> element",
+      "ca": "Per a l'element <select>",
+      "es": "Para el elemento <select>"
+     }
+    }
+   ]
+  },
+  {
+   "group": "style",
+   "items": [
+    {
+     "class": "select-ghost",
+     "description": {
+      "en": "ghost style"
+     }
+    }
+   ]
+  },
+  {
+   "group": "color",
+   "items": [
+    {
+     "class": "select-neutral",
+     "description": {
+      "en": "neutral color"
+     }
+    },
+    {
+     "class": "select-primary",
+     "description": {
+      "en": "primary color"
+     }
+    },
+    {
+     "class": "select-secondary",
+     "description": {
+      "en": "secondary color"
+     }
+    },
+    {
+     "class": "select-accent",
+     "description": {
+      "en": "accent color"
+     }
+    },
+    {
+     "class": "select-info",
+     "description": {
+      "en": "info color"
+     }
+    },
+    {
+     "class": "select-success",
+     "description": {
+      "en": "success color"
+     }
+    },
+    {
+     "class": "select-warning",
+     "description": {
+      "en": "warning color"
+     }
+    },
+    {
+     "class": "select-error",
+     "description": {
+      "en": "error color"
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "select-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "select-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "select-md",
+     "description": {
+      "en": "Medium size",
+      "ca": "Talla mitjana",
+      "es": "tamaño mediano"
+     },
+     "default": true
+    },
+    {
+     "class": "select-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "select-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "select",
+   "section": null,
+   "title": {
+    "en": "Select"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select\">\n  <option disabled selected>Pick a color</option>\n  <option>Crimson</option>\n  <option>Amber</option>\n  <option>Velvet</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "ghost-no-background",
+   "section": null,
+   "title": {
+    "en": "Ghost (no background)"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select select-ghost\">\n  <option disabled selected>Pick a font</option>\n  <option>Inter</option>\n  <option>Poppins</option>\n  <option>Raleway</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "with-fieldset-and-labels",
+   "section": null,
+   "title": {
+    "en": "With fieldset and labels"
+   },
+   "subtitle": null,
+   "html": "<fieldset class=\"fieldset\">\n  <legend class=\"fieldset-legend\">Browsers</legend>\n  <select class=\"select\">\n    <option disabled selected>Pick a browser</option>\n    <option>Chrome</option>\n    <option>FireFox</option>\n    <option>Safari</option>\n  </select>\n  <span class=\"label\">Optional</span>\n</fieldset>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "primary-color",
+   "section": null,
+   "title": {
+    "en": "Primary color"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select select-primary\">\n  <option disabled selected>Pick a text editor</option>\n  <option>VScode</option>\n  <option>VScode fork</option>\n  <option>Another VScode fork</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "secondary-color",
+   "section": null,
+   "title": {
+    "en": "Secondary color"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select select-secondary\">\n  <option disabled selected>Pick a language</option>\n  <option>Zig</option>\n  <option>Go</option>\n  <option>Rust</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "accent-color",
+   "section": null,
+   "title": {
+    "en": "Accent color"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select select-accent\">\n  <option selected disabled>Color scheme</option>\n  <option>Light mode</option>\n  <option>Dark mode</option>\n  <option>System</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "neutral-color",
+   "section": null,
+   "title": {
+    "en": "Neutral color"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select select-neutral\">\n  <option disabled selected>Server location</option>\n  <option>North America</option>\n  <option>EU west</option>\n  <option>South East Asia</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "info-color",
+   "section": null,
+   "title": {
+    "en": "Info color"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select select-info\">\n  <option disabled selected>Pick a Framework</option>\n  <option>React</option>\n  <option>Vue</option>\n  <option>Angular</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "success-color",
+   "section": null,
+   "title": {
+    "en": "Success color"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select select-success\">\n  <option disabled selected>Pick a Runtime</option>\n  <option>npm</option>\n  <option>Bun</option>\n  <option>yarn</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "warning-color",
+   "section": null,
+   "title": {
+    "en": "Warning color"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select select-warning\">\n  <option disabled selected>Pick an OS</option>\n  <option>Windows</option>\n  <option>MacOS</option>\n  <option>Linux</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "error-color",
+   "section": null,
+   "title": {
+    "en": "Error color"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select select-error\">\n  <option disabled selected>Pick an AI Model</option>\n  <option>GPT-4</option>\n  <option>Claude</option>\n  <option>Llama</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "sizes",
+   "section": null,
+   "title": {
+    "en": "Sizes"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select select-xs\">\n  <option disabled selected>Xsmall</option>\n  <option>Xsmall Apple</option>\n  <option>Xsmall Orange</option>\n  <option>Xsmall Tomato</option>\n</select>\n<select class=\"select select-sm\">\n  <option disabled selected>Small</option>\n  <option>Small Apple</option>\n  <option>Small Orange</option>\n  <option>Small Tomato</option>\n</select>\n<select class=\"select select-md\">\n  <option disabled selected>Medium</option>\n  <option>Medium Apple</option>\n  <option>Medium Orange</option>\n  <option>Medium Tomato</option>\n</select>\n<select class=\"select select-lg\">\n  <option disabled selected>Large</option>\n  <option>Large Apple</option>\n  <option>Large Orange</option>\n  <option>Large Tomato</option>\n</select>\n<select class=\"select select-xl\">\n  <option disabled selected>Xlarge</option>\n  <option>Xlarge Apple</option>\n  <option>Xlarge Orange</option>\n  <option>Xlarge Tomato</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "disabled",
+   "section": null,
+   "title": {
+    "en": "Disabled"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select\" disabled>\n  <option>You can't touch this</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "using-os-native-style-for-the-options-dropdown",
+   "section": null,
+   "title": {
+    "en": "Using OS native style for the options dropdown"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select appearance-none\">\n  <option disabled selected>Pick a color</option>\n  <option>Crimson</option>\n  <option>Amber</option>\n  <option>Velvet</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "select-with-custom-dropdown-height",
+   "section": null,
+   "title": {
+    "en": "Select with custom dropdown height"
+   },
+   "subtitle": null,
+   "html": "<select class=\"select [&::picker(select)]:max-h-26\">\n  <option disabled selected>Pick a color</option>\n  <option>Crimson</option>\n  <option>Amber</option>\n  <option>Velvet</option>\n</select>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  }
+ ]
+}

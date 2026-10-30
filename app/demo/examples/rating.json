@@ -1,0 +1,195 @@
+{
+ "name": "rating",
+ "title": {
+  "en": "Rating"
+ },
+ "description": {
+  "en": "Rating is a set of radio buttons that allow the user to rate something.",
+  "ca": "El Rating és un conjunt de botons de radio que permet a l'usuari puntuar alguna cosa.",
+  "es": "Rating es un conjunto de botones de radio que permiten al usuario calificar algo."
+ },
+ "classes": [
+  {
+   "group": "component",
+   "items": [
+    {
+     "class": "rating",
+     "description": {
+      "en": "For a div containing radio inputs",
+      "ca": "Per a un div que conté entrades Radio",
+      "es": "Para un div que contiene entradas de radio"
+     }
+    }
+   ]
+  },
+  {
+   "group": "modifier",
+   "items": [
+    {
+     "class": "rating-half",
+     "description": {
+      "en": "To shows half of the shapes. Useful for half star ratings",
+      "ca": "A mostra la meitat de les formes. Útil per a les qualificacions de mitja estrella",
+      "es": "Para mostrar la mitad de las formas. Útil para calificaciones de media estrella"
+     }
+    },
+    {
+     "class": "rating-hidden",
+     "description": {
+      "en": "For the first radio to make it hidden so user can clear the rating",
+      "ca": "Perquè el primer Radio s'oculti perquè l'usuari pugui esborrar el Rating",
+      "es": "Para el primer Radio, ocultarlo para que el usuario pueda borrar el Rating."
+     }
+    }
+   ]
+  },
+  {
+   "group": "size",
+   "items": [
+    {
+     "class": "rating-xs",
+     "description": {
+      "en": "Extra small size",
+      "ca": "Talla extra petita",
+      "es": "Tamaño muy pequeño"
+     }
+    },
+    {
+     "class": "rating-sm",
+     "description": {
+      "en": "Small size",
+      "ca": "Talla petita",
+      "es": "tamaño pequeño"
+     }
+    },
+    {
+     "class": "rating-md",
+     "description": {
+      "en": "Medium size",
+      "ca": "Talla mitjana",
+      "es": "tamaño mediano"
+     },
+     "default": true
+    },
+    {
+     "class": "rating-lg",
+     "description": {
+      "en": "Large size",
+      "ca": "Talla gran",
+      "es": "tamaño grande"
+     }
+    },
+    {
+     "class": "rating-xl",
+     "description": {
+      "en": "Extra large size",
+      "ca": "Talla extra gran",
+      "es": "tamaño extra grande"
+     }
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "rating",
+   "section": null,
+   "title": {
+    "en": "Rating"
+   },
+   "subtitle": null,
+   "html": "<div class=\"rating\">\n  <input type=\"radio\" name=\"rating-1\" class=\"mask mask-star\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-1\" class=\"mask mask-star\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-1\" class=\"mask mask-star\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-1\" class=\"mask mask-star\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-1\" class=\"mask mask-star\" aria-label=\"5 star\" />\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "read-only-rating",
+   "section": null,
+   "title": {
+    "en": "Read-only Rating"
+   },
+   "subtitle": null,
+   "html": "<div class=\"rating\">\n  <div class=\"mask mask-star\" aria-label=\"1 star\"></div>\n  <div class=\"mask mask-star\" aria-label=\"2 star\"></div>\n  <div class=\"mask mask-star\" aria-label=\"3 star\" aria-current=\"true\"></div>\n  <div class=\"mask mask-star\" aria-label=\"4 star\"></div>\n  <div class=\"mask mask-star\" aria-label=\"5 star\"></div>\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "mask-star-2-with-warning-color",
+   "section": null,
+   "title": {
+    "en": "mask-star-2 with warning color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"rating\">\n  <input type=\"radio\" name=\"rating-2\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-2\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-2\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-2\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-2\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  },
+  {
+   "id": "mask-heart-with-multiple-colors",
+   "section": null,
+   "title": {
+    "en": "mask-heart with multiple colors"
+   },
+   "subtitle": null,
+   "html": "<div class=\"rating gap-1\">\n  <input type=\"radio\" name=\"rating-3\" class=\"mask mask-heart bg-red-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-3\" class=\"mask mask-heart bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-3\" class=\"mask mask-heart bg-yellow-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-3\" class=\"mask mask-heart bg-lime-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-3\" class=\"mask mask-heart bg-green-400\" aria-label=\"5 star\" />\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  },
+  {
+   "id": "mask-star-2-with-green-500-color",
+   "section": null,
+   "title": {
+    "en": "mask-star-2 with green-500 color"
+   },
+   "subtitle": null,
+   "html": "<div class=\"rating\">\n  <input type=\"radio\" name=\"rating-4\" class=\"mask mask-star-2 bg-green-500\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-4\" class=\"mask mask-star-2 bg-green-500\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-4\" class=\"mask mask-star-2 bg-green-500\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-4\" class=\"mask mask-star-2 bg-green-500\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-4\" class=\"mask mask-star-2 bg-green-500\" aria-label=\"5 star\" />\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  },
+  {
+   "id": "sizes",
+   "section": null,
+   "title": {
+    "en": "Sizes"
+   },
+   "subtitle": null,
+   "html": "<!-- xs -->\n<div class=\"rating rating-xs\">\n  <input type=\"radio\" name=\"rating-5\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-5\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-5\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-5\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-5\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>\n<!-- sm -->\n<div class=\"rating rating-sm\">\n  <input type=\"radio\" name=\"rating-6\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-6\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-6\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-6\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-6\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>\n<!-- md -->\n<div class=\"rating rating-md\">\n  <input type=\"radio\" name=\"rating-7\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-7\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-7\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-7\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-7\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>\n<!-- lg -->\n<div class=\"rating rating-lg\">\n  <input type=\"radio\" name=\"rating-8\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-8\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-8\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-8\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-8\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>\n<!-- xl -->\n<div class=\"rating rating-xl\">\n  <input type=\"radio\" name=\"rating-9\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-9\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-9\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-9\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-9\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  },
+  {
+   "id": "with-rating-hidden",
+   "section": null,
+   "title": {
+    "en": "with `rating-hidden`"
+   },
+   "subtitle": {
+    "en": "`rating-hidden` is a hidden radio at the start to allow users to remove their rating.",
+    "ca": "\"Rating-hidden\" és un Radio amagat al principi per permetre als usuaris eliminar el seu Rating. (`rating-hidden`)",
+    "es": "`rating-hidden` es una radio oculta al inicio que permite a los usuarios eliminar su calificación."
+   },
+   "html": "<div class=\"rating rating-lg\">\n  <input type=\"radio\" name=\"rating-10\" class=\"rating-hidden\" aria-label=\"clear\" />\n  <input type=\"radio\" name=\"rating-10\" class=\"mask mask-star-2\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-10\" class=\"mask mask-star-2\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-10\" class=\"mask mask-star-2\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-10\" class=\"mask mask-star-2\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-10\" class=\"mask mask-star-2\" aria-label=\"5 star\" />\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": false
+  },
+  {
+   "id": "half-stars",
+   "section": null,
+   "title": {
+    "en": "half stars"
+   },
+   "subtitle": null,
+   "html": "<div class=\"rating rating-lg rating-half\">\n  <input type=\"radio\" name=\"rating-11\" class=\"rating-hidden\" aria-label=\"clear\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-1 bg-green-500\" aria-label=\"0.5 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-2 bg-green-500\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-1 bg-green-500\" aria-label=\"1.5 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-2 bg-green-500\" aria-label=\"2 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-1 bg-green-500\" aria-label=\"2.5 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-2 bg-green-500\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-1 bg-green-500\" aria-label=\"3.5 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-2 bg-green-500\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-1 bg-green-500\" aria-label=\"4.5 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-2 bg-green-500\" aria-label=\"5 star\" />\n</div>",
+   "runs": true,
+   "kind": "",
+   "palette": true
+  }
+ ]
+}

@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 from babel.dates import format_date as babel_date
 from babel.dates import format_datetime as babel_datetime
 from babel.numbers import format_decimal as babel_decimal
+from babel.numbers import format_percent as babel_percent
 from babel.numbers import parse_decimal as babel_parse
 
 from app.core.i18n import current_language
@@ -54,6 +55,11 @@ def parse_decimal(text: str) -> Decimal:
     if not value.is_finite():
         raise ValueError(text)
     return value
+
+
+def format_percent(value: int | Decimal) -> str:
+    """A whole percentage: the locale decides the sign and the space before it."""
+    return babel_percent(Decimal(value) / 100, locale=current_language())
 
 
 def format_date(value: date) -> str:

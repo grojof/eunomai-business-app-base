@@ -118,17 +118,18 @@ def test_htmx_has_evaluation_turned_off(open_page):
 @pytest.mark.rule("A11Y-02")
 def test_escape_closes_the_user_menu_and_returns_to_its_button(open_page):
     page = open_page("/")
-    summary = page.locator("details[data-menu] summary")
+    summary = page.get_by_text("Demo User").locator("xpath=ancestor::summary")
+    link = page.locator('details[data-menu] a[href="/settings"]')
     summary.press("Enter")
-    assert page.locator('button[name="theme"][value="dark"]').is_visible()
+    assert link.is_visible()
     page.keyboard.press("Escape")
-    assert not page.locator('button[name="theme"][value="dark"]').is_visible()
+    assert not link.is_visible()
     assert summary.evaluate("element => element === document.activeElement")
 
 
 def test_a_person_can_change_the_language_with_the_keyboard(open_page):
     page = open_page("/", language="en")
-    page.locator("details[data-menu] summary").press("Enter")
+    page.locator("[data-preferences='header-language'] summary").press("Enter")
     with page.expect_navigation():
-        page.locator('button[name="language"][value="es"]').press("Enter")
+        page.locator('[data-preferences="header-language"] button[value="es"]').press("Enter")
     assert page.locator("html").get_attribute("lang") == "es"

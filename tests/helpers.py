@@ -11,46 +11,64 @@ ROOT = Path(__file__).resolve().parent.parent
 TEXT_ATTRIBUTES = ("aria-label", "title", "placeholder", "alt", "data-announce")
 WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
 NOT_OURS = {".git", ".venv", ".cache", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
-ANIMATIONS_FINISHED = """Promise.allSettled(
-    document.getAnimations()
-        .filter((animation) => animation.effect.getComputedTiming().iterations !== Infinity)
-        .map((animation) => animation.finished)
-).then(() => null)"""
-"""Text still fading in fails the contrast scan: what is measured must be what stays on the page."""
-VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
+ANIMATIONS_FINISHED = """Promise.race([
+    Promise.allSettled(
+        document.getAnimations()
+            .filter((animation) => animation.effect.getComputedTiming().iterations !== Infinity)
+            .map((animation) => animation.finished)
+    ),
+    new Promise((resolve) => setTimeout(resolve, 3000)),
+]).then(() => null)"""
+"""Text still fading in fails the contrast scan: what is measured must be what stays on the page. An animation on an
+element that never renders never finishes, so the wait has an end."""
 FOCUSABLE = (
     "a[href], summary, select:not([disabled]), textarea:not([disabled]), button:not([disabled]), "
-    'input:not([disabled]):not([type="hidden"]), [tabindex]:not([tabindex="-1"])'
+    'input:not([disabled]):not([type="hidden"]):not([type="radio"]:not(:checked)), [tabindex]:not([tabindex="-1"])'
 )
+
+
+def without_official_examples(html: str) -> str:
+    """Our frame only: daisyUI's examples are reference material, left as published."""
+    return re.sub(r"<!--official-->.*?<!--/official-->", "", html, flags=re.S)
 
 
 class _Texts(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.texts: list[str] = []
-        self._skip = 0
+        self._skipping = ""
+        self._depth = 0
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag in ("script", "style", "code", "kbd") or (tag == "button" and dict(attrs).get("lang")):
-            self._skip += 1
+        if self._skipping:
+            self._depth += tag == self._skipping
+            return
+        if tag in ("script", "style", "code", "kbd") or (tag != "html" and dict(attrs).get("lang")):
+            self._skipping, self._depth = tag, 1
         self.texts += [value for name, value in attrs if name in TEXT_ATTRIBUTES and value]
 
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if not self._skipping:
+            self.texts += [value for name, value in attrs if name in TEXT_ATTRIBUTES and value]
+
     def handle_endtag(self, tag: str) -> None:
-        if tag in ("script", "style", "code", "kbd") or (tag == "button" and self._skip):
-            self._skip = max(0, self._skip - 1)
+        if tag == self._skipping:
+            self._depth -= 1
+            if not self._depth:
+                self._skipping = ""
 
     def handle_data(self, data: str) -> None:
-        if not self._skip and data.strip():
+        if not self._skipping and data.strip():
             self.texts.append(data.strip())
 
 
 def untranslated(html: str, allowed: tuple[str, ...]) -> list[str]:
     """Texts a person would see that did not go through translation: in the pseudo-language, all others are marked."""
     parser = _Texts()
-    parser.feed(html)
+    parser.feed(re.sub(r"⟦.*?⟧", "", without_official_examples(html), flags=re.S))  # marks may hold <code>
     found = []
-    for text in parser.texts:
-        rest = re.sub(r"⟦.*?⟧", "", text, flags=re.S)
+    for rest in parser.texts:
+        text = rest
         for word in allowed:
             rest = rest.replace(word, "")
         if re.search(r"[^\W\d_]", rest):
@@ -68,41 +86,6 @@ def run_axe(page: Any, exclude: tuple[str, ...] = ()) -> list[str]:
         [WCAG_TAGS, context],
     )
     return [f"{v['id']}: {node['target']}" for v in result["violations"] for node in v["nodes"]]
-
-
-class _Specimens(HTMLParser):
-    """What each gallery specimen really contains: its elements and its text."""
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.contents: dict[str, str] = {}
-        self._name = ""
-        self._depth = 0
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        values = dict(attrs)
-        if tag == "section" and "data-status" in values:
-            self._name = values.get("id") or ""
-        if self._depth:
-            self.contents[self._name] += f"<{tag}>"
-            self._depth += tag not in VOID_TAGS
-        elif "data-specimen" in values:
-            self.contents[self._name] = ""
-            self._depth = 1
-
-    def handle_endtag(self, tag: str) -> None:
-        if self._depth and tag not in VOID_TAGS:
-            self._depth -= 1
-
-    def handle_data(self, data: str) -> None:
-        if self._depth:
-            self.contents[self._name] += data.strip()
-
-
-def specimen_contents(html: str) -> dict[str, str]:
-    parser = _Specimens()
-    parser.feed(html)
-    return parser.contents
 
 
 def focus_order(page: Any) -> tuple[list[str], list[str]]:

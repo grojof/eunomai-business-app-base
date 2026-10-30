@@ -9,6 +9,7 @@ from jinja2 import nodes
 
 from app.core.templating import environment
 from app.ui.catalog import STATUSES, components
+from tests.helpers import without_official_examples
 
 NO_CSS_OF_THEIR_OWN = {"drawer-button", "theme-controller"}
 """Real names in daisyUI's documentation that only mark an element: no rule needs them in this stylesheet."""
@@ -35,9 +36,9 @@ class _Page(HTMLParser):
 
 
 def read_page(html: str) -> tuple[set[str], set[str]]:
-    """The classes in a page, and the addresses it leads to."""
+    """The classes in a page, and the addresses it leads to. daisyUI's examples are not ours to check."""
     page = _Page()
-    page.feed(html)
+    page.feed(without_official_examples(html))
     return page.classes, page.links
 
 

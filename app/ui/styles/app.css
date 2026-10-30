@@ -4,7 +4,7 @@
 @import "tailwindcss" source(none);
 @source "../../**/*.html";
 @source "../catalog.py";
-@source "../../demo/variants.json";
+@source "../../demo/examples/classes.txt"; /* demo */
 
 @plugin "../../../tools/tailwind/daisyui.mjs" {
   themes: light --default, dark --prefersdark;
@@ -12,6 +12,7 @@
 }
 
 @import "../../brand/theme.css";
+@import "../../demo/gallery.css"; /* demo */
 
 @theme {
   --color-*: initial;
@@ -19,6 +20,22 @@
 
 /* Outside any layer, so no component can hide it: daisyUI's menu marks focus only with a background */
 :where(a, button, summary, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* The palette's text box is the only thing that can be typed in, and its row shows that it has focus */
+#palette-input:focus-visible {
+  outline: none;
+}
+
+/* After every component, so the palette's height is the one that counts */
+#palette .modal-box {
+  max-height: min(40rem, calc(100dvh - 1rem));
+}
+
+/* A swap hides its box, so its label shows the focus */
+.swap:has(input:focus-visible) {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
@@ -34,8 +51,9 @@
   }
 
   h1 {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-semibold);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--tracking-tight);
   }
 
   h2 {
@@ -51,6 +69,11 @@
     --size-field: 0.21rem;
     --size-selector: 0.21rem;
     font-size: var(--text-sm);
+  }
+
+  /* A hidden element stays hidden, whatever a class says */
+  [hidden] {
+    display: none !important;
   }
 }
 
@@ -68,5 +91,34 @@
   .htmx-request .htmx-indicator,
   .htmx-request.htmx-indicator {
     display: inline;
+  }
+
+  /* Words break between letters only where nothing else fits: a table can scroll instead */
+  .table {
+    overflow-wrap: normal;
+  }
+
+  #palette-results [role="option"][aria-selected="true"] {
+    background-color: var(--color-neutral);
+    color: var(--color-neutral-content);
+  }
+
+  #palette-results [role="option"]:hover {
+    background-color: var(--color-base-200);
+  }
+
+  #palette-results [role="option"][aria-selected="true"] span span {
+    color: inherit;
+  }
+
+  #palette-results [role="option"][aria-selected="true"] .icon {
+    color: var(--color-base-content);
+  }
+
+  #palette-results mark {
+    background: none;
+    color: inherit;
+    font-weight: var(--font-weight-bold);
+    text-decoration: underline;
   }
 }
