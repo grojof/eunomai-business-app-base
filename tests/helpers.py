@@ -15,12 +15,12 @@ class _Texts(HTMLParser):
         self._skip = 0
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag in ("script", "style") or (tag == "option" and dict(attrs).get("lang")):
+        if tag in ("script", "style") or (tag == "button" and dict(attrs).get("lang")):
             self._skip += 1
         self.texts += [value for name, value in attrs if name in TEXT_ATTRIBUTES and value]
 
     def handle_endtag(self, tag: str) -> None:
-        if tag in ("script", "style") or (tag == "option" and self._skip):
+        if tag in ("script", "style") or (tag == "button" and self._skip):
             self._skip = max(0, self._skip - 1)
 
     def handle_data(self, data: str) -> None:

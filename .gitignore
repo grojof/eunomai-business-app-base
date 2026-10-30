@@ -16,6 +16,9 @@ htmlcov/
 .env.*
 !.env.example
 
+# The stylesheet's executable, downloaded by tools/css.py
+.cache/
+
 # Clutter
 .DS_Store
 Thumbs.db

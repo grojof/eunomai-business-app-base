@@ -43,6 +43,7 @@ jobs:
           if git diff --quiet; then echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0; fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
           uv sync --frozen --python 3.12
+          uv run --frozen python tools/css.py
           uv run --frozen pytest -q
           git diff --name-only -z | tar --null -T - -cf "$RUNNER_TEMP/out/update.tar"
 
@@ -74,7 +75,7 @@ jobs:
           path: ${{ runner.temp }}/in
       - name: Propose the update
         run: |
-          allowed='^(uv\.lock|pyproject\.toml|vendor\.json|app/ui/static/vendor/[^/]+|tests/vendor/[^/]+)$'
+          allowed='^(uv\.lock|pyproject\.toml|vendor\.json|app/ui/static/app\.css|app/ui/static/vendor/[^/]+|tests/vendor/[^/]+|tools/tailwind/[^/]+)$'
           unexpected=$(tar -tf "$RUNNER_TEMP/in/update.tar" | grep -v -E "$allowed" || true)
           if [ -n "$unexpected" ]; then echo "unexpected files: $unexpected"; exit 1; fi
           tar -xf "$RUNNER_TEMP/in/update.tar"

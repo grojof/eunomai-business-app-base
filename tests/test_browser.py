@@ -26,7 +26,7 @@ def test_the_skip_link_comes_first_and_moves_focus_to_the_content(open_page):
     page = open_page("/")
     page.keyboard.press("Tab")
     link = page.locator(":focus")
-    assert link.get_attribute("class") == "skip-link"
+    assert "Skip to content" in link.inner_text()
     box = link.bounding_box()
     assert box["y"] >= 0
     assert link.evaluate("element => getComputedStyle(element).outlineStyle") != "none"
@@ -38,7 +38,7 @@ def test_the_skip_link_comes_first_and_moves_focus_to_the_content(open_page):
 @pytest.mark.rule("A11Y-04")
 def test_every_control_is_reached_by_keyboard_with_visible_focus(open_page):
     page = open_page("/")
-    expected = page.locator("a[href], button, select").count()
+    expected = page.locator("a[href]:visible, button:visible, summary:visible").count()
     reached = 0
     for _ in range(expected + 2):
         page.keyboard.press("Tab")
@@ -101,10 +101,20 @@ def test_htmx_has_evaluation_turned_off(open_page):
     assert page.evaluate("htmx.config.allowEval") is False
 
 
+@pytest.mark.rule("A11Y-02")
+def test_escape_closes_the_user_menu_and_returns_to_its_button(open_page):
+    page = open_page("/")
+    summary = page.locator("details[data-menu] summary")
+    summary.press("Enter")
+    assert page.locator('button[name="theme"][value="dark"]').is_visible()
+    page.keyboard.press("Escape")
+    assert not page.locator('button[name="theme"][value="dark"]').is_visible()
+    assert summary.evaluate("element => element === document.activeElement")
+
+
 def test_a_person_can_change_the_language_with_the_keyboard(open_page):
     page = open_page("/", language="en")
-    page.select_option("#language", "es")
-    page.locator("#language").press("Tab")
+    page.locator("details[data-menu] summary").press("Enter")
     with page.expect_navigation():
-        page.keyboard.press("Enter")
+        page.locator('button[name="language"][value="es"]').press("Enter")
     assert page.locator("html").get_attribute("lang") == "es"

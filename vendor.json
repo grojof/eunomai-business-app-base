@@ -12,5 +12,30 @@
     "target": "tests/vendor/axe.min.js",
     "script": false,
     "sha384": "lFUXB8tI4BaTE1bqxH9eeAXON2NH1qsdAhs7S5L++nUNP5QOy+hwr0C3TYEJUEl0"
+  },
+  "daisyui": {
+    "version": "5.7.50",
+    "url": "https://github.com/saadeghi/daisyui/releases/download/v{version}/daisyui.mjs",
+    "target": "tools/tailwind/daisyui.mjs",
+    "script": false,
+    "sha384": "JsIkwgQhEKIAhD2T804yQFi32nSxZ7d6V8wvdOhsN0uNCpXWkPtpB0p+MHu7QhOE"
+  },
+  "daisyui-theme": {
+    "package": "daisyui",
+    "version": "5.7.50",
+    "url": "https://github.com/saadeghi/daisyui/releases/download/v{version}/daisyui-theme.mjs",
+    "target": "tools/tailwind/daisyui-theme.mjs",
+    "script": false,
+    "sha384": "rDQAUa9NMFOYPv9JGBkbWXiz9fCcaqDaw/NabnV28U9b8mniJAUGu3J3Ben4jd8j"
+  },
+  "tailwindcss": {
+    "version": "4.3.3",
+    "script": false,
+    "executables": {
+      "tailwindcss-linux-x64": "dc61b3ac6b8c9ca874c0cc4c57b2409791a64c5540404ca5f5367360babc313a",
+      "tailwindcss-linux-arm64": "55fd0b241214eff3de1e8ee4f22796662f2d2e7a49bcfca7477cfd0bac398195",
+      "tailwindcss-macos-arm64": "cdf646702987a743464dff4d9c60fd4480d1c1e73dd819a9a67f1078815dce9d",
+      "tailwindcss-windows-x64.exe": "e0e260ce048014e9268f6237ff18f8ccf02cef521cbd0ae04e82c2cdf7aa3955"
+    }
   }
 }

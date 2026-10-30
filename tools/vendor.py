@@ -82,9 +82,24 @@ def fetch(name: str, version: str, member: str) -> bytes:
         return extracted.read()
 
 
+def download(url: str) -> bytes:
+    with urllib.request.urlopen(url, timeout=120) as response:
+        content: bytes = response.read()
+    return content
+
+
+def executable_hashes(version: str, names: dict[str, str]) -> dict[str, str]:
+    url = f"https://github.com/tailwindlabs/tailwindcss/releases/download/v{version}/sha256sums.txt"
+    lines = [line.split() for line in download(url).decode().splitlines()]
+    published = {path: digest for digest, path in lines}
+    return {name: published[f"./{name}"] for name in names}
+
+
 def check() -> list[str]:
     problems = []
     for name, entry in json.loads(VENDOR.read_text(encoding="utf-8")).items():
+        if "target" not in entry:  # an executable: tools/css.py checks it when downloading
+            continue
         path = ROOT / entry["target"]
         if not path.exists() or sha384(path.read_bytes()) != entry["sha384"]:
             problems.append(f"{name}: {entry['target']} does not match vendor.json")
@@ -95,14 +110,21 @@ def update() -> list[str]:
     entries = json.loads(VENDOR.read_text(encoding="utf-8"))
     changes = []
     for name, entry in entries.items():
-        version = newest_allowed(name, entry["version"])
+        version = newest_allowed(entry.get("package", name), entry["version"])
         if version is None:
             print(f"{name}: no allowed version", file=sys.stderr)
+            continue
+        if "executables" in entry:
+            if version != entry["version"]:
+                entry.update(version=version, executables=executable_hashes(version, entry["executables"]))
+                changes.append(f"`{name}` to {version}")
             continue
         target = ROOT / entry["target"]
         if version == entry["version"] and target.exists():
             continue
-        content = fetch(name, version, entry["file"])
+        content = (
+            download(entry["url"].format(version=version)) if "url" in entry else fetch(name, version, entry["file"])
+        )
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(content)
         changes.append(f"`{name}` {entry['version']} to {version}")

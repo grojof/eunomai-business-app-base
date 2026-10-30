@@ -1,0 +1,65 @@
+/* The source of the stylesheet. tools/css.py turns it into app/ui/static/app.css with the classes in use.
+   Colours come only from the brand: Tailwind's own palette is removed, so a class like bg-blue-500 does not exist. */
+
+@import "tailwindcss" source(none);
+@source "../../**/*.html";
+
+@plugin "../../../tools/tailwind/daisyui.mjs" {
+  themes: false;
+  logs: false;
+}
+
+@import "../../brand/theme.css";
+
+@theme {
+  --color-*: initial;
+}
+
+/* Outside any layer, so no component can hide it: daisyUI's menu marks focus only with a background */
+:where(a, button, summary, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@layer base {
+  body {
+    overflow-wrap: anywhere;
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  h2 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  [tabindex="-1"]:focus {
+    outline: none;
+  }
+
+  [data-density="compact"] {
+    --size-field: 0.21rem;
+    --size-selector: 0.21rem;
+    font-size: var(--text-sm);
+  }
+}
+
+@layer components {
+  /* Every icon takes the size of its box */
+  .icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .htmx-indicator {
+    display: none;
+  }
+
+  .htmx-request .htmx-indicator,
+  .htmx-request.htmx-indicator {
+    display: inline;
+  }
+}

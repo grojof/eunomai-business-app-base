@@ -18,6 +18,12 @@ class Settings(BaseSettings):
     languages: list[str] = ["en", "es", "ca"]
     time_zone: str = "Europe/Madrid"
 
+    # How the application is arranged. See docs/specification.md#layouts
+    layout_navigation: Literal["side", "compact", "top", "hidden"] = "side"
+    layout_sticky_header: bool = True
+    layout_width: Literal["full", "centered"] = "full"
+    layout_density: Literal["normal", "compact"] = "normal"
+
     # Identity: who is allowed to send these headers, and what they are called.
     trusted_proxies: list[str] = ["127.0.0.1", "::1"]
     header_username: str = "X-Remote-User"

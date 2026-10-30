@@ -8,8 +8,8 @@ person or real system: it stays neutral so anyone can clone it.
 | Folder | Contents | Rule |
 |---|---|---|
 | `app/core/` | Identity, roles, settings, database, languages, formatters, errors, health | Never imports from `app/demo/` |
-| `app/ui/` | Components: macros, CSS, the few JavaScript files | Uses only the brand's variables |
-| `app/brand/` | Colours, fonts, logos | The only folder an organization must change |
+| `app/ui/` | Components as macros, the stylesheet's source, the few JavaScript files | Screens call macros; daisyUI classes stay here where possible |
+| `app/brand/` | The theme, logos | The only folder an organization must change |
 | `app/demo/` | Demo screens, data and their translations | Deleting it leaves a working application |
 
 ## Rules
@@ -20,7 +20,8 @@ person or real system: it stays neutral so anyone can clone it.
   *Project decision*. A test names the rule it proves: `@pytest.mark.rule("A11Y-05")`.
 - Build the plain HTML first: it must work with a keyboard and a screen reader before any behaviour is added on top.
 - Every text a user can see goes through translation. Every number, date and time goes through the locale's formatter.
-- Every colour, size and radius comes from a variable. No value is written by hand in a component.
+- Colours come from the brand. No invented values such as `bg-[#ff0000]` or `text-[13px]`: a test refuses them.
+- Use the existing macros before writing anything new. After changing templates, run `uv run python tools/css.py`.
 - Each screen handles its empty, loading, error and no-permission states.
 - A new component needs its page in the demo and its tests, in the same change.
 - Add a dependency only if the [stack](docs/specification.md#stack) needs it. Pin it and check it for known
@@ -36,6 +37,7 @@ test by hand and record it in the pull request.
 ```bash
 uv run ruff check && uv run ruff format --check && uv run mypy
 uv run python tools/vendor.py check
+uv run python tools/css.py check
 uv run python tools/translations.py check   # after changing texts: tools/translations.py update
 uv run pytest -q
 ```

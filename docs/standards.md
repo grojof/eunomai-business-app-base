@@ -75,6 +75,7 @@ hand: keyboard only, then a screen reader (NVDA with a Chromium browser), record
 | USE-06 | Any action responds at once; a long task shows progress and can be left running | [Nielsen 1: visibility of system status](https://www.nngroup.com/articles/ten-usability-heuristics/) | Milestone 4 |
 | USE-07 | One primary action per screen | Project decision | By hand |
 | USE-08 | The same thing looks and behaves the same, in the same place | [WCAG 3.2.3](https://www.w3.org/TR/WCAG22/#consistent-navigation), [3.2.4](https://www.w3.org/TR/WCAG22/#consistent-identification), [Nielsen 4: consistency](https://www.nngroup.com/articles/ten-usability-heuristics/) | By hand |
+| USE-10 | Every milestone is looked at by a person, in both themes, at desktop and phone width, before it is merged: passing the checks says nothing about how it looks | Project decision | By hand |
 | USE-09 | The theme follows the system; a person's choice is remembered | [Media Queries 5](https://www.w3.org/TR/mediaqueries-5/) | Automatic |
 
 ## Language

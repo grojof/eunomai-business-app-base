@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 18:56+0100\n"
+"POT-Creation-Date: 2026-10-30 20:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -44,15 +44,23 @@ msgstr "Botones"
 msgid "Cancel"
 msgstr "Cancelar"
 
+msgid "Centred"
+msgstr "Centrado"
+
+msgid "Compact"
+msgstr "Compacta"
+
 msgid "Component catalogue"
 msgstr "Catálogo de componentes"
 
-#, python-format
-msgid "Cost to date: %(cost)s"
-msgstr "Coste hasta la fecha: %(cost)s"
+msgid "Cost to date"
+msgstr "Coste hasta la fecha"
 
 msgid "Dashboard"
 msgstr "Panel"
+
+msgid "Density"
+msgstr "Densidad"
 
 msgid "Empty state"
 msgstr "Estado vacío"
@@ -60,12 +68,29 @@ msgstr "Estado vacío"
 msgid "Every component in every state."
 msgstr "Cada componente en cada estado."
 
-#, python-format
-msgid "Hours worked: %(hours)s"
-msgstr "Horas trabajadas: %(hours)s"
+msgid "Fixed header"
+msgstr "Cabecera fija"
+
+msgid "Full"
+msgstr "Completo"
+
+msgid "Hidden"
+msgstr "Oculta"
+
+msgid "Hours worked"
+msgstr "Horas trabajadas"
+
+msgid "Icons only"
+msgstr "Solo iconos"
+
+msgid "Indicators"
+msgstr "Indicadores"
 
 msgid "Inspections"
 msgstr "Inspecciones"
+
+msgid "Layouts"
+msgstr "Disposiciones"
 
 msgid "Loading"
 msgstr "Cargando"
@@ -73,21 +98,35 @@ msgstr "Cargando"
 msgid "Messages"
 msgstr "Mensajes"
 
-#, python-format
-msgid "Next inspection: %(date)s"
-msgstr "Próxima inspección: %(date)s"
+msgid "Navigation"
+msgstr "Navegación"
+
+msgid "Next inspection"
+msgstr "Próxima inspección"
+
+msgid "No"
+msgstr "No"
 
 msgid "No work orders yet"
 msgstr "Aún no hay órdenes de trabajo"
 
+msgid "Normal"
+msgstr "Normal"
+
 msgid "Only people with the administrator role can open this page."
 msgstr "Solo pueden abrir esta página las personas con el rol de administrador."
+
+msgid "Open work orders"
+msgstr "Órdenes de trabajo abiertas"
 
 msgid "Save"
 msgstr "Guardar"
 
 msgid "Show inspections"
 msgstr "Mostrar inspecciones"
+
+msgid "Side"
+msgstr "Lateral"
 
 msgid "Summary"
 msgstr "Resumen"
@@ -101,12 +140,24 @@ msgstr "La orden de trabajo se ha guardado."
 msgid "This equipment is due for inspection."
 msgstr "A este equipo le toca inspección."
 
+msgid "Top"
+msgstr "Superior"
+
+msgid "Try each arrangement. An application fixes its own in its settings."
+msgstr "Prueba cada disposición. Cada aplicación fija la suya en sus ajustes."
+
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualizado: %(moment)s"
 
+msgid "Width"
+msgstr "Ancho"
+
 msgid "Work orders appear here when someone creates one."
 msgstr "Las órdenes de trabajo aparecen aquí cuando alguien crea una."
+
+msgid "Yes"
+msgstr "Sí"
 
 msgid "Your changes are saved as you type."
 msgstr "Tus cambios se guardan mientras escribes."
