@@ -63,14 +63,19 @@ def newest_allowed(name: str, current: str) -> str | None:
     return None
 
 
-def fetch(name: str, version: str, member: str) -> bytes:
+def tarball(name: str, version: str) -> bytes:
+    """A package as published, checked against its published integrity."""
     metadata = read_json(f"https://registry.npmjs.org/{urllib.parse.quote(name, safe='@')}/{version}")
-    with urllib.request.urlopen(metadata["dist"]["tarball"], timeout=60) as response:
-        tarball = response.read()
+    with urllib.request.urlopen(metadata["dist"]["tarball"], timeout=120) as response:
+        content: bytes = response.read()
     algorithm, expected = metadata["dist"]["integrity"].split("-", 1)
-    if base64.b64encode(hashlib.new(algorithm, tarball).digest()).decode() != expected:
+    if base64.b64encode(hashlib.new(algorithm, content).digest()).decode() != expected:
         raise RuntimeError(f"{name} {version}: the tarball does not match its published integrity")
-    with tarfile.open(fileobj=io.BytesIO(tarball)) as archive:
+    return content
+
+
+def fetch(name: str, version: str, member: str) -> bytes:
+    with tarfile.open(fileobj=io.BytesIO(tarball(name, version))) as archive:
         extracted = archive.extractfile(f"package/{member}")
         if extracted is None:
             raise RuntimeError(f"{name} {version}: no {member} in the package")

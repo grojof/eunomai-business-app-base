@@ -40,4 +40,5 @@ uv run python tools/translations.py check   # after changing texts: tools/transl
 uv run pytest -q
 ```
 
-Browser tests use the Chrome already on the computer; nothing is downloaded.
+Browser tests use the Chrome already on the computer; nothing is downloaded. After upgrading Babel, a test may ask for
+`uv run python tools/cldr_grouping.py`.

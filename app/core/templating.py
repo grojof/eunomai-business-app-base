@@ -61,6 +61,7 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
         app_name=state.settings.name,
         version=__version__,
         language=current_language(),
+        language_tag=current_language().replace("_", "-"),
         languages=state.languages.options(),
         theme=getattr(request.state, "theme", "system"),
         person=person,

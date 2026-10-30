@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ language }}" data-theme="{{ theme }}">
+<html lang="{{ language_tag }}" data-theme="{{ theme }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -45,7 +45,7 @@
           <label for="language">{{ _("Language") }}</label>
           <select class="select" id="language" name="language">
             {% for code, label in languages %}
-            <option value="{{ code }}" lang="{{ code }}"{% if code == language %} selected{% endif %}>{{ label }}</option>
+            <option value="{{ code }}" lang="{{ code|replace('_', '-') }}"{% if code == language %} selected{% endif %}>{{ label }}</option>
             {% endfor %}
           </select>
           <button class="button" type="submit">{{ _("Change language") }}</button>

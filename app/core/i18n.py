@@ -1,6 +1,6 @@
 """Languages: catalogues read straight from their .po files, so there is nothing to compile."""
 
-import gettext as stdlib_gettext
+import re
 from collections.abc import Iterable
 from contextvars import ContextVar
 from io import BytesIO
@@ -66,13 +66,26 @@ class PseudoTranslations(NullTranslations):
         return _pseudo(singular if num == 1 else plural)
 
 
-def _load(path: Path, language: str) -> stdlib_gettext.GNUTranslations:
+def _load(path: Path, language: str) -> Translations:
     with path.open("rb") as file:
         catalog = read_po(file, locale=language)
     compiled = BytesIO()
     write_mo(compiled, catalog)
     compiled.seek(0)
     return Translations(compiled)
+
+
+def _accepted(header: str | None) -> list[str]:
+    """The languages of an Accept-Language header, by preference: its order is not guaranteed (RFC 9110, 12.5.4)."""
+    weighted = []
+    for part in (header or "").split(","):
+        tag, _separator, parameters = part.partition(";")
+        tag = tag.strip().replace("-", "_")
+        found = re.search(r"\bq=([01](?:\.\d{1,3})?)", parameters, re.I)
+        weight = float(found[1]) if found else 1.0
+        if tag and tag != "*" and weight > 0:
+            weighted.append((weight, tag))
+    return [tag for _weight, tag in sorted(weighted, key=lambda item: -item[0])]
 
 
 class Languages:
@@ -91,24 +104,26 @@ class Languages:
 
     def catalogue(self, language: str) -> NullTranslations:
         if language not in self._catalogues:
-            merged = Translations()
+            # The first catalogue is the base: it carries the language's plural rule, which merging does not.
+            merged: Translations | None = None
             for folder in self._folders:
                 path = folder / language / "LC_MESSAGES" / "messages.po"
                 if path.exists():
-                    merged.merge(_load(path, language))  # type: ignore[arg-type]
-            self._catalogues[language] = merged
+                    loaded = _load(path, language)
+                    merged = loaded if merged is None else merged.merge(loaded)
+            self._catalogues[language] = merged if merged is not None else NullTranslations()
         return self._catalogues[language]
 
     def choose(self, saved: str | None, accept_language: str | None) -> str:
         """The person's choice, then what their browser accepts, then the default."""
         if saved in self.offered or (self.allow_pseudo and saved == PSEUDO):
             return str(saved)
-        accepted = [part.split(";")[0].strip().replace("-", "_") for part in (accept_language or "").split(",")]
-        return negotiate_locale([a for a in accepted if a and a != "*"], self.offered) or self.default
+        return negotiate_locale(_accepted(accept_language), self.offered) or self.default
 
     def options(self) -> list[tuple[str, str]]:
         """Each language with its name in that language: a person looks for their own."""
-        return [(code, (Locale.parse(code).get_display_name(code) or code).capitalize()) for code in self.offered]
+        names = ((code, Locale.parse(code).get_display_name(code) or code) for code in self.offered)
+        return [(code, name[:1].upper() + name[1:]) for code, name in names]
 
     def activate(self, language: str) -> None:
         _language.set(self.default if language == PSEUDO else language)

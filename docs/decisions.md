@@ -22,8 +22,9 @@ related: [specification.md, standards.md]
 | One definition per colour with `light-dark()`, themes set by the server | No JavaScript and no duplicated values | A second block of dark variables |
 | Translations read directly from `.po` files | Nothing to compile, in keeping with no build step | Compiled `.mo` files |
 | Browser tests on the installed Chrome | Nothing is downloaded | Playwright's own browsers |
-| Spanish number grouping added by hand | CLDR sets `minimumGroupingDigits` to 2 for Spanish, and Babel does not apply it | Accepting 1.250 where CLDR says 1250 |
-| Decimal context of 76 digits while formatting | Without it, Babel cuts long values silently at Python's default 28 digits | Trusting the default |
+| Babel for formats and translations | Pure Python, one dependency for both jobs, and the usual choice for Python web applications | PyICU: closer to CLDR, but it has no ready package, must be compiled on each server, ties its version to the system, and handles no `.po` files |
+| CLDR's `minimumGroupingDigits` applied through Babel's own `group_separator` | The standard says 1250 and 12.500 in Spanish, and Babel ignores that field. The values come from Unicode's data for the CLDR version Babel uses (`tools/cldr_grouping.py`), and a test fails if they part ways. Delete it if Babel adds support | A list written by hand, which was wrong for regional variants; accepting the difference, which only affects how numbers look |
+| Decimal context sized to each value | Python's default of 28 digits, or any fixed limit, cuts longer values without an error | A fixed precision |
 
 ## Open questions
 

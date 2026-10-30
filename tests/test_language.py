@@ -1,7 +1,9 @@
+import json
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
 import pytest
+from babel.core import get_cldr_version
 from fastapi.testclient import TestClient
 
 from app.core import formatters
@@ -152,3 +154,101 @@ def test_a_moment_is_shown_in_the_time_zone():
     moment = datetime(2026, 10, 30, 23, 30, tzinfo=UTC)
     assert "12:30" in formatters.format_datetime(moment, "Europe/Madrid")
     assert "Oct 31" in formatters.format_datetime(moment, "Europe/Madrid")
+
+
+@pytest.mark.rule("LANG-06")
+@pytest.mark.parametrize(
+    ("language", "expected"),
+    [
+        ("es", "1250,5"),
+        ("es_ES", "1250,5"),
+        ("es_419", "1,250.5"),
+        ("es_MX", "1,250.5"),
+        ("pl", "1250,5"),
+        ("it", "1250,5"),
+        ("pt_PT", "1250,5"),
+        ("pt_BR", "1.250,5"),
+        ("de", "1.250,5"),
+        ("ca", "1.250,5"),
+        ("en", "1,250.5"),
+    ],
+)
+def test_four_digit_numbers_follow_cldr_in_each_language(language, expected):
+    activate(language)
+    assert formatters.format_decimal(Decimal("1250.5")) == expected
+
+
+@pytest.mark.rule("LANG-06")
+def test_the_grouping_data_is_from_the_cldr_version_babel_uses():
+    data = json.loads((ROOT / "app" / "core" / "cldr_grouping.json").read_text(encoding="utf-8"))
+    assert data["cldr"].split(".")[0] == str(get_cldr_version())
+
+
+@pytest.mark.rule("LANG-08")
+@pytest.mark.parametrize("language", ["en", "es", "ca"])
+def test_no_length_of_decimal_is_cut(language):
+    activate(language)
+    value = Decimal("1" * 150 + "." + "2" * 150)
+    assert formatters.parse_decimal(formatters.format_decimal(value)) == value
+
+
+@pytest.mark.rule("LANG-07")
+@pytest.mark.parametrize("text", ["NaN", "nan", "Infinity", "-Infinity", "sNaN", "1e5x", ""])
+def test_something_that_is_not_a_number_is_refused(text):
+    activate("en")
+    with pytest.raises(ValueError):
+        formatters.parse_decimal(text)
+
+
+@pytest.mark.parametrize("value", [Decimal("NaN"), Decimal("Infinity")])
+def test_a_special_value_does_not_break_the_page(value):
+    activate("es")
+    assert formatters.format_decimal(value)
+
+
+@pytest.mark.rule("LANG-04")
+def test_plurals_keep_the_language_rule_when_catalogues_are_merged(tmp_path):
+    header = (
+        'msgid ""\nmsgstr ""\n"Content-Type: text/plain; charset=UTF-8\\n"\n'
+        '"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\\n"\n\n'
+    )
+    plural = 'msgid "one"\nmsgid_plural "many"\nmsgstr[0] "a"\nmsgstr[1] "b"\nmsgstr[2] "c"\n'
+    other = 'msgid "other"\nmsgstr "inny"\n'
+    languages = Languages(["pl"], "pl")
+    for folder, body in (("first", plural), ("second", other)):
+        path = tmp_path / folder / "pl" / "LC_MESSAGES" / "messages.po"
+        path.parent.mkdir(parents=True)
+        path.write_text(header + body, encoding="utf-8")
+        languages.add_folder(tmp_path / folder)
+    languages.activate("pl")
+    assert [ngettext("one", "many", n) for n in (1, 3, 5, 22)] == ["a", "b", "c", "b"]
+    assert _("other") == "inny"
+
+
+@pytest.mark.parametrize(
+    ("header", "expected"),
+    [
+        ("es;q=0.5, ca;q=0.9", "ca"),
+        ("ca;q=0, es", "es"),
+        ("de, ca;q=0.8, es;q=0.9", "es"),
+        ("*", "en"),
+        ("es;q=broken", "es"),
+    ],
+)
+def test_the_browser_preference_follows_its_weights(header, expected):
+    assert Languages(["en", "es", "ca"], "en").choose(None, header) == expected
+
+
+@pytest.mark.rule("LANG-12")
+def test_a_language_name_keeps_its_own_capitals():
+    names = dict(Languages(["pt_BR", "de_CH"], "pt_BR").options())
+    assert names == {"pt_BR": "Português (Brasil)", "de_CH": "Deutsch (Schweiz)"}
+
+
+@pytest.mark.rule("LANG-10")
+def test_a_regional_language_uses_a_valid_tag(person):
+    client = TestClient(create_app(build_settings(languages=["en", "pt_BR"])))
+    client.cookies.set("language", "pt_BR")
+    html = client.get("/", headers=person).text
+    assert '<html lang="pt-BR"' in html
+    assert 'value="pt_BR" lang="pt-BR"' in html
