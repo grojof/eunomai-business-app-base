@@ -1,0 +1,32 @@
+# AGENTS.md — business-app-base
+
+For anyone working in this repository, person or AI assistant. The repository is in English and names no organization,
+person or real system: it stays neutral so anyone can clone it.
+
+## What goes where
+
+| Folder | Contents | Rule |
+|---|---|---|
+| `app/core/` | Identity, roles, settings, database, languages, formatters, errors, health | Never imports from `app/demo/` |
+| `app/ui/` | Components: macros, CSS, the few JavaScript files | Uses only the brand's variables |
+| `app/brand/` | Colours, fonts, logos | The only folder an organization must change |
+| `app/demo/` | Demo screens, data and their translations | Deleting it leaves a working application |
+
+## Rules
+
+- Read [Standards](docs/standards.md) before writing a screen or a component. A change that breaks a standard is not
+  finished, whatever else it does.
+- Build the plain HTML first: it must work with a keyboard and a screen reader before any behaviour is added on top.
+- Every text a user can see goes through translation. Every number, date and time goes through the locale's formatter.
+- Every colour, size and radius comes from a variable. No value is written by hand in a component.
+- Each screen handles its empty, loading, error and no-permission states.
+- A new component needs its page in the demo and its tests, in the same change.
+- Add a dependency only if the [stack](docs/specification.md#stack) needs it. Pin it and check it for known
+  vulnerabilities.
+- No secrets in the repository, and no real people or companies in demo data.
+
+## Checks
+
+Automatic checks are what protect this repository; these rules only explain them. Run them all before calling something
+done, and say plainly what was not checked. Where a check cannot tell, such as how a screen reader announces a change,
+test by hand and record it in the pull request.

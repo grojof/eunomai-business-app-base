@@ -1,3 +1,34 @@
 # business-app-base
 
-A demo business application to clone and adapt.
+A demo business application to clone and adapt. It shows nearly every component an internal application needs, built
+to one standard of accessibility, usability and language support, so a new application starts from working, tested
+pieces instead of from a blank page. People and AI assistants both build faster that way.
+
+**For whom:** teams that build internal applications, with or without AI, and want them to look and behave alike.
+
+**What it is not:** a framework or a dependency. There is nothing to install and nothing to stay tied to. Clone it, keep
+what helps, change the rest.
+
+```mermaid
+flowchart LR
+    b[business-app-base<br/>the demo] -->|clone, add your brand| o[Your organization's base]
+    o -->|clone, delete the demo| a[Application]
+    o -->|clone, delete the demo| c[Application]
+    classDef data fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
+    classDef step fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    class b,o data
+    class a,c step
+```
+
+> **Status:** specification. There is no code yet; the first milestones are in the
+> [specification](docs/specification.md#milestones).
+
+## Documentation
+
+| Page | What it contains |
+|---|---|
+| [Specification](docs/specification.md) | What the base contains, its components, the demo, how it is adapted, and the milestones |
+| [Standards](docs/standards.md) | Accessibility, usability, language and security: the rules and how each is checked |
+| [Decisions](docs/decisions.md) | Why it is built this way, and what is still open |
+
+How to work in this repository: [AGENTS.md](AGENTS.md).
