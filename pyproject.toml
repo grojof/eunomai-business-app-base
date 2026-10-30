@@ -1,0 +1,58 @@
+[project]
+name = "business-app-base"
+version = "0.1.0"
+description = "A demo business application to clone and adapt."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "babel>=2.18,<3",
+    "fastapi>=0.143,<1",
+    "jinja2>=3.1.6,<4",
+    "pydantic-settings>=2.6,<3",
+    "python-multipart>=0.0.32",
+    "tzdata>=2025.2",  # Windows has no time zone database of its own
+    "uvicorn>=0.54,<1",
+]
+
+[dependency-groups]
+dev = [
+    "httpx2>=2",
+    "mypy>=1.13,<3",
+    "playwright>=1.64,<2",
+    "pytest>=9,<10",
+    "ruff>=0.14,<1",
+]
+
+[tool.uv]
+package = false
+# Nothing younger than two weeks. tools/update_dependencies.py adds an exception only for a version that fixes a
+# known vulnerability, and removes it once the two weeks have passed.
+exclude-newer = "14 days"
+exclude-newer-package = {}
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+# A deprecated call breaks the tests now rather than the application after an upgrade.
+filterwarnings = ["error::DeprecationWarning"]
+addopts = "--strict-markers"
+markers = [
+    "browser: needs a real browser",
+    "rule(identifier): the rule of docs/standards.md this test proves",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "C4", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S603", "S607"]
+"tools/**" = ["S310", "S603", "S607"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["app", "tools"]

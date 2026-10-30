@@ -1,0 +1,113 @@
+# Catalan translations for business-app-base.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the business-app-base
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: business-app-base VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-30 18:56+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ca\n"
+"Language-Team: ca <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid "%(num)d inspection is due"
+msgid_plural "%(num)d inspections are due"
+msgstr[0] "%(num)d inspecció pendent"
+msgstr[1] "%(num)d inspeccions pendents"
+
+#, python-format
+msgid "%(num)d open work order"
+msgid_plural "%(num)d open work orders"
+msgstr[0] "%(num)d ordre de treball oberta"
+msgstr[1] "%(num)d ordres de treball obertes"
+
+msgid "A fictional company that maintains its equipment."
+msgstr "Una empresa fictícia que manté els seus equips."
+
+msgid "Administration"
+msgstr "Administració"
+
+msgid "Buttons"
+msgstr "Botons"
+
+msgid "Cancel"
+msgstr "Cancel·la"
+
+msgid "Component catalogue"
+msgstr "Catàleg de components"
+
+#, python-format
+msgid "Cost to date: %(cost)s"
+msgstr "Cost fins avui: %(cost)s"
+
+msgid "Dashboard"
+msgstr "Tauler"
+
+msgid "Empty state"
+msgstr "Estat buit"
+
+msgid "Every component in every state."
+msgstr "Cada component en cada estat."
+
+#, python-format
+msgid "Hours worked: %(hours)s"
+msgstr "Hores treballades: %(hours)s"
+
+msgid "Inspections"
+msgstr "Inspeccions"
+
+msgid "Loading"
+msgstr "S'està carregant"
+
+msgid "Messages"
+msgstr "Missatges"
+
+#, python-format
+msgid "Next inspection: %(date)s"
+msgstr "Propera inspecció: %(date)s"
+
+msgid "No work orders yet"
+msgstr "Encara no hi ha ordres de treball"
+
+msgid "Only people with the administrator role can open this page."
+msgstr "Només poden obrir aquesta pàgina les persones amb el rol d'administrador."
+
+msgid "Save"
+msgstr "Desa"
+
+msgid "Show inspections"
+msgstr "Mostra les inspeccions"
+
+msgid "Summary"
+msgstr "Resum"
+
+msgid "The work order could not be saved. Try again."
+msgstr "L'ordre de treball no s'ha pogut desar. Torna-ho a provar."
+
+msgid "The work order was saved."
+msgstr "L'ordre de treball s'ha desat."
+
+msgid "This equipment is due for inspection."
+msgstr "Aquest equip ha de passar la inspecció."
+
+#, python-format
+msgid "Updated: %(moment)s"
+msgstr "Actualitzat: %(moment)s"
+
+msgid "Work orders appear here when someone creates one."
+msgstr "Les ordres de treball apareixen aquí quan algú en crea una."
+
+msgid "Your changes are saved as you type."
+msgstr "Els canvis es desen mentre escrius."
+

@@ -20,15 +20,26 @@ flowchart LR
     class a,c step
 ```
 
-> **Status:** specification. There is no code yet; the first milestones are in the
-> [specification](docs/specification.md#milestones).
+> **Status:** milestone 1: one screen with identity, languages, themes and every check running. The rest is in the
+> [milestones](docs/specification.md#milestones).
+
+## Try it
+
+Needs [uv](https://docs.astral.sh/uv/). A copy of `.env.example` gives a fake identity for local work.
+
+```bash
+cp .env.example .env
+uv run uvicorn app.main:app --reload
+```
+
+To start an application of your own, clone this, then run `uv run python tools/remove_demo.py`.
 
 ## Documentation
 
 | Page | What it contains |
 |---|---|
 | [Specification](docs/specification.md) | What the base contains, its components, the demo, how it is adapted, and the milestones |
-| [Standards](docs/standards.md) | Accessibility, usability, language and security: the rules and how each is checked |
+| [Standards](docs/standards.md) | Every rule of accessibility, usability, language and security, with its official source and its check |
 | [Decisions](docs/decisions.md) | Why it is built this way, and what is still open |
 
 How to work in this repository: [AGENTS.md](AGENTS.md).

@@ -1,0 +1,98 @@
+# Spanish translations for business-app-base.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the business-app-base
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: business-app-base VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-30 18:56+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "As the system"
+msgstr "Como el sistema"
+
+msgid "Ask whoever manages this application if you need access."
+msgstr "Si necesitas acceso, pídelo a quien gestiona esta aplicación."
+
+msgid "Back to the start"
+msgstr "Volver al inicio"
+
+msgid "Change language"
+msgstr "Cambiar idioma"
+
+msgid "Change theme"
+msgstr "Cambiar tema"
+
+msgid "Check the address, or go back to the start."
+msgstr "Comprueba la dirección o vuelve al inicio."
+
+msgid "Dark"
+msgstr "Oscuro"
+
+msgid "Done"
+msgstr "Hecho"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Information"
+msgstr "Información"
+
+msgid "It is not your fault. Try again in a moment."
+msgstr "No es culpa tuya. Vuelve a intentarlo en un momento."
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "Light"
+msgstr "Claro"
+
+msgid "Main"
+msgstr "Principal"
+
+msgid "Page not found"
+msgstr "Página no encontrada"
+
+msgid "Sign-in required"
+msgstr "Hay que iniciar sesión"
+
+msgid "Skip to content"
+msgstr "Saltar al contenido"
+
+msgid "Something went wrong"
+msgstr "Algo ha fallado"
+
+msgid "Start"
+msgstr "Inicio"
+
+msgid "Theme"
+msgstr "Tema"
+
+msgid "This application is ready. Replace this page with your first screen."
+msgstr "Esta aplicación está lista. Sustituye esta página por tu primera pantalla."
+
+#, python-format
+msgid "Version %(version)s"
+msgstr "Versión %(version)s"
+
+msgid "Warning"
+msgstr "Aviso"
+
+msgid "We could not tell who you are. Open the application from your portal."
+msgstr "No hemos podido saber quién eres. Abre la aplicación desde tu portal."
+
+msgid "You do not have permission"
+msgstr "No tienes permiso"
+

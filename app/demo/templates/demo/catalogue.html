@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading, message, empty_state %}
+{% block title %}{{ _("Component catalogue") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("Component catalogue"), _("Every component in every state.")) }}
+
+<section class="card stack" aria-labelledby="messages">
+  <h2 id="messages">{{ _("Messages") }}</h2>
+  {{ message("info", _("Your changes are saved as you type.")) }}
+  {{ message("success", _("The work order was saved.")) }}
+  {{ message("warning", _("This equipment is due for inspection.")) }}
+  {{ message("danger", _("The work order could not be saved. Try again.")) }}
+</section>
+
+<section class="card stack" aria-labelledby="buttons">
+  <h2 id="buttons">{{ _("Buttons") }}</h2>
+  <p>
+    <button class="button button-primary" type="button">{{ _("Save") }}</button>
+    <button class="button" type="button">{{ _("Cancel") }}</button>
+  </p>
+</section>
+
+<section class="card stack" aria-labelledby="empty">
+  <h2 id="empty">{{ _("Empty state") }}</h2>
+  {{ empty_state(_("No work orders yet"), _("Work orders appear here when someone creates one.")) }}
+</section>
+{% endblock %}

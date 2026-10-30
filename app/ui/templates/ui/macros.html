@@ -1,0 +1,22 @@
+{#- Components: one macro each, using only the brand's variables. Each has its page in the catalogue. -#}
+
+{% macro page_heading(title, description="") %}
+<header class="stack">
+  <h1>{{ title }}</h1>
+  {% if description %}<p>{{ description }}</p>{% endif %}
+</header>
+{% endmacro %}
+
+{% macro message(kind, text) %}
+<div class="message message-{{ kind }}"{% if kind == "danger" %} role="alert"{% endif %}>
+  <strong>{{ {"info": _("Information"), "success": _("Done"), "warning": _("Warning"), "danger": _("Error")}[kind] }}:</strong>
+  {{ text }}
+</div>
+{% endmacro %}
+
+{% macro empty_state(title, advice) %}
+<div class="empty-state">
+  <h2>{{ title }}</h2>
+  <p>{{ advice }}</p>
+</div>
+{% endmacro %}

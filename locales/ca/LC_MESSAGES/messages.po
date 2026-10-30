@@ -1,0 +1,100 @@
+# Catalan translations for business-app-base.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the business-app-base
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: business-app-base VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-30 18:56+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ca\n"
+"Language-Team: ca <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "As the system"
+msgstr "Com el sistema"
+
+msgid "Ask whoever manages this application if you need access."
+msgstr "Si necessites accés, demana'l a qui gestiona aquesta aplicació."
+
+msgid "Back to the start"
+msgstr "Torna a l'inici"
+
+msgid "Change language"
+msgstr "Canvia l'idioma"
+
+msgid "Change theme"
+msgstr "Canvia el tema"
+
+msgid "Check the address, or go back to the start."
+msgstr "Comprova l'adreça o torna a l'inici."
+
+msgid "Dark"
+msgstr "Fosc"
+
+msgid "Done"
+msgstr "Fet"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Information"
+msgstr "Informació"
+
+msgid "It is not your fault. Try again in a moment."
+msgstr "No és culpa teva. Torna-ho a provar d'aquí a un moment."
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "Light"
+msgstr "Clar"
+
+msgid "Main"
+msgstr "Principal"
+
+msgid "Page not found"
+msgstr "No s'ha trobat la pàgina"
+
+msgid "Sign-in required"
+msgstr "Cal iniciar sessió"
+
+msgid "Skip to content"
+msgstr "Salta al contingut"
+
+msgid "Something went wrong"
+msgstr "Alguna cosa ha fallat"
+
+msgid "Start"
+msgstr "Inici"
+
+msgid "Theme"
+msgstr "Tema"
+
+msgid "This application is ready. Replace this page with your first screen."
+msgstr ""
+"Aquesta aplicació està a punt. Substitueix aquesta pàgina per la teva "
+"primera pantalla."
+
+#, python-format
+msgid "Version %(version)s"
+msgstr "Versió %(version)s"
+
+msgid "Warning"
+msgstr "Avís"
+
+msgid "We could not tell who you are. Open the application from your portal."
+msgstr "No hem pogut saber qui ets. Obre l'aplicació des del teu portal."
+
+msgid "You do not have permission"
+msgstr "No tens permís"
+

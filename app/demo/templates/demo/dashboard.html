@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading %}
+{% block title %}{{ _("Dashboard") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("Dashboard"), _("A fictional company that maintains its equipment.")) }}
+
+<section class="card stack" aria-labelledby="summary">
+  <h2 id="summary">{{ _("Summary") }}</h2>
+  <p>{{ ngettext("%(num)d open work order", "%(num)d open work orders", open_orders) }}</p>
+  <p>{{ _("Hours worked: %(hours)s", hours=hours|decimal) }}</p>
+  <p>{{ _("Cost to date: %(cost)s", cost=cost|decimal) }}</p>
+  <p>{{ _("Next inspection: %(date)s", date=next_inspection|date) }}</p>
+  <p>{{ _("Updated: %(moment)s", moment=local_datetime(updated)) }}</p>
+</section>
+
+<section class="card stack" aria-labelledby="pending">
+  <h2 id="pending">{{ _("Inspections") }}</h2>
+  <div id="inspections">
+    <button class="button button-primary" type="button" hx-get="/inspections" hx-target="#inspections">
+      {{ _("Show inspections") }}
+      <span class="htmx-indicator">{{ _("Loading") }}</span>
+    </button>
+  </div>
+</section>
+{% endblock %}

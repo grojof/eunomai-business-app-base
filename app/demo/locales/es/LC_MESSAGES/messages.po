@@ -1,0 +1,113 @@
+# Spanish translations for business-app-base.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the business-app-base
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: business-app-base VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-30 18:56+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid "%(num)d inspection is due"
+msgid_plural "%(num)d inspections are due"
+msgstr[0] "%(num)d inspección pendiente"
+msgstr[1] "%(num)d inspecciones pendientes"
+
+#, python-format
+msgid "%(num)d open work order"
+msgid_plural "%(num)d open work orders"
+msgstr[0] "%(num)d orden de trabajo abierta"
+msgstr[1] "%(num)d órdenes de trabajo abiertas"
+
+msgid "A fictional company that maintains its equipment."
+msgstr "Una empresa ficticia que mantiene sus equipos."
+
+msgid "Administration"
+msgstr "Administración"
+
+msgid "Buttons"
+msgstr "Botones"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Component catalogue"
+msgstr "Catálogo de componentes"
+
+#, python-format
+msgid "Cost to date: %(cost)s"
+msgstr "Coste hasta la fecha: %(cost)s"
+
+msgid "Dashboard"
+msgstr "Panel"
+
+msgid "Empty state"
+msgstr "Estado vacío"
+
+msgid "Every component in every state."
+msgstr "Cada componente en cada estado."
+
+#, python-format
+msgid "Hours worked: %(hours)s"
+msgstr "Horas trabajadas: %(hours)s"
+
+msgid "Inspections"
+msgstr "Inspecciones"
+
+msgid "Loading"
+msgstr "Cargando"
+
+msgid "Messages"
+msgstr "Mensajes"
+
+#, python-format
+msgid "Next inspection: %(date)s"
+msgstr "Próxima inspección: %(date)s"
+
+msgid "No work orders yet"
+msgstr "Aún no hay órdenes de trabajo"
+
+msgid "Only people with the administrator role can open this page."
+msgstr "Solo pueden abrir esta página las personas con el rol de administrador."
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Show inspections"
+msgstr "Mostrar inspecciones"
+
+msgid "Summary"
+msgstr "Resumen"
+
+msgid "The work order could not be saved. Try again."
+msgstr "La orden de trabajo no se ha podido guardar. Vuelve a intentarlo."
+
+msgid "The work order was saved."
+msgstr "La orden de trabajo se ha guardado."
+
+msgid "This equipment is due for inspection."
+msgstr "A este equipo le toca inspección."
+
+#, python-format
+msgid "Updated: %(moment)s"
+msgstr "Actualizado: %(moment)s"
+
+msgid "Work orders appear here when someone creates one."
+msgstr "Las órdenes de trabajo aparecen aquí cuando alguien crea una."
+
+msgid "Your changes are saved as you type."
+msgstr "Tus cambios se guardan mientras escribes."
+

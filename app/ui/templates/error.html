@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{{ page_heading(title, advice) }}
+{% if status != 401 %}<p><a href="/">{{ _("Back to the start") }}</a></p>{% endif %}
+{% endblock %}
