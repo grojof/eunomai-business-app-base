@@ -1,88 +1,110 @@
 ---
 type: reference
 title: Standards
-description: "The rules every screen and component follows for accessibility, usability, language and security, and how each one is checked."
+description: "Every rule that screens and components follow, each with its official source and how it is checked: accessibility, usability, language and security."
 tags: [accessibility, usability, i18n, security, standards]
 related: [specification.md, decisions.md]
 ---
 
 # Standards
 
-Every screen and component meets these rules. A rule without a check is a wish, so each section says how it is verified
-and what still needs a person.
+This page is the single home of the rules. Each one has an identifier, a source and a check, so quality does not depend
+on anyone's opinion, an AI assistant's included. Tests name the rule they prove with `@pytest.mark.rule("A11Y-05")`, and
+`tests/test_standards.py` fails if a rule has no source, or if a rule marked *Automatic* has no test.
+
+## Where the rules come from
+
+| Area | Authority | What it is | Access |
+|---|---|---|---|
+| Accessibility | [WCAG 2.2](https://www.w3.org/TR/WCAG22/) | W3C Recommendation | Free |
+| Accessibility | [EN 301 549](https://www.etsi.org/deliver/etsi_en/301500_301599/301549/) | European standard for accessible ICT, published by ETSI | Free |
+| Accessibility | [ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) | W3C guidance for interactive patterns | Free |
+| Usability | [GOV.UK Design System](https://design-system.service.gov.uk/) | Patterns researched with real users, by a government | Free; not a standard |
+| Usability | [Nielsen's 10 heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/) | The most cited usability reference | Free; not a standard |
+| Language | [W3C Internationalization](https://www.w3.org/International/techniques/authoring-html) | W3C guidance for authoring pages | Free |
+| Language | [BCP 47](https://www.rfc-editor.org/info/bcp47) | Internet standard for language tags | Free |
+| Language | [Unicode CLDR](https://cldr.unicode.org/) | The reference data for formats and plurals | Free |
+| Language | [GNU gettext manual](https://www.gnu.org/software/gettext/manual/gettext.html) | The reference for message catalogues | Free |
+| Security | [OWASP ASVS 5.0](https://asvs.owasp.org/) | Verification standard for applications | Free |
+| Security | [OWASP Top 10:2025](https://top10.owasp.org/2025/) | The reference list of web risks | Free |
+| Security | [CWE Top 25](https://cwe.mitre.org/top25/) | Most dangerous software weaknesses | Free |
+| Supply chain | [NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/final) and [SLSA](https://slsa.dev/spec/) | Secure development and build integrity | Free |
+
+**Reading the tables.** A rule cites the public source it comes from. *Project decision* means no source requires it:
+it is a choice of this repository, stated as such, and an organization may change it.
+
+**Usability has no free, testable standard like WCAG.** The international standards exist,
+[ISO 9241-110](https://www.iso.org/standard/75258.html) and [ISO 9241-210](https://www.iso.org/standard/77520.html),
+but their text is sold, and **this repository does not use them**: nobody here has read them, and no rule rests on them.
+
+**Check** says how a rule is verified: *Automatic* (a test), *By hand* (in the pull request), or the milestone that
+brings it.
+
+To add a rule: find its source first, give it the next identifier, and add its test in the same change.
 
 ## Accessibility
 
-The target is [WCAG 2.2](https://www.w3.org/TR/WCAG22/) level AA. Patterns follow the
-[ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/), and component behaviour takes the
-[GOV.UK Design System](https://design-system.service.gov.uk/) as its reference, because it publishes research with users
-of assistive technology. The behaviour is adopted, not the look.
+The target is WCAG 2.2 level AA. An automatic scan finds only part of the failures, so each component also passes by
+hand: keyboard only, then a screen reader (NVDA with a Chromium browser), recorded in its pull request.
 
-| Rule | In practice |
-|---|---|
-| HTML first | Real headings, labels, tables, buttons and links; ARIA only where HTML has no answer |
-| Keyboard | Everything works without a mouse, in a logical order, with no trap |
-| Visible focus | Always visible, in both themes, and never hidden behind a fixed bar |
-| Contrast | 4.5:1 for text, 3:1 for large text, controls and meaningful graphics |
-| Target size | At least 24 by 24 pixels |
-| Not by colour alone | A status has text or an icon as well |
-| Forms | Every field has a label; errors are named in a summary, linked to the field, and say how to fix it |
-| Page changes | When htmx replaces content, focus stays somewhere sensible and the change is announced |
-| Charts | Always a text summary and the data as a table |
-| Movement | Nothing moves or flashes on its own; animation respects `prefers-reduced-motion` |
-| Zoom | Usable at 200 % zoom and at 320 pixels wide, without horizontal scrolling of the page |
-
-**How it is checked.** axe-core on every catalogue state, in both themes, and keyboard tests in the browser. An automatic
-scan finds only part of the problems, so each component also passes by hand: keyboard only, then a screen reader (NVDA
-with a Chromium browser), recorded in its pull request.
+| ID | Rule | Source | Check |
+|---|---|---|---|
+| A11Y-01 | Real headings, labels, tables, buttons and links; ARIA only where HTML has no answer | [WCAG 1.3.1](https://www.w3.org/TR/WCAG22/#info-and-relationships), [4.1.2](https://www.w3.org/TR/WCAG22/#name-role-value) | Automatic |
+| A11Y-02 | Everything works with a keyboard, in a logical order | [WCAG 2.1.1](https://www.w3.org/TR/WCAG22/#keyboard), [2.4.3](https://www.w3.org/TR/WCAG22/#focus-order) | Automatic |
+| A11Y-03 | The keyboard is never trapped | [WCAG 2.1.2](https://www.w3.org/TR/WCAG22/#no-keyboard-trap) | By hand |
+| A11Y-04 | Focus is always visible, and never hidden behind a fixed bar | [WCAG 2.4.7](https://www.w3.org/TR/WCAG22/#focus-visible), [2.4.11](https://www.w3.org/TR/WCAG22/#focus-not-obscured-minimum) | Automatic |
+| A11Y-05 | Contrast of 4.5:1 for text, 3:1 for large text, controls and meaningful graphics | [WCAG 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum), [1.4.11](https://www.w3.org/TR/WCAG22/#non-text-contrast) | Automatic |
+| A11Y-06 | Targets of at least 24 by 24 pixels | [WCAG 2.5.8](https://www.w3.org/TR/WCAG22/#target-size-minimum) | Automatic |
+| A11Y-07 | A status is never shown by colour alone | [WCAG 1.4.1](https://www.w3.org/TR/WCAG22/#use-of-color) | By hand |
+| A11Y-08 | Every field has a label; errors are listed in a summary, linked to the field, and say how to fix them | [WCAG 3.3.1](https://www.w3.org/TR/WCAG22/#error-identification), [3.3.2](https://www.w3.org/TR/WCAG22/#labels-or-instructions), [3.3.3](https://www.w3.org/TR/WCAG22/#error-suggestion), [GOV.UK error summary](https://design-system.service.gov.uk/components/error-summary/) | Milestone 3 |
+| A11Y-09 | When content is replaced, focus stays somewhere sensible and the change is announced | [WCAG 4.1.3](https://www.w3.org/TR/WCAG22/#status-messages), [2.4.3](https://www.w3.org/TR/WCAG22/#focus-order) | Automatic |
+| A11Y-10 | A chart always has a text summary and its data as a table | [WCAG 1.1.1](https://www.w3.org/TR/WCAG22/#non-text-content) | Milestone 2 |
+| A11Y-11 | Nothing moves or flashes on its own; animation respects `prefers-reduced-motion` | [WCAG 2.2.2](https://www.w3.org/TR/WCAG22/#pause-stop-hide), [2.3.3](https://www.w3.org/TR/WCAG22/#animation-from-interactions) | By hand |
+| A11Y-12 | Usable at 200 % zoom and at 320 pixels wide, without sideways scrolling | [WCAG 1.4.4](https://www.w3.org/TR/WCAG22/#resize-text), [1.4.10](https://www.w3.org/TR/WCAG22/#reflow) | Automatic |
+| A11Y-13 | A skip link is the first thing the keyboard reaches | [WCAG 2.4.1](https://www.w3.org/TR/WCAG22/#bypass-blocks), [GOV.UK skip link](https://design-system.service.gov.uk/components/skip-link/) | Automatic |
 
 ## Usability
 
-| Rule | In practice |
-|---|---|
-| Every state is designed | Loading, empty, error, partial and no permission, in each screen |
-| Say what happened and what to do | Messages in plain language, without error codes as the main text |
-| Keep the person's work | A failed submission keeps what was typed; leaving unsaved changes asks first |
-| Reversible or confirmed | Delete with undo where possible; a confirmation names what will be lost |
-| The URL holds the state | Filters, sort and page survive a reload and can be shared |
-| Immediate response | Any action shows a response at once; a long task shows progress and can be left running |
-| One primary action per screen | The next step is obvious |
-| Same thing, same place | A component behaves the same everywhere |
-| Theme | Follows the system by default; the person can choose and it is remembered |
-
-**How it is checked.** A review list per screen in the pull request, and the catalogue, where every state must exist.
+| ID | Rule | Source | Check |
+|---|---|---|---|
+| USE-01 | Each screen designs its loading, empty, error, partial and no-permission states | [Nielsen 1: visibility of system status](https://www.nngroup.com/articles/ten-usability-heuristics/) | By hand |
+| USE-02 | Messages say what happened and what to do, in plain language | [Nielsen 9: recover from errors](https://www.nngroup.com/articles/ten-usability-heuristics/), [GOV.UK error message](https://design-system.service.gov.uk/components/error-message/) | By hand |
+| USE-03 | A failed submission keeps what was typed | [GOV.UK validation](https://design-system.service.gov.uk/patterns/validation/) | Milestone 3 |
+| USE-04 | Actions can be undone where possible; a confirmation names what will be lost | [Nielsen 3 and 5: user control, error prevention](https://www.nngroup.com/articles/ten-usability-heuristics/) | Milestone 3 |
+| USE-05 | Filters, sort and page live in the URL, and survive a reload | Project decision | Milestone 2 |
+| USE-06 | Any action responds at once; a long task shows progress and can be left running | [Nielsen 1: visibility of system status](https://www.nngroup.com/articles/ten-usability-heuristics/) | Milestone 4 |
+| USE-07 | One primary action per screen | Project decision | By hand |
+| USE-08 | The same thing looks and behaves the same, in the same place | [WCAG 3.2.3](https://www.w3.org/TR/WCAG22/#consistent-navigation), [3.2.4](https://www.w3.org/TR/WCAG22/#consistent-identification), [Nielsen 4: consistency](https://www.nngroup.com/articles/ten-usability-heuristics/) | By hand |
+| USE-09 | The theme follows the system; a person's choice is remembered | [Media Queries 5](https://www.w3.org/TR/mediaqueries-5/) | Automatic |
 
 ## Language
 
 Every application can run in several languages from its first screen, because adding them later means touching every
-text of every screen. A single-language application still follows these rules: it costs almost nothing, and the
-formatting rules apply anyway.
+text of every screen. A single-language application still follows these rules: they cost almost nothing, and formatting
+applies anyway.
 
-### Rules
+| ID | Rule | Source | Check |
+|---|---|---|---|
+| LANG-01 | No visible text in code: pages, messages, Excel headers, chart labels and titles go through translation | [gettext manual](https://www.gnu.org/software/gettext/manual/gettext.html) | Automatic |
+| LANG-02 | Whole sentences, never joined from pieces: word order changes between languages | [gettext manual](https://www.gnu.org/software/gettext/manual/gettext.html) | By hand |
+| LANG-03 | Named placeholders, identical in source and translation | [gettext manual](https://www.gnu.org/software/gettext/manual/gettext.html) | Automatic |
+| LANG-04 | Plurals follow each language's rules | [CLDR plural rules](https://cldr.unicode.org/index/cldr-spec/plural-rules) | Automatic |
+| LANG-05 | A context wherever one word has two meanings | [gettext manual](https://www.gnu.org/software/gettext/manual/gettext.html) | By hand |
+| LANG-06 | Numbers, dates, times and currency come from the locale, never by hand | [Unicode CLDR](https://cldr.unicode.org/) | Automatic |
+| LANG-07 | A number is read as the person's language writes it; a wrong format is refused, never guessed | [Unicode CLDR](https://cldr.unicode.org/) | Automatic |
+| LANG-08 | Exact values stay exact: the locale changes how a `Decimal` looks, never its value | Project decision | Automatic |
+| LANG-09 | Moments are stored in UTC and shown in the person's time zone | [W3C Working with Time Zones](https://www.w3.org/TR/timezone/) | Automatic |
+| LANG-10 | `lang` on every page, and on any passage in another language | [WCAG 3.1.1](https://www.w3.org/TR/WCAG22/#language-of-page), [3.1.2](https://www.w3.org/TR/WCAG22/#language-of-parts), [BCP 47](https://www.rfc-editor.org/info/bcp47), [W3C](https://www.w3.org/International/questions/qa-html-language-declarations) | Automatic |
+| LANG-11 | Layouts survive text 40 % longer; no text in images; CSS logical properties | [W3C authoring](https://www.w3.org/International/techniques/authoring-html) | Automatic |
+| LANG-12 | Each language is named in itself (Català, Español), without flags: a flag is a country | Project decision | Automatic |
+| LANG-13 | A missing text falls back to the default language; never a blank or a key | [gettext manual](https://www.gnu.org/software/gettext/manual/gettext.html) | Automatic |
+| LANG-14 | A translation by AI stays *fuzzy* until a person accepts it, and fuzzy text is not finished | Project decision | Automatic |
 
-| Rule | In practice |
-|---|---|
-| No visible text in code | Python, templates, messages, Excel headers, chart labels and page titles all go through gettext |
-| Whole sentences | Never joined from pieces: word order changes between languages |
-| Named placeholders | `%(name)s`, so a translator can move them |
-| Real plurals | `ngettext`: languages differ in how many plural forms they have |
-| Context | `pgettext` where one word has two meanings |
-| Formats from the locale | Numbers, dates, times and currency through [Babel](https://babel.pocoo.org/) and [CLDR](https://cldr.unicode.org/), never by hand |
-| Input follows the locale | A decimal is read as the person's locale writes it, and the form shows the expected format |
-| Exact values stay exact | `Decimal` from the database to the page; the locale changes how it looks, never its value |
-| Moments | Stored in UTC, shown in the person's time zone |
-| Language is declared | `<html lang>` on every page, and `lang` on any passage in another language ([WCAG 3.1](https://www.w3.org/TR/WCAG22/#readable)) |
-| Layout survives translation | No fixed widths around text and no text in images; CSS logical properties, so right-to-left stays possible |
-| Selector | Each language named in itself (Català, Español), never with a flag: a flag is a country |
-
-### Which language is used
+### How a language is chosen
 
 1. The person's saved choice.
 2. The browser's `Accept-Language`, if the application offers it.
 3. The application's default.
-
-The choice is remembered, and htmx responses use it too. A text missing from a language falls back to the default
-language and is reported, never shown as a blank or a key.
 
 | Text | Language |
 |---|---|
@@ -90,37 +112,31 @@ language and is reported, never shown as a blank or a key.
 | Business data | As stored, unless the model declares it translatable |
 | Logs and audit codes | The source language, so they can be searched |
 
-### Quality of translations
-
-- A **glossary** per organization fixes key terms and tone, so "order" is translated the same way everywhere.
-- A translation made by AI is marked as *fuzzy* until a person accepts it, and a fuzzy text never counts as finished.
-- The demo ships in English, Spanish and Catalan, which proves plurals and different text lengths.
+A **glossary** per organization fixes key terms and tone. The demo ships in English, Spanish and Catalan.
 
 ### How language is checked
 
 | Check | Catches |
 |---|---|
-| Extraction finds no difference with the catalogue | Text added without its translation entry |
-| No missing or fuzzy entry in a required language | Unfinished translations |
-| Placeholders match between source and translation | Broken messages |
-| A scan of rendered pages against a pseudo-language | Hard-coded text: any text not transformed was not translated |
-| The pseudo-language lengthens text by 40 % | Layouts that break with longer languages |
-| Every page has a valid `lang` | Wrong pronunciation in a screen reader |
-| Number and date tests per locale, with fixed values | Formats, and decimals read back unchanged |
+| `tools/translations.py check` | Texts missing from a catalogue, unfinished or fuzzy translations, different placeholders |
+| A pseudo-language marks every translated text and lengthens it by 40 % | Any unmarked text was never translated; layouts that break with longer languages |
+| Values fixed per language, written and read back | Formats, and decimals that change |
 
 ## Security
 
-| Rule | In practice |
-|---|---|
-| Identity from the proxy only | Headers believed only behind it; see [Identity](specification.md#identity) |
-| Permissions on the server | Checked per action; hiding a button is not a control |
-| Input validated at the edge | Pydantic models; uploads checked by size and real type |
-| Escaping always on | Never marking user data as safe |
-| Parameterised queries | SQLAlchemy; no text built from input |
-| Content Security Policy | No inline scripts; hence Alpine's CSP build |
-| Changes protected | CSRF protection on every change |
-| Personal data | Only what is needed; none in logs or URLs |
-| Secrets | In the environment; a `.env.example` documents them |
-| Dependencies | Pinned with hashes; kept current and checked by the [dependency rules](specification.md#dependencies) |
-
-**How it is checked.** Tests per role and per action, the headers of every response, and a dependency scan in CI.
+| ID | Rule | Source | Check |
+|---|---|---|---|
+| SEC-01 | Identity comes only from the proxy; without it, nothing is served | [ASVS V6](https://asvs.owasp.org/), [Top 10 A07](https://top10.owasp.org/2025/) | Automatic |
+| SEC-02 | Permissions are checked on the server, per action; hiding a button is not a control | [ASVS V8](https://asvs.owasp.org/), [Top 10 A01](https://top10.owasp.org/2025/) | Automatic |
+| SEC-03 | Input is validated at the edge | [ASVS V2](https://asvs.owasp.org/), [Top 10 A05](https://top10.owasp.org/2025/) | Milestone 3 |
+| SEC-04 | Escaping is always on; user data is never marked as safe | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Automatic |
+| SEC-05 | Queries are parameterised; no text built from input | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Milestone 2 |
+| SEC-06 | A Content Security Policy without inline scripts | [CSP 3](https://www.w3.org/TR/CSP3/), [OWASP CSP](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html) | Automatic |
+| SEC-07 | Changes from another site are refused | [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html), [Fetch Metadata](https://www.w3.org/TR/fetch-metadata/) | Automatic |
+| SEC-08 | Only the personal data needed; none in logs or URLs | [ASVS V14](https://asvs.owasp.org/), [OWASP Logging](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) | By hand |
+| SEC-09 | Secrets live in the environment, never in the repository | [ASVS V13](https://asvs.owasp.org/) | Automatic |
+| SEC-10 | Dependencies are pinned with hashes and follow the [dependency rules](specification.md#dependencies) | [Top 10 A03](https://top10.owasp.org/2025/), [NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/final), [SLSA](https://slsa.dev/spec/) | Automatic |
+| SEC-11 | An error reveals nothing to the person, and is logged for IT | [ASVS V16](https://asvs.owasp.org/), [Top 10 A10](https://top10.owasp.org/2025/) | Automatic |
+| SEC-12 | Uploads are checked by size and real type | [ASVS V5](https://asvs.owasp.org/), [OWASP File Upload](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html) | Milestone 3 |
+| SEC-14 | Text is never run as code: no `eval`, `new Function` or `exec`, and the browser refuses them | [CWE-95](https://cwe.mitre.org/data/definitions/95.html), [CSP 3](https://www.w3.org/TR/CSP3/), [htmx security](https://htmx.org/essays/web-security-basics-with-htmx/) | Automatic |
+| SEC-13 | Cookies are `Secure`, `HttpOnly` and `SameSite`; a redirect never leaves the application | [ASVS V3](https://asvs.owasp.org/), [Top 10 A01](https://top10.owasp.org/2025/) | Automatic |

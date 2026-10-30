@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="{{ language_tag }}" data-theme="{{ theme }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="htmx-config" content='{"includeIndicatorStyles":false,"allowEval":false}'>
+  <title>{% block title %}{% endblock %} · {{ app_name }}</title>
+  <link rel="icon" href="/static/brand/logo.svg">
+  <link rel="stylesheet" href="/static/brand/tokens.css">
+  <link rel="stylesheet" href="/static/ui/ui.css">
+  {% for script in vendor_scripts %}
+  <script src="{{ script.src }}" integrity="{{ script.integrity }}" crossorigin="anonymous" defer></script>
+  {% endfor %}
+  <script src="/static/ui/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">{{ _("Skip to content") }}</a>
+  <header class="page-header">
+    <div class="page-width page-header-row">
+      <a class="brand" href="/"><img src="/static/brand/logo.svg" alt=""> {{ app_name }}</a>
+      {% if navigation %}
+      <nav class="navigation" aria-label="{{ _('Main') }}">
+        <ul>
+          {% for item in navigation %}
+          <li><a href="{{ item.path }}"{% if item.path == current_path %} aria-current="page"{% endif %}>{{ _(item.label) }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+      {% endif %}
+      {% if person %}<p class="identity">{{ person.name }}</p>{% endif %}
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1" class="page-width stack">
+    {% block content %}{% endblock %}
+  </main>
+
+  <div id="announcements" class="visually-hidden" role="status" aria-live="polite"></div>
+
+  <footer class="page-footer">
+    <div class="page-width stack">
+      <div class="preferences">
+        <form class="preference" method="post" action="/preferences">
+          <input type="hidden" name="next" value="{{ here }}">
+          <label for="language">{{ _("Language") }}</label>
+          <select class="select" id="language" name="language">
+            {% for code, label in languages %}
+            <option value="{{ code }}" lang="{{ code|replace('_', '-') }}"{% if code == language %} selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <button class="button" type="submit">{{ _("Change language") }}</button>
+        </form>
+        <form class="preference" method="post" action="/preferences">
+          <input type="hidden" name="next" value="{{ here }}">
+          <label for="theme">{{ _("Theme") }}</label>
+          <select class="select" id="theme" name="theme">
+            <option value="system"{% if theme == "system" %} selected{% endif %}>{{ _("As the system") }}</option>
+            <option value="light"{% if theme == "light" %} selected{% endif %}>{{ _("Light") }}</option>
+            <option value="dark"{% if theme == "dark" %} selected{% endif %}>{{ _("Dark") }}</option>
+          </select>
+          <button class="button" type="submit">{{ _("Change theme") }}</button>
+        </form>
+      </div>
+      <p>{{ _("Version %(version)s", version=version) }}</p>
+    </div>
+  </footer>
+</body>
+</html>

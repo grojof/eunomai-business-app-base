@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading %}
+{% block title %}{{ _("Administration") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("Administration"), _("Only people with the administrator role can open this page.")) }}
+{% endblock %}

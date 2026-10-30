@@ -117,7 +117,7 @@ Sample data is generated and reproducible. Two fictional roles show what each on
 | Your colours, fonts and logos | `app/brand/` |
 | Your languages | Settings, and `locales/` |
 | Your identity proxy | Settings |
-| Start an application | Clone your copy, delete `app/demo/`, remove its line from `app/main.py` |
+| Start an application | Clone your copy, run `tools/remove_demo.py` |
 | Add a component | `app/ui/`, with its page in the catalogue |
 
 An application that needs something different changes it: the code belongs to whoever cloned it. There is no update
@@ -136,6 +136,7 @@ still runs.
 | Accessibility scan of every catalogue state, in both themes | No automatically detectable failure |
 | Keyboard tests of each interactive component | Reachable, operable, focus visible and in order |
 | Language checks | See [Standards](standards.md#how-language-is-checked) |
+| Every rule has a source and a check | No rule rests on opinion; no *Automatic* rule lacks its test |
 | Hard-coded value check | No colour or size outside the brand's variables |
 | Linter, type checker, lock file, [dependency rules](#dependencies) | The code and its dependencies |
 

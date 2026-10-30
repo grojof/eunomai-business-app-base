@@ -14,8 +14,10 @@ person or real system: it stays neutral so anyone can clone it.
 
 ## Rules
 
-- Read [Standards](docs/standards.md) before writing a screen or a component. A change that breaks a standard is not
-  finished, whatever else it does.
+- Read [Standards](docs/standards.md) before writing a screen or a component. It is the only home of the rules: each
+  has an identifier, an official source and a check. A change that breaks one is not finished, whatever else it does.
+- Base decisions on those sources, not on what seems right. A new rule needs its source and its test, or it says
+  *Project decision*. A test names the rule it proves: `@pytest.mark.rule("A11Y-05")`.
 - Build the plain HTML first: it must work with a keyboard and a screen reader before any behaviour is added on top.
 - Every text a user can see goes through translation. Every number, date and time goes through the locale's formatter.
 - Every colour, size and radius comes from a variable. No value is written by hand in a component.
@@ -30,3 +32,13 @@ person or real system: it stays neutral so anyone can clone it.
 Automatic checks are what protect this repository; these rules only explain them. Run them all before calling something
 done, and say plainly what was not checked. Where a check cannot tell, such as how a screen reader announces a change,
 test by hand and record it in the pull request.
+
+```bash
+uv run ruff check && uv run ruff format --check && uv run mypy
+uv run python tools/vendor.py check
+uv run python tools/translations.py check   # after changing texts: tools/translations.py update
+uv run pytest -q
+```
+
+Browser tests use the Chrome already on the computer; nothing is downloaded. After upgrading Babel, a test may ask for
+`uv run python tools/cldr_grouping.py`.

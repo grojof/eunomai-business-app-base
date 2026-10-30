@@ -1,0 +1,16 @@
+{
+  "htmx.org": {
+    "version": "2.0.11",
+    "file": "dist/htmx.min.js",
+    "target": "app/ui/static/vendor/htmx.min.js",
+    "script": true,
+    "sha384": "2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg"
+  },
+  "axe-core": {
+    "version": "4.14.0",
+    "file": "axe.min.js",
+    "target": "tests/vendor/axe.min.js",
+    "script": false,
+    "sha384": "lFUXB8tI4BaTE1bqxH9eeAXON2NH1qsdAhs7S5L++nUNP5QOy+hwr0C3TYEJUEl0"
+  }
+}
