@@ -1,4 +1,4 @@
-{% from "demo/gallery/macros.html" import specimen %}
+{% from "demo/gallery/macros.html" import specimen, each %}
 {% from "ui/macros.html" import icon %}
 {% call specimen(c["breadcrumbs"], statuses) %}
 <nav class="breadcrumbs" aria-label="{{ _('Breadcrumbs') }}">
@@ -17,6 +17,9 @@
 {% call specimen(c["link"], statuses) %}
 <a class="link" href="#link">{{ _("Option one") }}</a>
 <a class="link link-primary" href="#link">{{ _("Option two") }}</a>
+{% call(name) each(v["link"], groups) %}
+<a class="link {{ name }}" href="#link">{{ _("Option one") }}</a>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["menu"], statuses) %}
@@ -25,6 +28,9 @@
   <li><a href="#menu">{{ _("Option one") }}</a></li>
   <li><a href="#menu" class="menu-active">{{ _("Option two") }}</a></li>
 </ul>
+{% call(name) each(v["menu"], groups) %}
+<ul class="menu {{ name }} rounded-box border border-base-300"><li><a href="#menu">{{ _("Option one") }}</a></li></ul>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["navbar"], statuses) %}
@@ -48,6 +54,9 @@
   <li class="step step-primary">{{ _("Second") }}</li>
   <li class="step">{{ _("Third") }}</li>
 </ul>
+{% call(name) each(v["steps"], groups) %}
+<ul class="steps"><li class="step {{ name }}">{{ _("First") }}</li><li class="step">{{ _("Second") }}</li></ul>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["tab"], statuses) %}

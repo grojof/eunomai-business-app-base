@@ -1,4 +1,4 @@
-{% from "demo/gallery/macros.html" import specimen %}
+{% from "demo/gallery/macros.html" import specimen, each %}
 {% from "ui/macros.html" import icon %}
 {% call specimen(c["button"], statuses) %}
 <button class="btn" type="button">{{ _("Action") }}</button>
@@ -8,6 +8,9 @@
 <button class="btn btn-error" type="button">{{ _("Action") }}</button>
 <button class="btn btn-sm" type="button">{{ _("Action") }}</button>
 <button class="btn" type="button" disabled>{{ _("Action") }}</button>
+{% call(name) each(v["button"], groups) %}
+<button class="btn {{ name }}" type="button">{{ _("Action") }}</button>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["dropdown"], statuses) %}

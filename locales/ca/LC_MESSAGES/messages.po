@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 21:51+0100\n"
+"POT-Creation-Date: 2026-10-30 22:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -62,9 +62,6 @@ msgstr "Error"
 msgid "Feedback"
 msgstr "Avisos"
 
-msgid "Has problems"
-msgstr "Amb problemes"
-
 msgid "Information"
 msgstr "Informació"
 
@@ -108,6 +105,9 @@ msgstr "Es mou sol i només un punter el pot aturar: WCAG 2.2.2."
 
 msgid "Navigation"
 msgstr "Navegació"
+
+msgid "Not recommended"
+msgstr "No recomanat"
 
 msgid "Open menu"
 msgstr "Obre el menú"

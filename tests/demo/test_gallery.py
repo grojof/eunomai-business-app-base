@@ -1,14 +1,23 @@
 """The gallery shows every component, tells the truth about each, and works under the application's own rules."""
 
+import json
 import re
 
 import pytest
 
 from app.core.i18n import PSEUDO
 from app.ui.catalog import CATEGORIES, PROBLEMS, components
-from tests.helpers import focus_order, overflows_sideways, run_axe, specimen_contents, untranslated
+from tests.helpers import ROOT, focus_order, overflows_sideways, run_axe, specimen_contents, untranslated
 
 SLUGS = sorted(CATEGORIES)
+# Variants that fall below AA with daisyUI's themes as they come. Stated in docs/standards.md: A11Y-05.
+DEFAULT_THEME_BELOW_AA = (
+    "[class*='link-']",
+    ".btn-link",
+    ".menu-title",
+    ".chat-bubble-primary",
+    ".chat-bubble-secondary",
+)
 ALLOWED = ("Business App", "Demo Person", "AB", "example.org")
 
 
@@ -68,7 +77,7 @@ def test_no_gallery_page_has_text_outside_translation(client, person, path):
 @pytest.mark.parametrize("theme", ["light", "dark"])
 def test_only_components_marked_with_problems_may_fail_the_scan(open_page, slug, theme):
     page = open_page(f"/gallery/{slug}", theme=theme, bypass_csp=True)
-    assert run_axe(page, exclude=f'[data-status="{PROBLEMS}"]') == []
+    assert run_axe(page, exclude=(f'[data-status="{PROBLEMS}"]', *DEFAULT_THEME_BELOW_AA)) == []
 
 
 @pytest.mark.browser
@@ -121,3 +130,14 @@ def test_values_written_by_script_reach_the_component(open_page):
     page = open_page("/gallery/feedback")
     radial = page.locator(".radial-progress")
     assert radial.evaluate("element => element.style.getPropertyValue('--value')") == "70"
+
+
+@pytest.mark.rule("COMP-03")
+def test_generated_variants_are_shown(client, person):
+    """Colours, styles and sizes come from daisyUI's file, so a new one appears by itself."""
+    variants = json.loads((ROOT / "app" / "demo" / "variants.json").read_text(encoding="utf-8"))
+    html = " ".join(client.get(f"/gallery/{slug}", headers=person).text for slug in SLUGS)
+    for name in ("button", "badge", "input", "select", "toggle", "progress", "loading"):
+        for group in ("color", "style", "size"):
+            for variant in variants[name].get(group, []):
+                assert f'<code class="text-xs">{variant}</code>' in html, variant

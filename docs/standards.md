@@ -56,7 +56,7 @@ passes by hand: keyboard only, then a screen reader (NVDA with a Chromium browse
 | A11Y-02 | The Tab key reaches every visible control of the start page, in the order of the page, and Escape closes a menu and returns focus to its button | [WCAG 2.1.1](https://www.w3.org/TR/WCAG22/#keyboard), [2.4.3](https://www.w3.org/TR/WCAG22/#focus-order) | Automatic |
 | A11Y-03 | The keyboard is never trapped | [WCAG 2.1.2](https://www.w3.org/TR/WCAG22/#no-keyboard-trap) | By hand |
 | A11Y-04 | Focus is visible on every control the Tab key reaches, and `scroll-padding-top` keeps it clear of the sticky header | [WCAG 2.4.7](https://www.w3.org/TR/WCAG22/#focus-visible), [2.4.11](https://www.w3.org/TR/WCAG22/#focus-not-obscured-minimum) | Automatic |
-| A11Y-05 | Contrast of 4.5:1 for text and 3:1 for large text, by the scan on the pages it visits; each theme's pairs of text and background, computed from `theme.css` in both themes, reach 4.5:1 | [WCAG 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum) | Automatic |
+| A11Y-05 | Contrast of 4.5:1 for text and 3:1 for large text, by the scan on the pages it visits. It measures text against its own background, not whether a shape stands out from the page: that is USE-10. With daisyUI's themes as they come, coloured links, `btn-link`, `menu-title`, `chat-bubble-primary` and `chat-bubble-secondary` can fall below it, are not used on real screens, and are left out of the scan by name. A theme added to `theme.css` is computed too | [WCAG 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum) | Automatic |
 | A11Y-06 | Targets of at least 24 by 24 pixels | [WCAG 2.5.8](https://www.w3.org/TR/WCAG22/#target-size-minimum) | Automatic |
 | A11Y-07 | A status is never shown by colour alone | [WCAG 1.4.1](https://www.w3.org/TR/WCAG22/#use-of-color) | By hand |
 | A11Y-08 | Every field has a label; errors are listed in a summary, linked to the field, and say how to fix them | [WCAG 3.3.1](https://www.w3.org/TR/WCAG22/#error-identification), [3.3.2](https://www.w3.org/TR/WCAG22/#labels-or-instructions), [3.3.3](https://www.w3.org/TR/WCAG22/#error-suggestion), [GOV.UK error summary](https://design-system.service.gov.uk/components/error-summary/) | Milestone 3 |
@@ -141,7 +141,7 @@ Catalan.
 |---|---|---|---|
 | COMP-01 | The catalogue lists every official component, plus an organization's own, each of those with a hand-written page; official pages match the official file | [daisyUI llms.txt](https://daisyui.com/llms.txt) | Automatic |
 | COMP-02 | Every component has a page with frontmatter and a description; each official page shows its status; one with problems says why | Project decision | Automatic |
-| COMP-03 | The gallery shows every component with its status in the catalogue, every specimen has content, and only those marked with problems may fail the accessibility scan | Project decision | Automatic |
+| COMP-03 | The gallery shows every component with its status in the catalogue, every specimen has content, and only those marked not recommended may fail the accessibility scan | Project decision | Automatic |
 | COMP-04 | A class in use must exist, read from real pages, macro arguments, `{% set %}` values and the catalogue; values such as `[color:#ff0000]` are refused. Component classes outside what Tailwind reads are caught; Tailwind utilities in Python files are not | Project decision | Automatic |
 
 ## Security

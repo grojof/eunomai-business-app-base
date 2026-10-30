@@ -1,5 +1,6 @@
 """The demo: a fictional company that maintains its equipment. Deleting this folder leaves a working application."""
 
+import json
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
@@ -14,6 +15,14 @@ from app.core.templating import NavigationItem, add_templates, render
 from app.ui.catalog import CATEGORIES, STATUSES, components
 
 HERE = Path(__file__).resolve().parent
+VARIANTS = json.loads((HERE / "variants.json").read_text(encoding="utf-8"))
+VARIANT_LABELS = {
+    "color": N_("Colours"),
+    "style": N_("Styles"),
+    "size": N_("Sizes"),
+    "direction": N_("Directions"),
+    "placement": N_("Placements"),
+}
 
 
 async def dashboard(request: Request) -> Response:
@@ -64,7 +73,16 @@ async def gallery_category(request: Request, slug: str) -> Response:
     if slug not in CATEGORIES:
         raise HTTPException(status_code=404)
     title = _(CATEGORIES[slug][0])
-    return render(request, "demo/gallery/category.html", slug=slug, title=title, c=components(), statuses=STATUSES)
+    return render(
+        request,
+        "demo/gallery/category.html",
+        slug=slug,
+        title=title,
+        c=components(),
+        statuses=STATUSES,
+        v=VARIANTS,
+        groups=VARIANT_LABELS,
+    )
 
 
 async def administration(request: Request, person: Annotated[Person, Depends(require_role("admin"))]) -> Response:

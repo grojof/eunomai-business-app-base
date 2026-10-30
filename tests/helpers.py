@@ -58,11 +58,11 @@ def untranslated(html: str, allowed: tuple[str, ...]) -> list[str]:
     return found
 
 
-def run_axe(page: Any, exclude: str | None = None) -> list[str]:
+def run_axe(page: Any, exclude: tuple[str, ...] = ()) -> list[str]:
     """Runs the accessibility scan on the open page and returns each failure, with where it is."""
     page.evaluate(ANIMATIONS_FINISHED)
     page.add_script_tag(path=str(ROOT / "tests" / "vendor" / "axe.min.js"))
-    context = {"exclude": [[exclude]]} if exclude else {"exclude": []}
+    context = {"exclude": [[selector] for selector in exclude]}
     result = page.evaluate(
         "([tags, context]) => axe.run(context, {runOnly: {type: 'tag', values: tags}})",
         [WCAG_TAGS, context],

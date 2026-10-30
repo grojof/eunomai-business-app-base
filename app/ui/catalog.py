@@ -13,10 +13,10 @@ DECORATIVE = "decorative"  # not meant for management applications
 PROBLEMS = "problems"  # fails a standard: its note says why
 
 STATUSES = {
-    APPROVED: (N_("Approved"), "badge-soft badge-success"),
-    AVAILABLE: (N_("Available"), "badge-soft badge-info"),
+    APPROVED: (N_("Approved"), "badge-success"),
+    AVAILABLE: (N_("Available"), "badge-info"),
     DECORATIVE: (N_("Decorative"), "badge-ghost"),
-    PROBLEMS: (N_("Has problems"), "badge-soft badge-error"),
+    PROBLEMS: (N_("Not recommended"), "badge-warning"),
 }
 
 MOTION = N_("Moves on its own and only a pointer can pause it: WCAG 2.2.2.")

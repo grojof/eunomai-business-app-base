@@ -1,4 +1,4 @@
-{% from "demo/gallery/macros.html" import specimen %}
+{% from "demo/gallery/macros.html" import specimen, each %}
 {% call specimen(c["calendar"], statuses) %}
 <label class="flex flex-col gap-1"><span>{{ _("Date") }}</span><input class="input" type="date"></label>
 {% endcall %}
@@ -6,6 +6,9 @@
 {% call specimen(c["checkbox"], statuses) %}
 <label class="flex items-center gap-2"><input type="checkbox" class="checkbox" checked> {{ _("Option one") }}</label>
 <label class="flex items-center gap-2"><input type="checkbox" class="checkbox checkbox-primary"> {{ _("Option two") }}</label>
+{% call(name) each(v["checkbox"], groups) %}
+<input type="checkbox" class="checkbox {{ name }}" checked aria-label="{{ _('Option one') }}">
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["fieldset"], statuses) %}
@@ -18,6 +21,9 @@
 
 {% call specimen(c["file-input"], statuses) %}
 <label class="flex flex-col gap-1"><span>{{ _("File") }}</span><input type="file" class="file-input"></label>
+{% call(name) each(v["file-input"], groups) %}
+<input type="file" class="file-input {{ name }}" aria-label="{{ _('File') }}">
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["filter"], statuses) %}
@@ -31,6 +37,9 @@
 {% call specimen(c["input"], statuses) %}
 <label class="flex flex-col gap-1"><span>{{ _("Name") }}</span><input class="input" type="text" placeholder="{{ _('Name') }}"></label>
 <label class="flex flex-col gap-1"><span>{{ _("Email") }}</span><input class="input input-primary" type="email"></label>
+{% call(name) each(v["input"], groups) %}
+<input class="input {{ name }}" type="text" aria-label="{{ _('Name') }}" placeholder="{{ _('Name') }}">
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["label"], statuses) %}
@@ -49,15 +58,24 @@
   <span></span><span></span><span></span><span></span>
   <input type="text" autocomplete="one-time-code" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" aria-label="{{ _('Code') }}">
 </label>
+{% call(name) each(v["otp"], groups) %}
+<label class="otp {{ name }}"><span></span><span></span><span></span><span></span><input type="text" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" aria-label="{{ _('Code') }}"></label>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["radio"], statuses) %}
 <label class="flex items-center gap-2"><input type="radio" name="sample-radio" class="radio" checked> {{ _("Option one") }}</label>
 <label class="flex items-center gap-2"><input type="radio" name="sample-radio" class="radio radio-primary"> {{ _("Option two") }}</label>
+{% call(name) each(v["radio"], groups) %}
+<input type="radio" name="sample-{{ name }}" class="radio {{ name }}" checked aria-label="{{ _('Option one') }}">
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["range"], statuses) %}
 <input type="range" min="0" max="100" value="40" class="range" aria-label="{{ _('Volume') }}">
+{% call(name) each(v["range"], groups) %}
+<input type="range" min="0" max="100" value="40" class="range {{ name }} w-40" aria-label="{{ _('Volume') }}">
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["rating"], statuses) %}
@@ -73,14 +91,23 @@
   <span>{{ _("Title") }}</span>
   <select class="select"><option>{{ _("Option one") }}</option><option>{{ _("Option two") }}</option></select>
 </label>
+{% call(name) each(v["select"], groups) %}
+<select class="select {{ name }} w-40" aria-label="{{ _('Title') }}"><option>{{ _("Option one") }}</option></select>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["textarea"], statuses) %}
 <label class="flex w-full flex-col gap-1"><span>{{ _("Comments") }}</span><textarea class="textarea w-full"></textarea></label>
+{% call(name) each(v["textarea"], groups) %}
+<textarea class="textarea {{ name }} w-40" aria-label="{{ _('Comments') }}"></textarea>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["toggle"], statuses) %}
 <label class="flex items-center gap-2"><input type="checkbox" class="toggle" checked> {{ _("Option one") }}</label>
+{% call(name) each(v["toggle"], groups) %}
+<input type="checkbox" class="toggle {{ name }}" checked aria-label="{{ _('Option one') }}">
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["validator"], statuses) %}

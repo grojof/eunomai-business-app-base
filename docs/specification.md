@@ -17,7 +17,7 @@ Success means three things, each testable:
 |---|---|
 | Adapting it to an organization is cheap | Changing only `app/brand/` and the settings gives that organization's look |
 | A new application starts clean | With `app/demo/` deleted, every tool check and the tests still pass |
-| The components hold the [standards](standards.md) | Only components marked *Has problems* may fail the [gallery](#gallery)'s scan |
+| The components hold the [standards](standards.md) | Only components marked *Not recommended* may fail the [gallery](#gallery)'s scan |
 
 ## Structure
 
@@ -189,14 +189,18 @@ ask for it by name.
 | Approved | A macro, tests and a review. This is what applications should use. Today: `alert`, `button` and `card` |
 | Available | Passes the automatic scan. Usable with care |
 | Decorative | Not meant for management applications |
-| Has problems | Fails a standard; its note states why |
+| Not recommended | Fails a standard; its note states why |
 
 `app/ui/catalog.py` is the one list. It survives deleting the demo, and it feeds the gallery, the documentation and
 `catalog.json`.
 
 The checks prove that an *Available* component passes the automatic scan. They cannot prove the opposite: *Decorative*
-and most of *Has problems* are a person's judgement, such as text that moves on its own, and *Approved* needs the review
+and most of *Not recommended* are a person's judgement, such as text that moves on its own, and *Approved* needs the review
 its name says.
+
+For most components the gallery shows every colour, style and size daisyUI offers. Those lists are not written by hand: `tools/components.py` takes them from the official file into `app/demo/variants.json`, so a new variant appears by itself. *Not recommended* components have a better option in this base, and their note names it.
+
+A component in the gallery is available to use, not yet used: real screens use only `alert`, `button`, `card`, `dropdown`, `menu`, `navbar` and `stat` until milestones 2 to 4 bring the rest.
 
 ## Documentation for assistants
 
@@ -232,7 +236,7 @@ each page says so.
 
 | To do this | Change |
 |---|---|
-| Your colours, radius and logos | `app/brand/`: [daisyUI's theme generator](https://daisyui.com/theme-generator/) writes the variables of `theme.css`. Colours may be hex or oklch; contrast is measured in both themes. Then run `tools/css.py` |
+| Your colours, radius and logos | The base uses daisyUI's `light` and `dark` themes as they come. To change them, paste what [daisyUI's theme generator](https://daisyui.com/theme-generator/) gives you into `app/brand/theme.css`, in hex or oklch, and run `tools/css.py`. Contrast of your theme's text colours is then computed |
 | Another CSS library | `app/ui/`: the macros and the stylesheet's source; screens do not change |
 | Your languages | Each folder under `locales/` is a required language: add yours, run `tools/translations.py update` and translate it. Change `APP_LANGUAGES` too |
 | Your time zone | `APP_TIME_ZONE`; the default is UTC |
@@ -252,8 +256,8 @@ still runs.
 |---|---|
 | Unit and integration tests | Behaviour, including permissions per role |
 | Tests with `app/demo/` deleted | In a copy without the demo, the stylesheet builds, every tool check passes and the tests pass, browser tests included |
-| Accessibility scan, in both themes | No automatically detectable failure on the start, error, catalogue, layouts, administration and gallery pages, or in any layout. Components marked *Has problems* are left out |
-| Brand contrast | Each text colour in `theme.css` against its background, computed in both themes |
+| Accessibility scan, in both themes | No automatically detectable failure on the start, error, catalogue, layouts, administration and gallery pages, or in any layout. Components marked *Not recommended* are left out |
+| Brand contrast | Each text colour of a theme added to `theme.css` against its background |
 | Keyboard tests | Every control of the start page is reached with visible focus; focus stops clear of the sticky header; Escape closes the user menu, the phone menu and a dialog, and returns focus |
 | Tab order | The Tab key visits the visible controls in the order of the page, on the start page and on a page full of controls |
 | Language checks | See [Standards](standards.md#how-language-is-checked) |

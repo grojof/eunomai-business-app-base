@@ -1,4 +1,4 @@
-{% from "demo/gallery/macros.html" import specimen %}
+{% from "demo/gallery/macros.html" import specimen, each %}
 {% set logo = "/static/brand/logo.svg" %}
 {% call specimen(c["aura"], statuses) %}
 <div class="aura text-primary"><button class="btn" type="button">{{ _("Action") }}</button></div>
@@ -10,6 +10,9 @@
   <div class="divider">{{ _("Second") }}</div>
   <p>{{ _("Third") }}</p>
 </div>
+{% call(name) each(v["divider"], groups) %}
+<div class="divider {{ name }} w-40">{{ _("Second") }}</div>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["drawer"], statuses) %}

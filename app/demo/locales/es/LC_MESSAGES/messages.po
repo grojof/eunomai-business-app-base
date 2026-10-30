@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 21:51+0100\n"
+"POT-Creation-Date: 2026-10-30 22:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -71,6 +71,9 @@ msgstr "Cerrar"
 msgid "Code"
 msgstr "Código"
 
+msgid "Colours"
+msgstr "Colores"
+
 msgid "Comments"
 msgstr "Comentarios"
 
@@ -100,6 +103,9 @@ msgstr "Densidad"
 
 msgid "Details"
 msgstr "Detalles"
+
+msgid "Directions"
+msgstr "Direcciones"
 
 msgid "Done"
 msgstr "Hecho"
@@ -203,6 +209,9 @@ msgstr "Opción dos"
 msgid "Pages"
 msgstr "Páginas"
 
+msgid "Placements"
+msgstr "Posiciones"
+
 msgid "Rating"
 msgstr "Valoración"
 
@@ -218,8 +227,14 @@ msgstr "Mostrar inspecciones"
 msgid "Side"
 msgstr "Lateral"
 
+msgid "Sizes"
+msgstr "Tamaños"
+
 msgid "Status"
 msgstr "Estado"
+
+msgid "Styles"
+msgstr "Estilos"
 
 msgid "Summary"
 msgstr "Resumen"

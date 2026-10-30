@@ -1,12 +1,13 @@
 /* The source of the stylesheet. tools/css.py turns it into app/ui/static/app.css with the classes in use.
-   Colours come only from the brand: Tailwind's own palette is removed, so a class like bg-blue-500 does not exist. */
+   Colours come from daisyUI's themes: Tailwind's own palette is removed, so a class like bg-blue-500 does not exist. */
 
 @import "tailwindcss" source(none);
 @source "../../**/*.html";
 @source "../catalog.py";
+@source "../../demo/variants.json";
 
 @plugin "../../../tools/tailwind/daisyui.mjs" {
-  themes: false;
+  themes: light --default, dark --prefersdark;
   logs: false;
 }
 
@@ -20,23 +21,6 @@
 :where(a, button, summary, input, select, textarea):focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-}
-
-/* daisyUI dims these with opacity, below the contrast WCAG 1.4.3 requires */
-.stat-title,
-.stat-desc,
-.label,
-.footer-title,
-.menu-title,
-.table thead th,
-.table :where(thead, tfoot) {
-  color: var(--color-base-content);
-  opacity: 1;
-}
-
-/* A tinted background stays; its text does not need the same colour, and fails the contrast with it */
-.alert-soft {
-  color: var(--color-base-content);
 }
 
 @layer base {

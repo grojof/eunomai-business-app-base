@@ -1,4 +1,4 @@
-{% from "demo/gallery/macros.html" import specimen %}
+{% from "demo/gallery/macros.html" import specimen, each %}
 {% set logo = "/static/brand/logo.svg" %}
 {% call specimen(c["accordion"], statuses) %}
 <div class="w-full">
@@ -26,6 +26,9 @@
 <span class="badge badge-outline">{{ _("First") }}</span>
 <span class="badge badge-success">{{ _("Done") }}</span>
 <span class="badge badge-error">{{ _("Error") }}</span>
+{% call(name) each(v["badge"], groups) %}
+<span class="badge {{ name }}">{{ _("First") }}</span>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["card"], statuses) %}
@@ -36,6 +39,9 @@
     <div class="card-actions justify-end"><button class="btn btn-primary btn-sm" type="button">{{ _("Action") }}</button></div>
   </div>
 </div>
+{% call(name) each(v["card"], groups) %}
+<div class="card card-border {{ name }} w-48"><div class="card-body"><h3 class="card-title">{{ _("Title") }}</h3><p>{{ _("Message") }}</p></div></div>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["carousel"], statuses) %}
@@ -51,6 +57,9 @@
   <div class="chat chat-start"><div class="chat-bubble">{{ _("Message") }}</div></div>
   <div class="chat chat-end"><div class="chat-bubble chat-bubble-primary">{{ _("Message") }}</div></div>
 </div>
+{% call(name) each(v["chat"], groups) %}
+<div class="chat chat-start"><div class="chat-bubble {{ name }}">{{ _("Message") }}</div></div>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["collapse"], statuses) %}
@@ -88,6 +97,9 @@
 
 {% call specimen(c["kbd"], statuses) %}
 <kbd class="kbd">Ctrl</kbd> <kbd class="kbd">K</kbd>
+{% call(name) each(v["kbd"], groups) %}
+<kbd class="kbd {{ name }}">K</kbd>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["list"], statuses) %}
@@ -110,6 +122,9 @@
 {% call specimen(c["status"], statuses) %}
 <span class="flex items-center gap-2"><span class="status status-success"></span>{{ _("Done") }}</span>
 <span class="flex items-center gap-2"><span class="status status-error"></span>{{ _("Error") }}</span>
+{% call(name) each(v["status"], groups) %}
+<span class="status {{ name }}" aria-hidden="true"></span>
+{% endcall %}
 {% endcall %}
 
 {% call specimen(c["table"], statuses) %}

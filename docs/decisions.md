@@ -24,6 +24,7 @@ related: [specification.md, standards.md]
 | A class with no CSS counts as invented | Tailwind generates only what exists, so the check covers daisyUI and Tailwind alike, for the classes it can read | Comparing with daisyUI's class lists, which would not cover Tailwind |
 | What daisyUI writes inline moves to `app.js` | `style="--value"` and `onclick` break the Content Security Policy | Weakening the policy |
 | Native browser features for menus: `popover` and `details` | Escape, focus and outside clicks with almost no JavaScript | daisyUI's hidden-checkbox drawer, whose button cannot be reached by keyboard |
+| daisyUI's `light` and `dark` themes as they come | They are designed and maintained by daisyUI, and an organization changes them with its generator. A palette of our own only added problems | A custom neutral palette, which made alerts too pale to see |
 | Tailwind's own palette removed, invented values refused by a test | Colours exist only in the brand; an organization wanting more freedom removes the test | Trusting each author |
 | Language support from the first screen | Adding it later touches every text | Single language first |
 | UTC as the default time zone | The base belongs to no place; an application sets its own in `APP_TIME_ZONE` | The time zone of whoever wrote it |

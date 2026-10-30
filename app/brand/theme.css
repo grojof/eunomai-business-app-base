@@ -1,75 +1,10 @@
-/* The brand's colours and shapes. daisyUI's theme generator (https://daisyui.com/theme-generator/) writes these same
-   variables: choose your colours there and paste them here. Then run tools/css.py.
-   The tests measure each text colour against its background, in both themes. */
+/* The brand. The base uses daisyUI's own light and dark themes as they come, so this file is empty.
+   To use your colours, make a theme with https://daisyui.com/theme-generator/ , paste it below, and run tools/css.py:
 
-@plugin "../../tools/tailwind/daisyui-theme.mjs" {
-  name: "light";
-  default: true;
-  color-scheme: light;
+   @plugin "../../tools/tailwind/daisyui-theme.mjs" {
+     name: "light";
+     default: true;
+     --color-primary: #2d5fa8;
+   }
 
-  --color-base-100: #ffffff;
-  --color-base-200: #f4f6f9;
-  --color-base-300: #e2e6ec;
-  --color-base-content: #1b1f27;
-  --color-primary: #2d5fa8;
-  --color-primary-content: #ffffff;
-  --color-secondary: #4f5a69;
-  --color-secondary-content: #ffffff;
-  --color-accent: #a85510;
-  --color-accent-content: #ffffff;
-  --color-neutral: #1f2937;
-  --color-neutral-content: #f4f6f9;
-  --color-info: #1f6fb2;
-  --color-info-content: #ffffff;
-  --color-success: #1b7a47;
-  --color-success-content: #ffffff;
-  --color-warning: #f2b632;
-  --color-warning-content: #2b1d00;
-  --color-error: #c0392b;
-  --color-error-content: #ffffff;
-
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.75rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 0;
-  --noise: 0;
-}
-
-@plugin "../../tools/tailwind/daisyui-theme.mjs" {
-  name: "dark";
-  prefersdark: true;
-  color-scheme: dark;
-
-  --color-base-100: #1e2127;
-  --color-base-200: #14161a;
-  --color-base-300: #333842;
-  --color-base-content: #eceef2;
-  --color-primary: #8db4f5;
-  --color-primary-content: #10141b;
-  --color-secondary: #b4bcc8;
-  --color-secondary-content: #10141b;
-  --color-accent: #f0a55a;
-  --color-accent-content: #10141b;
-  --color-neutral: #333842;
-  --color-neutral-content: #eceef2;
-  --color-info: #7cb8ee;
-  --color-info-content: #0c1d2e;
-  --color-success: #6fcf97;
-  --color-success-content: #0b2415;
-  --color-warning: #f2c35c;
-  --color-warning-content: #2b1d00;
-  --color-error: #f1948a;
-  --color-error-content: #2f0d09;
-
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.75rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 0;
-  --noise: 0;
-}
+   Name it "light" or "dark" to replace that theme: daisyUI keeps every value you leave out. */
