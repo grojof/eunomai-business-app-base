@@ -121,6 +121,6 @@ language and is reported, never shown as a blank or a key.
 | Changes protected | CSRF protection on every change |
 | Personal data | Only what is needed; none in logs or URLs |
 | Secrets | In the environment; a `.env.example` documents them |
-| Dependencies | Pinned with hashes; checked for known vulnerabilities in every build |
+| Dependencies | Pinned with hashes; kept current and checked by the [dependency rules](specification.md#dependencies) |
 
 **How it is checked.** Tests per role and per action, the headers of every response, and a dependency scan in CI.

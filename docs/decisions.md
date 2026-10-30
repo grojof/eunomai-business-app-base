@@ -27,6 +27,7 @@ related: [specification.md, standards.md]
 | Are ECharts' keyboard and screen-reader options enough? | Test it in milestone 2. The text summary and data table are required either way |
 | How does focus behave across htmx swaps? | Define one pattern in milestone 1 and test it in every component |
 | Which translation tool do translators use? | Files in git work for developers; decide if non-developers translate |
+| Does the dependency workflow run on other git servers? | It is written for GitHub Actions; test it on the first clone hosted elsewhere |
 | Which licence, when it goes public? | MIT or Apache 2.0. Without a licence, nobody may legally reuse it |
 | Do project skills load in every assistant? | Test before relying on them; the rules live in `AGENTS.md` and `docs/` |
 | Which fields does the registration file need? | Milestone 5, against a real platform |

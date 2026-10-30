@@ -38,8 +38,9 @@ docs/
 
 | Piece | Choice |
 |---|---|
-| Server | Python 3.12+, FastAPI, Pydantic v2; uv with `uv.lock` |
+| Server | Python 3.12+, FastAPI, Pydantic v2, Uvicorn; uv with `uv.lock` |
 | Data | PostgreSQL, SQLAlchemy 2, Alembic, psycopg 3 |
+| Reading another system's SQL Server | pyodbc with Microsoft's ODBC Driver 18 and a read-only user; optional |
 | Pages | Jinja2 with escaping always on, htmx 2.0, Alpine.js in its CSP build |
 | Tables | Made on the server; Tabulator only where grouping or editing needs it ([open](decisions.md#open-questions)) |
 | Charts | Apache ECharts ([open](decisions.md#open-questions)) |
@@ -47,7 +48,27 @@ docs/
 | Languages | gettext catalogues through Babel and Jinja2's i18n extension |
 
 No Node, no build step and no file loaded from another server. JavaScript files are copied into the repository with
-their version, origin and hash, and served with Subresource Integrity.
+their version, origin and hash (`vendor.json`), and served with Subresource Integrity.
+
+Exact versions live in `uv.lock` and `vendor.json`, not in this page.
+
+## Dependencies
+
+A daily workflow keeps dependencies current, and every clone inherits it. It updates to the newest version the rules
+allow, runs the tests and proposes one pull request. A person merges it. If no allowed version solves a problem, it
+keeps an issue open until one does.
+
+| Rule | Decision |
+|---|---|
+| Known vulnerability | Blocked, always |
+| Yanked, deprecated or a pre-release | Blocked |
+| Released less than two weeks ago | Waits, unless it fixes a vulnerability in every older version |
+| No release in three years, or no public source repository | Blocked, unless the organization makes an exception |
+| New major version | Never automatic: it takes a decision, as htmx 4 does |
+
+The workflow covers `uv.lock` and `vendor.json`: a copied JavaScript file gets the same rules, and its update brings the
+new hash. The job that runs upgraded code can only read; a separate job, which runs no project code, opens the pull
+request, and accepts only the files the update produces.
 
 ## Identity
 
@@ -116,7 +137,7 @@ still runs.
 | Keyboard tests of each interactive component | Reachable, operable, focus visible and in order |
 | Language checks | See [Standards](standards.md#how-language-is-checked) |
 | Hard-coded value check | No colour or size outside the brand's variables |
-| Linter, type checker, lock file, known vulnerabilities | The code and its dependencies |
+| Linter, type checker, lock file, [dependency rules](#dependencies) | The code and its dependencies |
 
 Browser tests use Playwright for Python and a vendored axe-core. Both are development tools and never reach a server.
 
@@ -131,7 +152,7 @@ server and access configuration from this file. Its fields are fixed in mileston
 | # | Milestone | Done when |
 |---|---|---|
 | 0 | Specification | Reviewed |
-| 1 | Skeleton | Layout, identity, languages, themes and every check running on one screen |
+| 1 | Skeleton | Layout, identity, languages, themes, every check and the dependency workflow running on one screen |
 | 2 | Data | Server table with 50,000 rows, filters, export, indicators, charts |
 | 3 | Forms | Every field, with validation in three languages |
 | 4 | Feedback and long tasks | Every state in the catalogue |
