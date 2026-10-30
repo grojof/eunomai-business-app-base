@@ -19,7 +19,6 @@ from app.core.templating import LAYOUTS, UI, render
 logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent.parent
 THEMES = ("system", "light", "dark")
-PUBLIC_PREFIXES = ("/static/", "/health")
 ONE_YEAR = 60 * 60 * 24 * 365
 
 CONTENT_SECURITY_POLICY = "; ".join(
@@ -48,6 +47,10 @@ def _cross_site(request: Request) -> bool:
     return origin is not None and urlsplit(origin).netloc != request.headers.get("host")
 
 
+def _is_public(path: str) -> bool:
+    return path == "/health" or path.startswith("/static/")
+
+
 async def _context(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
     state = request.app.state
     language = state.languages.choose(request.cookies.get("language"), request.headers.get("accept-language"))
@@ -55,7 +58,7 @@ async def _context(request: Request, call_next: Callable[[Request], Awaitable[Re
     theme = request.cookies.get("theme")
     request.state.theme = theme if theme in THEMES else "system"
 
-    if request.url.path.startswith(PUBLIC_PREFIXES):
+    if _is_public(request.url.path):
         response = await call_next(request)
     else:
         client = request.client.host if request.client else None
@@ -91,7 +94,9 @@ def _error_page(request: Request, status: int) -> Response:
 
 async def _on_http_error(request: Request, error: Exception) -> Response:
     assert isinstance(error, HTTPException)  # noqa: S101  # FastAPI only sends these here
-    return _error_page(request, error.status_code)
+    response = _error_page(request, error.status_code)
+    response.headers.update(error.headers or {})  # a 405 must say what is allowed, for example
+    return response
 
 
 def _safe_path(next_path: str) -> str:

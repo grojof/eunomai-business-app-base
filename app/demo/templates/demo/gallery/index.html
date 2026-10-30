@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading %}
+{% block title %}{{ _("Gallery") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("Gallery"), _("Every component, with its status. Ask for any of them by name.")) }}
+
+<ul class="flex flex-wrap gap-4">
+  {% for label, badge, count in legend %}
+  <li class="flex items-center gap-2"><span class="badge badge-sm {{ badge }}">{{ label }}</span> {{ count }}</li>
+  {% endfor %}
+</ul>
+
+<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+  {% for slug, title, count in categories %}
+  <a class="card border border-base-300 bg-base-100 hover:border-primary" href="/gallery/{{ slug }}">
+    <div class="card-body gap-1 p-4">
+      <h2>{{ title }}</h2>
+      <p class="text-sm">{{ ngettext("%(num)d component", "%(num)d components", count) }}</p>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

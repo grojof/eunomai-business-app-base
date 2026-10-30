@@ -1,0 +1,14 @@
+{#- One component in the gallery: its name, its status, and why, if it has problems. -#}
+{% macro specimen(component, statuses) %}
+{% set label, badge = statuses[component.status] %}
+<section id="{{ component.name }}" class="card min-w-0 border border-base-300 bg-base-100" aria-labelledby="name-{{ component.name }}" data-status="{{ component.status }}">
+  <div class="card-body gap-3">
+    <div class="flex flex-wrap items-center gap-2">
+      <h2 id="name-{{ component.name }}"><code>{{ component.name }}</code></h2>
+      <span class="badge badge-sm {{ badge }}">{{ _(label) }}</span>
+    </div>
+    {% if component.note %}<p class="text-sm">{{ _(component.note) }}</p>{% endif %}
+    <div class="flex min-w-0 flex-wrap items-center gap-3" data-specimen>{{ caller() }}</div>
+  </div>
+</section>
+{% endmacro %}

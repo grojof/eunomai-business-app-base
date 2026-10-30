@@ -1,0 +1,60 @@
+{% from "demo/gallery/macros.html" import specimen %}
+{% from "ui/macros.html" import icon %}
+{% call specimen(c["breadcrumbs"], statuses) %}
+<nav class="breadcrumbs" aria-label="{{ _('Breadcrumbs') }}">
+  <ul><li><a href="#breadcrumbs">{{ _("First") }}</a></li><li><a href="#breadcrumbs">{{ _("Second") }}</a></li><li>{{ _("Third") }}</li></ul>
+</nav>
+{% endcall %}
+
+{% call specimen(c["dock"], statuses) %}
+<div class="dock static w-full">
+  <button type="button" class="dock-active">{{ icon("layout-dashboard") }}<span class="dock-label">{{ _("First") }}</span></button>
+  <button type="button">{{ icon("component") }}<span class="dock-label">{{ _("Second") }}</span></button>
+  <button type="button">{{ icon("shield") }}<span class="dock-label">{{ _("Third") }}</span></button>
+</div>
+{% endcall %}
+
+{% call specimen(c["link"], statuses) %}
+<a class="link" href="#link">{{ _("Option one") }}</a>
+<a class="link link-primary" href="#link">{{ _("Option two") }}</a>
+{% endcall %}
+
+{% call specimen(c["menu"], statuses) %}
+<ul class="menu w-56 rounded-box border border-base-300">
+  <li class="menu-title">{{ _("Title") }}</li>
+  <li><a href="#menu">{{ _("Option one") }}</a></li>
+  <li><a href="#menu" class="menu-active">{{ _("Option two") }}</a></li>
+</ul>
+{% endcall %}
+
+{% call specimen(c["navbar"], statuses) %}
+<div class="navbar rounded-box border border-base-300">
+  <div class="navbar-start font-semibold">{{ _("Title") }}</div>
+  <div class="navbar-end"><button class="btn btn-ghost btn-sm" type="button">{{ _("Action") }}</button></div>
+</div>
+{% endcall %}
+
+{% call specimen(c["pagination"], statuses) %}
+<nav class="join" aria-label="{{ _('Pages') }}">
+  <a class="btn join-item" href="#pagination">1</a>
+  <a class="btn join-item btn-active" href="#pagination" aria-current="page">2</a>
+  <a class="btn join-item" href="#pagination">3</a>
+</nav>
+{% endcall %}
+
+{% call specimen(c["steps"], statuses) %}
+<ul class="steps w-full">
+  <li class="step step-primary">{{ _("First") }}</li>
+  <li class="step step-primary">{{ _("Second") }}</li>
+  <li class="step">{{ _("Third") }}</li>
+</ul>
+{% endcall %}
+
+{% call specimen(c["tab"], statuses) %}
+<div role="group" aria-label="{{ _('Title') }}" class="tabs tabs-box w-full">
+  <input type="radio" name="sample-tabs" class="tab" aria-label="{{ _('First') }}" checked>
+  <div class="tab-content p-4">{{ _("A short description.") }}</div>
+  <input type="radio" name="sample-tabs" class="tab" aria-label="{{ _('Second') }}">
+  <div class="tab-content p-4">{{ _("Message") }}</div>
+</div>
+{% endcall %}

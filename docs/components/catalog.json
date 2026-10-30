@@ -1,0 +1,546 @@
+[
+  {
+    "name": "button",
+    "category": "actions",
+    "status": "approved",
+    "note": "",
+    "use": "Use buttons to start actions.",
+    "page": "docs/components/button.md"
+  },
+  {
+    "name": "dropdown",
+    "category": "actions",
+    "status": "available",
+    "note": "",
+    "use": "A dropdown can open a menu or another element when the user clicks the button.",
+    "page": "docs/components/dropdown.md"
+  },
+  {
+    "name": "fab",
+    "category": "actions",
+    "status": "available",
+    "note": "",
+    "use": "A FAB is a floating action button that stays in a bottom corner of the screen. It contains a focusable, accessible element with a button role. When the user clicks or focuses it, more speed-dial buttons appear. These buttons have a vertical or quarter-circle arrangement.",
+    "page": "docs/components/fab.md"
+  },
+  {
+    "name": "modal",
+    "category": "actions",
+    "status": "available",
+    "note": "",
+    "use": "A modal shows a dialog or box when the user clicks a button.",
+    "page": "docs/components/modal.md"
+  },
+  {
+    "name": "swap",
+    "category": "actions",
+    "status": "available",
+    "note": "",
+    "use": "Use the swap component to change the visibility of two elements. Control the swap with a checkbox or a class name.",
+    "page": "docs/components/swap.md"
+  },
+  {
+    "name": "theme-controller",
+    "category": "actions",
+    "status": "problems",
+    "note": "It changes the theme without saving it. The user menu does this properly.",
+    "use": "If a checked checkbox or radio input has the `theme-controller` class, the page uses the theme in the input value.",
+    "page": "docs/components/theme-controller.md"
+  },
+  {
+    "name": "accordion",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "Use the accordion to show and hide content. Only one item can be open at a time.",
+    "page": "docs/components/accordion.md"
+  },
+  {
+    "name": "avatar",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "Use an avatar to show a thumbnail image.",
+    "page": "docs/components/avatar.md"
+  },
+  {
+    "name": "badge",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "Use a badge to show the status of data.",
+    "page": "docs/components/badge.md"
+  },
+  {
+    "name": "card",
+    "category": "data-display",
+    "status": "approved",
+    "note": "",
+    "use": "Use cards to group and show content.",
+    "page": "docs/components/card.md"
+  },
+  {
+    "name": "carousel",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "Use a carousel to show images or content in a scrollable area.",
+    "page": "docs/components/carousel.md"
+  },
+  {
+    "name": "chat",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "A chat bubble shows one line of a conversation and its related data. This data can include the author image, name, and time.",
+    "page": "docs/components/chat.md"
+  },
+  {
+    "name": "collapse",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "Use the collapse component to show and hide content.",
+    "page": "docs/components/collapse.md"
+  },
+  {
+    "name": "countdown",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "A countdown gives a transition effect when a number changes from 0 through 999.",
+    "page": "docs/components/countdown.md"
+  },
+  {
+    "name": "diff",
+    "category": "data-display",
+    "status": "decorative",
+    "note": "",
+    "use": "Use the diff component to show a side-by-side comparison of two items.",
+    "page": "docs/components/diff.md"
+  },
+  {
+    "name": "hover-3d",
+    "category": "data-display",
+    "status": "decorative",
+    "note": "",
+    "use": "The hover 3D component is a wrapper that adds a 3D effect to its content. When the pointer is on the component, the component tilts and turns in relation to the pointer position.",
+    "page": "docs/components/hover-3d.md"
+  },
+  {
+    "name": "hover-gallery",
+    "category": "data-display",
+    "status": "decorative",
+    "note": "",
+    "use": "A hover gallery is a container for images. The first image is visible by default. When the pointer moves horizontally on it, the other images appear. Use a hover gallery for product cards, e-commerce sites, portfolios, or image galleries. A hover gallery can contain a maximum of 10 images.",
+    "page": "docs/components/hover-gallery.md"
+  },
+  {
+    "name": "kbd",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "Use the kbd component to show keyboard shortcuts.",
+    "page": "docs/components/kbd.md"
+  },
+  {
+    "name": "list",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "Use a list to show information in rows in a vertical layout.",
+    "page": "docs/components/list.md"
+  },
+  {
+    "name": "stat",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "Use a stat component to show numbers and data in a block.",
+    "page": "docs/components/stat.md"
+  },
+  {
+    "name": "status",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "A status is a small icon that shows the current state of an element. Example states are online, offline, and error.",
+    "page": "docs/components/status.md"
+  },
+  {
+    "name": "table",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "Use a table to show data in rows and columns.",
+    "page": "docs/components/table.md"
+  },
+  {
+    "name": "text-rotate",
+    "category": "data-display",
+    "status": "problems",
+    "note": "Moves on its own and only a pointer can pause it: WCAG 2.2.2.",
+    "use": "Text rotate can show a maximum of six text lines, one line at a time. It uses a continuous loop animation. The default animation time is 10 seconds. The animation pauses when the pointer is on the text.",
+    "page": "docs/components/text-rotate.md"
+  },
+  {
+    "name": "timeline",
+    "category": "data-display",
+    "status": "available",
+    "note": "",
+    "use": "Use a timeline to show a list of events in chronological order.",
+    "page": "docs/components/timeline.md"
+  },
+  {
+    "name": "breadcrumbs",
+    "category": "navigation",
+    "status": "available",
+    "note": "",
+    "use": "Use breadcrumbs to help users navigate.",
+    "page": "docs/components/breadcrumbs.md"
+  },
+  {
+    "name": "dock",
+    "category": "navigation",
+    "status": "available",
+    "note": "",
+    "use": "A dock is also called bottom navigation or a bottom bar. It gives navigation options and stays at the bottom of the screen.",
+    "page": "docs/components/dock.md"
+  },
+  {
+    "name": "link",
+    "category": "navigation",
+    "status": "available",
+    "note": "",
+    "use": "The link component adds an underline to links.",
+    "page": "docs/components/link.md"
+  },
+  {
+    "name": "menu",
+    "category": "navigation",
+    "status": "available",
+    "note": "",
+    "use": "Use a menu to show a list of links vertically or horizontally.",
+    "page": "docs/components/menu.md"
+  },
+  {
+    "name": "navbar",
+    "category": "navigation",
+    "status": "available",
+    "note": "",
+    "use": "Use a navbar to show navigation at the top of the page.",
+    "page": "docs/components/navbar.md"
+  },
+  {
+    "name": "pagination",
+    "category": "navigation",
+    "status": "available",
+    "note": "",
+    "use": "Pagination is a group of buttons.",
+    "page": "docs/components/pagination.md"
+  },
+  {
+    "name": "steps",
+    "category": "navigation",
+    "status": "available",
+    "note": "",
+    "use": "Use the steps component to show a sequence in a process.",
+    "page": "docs/components/steps.md"
+  },
+  {
+    "name": "tab",
+    "category": "navigation",
+    "status": "available",
+    "note": "",
+    "use": "Use tabs to show a list of links in a tabbed format.",
+    "page": "docs/components/tab.md"
+  },
+  {
+    "name": "alert",
+    "category": "feedback",
+    "status": "approved",
+    "note": "",
+    "use": "Use an alert to give users information about an important event.",
+    "page": "docs/components/alert.md"
+  },
+  {
+    "name": "loading",
+    "category": "feedback",
+    "status": "available",
+    "note": "",
+    "use": "Use the loading component to show an animation while a process runs.",
+    "page": "docs/components/loading.md"
+  },
+  {
+    "name": "progress",
+    "category": "feedback",
+    "status": "available",
+    "note": "",
+    "use": "Use a progress bar to show task progress or the passage of time.",
+    "page": "docs/components/progress.md"
+  },
+  {
+    "name": "radial-progress",
+    "category": "feedback",
+    "status": "available",
+    "note": "",
+    "use": "Use the radial progress component to show task progress or the passage of time.",
+    "page": "docs/components/radial-progress.md"
+  },
+  {
+    "name": "skeleton",
+    "category": "feedback",
+    "status": "available",
+    "note": "",
+    "use": "Use a skeleton component to show a loading state.",
+    "page": "docs/components/skeleton.md"
+  },
+  {
+    "name": "toast",
+    "category": "feedback",
+    "status": "available",
+    "note": "",
+    "use": "A toast is a wrapper that stacks elements in a corner of the page.",
+    "page": "docs/components/toast.md"
+  },
+  {
+    "name": "tooltip",
+    "category": "feedback",
+    "status": "available",
+    "note": "",
+    "use": "A tooltip shows a message when the pointer is on an element.",
+    "page": "docs/components/tooltip.md"
+  },
+  {
+    "name": "calendar",
+    "category": "data-input",
+    "status": "problems",
+    "note": "It only styles a calendar library, which is not included. Use a date field.",
+    "use": "The calendar component includes styles for different calendar libraries.",
+    "page": "docs/components/calendar.md"
+  },
+  {
+    "name": "checkbox",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "Use a checkbox to select or deselect a value.",
+    "page": "docs/components/checkbox.md"
+  },
+  {
+    "name": "fieldset",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "Use a fieldset as a container for related form elements. Use `fieldset-legend` as the title. Use `label` as the description.",
+    "page": "docs/components/fieldset.md"
+  },
+  {
+    "name": "file-input",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "Use a file input to upload files.",
+    "page": "docs/components/file-input.md"
+  },
+  {
+    "name": "filter",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "A filter is a group of radio buttons. When the user selects an option, the filter hides the other options. It also shows a reset button next to the selected option.",
+    "page": "docs/components/filter.md"
+  },
+  {
+    "name": "input",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "Use a text input as a simple input field.",
+    "page": "docs/components/input.md"
+  },
+  {
+    "name": "label",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "Use a label to give a name or title to an input field. Put the label before or after the field.",
+    "page": "docs/components/label.md"
+  },
+  {
+    "name": "otp",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "An OTP is a one-time password component that lets a user enter a verification code. The code usually contains four to six digits. Use it for two-factor authentication (2FA) or passwordless login.",
+    "page": "docs/components/otp.md"
+  },
+  {
+    "name": "radio",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "Use radio buttons to let the user select one option.",
+    "page": "docs/components/radio.md"
+  },
+  {
+    "name": "range",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "Move a range-slider handle to select a value.",
+    "page": "docs/components/range.md"
+  },
+  {
+    "name": "rating",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "A rating is a set of radio buttons that lets the user give a rating.",
+    "page": "docs/components/rating.md"
+  },
+  {
+    "name": "select",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "Use a select component to select a value from a list of options.",
+    "page": "docs/components/select.md"
+  },
+  {
+    "name": "textarea",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "A textarea lets users enter text on more than one line.",
+    "page": "docs/components/textarea.md"
+  },
+  {
+    "name": "toggle",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "A toggle is a checkbox with the style of a switch button.",
+    "page": "docs/components/toggle.md"
+  },
+  {
+    "name": "validator",
+    "category": "data-input",
+    "status": "available",
+    "note": "",
+    "use": "The validator class sets an error color or a success color on a form element. The input validation rules control the color.",
+    "page": "docs/components/validator.md"
+  },
+  {
+    "name": "aura",
+    "category": "layout",
+    "status": "decorative",
+    "note": "",
+    "use": "An aura adds a light effect around the border of a component. Use it to make an important button, card, or div easy to see.",
+    "page": "docs/components/aura.md"
+  },
+  {
+    "name": "divider",
+    "category": "layout",
+    "status": "available",
+    "note": "",
+    "use": "Use a divider to separate content vertically or horizontally.",
+    "page": "docs/components/divider.md"
+  },
+  {
+    "name": "drawer",
+    "category": "layout",
+    "status": "problems",
+    "note": "Its button is a label, which a keyboard cannot reach: WCAG 2.1.1. The shell uses a popover instead.",
+    "use": "A drawer is a grid layout that can show and hide a sidebar. The sidebar can be on either side of the page.",
+    "page": "docs/components/drawer.md"
+  },
+  {
+    "name": "footer",
+    "category": "layout",
+    "status": "available",
+    "note": "",
+    "use": "A footer can contain a logo, a copyright notice, and links to other pages.",
+    "page": "docs/components/footer.md"
+  },
+  {
+    "name": "hero",
+    "category": "layout",
+    "status": "available",
+    "note": "",
+    "use": "Use a hero to show a large box or image with a title and description.",
+    "page": "docs/components/hero.md"
+  },
+  {
+    "name": "indicator",
+    "category": "layout",
+    "status": "available",
+    "note": "",
+    "use": "Use an indicator to put an element at the corner of another element.",
+    "page": "docs/components/indicator.md"
+  },
+  {
+    "name": "join",
+    "category": "layout",
+    "status": "available",
+    "note": "",
+    "use": "A join is a container that groups more than one item. Use it to group buttons, inputs, or other elements. The join applies a border radius to the first and last items. It can make a horizontal or vertical list of items.",
+    "page": "docs/components/join.md"
+  },
+  {
+    "name": "mask",
+    "category": "layout",
+    "status": "decorative",
+    "note": "",
+    "use": "A mask crops the content of an element to a common shape.",
+    "page": "docs/components/mask.md"
+  },
+  {
+    "name": "megamenu",
+    "category": "layout",
+    "status": "available",
+    "note": "",
+    "use": "A megamenu is a large horizontal menu. Each item opens a popover that shows a large group of navigation links. Use one megamenu at the top of the page. Each popover can contain a daisyUI menu or custom content. Use a megamenu on large screens. On small screens, hide it and show its content in a dropdown or drawer.",
+    "page": "docs/components/megamenu.md"
+  },
+  {
+    "name": "stack",
+    "category": "layout",
+    "status": "available",
+    "note": "",
+    "use": "A stack puts elements on top of each other.",
+    "page": "docs/components/stack.md"
+  },
+  {
+    "name": "mockup-browser",
+    "category": "mockups",
+    "status": "decorative",
+    "note": "",
+    "use": "A browser mockup is a box in the form of a browser window.",
+    "page": "docs/components/mockup-browser.md"
+  },
+  {
+    "name": "mockup-code",
+    "category": "mockups",
+    "status": "decorative",
+    "note": "",
+    "use": "Use a code mockup to show code in a box with the style of a code editor.",
+    "page": "docs/components/mockup-code.md"
+  },
+  {
+    "name": "mockup-phone",
+    "category": "mockups",
+    "status": "decorative",
+    "note": "",
+    "use": "A phone mockup shows an iPhone mockup.",
+    "page": "docs/components/mockup-phone.md"
+  },
+  {
+    "name": "mockup-window",
+    "category": "mockups",
+    "status": "decorative",
+    "note": "",
+    "use": "A window mockup is a box in the form of an operating-system window.",
+    "page": "docs/components/mockup-window.md"
+  }
+]

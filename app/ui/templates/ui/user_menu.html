@@ -3,16 +3,14 @@
 <details class="dropdown dropdown-end" data-menu>
   <summary class="btn btn-ghost">
     {{ icon("circle-user") }}
-    <span class="hidden sm:inline">{% if person %}{{ person.name }}{% else %}{{ _("Preferences") }}{% endif %}</span>
+    <span class="hidden sm:inline">{{ person.name }}</span>
     <span class="sr-only sm:hidden">{{ _("Preferences") }}</span>
   </summary>
   <div class="dropdown-content z-30 mt-2 w-72 space-y-4 rounded-box border border-base-300 bg-base-100 p-4 shadow-lg">
-    {% if person %}
     <div>
       <p class="font-semibold">{{ person.name }}</p>
       {% if person.email %}<p class="text-sm">{{ person.email }}</p>{% endif %}
     </div>
-    {% endif %}
     <form method="post" action="/preferences" class="space-y-4">
       <input type="hidden" name="next" value="{{ here }}">
       <fieldset class="space-y-1">

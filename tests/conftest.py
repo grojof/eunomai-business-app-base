@@ -2,10 +2,12 @@ import socket
 import threading
 import time
 from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from typing import Any
 
 import pytest
 import uvicorn
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from app.core.settings import Settings
@@ -33,23 +35,31 @@ def person() -> dict[str, str]:
     return dict(PERSON)
 
 
-@pytest.fixture(scope="session")
-def base_url() -> Iterator[str]:
-    """The real application on a real port, for the browser checks."""
+@contextmanager
+def running_server(application: FastAPI, proxy_headers: bool = False) -> Iterator[int]:
+    """A real uvicorn on a real port, which it returns. Without proxy headers, as it runs behind a proxy."""
     with socket.socket() as probe:
         probe.bind(("127.0.0.1", 0))
         port = probe.getsockname()[1]
-    settings = build_settings(fake_identity=True, fake_groups=["admins"], trusted_proxies=[])
-    server = uvicorn.Server(uvicorn.Config(create_app(settings), host="127.0.0.1", port=port, log_level="warning"))
+    config = uvicorn.Config(application, host="127.0.0.1", port=port, log_level="warning", proxy_headers=proxy_headers)
+    server = uvicorn.Server(config)
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()
     for _ in range(100):
         if server.started:
             break
         time.sleep(0.05)
-    yield f"http://127.0.0.1:{port}"
+    yield port
     server.should_exit = True
     thread.join(timeout=5)
+
+
+@pytest.fixture(scope="session")
+def base_url() -> Iterator[str]:
+    """The real application, for the browser checks."""
+    settings = build_settings(fake_identity=True, fake_groups=["admins"], trusted_proxies=[])
+    with running_server(create_app(settings)) as port:
+        yield f"http://127.0.0.1:{port}"
 
 
 @pytest.fixture(scope="session")

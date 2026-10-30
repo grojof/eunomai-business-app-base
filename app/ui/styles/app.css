@@ -3,6 +3,7 @@
 
 @import "tailwindcss" source(none);
 @source "../../**/*.html";
+@source "../catalog.py";
 
 @plugin "../../../tools/tailwind/daisyui.mjs" {
   themes: false;
@@ -21,7 +22,29 @@
   outline-offset: 2px;
 }
 
+/* daisyUI dims these with opacity, below the contrast WCAG 1.4.3 requires */
+.stat-title,
+.stat-desc,
+.label,
+.footer-title,
+.menu-title,
+.table thead th,
+.table :where(thead, tfoot) {
+  color: var(--color-base-content);
+  opacity: 1;
+}
+
+/* A tinted background stays; its text does not need the same colour, and fails the contrast with it */
+.alert-soft {
+  color: var(--color-base-content);
+}
+
 @layer base {
+  /* What the keyboard reaches, and any #link, stops clear of the sticky header: WCAG 2.4.11 */
+  html {
+    scroll-padding-top: 5rem;
+  }
+
   body {
     overflow-wrap: anywhere;
   }

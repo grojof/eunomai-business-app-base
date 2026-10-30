@@ -28,7 +28,7 @@
         <a class="flex items-center gap-2 font-semibold" href="/"><img class="size-8" src="/static/brand/logo.svg" alt=""> {{ app_name }}</a>
         {% endif %}
         {% if navigation and not side %}{% include "ui/navigation.html" %}{% endif %}
-        <div class="ms-auto">{% include "ui/user_menu.html" %}</div>
+        {% if person %}<div class="ms-auto">{% include "ui/user_menu.html" %}</div>{% endif %}
       </header>
       <main id="main" tabindex="-1" class="w-full space-y-6 p-4 lg:p-8{{ ' mx-auto max-w-5xl' if layout.width == 'centered' else '' }}">
         {% block content %}{% endblock %}

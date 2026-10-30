@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 20:29+0100\n"
+"POT-Creation-Date: 2026-10-30 21:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -19,6 +19,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid "%(num)d component"
+msgid_plural "%(num)d components"
+msgstr[0] "%(num)d component"
+msgstr[1] "%(num)d components"
 
 #, python-format
 msgid "%(num)d inspection is due"
@@ -35,8 +41,20 @@ msgstr[1] "%(num)d ordres de treball obertes"
 msgid "A fictional company that maintains its equipment."
 msgstr "Una empresa fictícia que manté els seus equips."
 
+msgid "A short description."
+msgstr "Una descripció breu."
+
+msgid "Action"
+msgstr "Acció"
+
 msgid "Administration"
 msgstr "Administració"
+
+msgid "Back to the gallery"
+msgstr "Torna a la galeria"
+
+msgid "Breadcrumbs"
+msgstr "Ruta de navegació"
 
 msgid "Buttons"
 msgstr "Botons"
@@ -47,6 +65,15 @@ msgstr "Cancel·la"
 msgid "Centred"
 msgstr "Centrat"
 
+msgid "Close"
+msgstr "Tanca"
+
+msgid "Code"
+msgstr "Codi"
+
+msgid "Comments"
+msgstr "Comentaris"
+
 msgid "Compact"
 msgstr "Compacta"
 
@@ -56,23 +83,62 @@ msgstr "Catàleg de components"
 msgid "Cost to date"
 msgstr "Cost fins avui"
 
+msgid "Dark"
+msgstr "Fosc"
+
 msgid "Dashboard"
 msgstr "Tauler"
+
+msgid "Date"
+msgstr "Data"
+
+msgid "Delete"
+msgstr "Suprimeix"
 
 msgid "Density"
 msgstr "Densitat"
 
+msgid "Details"
+msgstr "Detalls"
+
+msgid "Done"
+msgstr "Fet"
+
+msgid "Email"
+msgstr "Correu electrònic"
+
 msgid "Empty state"
 msgstr "Estat buit"
 
+msgid "Enter a valid email address."
+msgstr "Escriu un correu electrònic vàlid."
+
+msgid "Error"
+msgstr "Error"
+
 msgid "Every component in every state."
 msgstr "Cada component en cada estat."
+
+msgid "Every component, with its status. Ask for any of them by name."
+msgstr "Cada component, amb el seu estat. Demana'n qualsevol pel nom."
+
+msgid "File"
+msgstr "Fitxer"
+
+msgid "Filter"
+msgstr "Filtre"
+
+msgid "First"
+msgstr "Primer"
 
 msgid "Fixed header"
 msgstr "Capçalera fixa"
 
 msgid "Full"
 msgstr "Complet"
+
+msgid "Gallery"
+msgstr "Galeria"
 
 msgid "Hidden"
 msgstr "Oculta"
@@ -95,8 +161,14 @@ msgstr "Disposicions"
 msgid "Loading"
 msgstr "S'està carregant"
 
+msgid "Message"
+msgstr "Missatge"
+
 msgid "Messages"
 msgstr "Missatges"
+
+msgid "Name"
+msgstr "Nom"
 
 msgid "Navigation"
 msgstr "Navegació"
@@ -116,17 +188,38 @@ msgstr "Normal"
 msgid "Only people with the administrator role can open this page."
 msgstr "Només poden obrir aquesta pàgina les persones amb el rol d'administrador."
 
+msgid "Open"
+msgstr "Obre"
+
 msgid "Open work orders"
 msgstr "Ordres de treball obertes"
 
+msgid "Option one"
+msgstr "Opció u"
+
+msgid "Option two"
+msgstr "Opció dos"
+
+msgid "Pages"
+msgstr "Pàgines"
+
+msgid "Rating"
+msgstr "Valoració"
+
 msgid "Save"
 msgstr "Desa"
+
+msgid "Second"
+msgstr "Segon"
 
 msgid "Show inspections"
 msgstr "Mostra les inspeccions"
 
 msgid "Side"
 msgstr "Lateral"
+
+msgid "Status"
+msgstr "Estat"
 
 msgid "Summary"
 msgstr "Resum"
@@ -137,8 +230,17 @@ msgstr "L'ordre de treball no s'ha pogut desar. Torna-ho a provar."
 msgid "The work order was saved."
 msgstr "L'ordre de treball s'ha desat."
 
+msgid "Theme"
+msgstr "Tema"
+
+msgid "Third"
+msgstr "Tercer"
+
 msgid "This equipment is due for inspection."
 msgstr "Aquest equip ha de passar la inspecció."
+
+msgid "Title"
+msgstr "Títol"
 
 msgid "Top"
 msgstr "Superior"
@@ -149,6 +251,12 @@ msgstr "Prova cada disposició. Cada aplicació fixa la seva als ajustos."
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualitzat: %(moment)s"
+
+msgid "Volume"
+msgstr "Volum"
+
+msgid "Warning"
+msgstr "Avís"
 
 msgid "Width"
 msgstr "Amplada"

@@ -1,0 +1,24 @@
+{% from "demo/gallery/macros.html" import specimen %}
+{% call specimen(c["mockup-browser"], statuses) %}
+<div class="mockup-browser w-full border border-base-300">
+  <div class="mockup-browser-toolbar"><div class="input">example.org</div></div>
+  <div class="p-6">{{ _("A short description.") }}</div>
+</div>
+{% endcall %}
+
+{% call specimen(c["mockup-code"], statuses) %}
+<div class="mockup-code w-full"><pre data-prefix="$"><code>uv run pytest</code></pre></div>
+{% endcall %}
+
+{% call specimen(c["mockup-phone"], statuses) %}
+<div class="mockup-phone">
+  <div class="mockup-phone-camera"></div>
+  <div class="mockup-phone-display flex items-center justify-center bg-base-200 p-4">{{ _("Title") }}</div>
+</div>
+{% endcall %}
+
+{% call specimen(c["mockup-window"], statuses) %}
+<div class="mockup-window w-full border border-base-300">
+  <div class="p-6">{{ _("A short description.") }}</div>
+</div>
+{% endcall %}

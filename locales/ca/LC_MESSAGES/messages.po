@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 20:29+0100\n"
+"POT-Creation-Date: 2026-10-30 21:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -20,11 +20,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+msgid "Actions"
+msgstr "Accions"
+
+msgid "Approved"
+msgstr "Aprovat"
+
 msgid "As the system"
 msgstr "Com el sistema"
 
 msgid "Ask whoever manages this application if you need access."
 msgstr "Si necessites accés, demana'l a qui gestiona aquesta aplicació."
+
+msgid "Available"
+msgstr "Disponible"
 
 msgid "Back to the start"
 msgstr "Torna a l'inici"
@@ -35,26 +44,70 @@ msgstr "Comprova l'adreça o torna a l'inici."
 msgid "Dark"
 msgstr "Fosc"
 
+msgid "Data display"
+msgstr "Mostrar dades"
+
+msgid "Data input"
+msgstr "Entrada de dades"
+
+msgid "Decorative"
+msgstr "Decoratiu"
+
 msgid "Done"
 msgstr "Fet"
 
 msgid "Error"
 msgstr "Error"
 
+msgid "Feedback"
+msgstr "Avisos"
+
+msgid "Has problems"
+msgstr "Amb problemes"
+
 msgid "Information"
 msgstr "Informació"
+
+msgid "It changes the theme without saving it. The user menu does this properly."
+msgstr "Canvia el tema sense desar-lo. El menú d'usuari ho fa correctament."
 
 msgid "It is not your fault. Try again in a moment."
 msgstr "No és culpa teva. Torna-ho a provar d'aquí a un moment."
 
+msgid ""
+"It only styles a calendar library, which is not included. Use a date "
+"field."
+msgstr ""
+"Només dona estil a una biblioteca de calendari, que no hi és inclosa. Fes"
+" servir un camp de data."
+
+msgid ""
+"Its button is a label, which a keyboard cannot reach: WCAG 2.1.1. The "
+"shell uses a popover instead."
+msgstr ""
+"El seu botó és una etiqueta, que no s'abasta amb el teclat: WCAG 2.1.1. "
+"L'estructura fa servir un plafó emergent."
+
 msgid "Language"
 msgstr "Idioma"
+
+msgid "Layout"
+msgstr "Estructura"
 
 msgid "Light"
 msgstr "Clar"
 
 msgid "Main"
 msgstr "Principal"
+
+msgid "Mockups"
+msgstr "Maquetes"
+
+msgid "Moves on its own and only a pointer can pause it: WCAG 2.2.2."
+msgstr "Es mou sol i només un punter el pot aturar: WCAG 2.2.2."
+
+msgid "Navigation"
+msgstr "Navegació"
 
 msgid "Open menu"
 msgstr "Obre el menú"

@@ -3,12 +3,14 @@
     uv run python tools/css.py         write app/ui/static/app.css
     uv run python tools/css.py check   fail if it is out of date
 
-The executable is downloaded once for this computer, checked against the hash in vendor.json, and kept in .cache/.
-Servers need none of this: they receive the generated file.
+The executable is downloaded once for this computer and kept in .cache/. It runs only if it matches the hash in
+vendor.json, checked every time: one that does not is downloaded again. Servers need none of this: they receive the
+generated file.
 """
 
 import hashlib
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -20,12 +22,39 @@ ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "app" / "ui" / "styles" / "app.css"
 TARGET = ROOT / "app" / "ui" / "static" / "app.css"
 RELEASES = "https://github.com/tailwindlabs/tailwindcss/releases/download"
+SYSTEMS = {"Linux": "linux", "Darwin": "macos", "Windows": "windows"}
+MACHINES = {"x86_64": "x64", "amd64": "x64", "arm64": "arm64", "aarch64": "arm64"}
+SUPPORTED = (
+    "tailwindcss-linux-arm64",
+    "tailwindcss-linux-arm64-musl",
+    "tailwindcss-linux-x64",
+    "tailwindcss-linux-x64-musl",
+    "tailwindcss-macos-arm64",
+    "tailwindcss-macos-x64",
+    "tailwindcss-windows-x64.exe",
+)
+
+
+def uses_musl() -> bool:
+    return platform.system() == "Linux" and any(Path("/lib").glob("ld-musl-*"))
 
 
 def executable_name() -> str:
-    system = {"Linux": "linux", "Darwin": "macos", "Windows": "windows"}[platform.system()]
-    machine = {"x86_64": "x64", "amd64": "x64", "arm64": "arm64", "aarch64": "arm64"}[platform.machine().lower()]
-    return f"tailwindcss-{system}-{machine}" + (".exe" if system == "windows" else "")
+    system = SYSTEMS.get(platform.system())
+    machine = MACHINES.get(platform.machine().lower())
+    name = (
+        f"tailwindcss-{system}-{machine}" + ("-musl" if uses_musl() else "") + (".exe" if system == "windows" else "")
+    )
+    if name not in SUPPORTED:
+        raise SystemExit(
+            f"Tailwind publishes no executable for {platform.system()} on {platform.machine()}. "
+            f"It has: {', '.join(SUPPORTED)}"
+        )
+    return name
+
+
+def sha256(content: bytes) -> str:
+    return hashlib.sha256(content).hexdigest()
 
 
 def executable() -> Path:
@@ -33,14 +62,18 @@ def executable() -> Path:
     name = executable_name()
     expected = entry["executables"][name]
     path: Path = ROOT / ".cache" / "tailwindcss" / entry["version"] / name
-    if not path.exists():
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with urllib.request.urlopen(f"{RELEASES}/v{entry['version']}/{name}", timeout=300) as response:
-            content = response.read()
-        if hashlib.sha256(content).hexdigest() != expected:
-            raise RuntimeError(f"{name}: the download does not match vendor.json")
-        path.write_bytes(content)
-        path.chmod(0o755)
+    if path.exists() and sha256(path.read_bytes()) == expected:
+        return path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with urllib.request.urlopen(f"{RELEASES}/v{entry['version']}/{name}", timeout=300) as response:
+        content = response.read()
+    if sha256(content) != expected:
+        raise RuntimeError(f"{name}: the download does not match vendor.json")
+    descriptor, temporary = tempfile.mkstemp(dir=path.parent, prefix=f"{name}.")
+    with os.fdopen(descriptor, "wb") as file:
+        file.write(content)
+    Path(temporary).chmod(0o755)
+    os.replace(temporary, path)
     return path
 
 

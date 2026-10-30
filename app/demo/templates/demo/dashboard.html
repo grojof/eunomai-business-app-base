@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "ui/macros.html" import page_heading, card, stat %}
+{% from "ui/macros.html" import page_heading, button, card, stat %}
 {% block title %}{{ _("Dashboard") }}{% endblock %}
 {% block content %}
 {{ page_heading(_("Dashboard"), _("A fictional company that maintains its equipment.")) }}
@@ -14,10 +14,7 @@
 <div class="grid gap-4 lg:grid-cols-2">
   {% call card(_("Inspections"), "inspections-title") %}
   <div id="inspections">
-    <button class="btn btn-primary" type="button" hx-get="/inspections" hx-target="#inspections">
-      {{ _("Show inspections") }}
-      <span class="htmx-indicator">{{ _("Loading") }}</span>
-    </button>
+    {{ button(_("Show inspections"), "primary", attributes={"hx-get": "/inspections", "hx-target": "#inspections"}, loading=_("Loading")) }}
   </div>
   {% endcall %}
   {% call card(_("Summary"), "summary-title") %}

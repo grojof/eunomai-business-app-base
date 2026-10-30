@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 20:29+0100\n"
+"POT-Creation-Date: 2026-10-30 21:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -19,6 +19,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid "%(num)d component"
+msgid_plural "%(num)d components"
+msgstr[0] "%(num)d componente"
+msgstr[1] "%(num)d componentes"
 
 #, python-format
 msgid "%(num)d inspection is due"
@@ -35,8 +41,20 @@ msgstr[1] "%(num)d órdenes de trabajo abiertas"
 msgid "A fictional company that maintains its equipment."
 msgstr "Una empresa ficticia que mantiene sus equipos."
 
+msgid "A short description."
+msgstr "Una descripción breve."
+
+msgid "Action"
+msgstr "Acción"
+
 msgid "Administration"
 msgstr "Administración"
+
+msgid "Back to the gallery"
+msgstr "Volver a la galería"
+
+msgid "Breadcrumbs"
+msgstr "Ruta de navegación"
 
 msgid "Buttons"
 msgstr "Botones"
@@ -47,6 +65,15 @@ msgstr "Cancelar"
 msgid "Centred"
 msgstr "Centrado"
 
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Code"
+msgstr "Código"
+
+msgid "Comments"
+msgstr "Comentarios"
+
 msgid "Compact"
 msgstr "Compacta"
 
@@ -56,23 +83,62 @@ msgstr "Catálogo de componentes"
 msgid "Cost to date"
 msgstr "Coste hasta la fecha"
 
+msgid "Dark"
+msgstr "Oscuro"
+
 msgid "Dashboard"
 msgstr "Panel"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Delete"
+msgstr "Eliminar"
 
 msgid "Density"
 msgstr "Densidad"
 
+msgid "Details"
+msgstr "Detalles"
+
+msgid "Done"
+msgstr "Hecho"
+
+msgid "Email"
+msgstr "Correo electrónico"
+
 msgid "Empty state"
 msgstr "Estado vacío"
 
+msgid "Enter a valid email address."
+msgstr "Escribe un correo electrónico válido."
+
+msgid "Error"
+msgstr "Error"
+
 msgid "Every component in every state."
 msgstr "Cada componente en cada estado."
+
+msgid "Every component, with its status. Ask for any of them by name."
+msgstr "Cada componente, con su estado. Pide cualquiera por su nombre."
+
+msgid "File"
+msgstr "Archivo"
+
+msgid "Filter"
+msgstr "Filtro"
+
+msgid "First"
+msgstr "Primero"
 
 msgid "Fixed header"
 msgstr "Cabecera fija"
 
 msgid "Full"
 msgstr "Completo"
+
+msgid "Gallery"
+msgstr "Galería"
 
 msgid "Hidden"
 msgstr "Oculta"
@@ -95,8 +161,14 @@ msgstr "Disposiciones"
 msgid "Loading"
 msgstr "Cargando"
 
+msgid "Message"
+msgstr "Mensaje"
+
 msgid "Messages"
 msgstr "Mensajes"
+
+msgid "Name"
+msgstr "Nombre"
 
 msgid "Navigation"
 msgstr "Navegación"
@@ -116,17 +188,38 @@ msgstr "Normal"
 msgid "Only people with the administrator role can open this page."
 msgstr "Solo pueden abrir esta página las personas con el rol de administrador."
 
+msgid "Open"
+msgstr "Abrir"
+
 msgid "Open work orders"
 msgstr "Órdenes de trabajo abiertas"
 
+msgid "Option one"
+msgstr "Opción uno"
+
+msgid "Option two"
+msgstr "Opción dos"
+
+msgid "Pages"
+msgstr "Páginas"
+
+msgid "Rating"
+msgstr "Valoración"
+
 msgid "Save"
 msgstr "Guardar"
+
+msgid "Second"
+msgstr "Segundo"
 
 msgid "Show inspections"
 msgstr "Mostrar inspecciones"
 
 msgid "Side"
 msgstr "Lateral"
+
+msgid "Status"
+msgstr "Estado"
 
 msgid "Summary"
 msgstr "Resumen"
@@ -137,8 +230,17 @@ msgstr "La orden de trabajo no se ha podido guardar. Vuelve a intentarlo."
 msgid "The work order was saved."
 msgstr "La orden de trabajo se ha guardado."
 
+msgid "Theme"
+msgstr "Tema"
+
+msgid "Third"
+msgstr "Tercero"
+
 msgid "This equipment is due for inspection."
 msgstr "A este equipo le toca inspección."
+
+msgid "Title"
+msgstr "Título"
 
 msgid "Top"
 msgstr "Superior"
@@ -149,6 +251,12 @@ msgstr "Prueba cada disposición. Cada aplicación fija la suya en sus ajustes."
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualizado: %(moment)s"
+
+msgid "Volume"
+msgstr "Volumen"
+
+msgid "Warning"
+msgstr "Aviso"
 
 msgid "Width"
 msgstr "Ancho"

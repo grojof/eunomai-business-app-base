@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 20:29+0100\n"
+"POT-Creation-Date: 2026-10-30 21:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -20,11 +20,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Approved"
+msgstr "Aprobado"
+
 msgid "As the system"
 msgstr "Como el sistema"
 
 msgid "Ask whoever manages this application if you need access."
 msgstr "Si necesitas acceso, pídelo a quien gestiona esta aplicación."
+
+msgid "Available"
+msgstr "Disponible"
 
 msgid "Back to the start"
 msgstr "Volver al inicio"
@@ -35,26 +44,70 @@ msgstr "Comprueba la dirección o vuelve al inicio."
 msgid "Dark"
 msgstr "Oscuro"
 
+msgid "Data display"
+msgstr "Mostrar datos"
+
+msgid "Data input"
+msgstr "Entrada de datos"
+
+msgid "Decorative"
+msgstr "Decorativo"
+
 msgid "Done"
 msgstr "Hecho"
 
 msgid "Error"
 msgstr "Error"
 
+msgid "Feedback"
+msgstr "Avisos"
+
+msgid "Has problems"
+msgstr "Con problemas"
+
 msgid "Information"
 msgstr "Información"
+
+msgid "It changes the theme without saving it. The user menu does this properly."
+msgstr "Cambia el tema sin guardarlo. El menú de usuario lo hace correctamente."
 
 msgid "It is not your fault. Try again in a moment."
 msgstr "No es culpa tuya. Vuelve a intentarlo en un momento."
 
+msgid ""
+"It only styles a calendar library, which is not included. Use a date "
+"field."
+msgstr ""
+"Solo da estilo a una biblioteca de calendario, que no está incluida. Usa "
+"un campo de fecha."
+
+msgid ""
+"Its button is a label, which a keyboard cannot reach: WCAG 2.1.1. The "
+"shell uses a popover instead."
+msgstr ""
+"Su botón es una etiqueta, que no se alcanza con el teclado: WCAG 2.1.1. "
+"El armazón usa en su lugar un panel emergente."
+
 msgid "Language"
 msgstr "Idioma"
+
+msgid "Layout"
+msgstr "Estructura"
 
 msgid "Light"
 msgstr "Claro"
 
 msgid "Main"
 msgstr "Principal"
+
+msgid "Mockups"
+msgstr "Maquetas"
+
+msgid "Moves on its own and only a pointer can pause it: WCAG 2.2.2."
+msgstr "Se mueve solo y solo un puntero puede pausarlo: WCAG 2.2.2."
+
+msgid "Navigation"
+msgstr "Navegación"
 
 msgid "Open menu"
 msgstr "Abrir el menú"

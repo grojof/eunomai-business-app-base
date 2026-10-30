@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "ui/macros.html" import page_heading, message, empty_state, card, stat %}
+{% from "ui/macros.html" import page_heading, button, message, empty_state, card, stat %}
 {% block title %}{{ _("Component catalogue") }}{% endblock %}
 {% block content %}
 {{ page_heading(_("Component catalogue"), _("Every component in every state.")) }}
@@ -13,8 +13,12 @@
 
 {% call card(_("Buttons"), "buttons") %}
 <p class="flex flex-wrap gap-2">
-  <button class="btn btn-primary" type="button">{{ _("Save") }}</button>
-  <button class="btn" type="button">{{ _("Cancel") }}</button>
+  {{ button(_("Save"), "primary") }}
+  {{ button(_("Cancel")) }}
+  {{ button(_("Details"), "ghost") }}
+  {{ button(_("Delete"), "danger") }}
+  {{ button(_("Save"), small=true) }}
+  {{ button(_("Save"), attributes={"disabled": true}) }}
 </p>
 {% endcall %}
 

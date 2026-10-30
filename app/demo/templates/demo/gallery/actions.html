@@ -1,0 +1,53 @@
+{% from "demo/gallery/macros.html" import specimen %}
+{% from "ui/macros.html" import icon %}
+{% call specimen(c["button"], statuses) %}
+<button class="btn" type="button">{{ _("Action") }}</button>
+<button class="btn btn-primary" type="button">{{ _("Action") }}</button>
+<button class="btn btn-outline" type="button">{{ _("Action") }}</button>
+<button class="btn btn-ghost" type="button">{{ _("Action") }}</button>
+<button class="btn btn-error" type="button">{{ _("Action") }}</button>
+<button class="btn btn-sm" type="button">{{ _("Action") }}</button>
+<button class="btn" type="button" disabled>{{ _("Action") }}</button>
+{% endcall %}
+
+{% call specimen(c["dropdown"], statuses) %}
+<details class="dropdown" data-menu>
+  <summary class="btn">{{ _("Open") }}</summary>
+  <ul class="menu dropdown-content z-10 w-48 rounded-box border border-base-300 bg-base-100 p-2 shadow-sm">
+    <li><a href="#dropdown">{{ _("Option one") }}</a></li>
+    <li><a href="#dropdown">{{ _("Option two") }}</a></li>
+  </ul>
+</details>
+{% endcall %}
+
+{% call specimen(c["fab"], statuses) %}
+<div class="fab static">
+  <button class="btn btn-lg btn-circle btn-primary" type="button" aria-label="{{ _('Action') }}">{{ icon("menu") }}</button>
+</div>
+{% endcall %}
+
+{% call specimen(c["modal"], statuses) %}
+<button class="btn" type="button" data-dialog="sample-dialog">{{ _("Open") }}</button>
+<dialog id="sample-dialog" class="modal" aria-labelledby="sample-dialog-title">
+  <div class="modal-box">
+    <h3 id="sample-dialog-title" class="text-lg font-semibold">{{ _("Title") }}</h3>
+    <p class="py-4">{{ _("A short description.") }}</p>
+    <form method="dialog" class="modal-action"><button class="btn">{{ _("Close") }}</button></form>
+  </div>
+</dialog>
+{% endcall %}
+
+{% call specimen(c["swap"], statuses) %}
+<label class="swap">
+  <input type="checkbox" aria-label="{{ _('Theme') }}">
+  <span class="swap-on">{{ icon("sun") }}</span>
+  <span class="swap-off">{{ icon("moon") }}</span>
+</label>
+{% endcall %}
+
+{% call specimen(c["theme-controller"], statuses) %}
+<label class="flex items-center gap-2">
+  <input type="checkbox" value="dark" class="toggle theme-controller">
+  {{ _("Dark") }}
+</label>
+{% endcall %}

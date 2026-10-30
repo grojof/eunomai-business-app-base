@@ -3,7 +3,7 @@
 import pytest
 
 from app.core.i18n import PSEUDO
-from tests.helpers import overflows_sideways, run_axe
+from tests.helpers import focus_order, overflows_sideways, run_axe
 
 pytestmark = pytest.mark.browser
 PAGES = ["/", "/missing"]
@@ -48,6 +48,20 @@ def test_every_control_is_reached_by_keyboard_with_visible_focus(open_page):
         if page.evaluate("document.activeElement.id") != "main":
             assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") != "none"
     assert reached >= expected
+
+
+@pytest.mark.rule("A11Y-04")
+def test_the_scroll_padding_clears_the_sticky_header(open_page):
+    page = open_page("/")
+    padding = page.evaluate("parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)")
+    assert padding >= page.evaluate("document.querySelector('body header').getBoundingClientRect().height")
+
+
+@pytest.mark.rule("A11Y-02")
+def test_focus_follows_the_order_of_the_page(open_page):
+    expected, reached = focus_order(open_page("/"))
+    assert len(expected) > 1
+    assert reached == expected
 
 
 @pytest.mark.rule("A11Y-12")

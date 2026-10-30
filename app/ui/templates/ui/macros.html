@@ -12,9 +12,17 @@
 </header>
 {% endmacro %}
 
+{% macro button(text, kind="default", type="button", small=false, attributes={}, loading="") %}
+{% set classes = {"default": "", "primary": "btn-primary", "ghost": "btn-ghost", "danger": "btn-error"} %}
+<button class="btn {{ classes[kind] }}{{ ' btn-sm' if small else '' }}" type="{{ type }}"{{ attributes|xmlattr }}>
+  {{- text -}}
+  {%- if loading %} <span class="htmx-indicator">{{ loading }}</span>{% endif -%}
+</button>
+{% endmacro %}
+
 {% macro message(kind, text) %}
 {% set classes = {"info": "alert-info", "success": "alert-success", "warning": "alert-warning", "danger": "alert-error"} %}
-<div class="alert {{ classes[kind] }}"{% if kind == "danger" %} role="alert"{% endif %}>
+<div class="alert alert-soft {{ classes[kind] }}"{% if kind == "danger" %} role="alert"{% endif %}>
   <p><strong>{{ {"info": _("Information"), "success": _("Done"), "warning": _("Warning"), "danger": _("Error")}[kind] }}:</strong> {{ text }}</p>
 </div>
 {% endmacro %}

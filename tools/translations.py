@@ -31,14 +31,26 @@ class Domain:
 DOMAINS = [
     Domain(
         ROOT / "locales",
-        ((ROOT / "app" / "core", "**.py", PYTHON), (ROOT / "app" / "ui" / "templates", "**.html", TEMPLATES)),
+        (
+            (ROOT / "app" / "core", "**.py", PYTHON),
+            (ROOT / "app" / "ui", "catalog.py", PYTHON),
+            (ROOT / "app" / "ui" / "templates", "**.html", TEMPLATES),
+        ),
     ),
     Domain(
         ROOT / "app" / "demo" / "locales",
         ((ROOT / "app" / "demo", "**.py", PYTHON), (ROOT / "app" / "demo" / "templates", "**.html", TEMPLATES)),
     ),
 ]
-REQUIRED = ["es", "ca"]
+LOCALES = ROOT / "locales"
+
+
+def languages_in(folder: Path) -> list[str]:
+    """A language is required once its folder exists. The source language has none: its texts are the code."""
+    return sorted(path.name for path in folder.iterdir() if path.is_dir())
+
+
+REQUIRED = languages_in(LOCALES)
 
 
 def extract(domain: Domain) -> Catalog:

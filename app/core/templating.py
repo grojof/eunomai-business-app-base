@@ -90,7 +90,7 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
         theme=getattr(request.state, "theme", "system"),
         layout=layout_for(request),
         person=person,
-        navigation=[item for item in state.navigation if item.role is None or item.role in roles],
+        navigation=[item for item in state.navigation if person and (item.role is None or item.role in roles)],
         current_path=request.url.path,
         here=request.url.path + query,
         vendor_scripts=_VENDOR_SCRIPTS,

@@ -5,12 +5,13 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import Response
 
 from app.core.i18n import N_, _
 from app.core.identity import Person, require_role
 from app.core.templating import NavigationItem, add_templates, render
+from app.ui.catalog import CATEGORIES, STATUSES, components
 
 HERE = Path(__file__).resolve().parent
 
@@ -49,6 +50,23 @@ async def layouts(request: Request) -> Response:
     return render(request, "demo/layouts.html", options=options)
 
 
+async def gallery(request: Request) -> Response:
+    every = components().values()
+    legend = [
+        (_(label), badge, sum(1 for component in every if component.status == status))
+        for status, (label, badge) in STATUSES.items()
+    ]
+    categories = [(slug, _(title), len(group)) for slug, (title, group) in CATEGORIES.items()]
+    return render(request, "demo/gallery/index.html", legend=legend, categories=categories)
+
+
+async def gallery_category(request: Request, slug: str) -> Response:
+    if slug not in CATEGORIES:
+        raise HTTPException(status_code=404)
+    title = _(CATEGORIES[slug][0])
+    return render(request, "demo/gallery/category.html", slug=slug, title=title, c=components(), statuses=STATUSES)
+
+
 async def administration(request: Request, person: Annotated[Person, Depends(require_role("admin"))]) -> Response:
     return render(request, "demo/administration.html", roles=sorted(person.roles))
 
@@ -58,6 +76,7 @@ def install(application: FastAPI) -> None:
     application.state.languages.add_folder(HERE / "locales")
     application.state.navigation += [
         NavigationItem(N_("Dashboard"), "/", "layout-dashboard"),
+        NavigationItem(N_("Gallery"), "/gallery", "layout-grid"),
         NavigationItem(N_("Component catalogue"), "/catalogue", "component"),
         NavigationItem(N_("Layouts"), "/layouts", "layout-panel-left"),
         NavigationItem(N_("Administration"), "/administration", "shield", role="admin"),
@@ -65,6 +84,8 @@ def install(application: FastAPI) -> None:
     application.state.layout_preview = True
     application.add_api_route("/", dashboard, include_in_schema=False)
     application.add_api_route("/layouts", layouts, include_in_schema=False)
+    application.add_api_route("/gallery", gallery, include_in_schema=False)
+    application.add_api_route("/gallery/{slug}", gallery_category, include_in_schema=False)
     application.add_api_route("/inspections", inspections, include_in_schema=False)
     application.add_api_route("/catalogue", catalogue, include_in_schema=False)
     application.add_api_route("/administration", administration, include_in_schema=False)

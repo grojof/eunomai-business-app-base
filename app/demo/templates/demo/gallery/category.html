@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{{ page_heading(title) }}
+<p><a class="link" href="/gallery">{{ _("Back to the gallery") }}</a></p>
+<div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+  {% include "demo/gallery/" ~ slug ~ ".html" %}
+</div>
+{% endblock %}

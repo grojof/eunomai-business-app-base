@@ -1,4 +1,8 @@
+import os
 import re
+import shutil
+import subprocess
+import sys
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
@@ -6,6 +10,18 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent.parent
 TEXT_ATTRIBUTES = ("aria-label", "title", "placeholder", "alt", "data-announce")
 WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
+NOT_OURS = {".git", ".venv", ".cache", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
+ANIMATIONS_FINISHED = """Promise.allSettled(
+    document.getAnimations()
+        .filter((animation) => animation.effect.getComputedTiming().iterations !== Infinity)
+        .map((animation) => animation.finished)
+).then(() => null)"""
+"""Text still fading in fails the contrast scan: what is measured must be what stays on the page."""
+VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
+FOCUSABLE = (
+    "a[href], summary, select:not([disabled]), textarea:not([disabled]), button:not([disabled]), "
+    'input:not([disabled]):not([type="hidden"]), [tabindex]:not([tabindex="-1"])'
+)
 
 
 class _Texts(HTMLParser):
@@ -15,12 +31,12 @@ class _Texts(HTMLParser):
         self._skip = 0
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag in ("script", "style") or (tag == "button" and dict(attrs).get("lang")):
+        if tag in ("script", "style", "code", "kbd") or (tag == "button" and dict(attrs).get("lang")):
             self._skip += 1
         self.texts += [value for name, value in attrs if name in TEXT_ATTRIBUTES and value]
 
     def handle_endtag(self, tag: str) -> None:
-        if tag in ("script", "style") or (tag == "button" and self._skip):
+        if tag in ("script", "style", "code", "kbd") or (tag == "button" and self._skip):
             self._skip = max(0, self._skip - 1)
 
     def handle_data(self, data: str) -> None:
@@ -42,14 +58,104 @@ def untranslated(html: str, allowed: tuple[str, ...]) -> list[str]:
     return found
 
 
-def run_axe(page: Any) -> list[str]:
+def run_axe(page: Any, exclude: str | None = None) -> list[str]:
     """Runs the accessibility scan on the open page and returns each failure, with where it is."""
+    page.evaluate(ANIMATIONS_FINISHED)
     page.add_script_tag(path=str(ROOT / "tests" / "vendor" / "axe.min.js"))
+    context = {"exclude": [[exclude]]} if exclude else {"exclude": []}
     result = page.evaluate(
-        "tags => axe.run(document, {runOnly: {type: 'tag', values: tags}})",
-        WCAG_TAGS,
+        "([tags, context]) => axe.run(context, {runOnly: {type: 'tag', values: tags}})",
+        [WCAG_TAGS, context],
     )
     return [f"{v['id']}: {node['target']}" for v in result["violations"] for node in v["nodes"]]
+
+
+class _Specimens(HTMLParser):
+    """What each gallery specimen really contains: its elements and its text."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.contents: dict[str, str] = {}
+        self._name = ""
+        self._depth = 0
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = dict(attrs)
+        if tag == "section" and "data-status" in values:
+            self._name = values.get("id") or ""
+        if self._depth:
+            self.contents[self._name] += f"<{tag}>"
+            self._depth += tag not in VOID_TAGS
+        elif "data-specimen" in values:
+            self.contents[self._name] = ""
+            self._depth = 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if self._depth and tag not in VOID_TAGS:
+            self._depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if self._depth:
+            self.contents[self._name] += data.strip()
+
+
+def specimen_contents(html: str) -> dict[str, str]:
+    parser = _Specimens()
+    parser.feed(html)
+    return parser.contents
+
+
+def focus_order(page: Any) -> tuple[list[str], list[str]]:
+    """The visible controls in the order of the page, and the order the Tab key really visits them."""
+    expected: list[str] = page.evaluate(
+        """(selector) => [...document.querySelectorAll(selector)]
+            .filter((element) => element.checkVisibility({visibilityProperty: true}))
+            .map((element, position) => (element.dataset.order = String(position)))""",
+        FOCUSABLE,
+    )
+    reached = []
+    for _ in expected:
+        page.keyboard.press("Tab")
+        reached.append(str(page.evaluate("document.activeElement.dataset.order")))
+    return expected, reached
+
+
+def _link_or_copy(source: str, target: str) -> None:
+    try:
+        os.link(source, target)
+    except OSError:
+        shutil.copy2(source, target)
+
+
+def repository_copy(target: Path) -> Path:
+    """A copy to change freely. The stylesheet's executable is linked: it weighs 100 megabytes and is only read."""
+    shutil.copytree(ROOT, target, ignore=shutil.ignore_patterns(*NOT_OURS, ".env"))
+    if (ROOT / ".cache").exists():
+        shutil.copytree(ROOT / ".cache", target / ".cache", copy_function=_link_or_copy)
+    return target
+
+
+def run_in(folder: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
+    """Runs Python there, as a person would, with the marker that stops the copy from copying itself."""
+    return subprocess.run(
+        [sys.executable, *arguments],
+        cwd=folder,
+        env=os.environ | {"BASE_WITHOUT_DEMO": "1"},
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+
+
+def repository_text_files() -> list[Path]:
+    """Every file git tracks or would track; in a copy without git, every file that is ours."""
+    if (ROOT / ".git").exists():
+        listing = ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"]
+        names = subprocess.run(listing, cwd=ROOT, check=True, capture_output=True, text=True, encoding="utf-8")
+        files = [ROOT / name for name in names.stdout.split("\0") if name]
+    else:
+        files = [path for path in ROOT.rglob("*") if not NOT_OURS & set(path.relative_to(ROOT).parts)]
+    return [path for path in files if path.is_file() and b"\0" not in path.read_bytes()[:8000]]
 
 
 def overflows_sideways(page: Any) -> bool:

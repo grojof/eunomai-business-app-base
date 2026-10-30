@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     # Languages: the first one the person accepts wins; `default_language` is the last resort.
     default_language: str = "en"
     languages: list[str] = ["en", "es", "ca"]
-    time_zone: str = "Europe/Madrid"
+    time_zone: str = "UTC"
 
     # How the application is arranged. See docs/specification.md#layouts
     layout_navigation: Literal["side", "compact", "top", "hidden"] = "side"
@@ -24,7 +24,8 @@ class Settings(BaseSettings):
     layout_width: Literal["full", "centered"] = "full"
     layout_density: Literal["normal", "compact"] = "normal"
 
-    # Identity: who is allowed to send these headers, and what they are called.
+    # Identity: who is allowed to send these headers, and what they are called. Uvicorn must run with
+    # --no-proxy-headers: otherwise X-Forwarded-For replaces the proxy's address, and nobody is believed.
     trusted_proxies: list[str] = ["127.0.0.1", "::1"]
     header_username: str = "X-Remote-User"
     header_name: str = "X-Remote-Name"
