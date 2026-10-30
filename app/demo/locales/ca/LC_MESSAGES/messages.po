@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 18:56+0100\n"
+"POT-Creation-Date: 2026-10-30 20:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -44,15 +44,23 @@ msgstr "Botons"
 msgid "Cancel"
 msgstr "Cancel·la"
 
+msgid "Centred"
+msgstr "Centrat"
+
+msgid "Compact"
+msgstr "Compacta"
+
 msgid "Component catalogue"
 msgstr "Catàleg de components"
 
-#, python-format
-msgid "Cost to date: %(cost)s"
-msgstr "Cost fins avui: %(cost)s"
+msgid "Cost to date"
+msgstr "Cost fins avui"
 
 msgid "Dashboard"
 msgstr "Tauler"
+
+msgid "Density"
+msgstr "Densitat"
 
 msgid "Empty state"
 msgstr "Estat buit"
@@ -60,12 +68,29 @@ msgstr "Estat buit"
 msgid "Every component in every state."
 msgstr "Cada component en cada estat."
 
-#, python-format
-msgid "Hours worked: %(hours)s"
-msgstr "Hores treballades: %(hours)s"
+msgid "Fixed header"
+msgstr "Capçalera fixa"
+
+msgid "Full"
+msgstr "Complet"
+
+msgid "Hidden"
+msgstr "Oculta"
+
+msgid "Hours worked"
+msgstr "Hores treballades"
+
+msgid "Icons only"
+msgstr "Només icones"
+
+msgid "Indicators"
+msgstr "Indicadors"
 
 msgid "Inspections"
 msgstr "Inspeccions"
+
+msgid "Layouts"
+msgstr "Disposicions"
 
 msgid "Loading"
 msgstr "S'està carregant"
@@ -73,21 +98,35 @@ msgstr "S'està carregant"
 msgid "Messages"
 msgstr "Missatges"
 
-#, python-format
-msgid "Next inspection: %(date)s"
-msgstr "Propera inspecció: %(date)s"
+msgid "Navigation"
+msgstr "Navegació"
+
+msgid "Next inspection"
+msgstr "Propera inspecció"
+
+msgid "No"
+msgstr "No"
 
 msgid "No work orders yet"
 msgstr "Encara no hi ha ordres de treball"
 
+msgid "Normal"
+msgstr "Normal"
+
 msgid "Only people with the administrator role can open this page."
 msgstr "Només poden obrir aquesta pàgina les persones amb el rol d'administrador."
+
+msgid "Open work orders"
+msgstr "Ordres de treball obertes"
 
 msgid "Save"
 msgstr "Desa"
 
 msgid "Show inspections"
 msgstr "Mostra les inspeccions"
+
+msgid "Side"
+msgstr "Lateral"
 
 msgid "Summary"
 msgstr "Resum"
@@ -101,12 +140,24 @@ msgstr "L'ordre de treball s'ha desat."
 msgid "This equipment is due for inspection."
 msgstr "Aquest equip ha de passar la inspecció."
 
+msgid "Top"
+msgstr "Superior"
+
+msgid "Try each arrangement. An application fixes its own in its settings."
+msgstr "Prova cada disposició. Cada aplicació fixa la seva als ajustos."
+
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualitzat: %(moment)s"
 
+msgid "Width"
+msgstr "Amplada"
+
 msgid "Work orders appear here when someone creates one."
 msgstr "Les ordres de treball apareixen aquí quan algú en crea una."
+
+msgid "Yes"
+msgstr "Sí"
 
 msgid "Your changes are saved as you type."
 msgstr "Els canvis es desen mentre escrius."

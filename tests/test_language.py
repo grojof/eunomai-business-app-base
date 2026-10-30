@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
@@ -13,7 +14,7 @@ from tests.conftest import build_settings
 from tests.helpers import ROOT, untranslated
 from tools import translations
 
-ALLOWED = ("Business App", "Demo Person")
+ALLOWED = ("Business App", "Demo Person", "Mar 15, 2027")
 
 
 def activate(language: str) -> None:
@@ -251,4 +252,11 @@ def test_a_regional_language_uses_a_valid_tag(person):
     client.cookies.set("language", "pt_BR")
     html = client.get("/", headers=person).text
     assert '<html lang="pt-BR"' in html
-    assert 'value="pt_BR" lang="pt-BR"' in html
+    assert re.search(r'value="pt_BR"\s+lang="pt-BR"', html)
+
+
+@pytest.mark.rule("LANG-08")
+@pytest.mark.parametrize("value", [0, 3, 1250, Decimal("0"), Decimal("0.5"), Decimal("1E+3"), Decimal("-7")])
+def test_small_and_whole_numbers_format_without_error(value):
+    activate("es")
+    assert formatters.parse_decimal(formatters.format_decimal(value)) == Decimal(value)

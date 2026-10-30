@@ -1,0 +1,24 @@
+{#- The application's navigation. `layout.navigation`: side, compact (icons only), top, or hidden (opened from the button). -#}
+{% from "ui/macros.html" import icon %}
+{% set compact = layout.navigation == "compact" %}
+{% set top = layout.navigation == "top" %}
+{% set shown = "" if layout.navigation == "hidden" else ("lg:block lg:static lg:h-auto lg:w-auto lg:border-0 lg:bg-transparent lg:p-0" if top else "lg:sticky lg:top-0 lg:block lg:shrink-0") %}
+<nav id="navigation" popover="auto" aria-label="{{ _('Main') }}"
+     class="fixed inset-y-0 start-0 m-0 h-dvh {{ 'lg:w-16 w-64' if compact else 'w-64' }} overflow-y-auto border-0 border-e border-base-300 bg-base-100 p-3 text-base-content {{ shown }}">
+  {% if not top %}
+  <a class="mb-4 flex items-center gap-2 px-2 py-1 font-semibold" href="/">
+    <img class="size-8" src="/static/brand/logo.svg" alt="">
+    <span{% if compact %} class="lg:sr-only"{% endif %}>{{ app_name }}</span>
+  </a>
+  {% endif %}
+  <ul class="menu w-full gap-1 p-0{% if top %} lg:menu-horizontal{% endif %}">
+    {% for item in navigation %}
+    <li>
+      <a href="{{ item.path }}"{% if item.path == current_path %} class="menu-active" aria-current="page"{% endif %}>
+        {{ icon(item.icon) }}
+        <span{% if compact %} class="lg:sr-only"{% endif %}>{{ _(item.label) }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</nav>

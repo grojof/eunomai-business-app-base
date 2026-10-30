@@ -48,13 +48,22 @@ def test_every_check_is_automatic_manual_or_planned():
         assert re.fullmatch(r"Automatic|By hand|Milestone \d", row["check"]), row["id"]
 
 
-def test_components_use_only_the_brand_variables():
-    css = (ROOT / "app" / "ui" / "static" / "ui.css").read_text(encoding="utf-8")
-    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
-    css = re.sub(r"@media[^{]+\{", "{", css)
-    assert re.findall(r"#[0-9a-fA-F]{3,8}\b|\b(?:rgb|hsl|oklch|oklab)a?\(", css) == []
-    sizes = re.findall(r"(?<![\w.-])\d*\.?\d+(?:px|rem|em)\b", css)
-    assert set(sizes) <= {"1px"}, "1px is only for hiding text from sight"
+def test_templates_use_no_invented_colours_or_sizes():
+    for template in (ROOT / "app").rglob("*.html"):
+        found = re.findall(r"[\w:-]+-\[[^\]]*\]", template.read_text(encoding="utf-8"))
+        assert found == [], template
+
+
+def test_colours_live_only_in_the_brand():
+    for source in (ROOT / "app" / "ui" / "styles").rglob("*.css"):
+        assert re.findall(r"#[0-9a-fA-F]{3,8}\b|\b(?:rgb|hsl|oklch)a?\(", source.read_text(encoding="utf-8")) == []
+
+
+def test_tailwinds_own_palette_does_not_exist():
+    css = (ROOT / "app" / "ui" / "styles" / "app.css").read_text(encoding="utf-8")
+    assert "--color-*: initial" in css
+    built = (ROOT / "app" / "ui" / "static" / "app.css").read_text(encoding="utf-8")
+    assert "--color-blue-500" not in built
 
 
 def test_no_page_loads_anything_from_another_server():

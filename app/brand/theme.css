@@ -1,0 +1,75 @@
+/* The brand: the only file an organization must change. daisyUI's theme generator (https://daisyui.com/theme-generator/)
+   writes these same variables: choose your colours there and paste them here. Then run tools/css.py.
+   Text and controls must keep the contrast in docs/standards.md: the tests measure it in both themes. */
+
+@plugin "../../tools/tailwind/daisyui-theme.mjs" {
+  name: "light";
+  default: true;
+  color-scheme: light;
+
+  --color-base-100: #ffffff;
+  --color-base-200: #f4f6f9;
+  --color-base-300: #e2e6ec;
+  --color-base-content: #1b1f27;
+  --color-primary: #2d5fa8;
+  --color-primary-content: #ffffff;
+  --color-secondary: #4f5a69;
+  --color-secondary-content: #ffffff;
+  --color-accent: #a85510;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1f2937;
+  --color-neutral-content: #f4f6f9;
+  --color-info: #cfe2fb;
+  --color-info-content: #17406f;
+  --color-success: #c7ecd6;
+  --color-success-content: #17542f;
+  --color-warning: #fbe3ad;
+  --color-warning-content: #5c3d00;
+  --color-error: #fbd0cb;
+  --color-error-content: #8a1c12;
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "../../tools/tailwind/daisyui-theme.mjs" {
+  name: "dark";
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: #1e2127;
+  --color-base-200: #14161a;
+  --color-base-300: #333842;
+  --color-base-content: #eceef2;
+  --color-primary: #8db4f5;
+  --color-primary-content: #10141b;
+  --color-secondary: #b4bcc8;
+  --color-secondary-content: #10141b;
+  --color-accent: #f0a55a;
+  --color-accent-content: #10141b;
+  --color-neutral: #333842;
+  --color-neutral-content: #eceef2;
+  --color-info: #1b2d45;
+  --color-info-content: #cfe2fb;
+  --color-success: #17352a;
+  --color-success-content: #c7ecd6;
+  --color-warning: #3d2f12;
+  --color-warning-content: #fbe3ad;
+  --color-error: #47201d;
+  --color-error-content: #fbd0cb;
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}

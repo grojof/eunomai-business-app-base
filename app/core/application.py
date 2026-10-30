@@ -14,7 +14,7 @@ from starlette.exceptions import HTTPException
 from app.core import identity
 from app.core.i18n import Languages, _
 from app.core.settings import Settings
-from app.core.templating import UI, render
+from app.core.templating import LAYOUTS, UI, render
 
 logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -27,7 +27,7 @@ CONTENT_SECURITY_POLICY = "; ".join(
         "default-src 'none'",
         "script-src 'self'",
         "style-src 'self'",
-        "img-src 'self'",
+        "img-src 'self' data:",
         "font-src 'self'",
         "connect-src 'self'",
         "form-action 'self'",
@@ -104,6 +104,10 @@ async def _save_preferences(
     language: Annotated[str, Form()] = "",
     theme: Annotated[str, Form()] = "",
     next_path: Annotated[str, Form(alias="next")] = "/",
+    layout_navigation: Annotated[str, Form()] = "",
+    layout_sticky_header: Annotated[str, Form()] = "",
+    layout_width: Annotated[str, Form()] = "",
+    layout_density: Annotated[str, Form()] = "",
 ) -> Response:
     response = RedirectResponse(_safe_path(next_path), status_code=303)
     secure = request.app.state.settings.environment == "production"
@@ -112,6 +116,16 @@ async def _save_preferences(
         response.set_cookie("language", language, **options)
     if theme in THEMES:
         response.set_cookie("theme", theme, **options)
+    if request.app.state.layout_preview:
+        chosen = {
+            "navigation": layout_navigation,
+            "sticky_header": layout_sticky_header,
+            "width": layout_width,
+            "density": layout_density,
+        }
+        for field, value in chosen.items():
+            if value in LAYOUTS[field]:
+                response.set_cookie(f"layout_{field}", value, **options)
     return response
 
 
@@ -123,6 +137,7 @@ def create_core(settings: Settings) -> FastAPI:
     application = FastAPI(title=settings.name, docs_url=None, redoc_url=None, openapi_url=None)
     application.state.settings = settings
     application.state.navigation = []
+    application.state.layout_preview = False
     application.state.languages = Languages(
         settings.languages, settings.default_language, allow_pseudo=settings.environment == "development"
     )

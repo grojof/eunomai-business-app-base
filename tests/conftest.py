@@ -67,7 +67,12 @@ def open_page(browser: Any, base_url: str) -> Iterator[Callable[..., Any]]:
     contexts = []
 
     def opener(
-        path: str, theme: str = "light", language: str = "en", width: int = 1280, bypass_csp: bool = False
+        path: str,
+        theme: str = "light",
+        language: str = "en",
+        width: int = 1280,
+        bypass_csp: bool = False,
+        layout: dict[str, str] | None = None,
     ) -> Any:
         context = browser.new_context(viewport={"width": width, "height": 800}, bypass_csp=bypass_csp)
         contexts.append(context)
@@ -75,6 +80,7 @@ def open_page(browser: Any, base_url: str) -> Iterator[Callable[..., Any]]:
             [
                 {"name": "theme", "value": theme, "url": base_url},
                 {"name": "language", "value": language, "url": base_url},
+                *({"name": f"layout_{k}", "value": v, "url": base_url} for k, v in (layout or {}).items()),
             ]
         )
         page = context.new_page()

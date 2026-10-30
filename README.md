@@ -20,8 +20,8 @@ flowchart LR
     class a,c step
 ```
 
-> **Status:** milestone 1: one screen with identity, languages, themes and every check running. The rest is in the
-> [milestones](docs/specification.md#milestones).
+> **Status:** milestone 1: the application's shell with its layouts, identity, languages, themes and every check
+> running. The rest is in the [milestones](docs/specification.md#milestones).
 
 ## Try it
 

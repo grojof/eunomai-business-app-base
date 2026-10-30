@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 18:56+0100\n"
+"POT-Creation-Date: 2026-10-30 20:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -28,12 +28,6 @@ msgstr "Si necesitas acceso, pídelo a quien gestiona esta aplicación."
 
 msgid "Back to the start"
 msgstr "Volver al inicio"
-
-msgid "Change language"
-msgstr "Cambiar idioma"
-
-msgid "Change theme"
-msgstr "Cambiar tema"
 
 msgid "Check the address, or go back to the start."
 msgstr "Comprueba la dirección o vuelve al inicio."
@@ -62,8 +56,14 @@ msgstr "Claro"
 msgid "Main"
 msgstr "Principal"
 
+msgid "Open menu"
+msgstr "Abrir el menú"
+
 msgid "Page not found"
 msgstr "Página no encontrada"
+
+msgid "Preferences"
+msgstr "Preferencias"
 
 msgid "Sign-in required"
 msgstr "Hay que iniciar sesión"

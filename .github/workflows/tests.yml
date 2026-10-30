@@ -29,5 +29,6 @@ jobs:
       - run: uv run --frozen ruff format --check
       - run: uv run --frozen mypy
       - run: uv run --frozen python tools/vendor.py check
+      - run: uv run --frozen python tools/css.py check
       - run: uv run --frozen python tools/translations.py check
       - run: uv run --frozen pytest -q

@@ -1,0 +1,39 @@
+{#- Who is signed in, with their preferences one click away. It works without JavaScript; app.js adds Escape. -#}
+{% from "ui/macros.html" import icon %}
+<details class="dropdown dropdown-end" data-menu>
+  <summary class="btn btn-ghost">
+    {{ icon("circle-user") }}
+    <span class="hidden sm:inline">{% if person %}{{ person.name }}{% else %}{{ _("Preferences") }}{% endif %}</span>
+    <span class="sr-only sm:hidden">{{ _("Preferences") }}</span>
+  </summary>
+  <div class="dropdown-content z-30 mt-2 w-72 space-y-4 rounded-box border border-base-300 bg-base-100 p-4 shadow-lg">
+    {% if person %}
+    <div>
+      <p class="font-semibold">{{ person.name }}</p>
+      {% if person.email %}<p class="text-sm">{{ person.email }}</p>{% endif %}
+    </div>
+    {% endif %}
+    <form method="post" action="/preferences" class="space-y-4">
+      <input type="hidden" name="next" value="{{ here }}">
+      <fieldset class="space-y-1">
+        <legend class="text-sm font-semibold">{{ _("Language") }}</legend>
+        <div class="flex flex-wrap gap-1">
+          {% for code, label in languages %}
+          <button class="btn btn-sm {{ 'btn-primary' if code == language else 'btn-ghost' }}" type="submit" name="language" value="{{ code }}"
+                  lang="{{ code|replace('_', '-') }}" aria-pressed="{{ 'true' if code == language else 'false' }}">{{ label }}</button>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <fieldset class="space-y-1">
+        <legend class="text-sm font-semibold">{{ _("Theme") }}</legend>
+        <div class="flex flex-wrap gap-1">
+          {% for value, label, name in [("system", _("As the system"), "monitor"), ("light", _("Light"), "sun"), ("dark", _("Dark"), "moon")] %}
+          <button class="btn btn-sm {{ 'btn-primary' if value == theme else 'btn-ghost' }}" type="submit" name="theme" value="{{ value }}"
+                  aria-pressed="{{ 'true' if value == theme else 'false' }}">{{ icon(name, "size-4") }}{{ label }}</button>
+          {% endfor %}
+        </div>
+      </fieldset>
+    </form>
+    <p class="text-sm">{{ _("Version %(version)s", version=version) }}</p>
+  </div>
+</details>

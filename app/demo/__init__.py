@@ -8,7 +8,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import Response
 
-from app.core.i18n import N_
+from app.core.i18n import N_, _
 from app.core.identity import Person, require_role
 from app.core.templating import NavigationItem, add_templates, render
 
@@ -35,6 +35,20 @@ async def catalogue(request: Request) -> Response:
     return render(request, "demo/catalogue.html")
 
 
+async def layouts(request: Request) -> Response:
+    options = [
+        (
+            "navigation",
+            _("Navigation"),
+            [("side", _("Side")), ("compact", _("Icons only")), ("top", _("Top")), ("hidden", _("Hidden"))],
+        ),
+        ("sticky_header", _("Fixed header"), [("on", _("Yes")), ("off", _("No"))]),
+        ("width", _("Width"), [("full", _("Full")), ("centered", _("Centred"))]),
+        ("density", _("Density"), [("normal", _("Normal")), ("compact", _("Compact"))]),
+    ]
+    return render(request, "demo/layouts.html", options=options)
+
+
 async def administration(request: Request, person: Annotated[Person, Depends(require_role("admin"))]) -> Response:
     return render(request, "demo/administration.html", roles=sorted(person.roles))
 
@@ -43,11 +57,14 @@ def install(application: FastAPI) -> None:
     add_templates(HERE / "templates")
     application.state.languages.add_folder(HERE / "locales")
     application.state.navigation += [
-        NavigationItem(N_("Dashboard"), "/"),
-        NavigationItem(N_("Component catalogue"), "/catalogue"),
-        NavigationItem(N_("Administration"), "/administration", role="admin"),
+        NavigationItem(N_("Dashboard"), "/", "layout-dashboard"),
+        NavigationItem(N_("Component catalogue"), "/catalogue", "component"),
+        NavigationItem(N_("Layouts"), "/layouts", "layout-panel-left"),
+        NavigationItem(N_("Administration"), "/administration", "shield", role="admin"),
     ]
+    application.state.layout_preview = True
     application.add_api_route("/", dashboard, include_in_schema=False)
+    application.add_api_route("/layouts", layouts, include_in_schema=False)
     application.add_api_route("/inspections", inspections, include_in_schema=False)
     application.add_api_route("/catalogue", catalogue, include_in_schema=False)
     application.add_api_route("/administration", administration, include_in_schema=False)
