@@ -19,8 +19,6 @@ on anyone's opinion, an AI assistant's included. Tests name the rule they prove 
 | Accessibility | [WCAG 2.2](https://www.w3.org/TR/WCAG22/) | W3C Recommendation | Free |
 | Accessibility | [EN 301 549](https://www.etsi.org/deliver/etsi_en/301500_301599/301549/) | European standard for accessible ICT, published by ETSI | Free |
 | Accessibility | [ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) | W3C guidance for interactive patterns | Free |
-| Usability | [ISO 9241-110:2020](https://www.iso.org/standard/75258.html) | International standard: interaction principles | Paid |
-| Usability | [ISO 9241-210:2019](https://www.iso.org/standard/77520.html) | International standard: human-centred design process | Paid |
 | Usability | [GOV.UK Design System](https://design-system.service.gov.uk/) | Patterns researched with real users, by a government | Free; not a standard |
 | Usability | [Nielsen's 10 heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/) | The most cited usability reference | Free; not a standard |
 | Language | [W3C Internationalization](https://www.w3.org/International/techniques/authoring-html) | W3C guidance for authoring pages | Free |
@@ -32,10 +30,12 @@ on anyone's opinion, an AI assistant's included. Tests name the rule they prove 
 | Security | [CWE Top 25](https://cwe.mitre.org/top25/) | Most dangerous software weaknesses | Free |
 | Supply chain | [NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/final) and [SLSA](https://slsa.dev/spec/) | Secure development and build integrity | Free |
 
-**Reading the tables.** A rule cites the closest public source. *Project decision* means no source requires it: it is
-a choice of this repository, stated as such, and an organization may change it. Usability has no free, testable standard
-like WCAG: ISO 9241 is the official one, and its text is paid, so these rules cite the public references instead of
-quoting it.
+**Reading the tables.** A rule cites the public source it comes from. *Project decision* means no source requires it:
+it is a choice of this repository, stated as such, and an organization may change it.
+
+**Usability has no free, testable standard like WCAG.** The international standards exist,
+[ISO 9241-110](https://www.iso.org/standard/75258.html) and [ISO 9241-210](https://www.iso.org/standard/77520.html),
+but their text is sold, and **this repository does not use them**: nobody here has read them, and no rule rests on them.
 
 **Check** says how a rule is verified: *Automatic* (a test), *By hand* (in the pull request), or the milestone that
 brings it.

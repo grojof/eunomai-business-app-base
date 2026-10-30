@@ -34,7 +34,7 @@ related: [specification.md, standards.md]
 | Are ECharts' keyboard and screen-reader options enough? | Test it in milestone 2. The text summary and data table are required either way |
 | Which translation tool do translators use? | Files in git work for developers; decide if non-developers translate |
 | Does the dependency workflow run on other git servers? | It is written for GitHub Actions; test it on the first clone hosted elsewhere |
-| Should the usability rules be checked against the text of ISO 9241-110? | It is paid. Buying it allows citing it rule by rule; until then they cite public sources |
+| Is it worth buying ISO 9241-110 to compare the usability rules with it? | Not needed to work: no rule uses it. An organization that must show ISO conformance would buy it |
 | Which licence, when it goes public? | MIT or Apache 2.0. Without a licence, nobody may legally reuse it |
 | Do project skills load in every assistant? | Test before relying on them; the rules live in `AGENTS.md` and `docs/` |
 | Which fields does the registration file need? | Milestone 5, against a real platform |
