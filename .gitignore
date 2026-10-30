@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Compiled translations
+*.mo
+
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+
+# Clutter
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
