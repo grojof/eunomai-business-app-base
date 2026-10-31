@@ -556,7 +556,7 @@ still runs.
 | Language checks | See [Standards](standards.md#how-language-is-checked) |
 | Screens without JavaScript | A real browser with JavaScript off sorts, filters and pages the list, changes tab and reaches the editor |
 | Exports | Each file is unzipped and read as XML: order, rows, cell types, rounding and neutralised text |
-| Database tests | The [data rules](standards.md#data), the lists and the screens on generated rows: on SQLite on every system, and on PostgreSQL in the Ubuntu job, with `TEST_DATABASE_URL` set. Each test gets a schema of its own, so nothing in that database is touched. Windows runs SQLite alone: its runners have no service containers |
+| Database tests | The [data rules](standards.md#data), the lists and the screens on generated rows: on SQLite on every system, and on PostgreSQL in the Ubuntu job, with `TEST_DATABASE_URL` set. Each test gets a schema of its own, so nothing in that database is touched. A pull request runs Ubuntu alone, with both databases. A run started by hand adds Windows, on SQLite alone, because its runners have no service containers: start it before publishing, and after a change to paths or tools |
 | Rule tracing | Every rule has a source and a check. Tests are read from pytest's collection, so a comment or a string cannot pass as one, and no *Automatic* rule lacks its test |
 | Invented values | No invented colours or sizes in templates, including `[color:#ff0000]`, and Tailwind's palette removed |
 | Invented classes | Every class in use generates CSS, as [COMP-04](standards.md#components) says |

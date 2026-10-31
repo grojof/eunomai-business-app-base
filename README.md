@@ -57,6 +57,10 @@ run on it too if `TEST_DATABASE_URL` gives one. [Data](docs/specification.md#dat
 uv run --frozen alembic upgrade head
 ```
 
+On GitHub, a pull request runs the tests on Ubuntu, with SQLite and PostgreSQL. To run them on Windows too, start the
+workflow by hand: *Actions*, *Tests*, *Run workflow*, or `gh workflow run tests.yml --ref <branch>`. Do it before
+publishing, and after a change to paths or tools.
+
 To start an application of your own, clone this, then run `uv run --frozen python tools/remove_demo.py` and
 `uv run --frozen python tools/css.py`.
 

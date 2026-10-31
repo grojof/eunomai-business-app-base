@@ -12,11 +12,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
+        # Ubuntu on every pull request; Windows too when started by hand, as the Dependencies workflow does.
+        os: ${{ fromJSON(github.event_name == 'workflow_dispatch' && '["ubuntu-latest", "windows-latest"]' || '["ubuntu-latest"]') }}
+        include:  # adds to the Ubuntu run. Windows runners have no service containers: an empty image starts none
           - os: ubuntu-latest
             postgres: postgres:18.4@sha256:a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636
             test_database_url: postgresql+psycopg://postgres@localhost:5432/postgres
-          - os: windows-latest  # Windows runners have no service containers: an empty image starts none
     runs-on: ${{ matrix.os }}
     timeout-minutes: 25
     services:
