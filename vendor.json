@@ -7,12 +7,12 @@
     "sha384": "2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg"
   },
   "chart.js": {
-    "version": "4.6.1",
+    "version": "4.5.1",
     "file": "dist/chart.umd.min.js",
     "target": "app/ui/static/vendor/chart.umd.min.js",
     "script": true,
     "on_demand": true,
-    "sha384": "Emf5ZVIUiarAdhkgtqK+5/Z5qIvM6QoVrS+qAVtfyZVuD5lIHrac0me485+Antp0"
+    "sha384": "jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"
   },
   "axe-core": {
     "version": "4.14.0",

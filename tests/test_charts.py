@@ -2,6 +2,7 @@
 
 import json
 import re
+from datetime import UTC, datetime
 from decimal import Decimal
 
 import pytest
@@ -9,6 +10,7 @@ import pytest
 from app.core.charts import CHART_TYPES, Point, Series, chart_data, point_data
 from app.core.templating import environment
 from tests.helpers import ROOT
+from tools import vendor
 
 MACROS = environment.get_template("ui/macros.html").module
 DATA = chart_data(["Jan", "Feb"], [Series("Hours", [Decimal("1250.5"), 7])], "Month", places=1)
@@ -107,3 +109,19 @@ def test_the_script_has_no_colour_of_its_own():
     script = (ROOT / "app" / "ui" / "static" / "charts.js").read_text(encoding="utf-8")
     assert not re.search(r"#[0-9a-fA-F]{3,8}\b", script)
     assert "oklch" not in script.replace("use oklch", "")
+
+
+def test_the_library_in_the_repository_is_the_version_vendor_json_says():
+    entry = vendor.read_entries()["chart.js"]
+    assert f"Chart.js v{entry['version']}" in (ROOT / entry["target"]).read_text(encoding="utf-8")[:200]
+
+
+@pytest.mark.parametrize("name", ["chart.js", "htmx.org"])
+def test_the_copied_files_are_past_the_two_week_rule(name):
+    """The rule has no exceptions but a vulnerability fix. It asks the registry, so it needs a network."""
+    version = vendor.read_entries()[name]["version"]
+    try:
+        published = vendor.read_json(f"https://registry.npmjs.org/{name}")["time"][version]
+    except OSError:
+        pytest.skip("the registry cannot be reached")
+    assert datetime.now(UTC) - datetime.fromisoformat(published) >= vendor.WINDOW
