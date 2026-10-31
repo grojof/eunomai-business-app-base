@@ -140,7 +140,7 @@ def dashboard_figures(session: Session, zone: str) -> dict[str, Any]:
     return {
         "open_orders": session.scalar(select(func.count()).select_from(WorkOrder).where(open_orders)) or 0,
         "all_orders": session.scalar(select(func.count()).select_from(WorkOrder)) or 0,
-        "hours": total(session, WorkOrder.hours),
+        "hours": total(session, WorkOrder.hours, WorkOrder.status == "closed"),  # what is open is not worked yet
         "cost": total(session, WorkOrder.cost),
         "next_inspection": next_up[0].next_inspection,
         "next_equipment": next_up[0].name,

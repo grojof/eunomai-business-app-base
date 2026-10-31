@@ -139,3 +139,11 @@ def test_the_plan_comes_from_the_rows(filled):
     share = 100 * sum(row["status"] == "closed" for row in preventive) // len(preventive)
     html = filled.get("/").text
     assert re.search(rf'value="{share}" max="100" aria-label="Preventive plan"', html)
+
+
+def test_hours_worked_are_those_of_finished_work_and_planning_agrees(filled):
+    orders = [work_order_row(position) for position in range(200)]
+    worked = sum(row["hours"] for row in orders if row["status"] == "closed")
+    assert f"{worked:,.2f}" in filled.get("/").text
+    closed_group = filled.get("/planning?status=closed&group=status&size=100").text
+    assert re.search(rf"[\d,]+ orders, {re.escape(f'{worked:,.2f}')} hours", closed_group)
