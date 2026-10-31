@@ -11,7 +11,6 @@ in docs/specification.md#uploads.
 import logging
 import os
 import re
-import unicodedata
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -23,7 +22,7 @@ from fastapi.responses import FileResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from app.core.formatters import format_file_size
-from app.core.forms import Refused
+from app.core.forms import Refused, has_hidden_characters
 from app.core.i18n import _
 
 logger = logging.getLogger(__name__)
@@ -63,8 +62,7 @@ def _kinds_in_words() -> str:
 def _named_kind(name: str) -> FileKind:
     """What the name claims, once the name itself is safe. A browser sends a bare name, so a path is someone's doing."""
     unsafe = _NOT_IN_A_NAME & set(name) or ".." in name or len(name) > LONGEST_NAME
-    # Category C holds control characters and the invisible ones that turn `gnp.exe` around on screen.
-    if unsafe or any(unicodedata.category(character).startswith("C") for character in name):
+    if unsafe or has_hidden_characters(name):
         raise Refused(_("Rename the file: its name cannot have a path or special characters."))
     stem, _dot, extension = name.rpartition(".")
     if "." in stem:
@@ -72,6 +70,8 @@ def _named_kind(name: str) -> FileKind:
     kind = next((kind for kind in KINDS if extension.lower() in kind.extensions), None)
     if kind is None or not stem:
         raise Refused(_kinds_in_words())
+    if not stem.strip():
+        raise Refused(_("Rename the file: its name cannot have a path or special characters."))
     return kind
 
 

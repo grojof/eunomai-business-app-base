@@ -4,7 +4,7 @@ A reader takes what was sent, as text, and gives back the value to save, or rais
 read. `read_fields` runs them all and keeps each problem with its field, so a person sees every problem at once.
 """
 
-import re
+import unicodedata
 from collections.abc import Callable, Collection, Mapping
 from datetime import date
 from decimal import Decimal, localcontext
@@ -15,13 +15,17 @@ from app.core.i18n import _, ngettext
 
 LONGEST_NUMBER = 64
 """No number a form takes is longer, and reading a very long one takes time."""
-_ONE_LINE = re.compile(r"[\x00-\x1f\x7f]")
-_MANY_LINES = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
-"""PostgreSQL refuses a NUL inside text, and none of the others belongs in what a person types."""
+_HIDDEN_CATEGORIES = {"Cc", "Cf", "Cs", "Zl", "Zp"}
+"""Control and format characters, surrogates, and line and paragraph separators. PostgreSQL refuses a NUL inside text,
+and the others hide on screen, as the one that shows `gnp.exe` backwards does."""
 
 
 class Refused(ValueError):
     """A value that cannot be saved. Its text is for the person: what to do, in their language."""
+
+
+def has_hidden_characters(text: str, allowed: str = "") -> bool:
+    return any(character not in allowed and unicodedata.category(character) in _HIDDEN_CATEGORIES for character in text)
 
 
 def read_fields(fields: Mapping[str, Callable[[], Any]]) -> tuple[dict[str, Any], dict[str, str]]:
@@ -39,10 +43,10 @@ def read_fields(fields: Mapping[str, Callable[[], Any]]) -> tuple[dict[str, Any]
 def read_text(text: str, *, longest: int, missing: str = "", lines: bool = False) -> str:
     """Text without its outer spaces, and with one form of line break. `missing` says it is needed, and what to do. The
     length is checked here because SQLite does not."""
-    value = text.replace("\r\n", "\n").strip()
+    value = text.replace("\r\n", "\n").replace("\r", "\n").strip()
     if not value and missing:
         raise Refused(missing)
-    if (_MANY_LINES if lines else _ONE_LINE).search(value):
+    if has_hidden_characters(value, "\t\n" if lines else ""):
         raise Refused(_("Remove the special characters, such as tabs, from this text."))
     if len(value) > longest:
         raise Refused(_("Use %(most)s characters at most.") % {"most": format_decimal(longest)})

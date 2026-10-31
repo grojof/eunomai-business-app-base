@@ -119,7 +119,12 @@ def test_a_real_file_with_the_name_of_another_kind_is_refused(content, name):
         "photo\x00.png",
         "photo\n.png",
         "photo.png:evil.exe",
-        "photo\u202egnp.exe",
+        "photo\u202egnp.png",
+        "photo\u2028.png",
+        "photo\x85.png",
+        "\u200b.png",
+        " .png",
+        "\u00a0.png",
         "x" * 201 + ".png",
     ],
 )

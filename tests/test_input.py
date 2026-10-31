@@ -50,7 +50,10 @@ def test_text_has_a_length_on_both_databases():
 
 
 @pytest.mark.rule("SEC-03")
-@pytest.mark.parametrize("value", ["a\x00b", "a\nb", "a\tb", "a\x7fb", "a\x1bb"])
+@pytest.mark.parametrize(
+    "value",
+    ["a\x00b", "a\nb", "a\tb", "a\x7fb", "a\x1bb", "a\x85b", "a\u2028b", "a\u2029b", "a\u202eb", "\ufeffa", "a\u200db"],
+)
 def test_a_line_of_text_refuses_control_characters(value):
     """PostgreSQL refuses a NUL inside text: left alone it would be an error page there, and stored on SQLite."""
     with pytest.raises(Refused):
@@ -62,6 +65,17 @@ def test_several_lines_keep_their_line_breaks_in_one_form_and_nothing_else():
     assert read_text("one\r\ntwo\n\tthree", longest=80, lines=True) == "one\ntwo\n\tthree"
     with pytest.raises(Refused):
         read_text("a\x00b", longest=80, lines=True)
+
+
+@pytest.mark.rule("SEC-03")
+@pytest.mark.parametrize("value", ["a\x85b", "a\u2028b", "a\u2029b", "a\u202eb", "\ufeffa", "a\u00adb"])
+def test_several_lines_refuse_by_category_too(value):
+    with pytest.raises(Refused):
+        read_text(value, longest=80, lines=True)
+
+
+def test_a_lone_carriage_return_is_a_line_break():
+    assert read_text("one\rtwo", longest=80, lines=True) == "one\ntwo"
 
 
 @pytest.mark.rule("SEC-03")
