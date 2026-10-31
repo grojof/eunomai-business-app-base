@@ -168,6 +168,8 @@ def test_text_that_matches_nothing_stays_and_is_a_visible_error_at_the_field(box
     assert message.count() == 1
     assert typed.get_attribute("aria-invalid") == "true"
     assert message.get_attribute("id") in typed.get_attribute("aria-describedby")
+    border = "element => getComputedStyle(element.closest('.input')).borderTopColor"
+    assert typed.evaluate(border) == box.locator("#sample-wrong").evaluate(border), "the same look as a server's error"
 
 
 @pytest.mark.browser

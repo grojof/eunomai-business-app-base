@@ -34,6 +34,11 @@
   max-height: min(40rem, calc(100dvh - 1rem));
 }
 
+/* A searchable select with text that is not on its list, as a server's error would mark it */
+.input:has(> [role="combobox"][aria-invalid="true"]) {
+  border-color: var(--color-error);
+}
+
 /* A dialog's box scrolls, so what hangs out of it is cut: there a searchable select's list takes its place in the box */
 .modal-box [data-combobox-popup] {
   position: static;
@@ -212,11 +217,6 @@
     [data-results] {
       transition: none;
     }
-  }
-
-  /* A searchable select with text that is not on its list, as a server's error would mark it */
-  .input:has(> [role="combobox"][aria-invalid="true"]) {
-    --input-color: var(--color-error);
   }
 
   /* A searchable select's options: the one the arrow keys are on, as in the palette */
