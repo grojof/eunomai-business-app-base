@@ -359,6 +359,30 @@ def test_htmx_gets_the_form_alone_with_its_errors(writable):
     assert "data-focus" in response.text
 
 
+def test_the_summary_and_the_page_keep_one_order_with_every_field_wrong(uploads):
+    client, _url, _folder = uploads
+    wrong = {
+        "title": "",
+        "equipment": "",
+        "fault": "invented",
+        "description": "a\x00b",
+        "status": "invented",
+        "planned_on": "not a date",
+        "hours": "many",
+        "crew": "0",
+        "cost": "many",
+        "priority": "invented",
+        "stop_needed": "maybe",
+    }
+    html = attach(client, b"", "report.pdf", **wrong).text
+    linked = re.findall(r'<li><a class="[^"]*" href="#(field-[a-z-]+)">', html)
+    form = html.split("</ul>", 1)[1]
+    found = re.findall(r'\sid="(field-[a-z-]+)"', form)
+    on_the_page = [name for name in found if not name.endswith(("-hint", "-error"))]
+    assert len(linked) == 12
+    assert linked == on_the_page
+
+
 @pytest.mark.parametrize("language", ["es", "ca"])
 def test_errors_come_in_the_persons_language(writable, language):
     client, _url = writable

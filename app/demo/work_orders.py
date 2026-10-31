@@ -44,21 +44,6 @@ from app.demo.planning import (
 )
 
 Admin = Annotated[Person, Depends(require_role("admin"))]
-FIELD_IDS = {
-    "title": "field-title",
-    "equipment": "field-equipment",
-    "description": "field-description",
-    "fault": "field-fault",
-    "status": "field-status",
-    "priority": "field-priority",
-    "planned_on": "field-planned-on",
-    "hours": "field-hours",
-    "crew": "field-crew",
-    "cost": "field-cost",
-    "stop_needed": "field-stop-needed",
-    "attachment": "field-attachment",
-}
-"""In the order of the page, which is the order of the error summary."""
 LONGEST_TITLE = 80
 LONGEST_DESCRIPTION = 2000
 LONGEST_CODE = 16
@@ -90,6 +75,44 @@ FAULTS = {
     "tripped_breaker": N_("Tripped breaker"),
     "worn_gasket": N_("Worn gasket"),
 }
+
+
+@dataclass(frozen=True)
+class OrderField:
+    """One field of the form. The page, the error summary and a conflict all read `FIELDS`, so they cannot disagree."""
+
+    name: str
+    label: str
+    shown: Callable[[WorkOrder], str] | None = None
+    compared: str = ""
+    wide: bool = False
+
+    @property
+    def identifier(self) -> str:
+        return "field-" + self.name.replace("_", "-")
+
+
+FIELDS = (
+    OrderField("title", N_("What has to be done"), lambda order: order.title, wide=True),
+    OrderField("equipment", N_("Equipment code"), lambda order: order.equipment.code, "equipment_id"),
+    OrderField("fault", N_("Fault"), lambda order: _(FAULTS[order.fault]) if order.fault else _("Not known")),
+    OrderField("description", N_("Description"), lambda order: order.description, wide=True),
+    OrderField("status", N_("State"), lambda order: _(ORDER_LABELS[order.status][0])),
+    OrderField("planned_on", N_("Planned for"), planned_text),
+    OrderField("hours", N_("Hours"), lambda order: format_decimal(order.hours, HOUR_DECIMALS)),
+    OrderField("crew", N_("People needed"), lambda order: str(order.crew)),
+    OrderField("cost", N_("Cost"), lambda order: format_decimal(order.cost)),
+    OrderField("priority", N_("Priority"), lambda order: _(PRIORITY_LABELS[order.priority])),
+    OrderField(
+        "stop_needed",
+        N_("The equipment must stop for this work"),
+        lambda order: _("Yes") if order.stop_needed else _("No"),
+        wide=True,
+    ),
+    OrderField("attachment", N_("Attachment")),
+)
+"""In the order of the page, by its cards: the work, the plan, and the file."""
+WORK_FIELDS, PLAN_FIELDS, FILE_FIELD = FIELDS[:4], FIELDS[4:11], FIELDS[11]
 _EQUIPMENT_PAGE = re.compile(r"/equipment/([0-9]{1,10})")
 
 
@@ -208,7 +231,7 @@ def checked(sent: Sent, session: Session, store: UploadStore) -> tuple[dict[str,
 
 
 def _typed(sent: Sent) -> dict[str, Any]:
-    typed = {name: getattr(sent, name) for name in FIELD_IDS if name != "attachment"}
+    typed = {field.name: getattr(sent, field.name) for field in FIELDS if field is not FILE_FIELD}
     return typed | {"stop_needed": sent.stop_needed == "yes", "version": sent.version}
 
 
@@ -271,7 +294,10 @@ def _form(
         back=back,
         values=values,
         errors=errors,
-        summary=[(FIELD_IDS[name], errors[name]) for name in FIELD_IDS if name in errors],
+        summary=[(field.identifier, errors[field.name]) for field in FIELDS if field.name in errors],
+        work_fields=WORK_FIELDS,
+        plan_fields=PLAN_FIELDS,
+        file_item=FILE_FIELD,
         state_options=_state_options(),
         priority_options=[(value, _(label)) for value, label in PRIORITY_LABELS.items()],
         fault_options=sorted(((value, _(label)) for value, label in FAULTS.items()), key=lambda o: o[1].casefold()),
@@ -324,23 +350,7 @@ def _saved_with_file(session: Session, store: UploadStore, order: WorkOrder, sen
 
 
 def _shown_here() -> dict[str, tuple[str, Callable[[WorkOrder], str]]]:
-    """What a conflict can name, in the order of the page."""
-    return {
-        "title": (_("What has to be done"), lambda order: order.title),
-        "equipment_id": (_("Equipment code"), lambda order: order.equipment.code),
-        "description": (_("Description"), lambda order: order.description),
-        "fault": (_("Fault"), lambda order: _(FAULTS[order.fault]) if order.fault else _("Not known")),
-        "status": (_("State"), lambda order: _(ORDER_LABELS[order.status][0])),
-        "planned_on": (_("Planned for"), planned_text),
-        "hours": (_("Hours"), lambda order: format_decimal(order.hours, HOUR_DECIMALS)),
-        "crew": (_("People needed"), lambda order: str(order.crew)),
-        "cost": (_("Cost"), lambda order: format_decimal(order.cost)),
-        "priority": (_("Priority"), lambda order: _(PRIORITY_LABELS[order.priority])),
-        "stop_needed": (
-            _("The equipment must stop for this work"),
-            lambda order: _("Yes") if order.stop_needed else _("No"),
-        ),
-    }
+    return {field.compared or field.name: (_(field.label), field.shown) for field in FIELDS if field.shown}
 
 
 def _changes(order: WorkOrder, clean: dict[str, Any]) -> list[tuple[str, str]]:
