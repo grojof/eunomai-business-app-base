@@ -12,11 +12,12 @@ Three things go wrong with a list that reaches a spreadsheet, and each is handle
 - Excel guesses. Each column declares its kind, and text is always written as text, so a long code keeps its zeros.
 """
 
+import logging
 import os
 import tempfile
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Literal
@@ -28,7 +29,12 @@ from xlsxwriter import Workbook  # type: ignore[import-untyped]
 
 from app.core.formatters import rounded
 
+logger = logging.getLogger(__name__)
 SIGNIFICANT_DIGITS = 15
+FIRST_YEAR = 1900
+"""Excel's calendar starts here. An earlier date cannot be a date cell, so it goes as text."""
+LONGEST_TEXT = 32_767
+"""What a cell holds."""
 LAST_ROW = 1_048_575
 """Excel's own limit, counting from zero. XlsxWriter would skip further rows without an error."""
 FORMULA_STARTS = ("=", "+", "-", "@", "\t", "\r", "\n", "\uff1d", "\uff0b", "\uff0d", "\uff20")
@@ -64,6 +70,14 @@ def sheet_name(title: str) -> str:
     return title.translate(NOT_IN_A_SHEET_NAME).strip()[:SHEET_NAME_LENGTH] or "Sheet1"
 
 
+def _fitted(text: str, row: int, column: ExcelColumn) -> str:
+    """Text that fits a cell. XlsxWriter would cut it to fit and say nothing, so a reader could not tell."""
+    if len(text) <= LONGEST_TEXT:
+        return text
+    logger.warning("Excel: text of %d characters cut in row %d, column %s", len(text), row, column.header)
+    return text[: LONGEST_TEXT - 1] + "\u2026"
+
+
 def _write_row(
     sheet: Any, number: int, columns: Sequence[ExcelColumn], row: Sequence[Any], formats: dict[Any, Any], zone: ZoneInfo
 ) -> None:
@@ -77,12 +91,18 @@ def _write_row(
             else:
                 sheet.write_number(number, position, kept, formats[column.places])
         elif column.kind == "date":
-            sheet.write_datetime(number, position, value, formats["date"])
+            if value.year < FIRST_YEAR:
+                sheet.write_string(number, position, value.isoformat(), formats["long"])
+            else:
+                sheet.write_datetime(number, position, value, formats["date"])
         elif column.kind == "moment":
             local: datetime = value.astimezone(zone).replace(tzinfo=None)
-            sheet.write_datetime(number, position, local, formats["moment"])
+            if local.year < FIRST_YEAR:
+                sheet.write_string(number, position, local.isoformat(sep=" "), formats["long"])
+            else:
+                sheet.write_datetime(number, position, local, formats["moment"])
         else:
-            sheet.write_string(number, position, safe_text(str(value)))
+            sheet.write_string(number, position, _fitted(safe_text(str(value)), number, column))
 
 
 def write_workbook(
@@ -133,6 +153,6 @@ def excel_response(
     return FileResponse(
         path,
         media_type=MEDIA_TYPE,
-        filename=f"{title}-{date.today().isoformat()}.xlsx",
+        filename=f"{title}-{datetime.now(ZoneInfo(zone)).date().isoformat()}.xlsx",
         background=BackgroundTask(Path(path).unlink),
     )

@@ -282,9 +282,9 @@ return excel_response(_("Equipment"), columns, rows, settings.time_zone)
 | What | How |
 |---|---|
 | Numbers | Rounded by the application's rule, half up, to the column's decimals, because Excel keeps 15 significant digits. A value still too long goes as right-aligned text, every digit there |
-| Dates and moments | Real date cells in Excel's own short format, so they read as the computer that opens the file writes them. A moment is shown in the application's time zone. |
-| Text | Always text, so a long code keeps its zeros. What could start a formula begins with an apostrophe: see [SEC-15](standards.md#security) |
-| Language | Headers, the sheet's name, the file's name and labels are the person's |
+| Dates and moments | Real date cells in Excel's own short format, so they read as the computer that opens the file writes them. A moment is shown in the application's time zone. Excel's calendar starts in 1900, so anything earlier goes as text |
+| Text | Always text, so a long code keeps its zeros. What could start a formula begins with an apostrophe: see [SEC-15](standards.md#security). A cell holds 32,767 characters: longer text is cut, ends in an ellipsis and leaves a line in the log, with the row and not the text |
+| Language | Headers, the sheet's name, the file's name and labels are the person's, and the date in the file's name is the application's day |
 | Too many rows | More than Excel holds is an error, never a shorter file |
 
 It runs in a worker thread, so other requests go on. Nobody sees progress: at 50,000 rows it takes about 2.2 seconds on one

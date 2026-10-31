@@ -1,5 +1,6 @@
 """Excel files, read back by unzipping their XML: no reader is a dependency of this repository."""
 
+import logging
 import re
 import xml.etree.ElementTree as ET
 import zipfile
@@ -171,4 +172,56 @@ def test_the_download_is_named_and_typed():
     response = excel_response("Equipos", COLUMNS, [("A", None, None, None)], "UTC")
     assert response.media_type.endswith("spreadsheetml.sheet")
     assert re.search(r'attachment; filename="Equipos-\d{4}-\d{2}-\d{2}\.xlsx"', response.headers["content-disposition"])
+    Path(response.path).unlink()
+
+
+@pytest.mark.parametrize(
+    "text", ["x" * 32_768, "=" + "y" * 32_767, "z" * 40_000], ids=["over", "with its apostrophe", "long"]
+)
+def test_text_too_long_for_a_cell_is_cut_on_purpose_and_logged(tmp_path, caplog, text):
+    with caplog.at_level(logging.WARNING, logger="app.core.excel"):
+        value = written(tmp_path, [(text, None, None, None)])[1][0][1]
+    assert len(value) == 32_767
+    assert value.endswith("\u2026")
+    assert "row 1" in caplog.text
+    assert text[1:50] not in caplog.text, "what a cell holds does not belong in a log"
+
+
+def test_the_longest_text_a_cell_holds_is_left_alone(tmp_path, caplog):
+    with caplog.at_level(logging.WARNING, logger="app.core.excel"):
+        assert written(tmp_path, [("z" * 32_767, None, None, None)])[1][0][1] == "z" * 32_767
+    assert caplog.text == ""
+
+
+@pytest.mark.parametrize(
+    ("value", "text"),
+    [
+        (date(1899, 12, 31), "1899-12-31"),
+        (date(1800, 1, 1), "1800-01-01"),
+        (date(1, 1, 1), "0001-01-01"),
+    ],
+)
+def test_a_date_before_excels_calendar_is_written_as_text(tmp_path, value, text):
+    assert written(tmp_path, [("A", None, value, None)])[1][1] == ("inlineStr", text)
+
+
+def test_a_moment_before_excels_calendar_is_written_as_text(tmp_path):
+    moment = datetime(1850, 6, 1, 12, 0, tzinfo=UTC)
+    assert written(tmp_path, [("A", None, None, moment)])[1][1] == ("inlineStr", "1850-06-01 12:00:00")
+
+
+def test_the_first_day_of_excels_calendar_is_a_date(tmp_path):
+    assert written(tmp_path, [("A", None, date(1900, 1, 1), None)])[1][1][0] == "n"
+
+
+@pytest.mark.parametrize(("zone", "day"), [("Pacific/Kiritimati", "2027-01-01"), ("Pacific/Pago_Pago", "2026-12-31")])
+def test_the_file_is_named_for_the_applications_day(monkeypatch, zone, day):
+    class Clock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return datetime(2026, 12, 31, 23, 30, tzinfo=UTC).astimezone(tz)
+
+    monkeypatch.setattr("app.core.excel.datetime", Clock)
+    response = excel_response("List", COLUMNS, [("A", None, None, None)], zone)
+    assert f"List-{day}.xlsx" in response.headers["content-disposition"]
     Path(response.path).unlink()
