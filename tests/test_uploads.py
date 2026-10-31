@@ -5,19 +5,22 @@ import os
 import re
 import socket
 from collections.abc import Iterator
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Annotated
 
+import anyio
 import pytest
-from fastapi import FastAPI, File, Form, UploadFile
+from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
+from app.core import application as application_module
 from app.core import i18n
 from app.core.formatters import format_file_size
 from app.core.forms import Refused
 from app.core.settings import Settings
-from app.core.uploads import KINDS, UploadStore, check_upload, read_upload
+from app.core.uploads import BODY_TOO_LARGE, KINDS, RequestLimit, UploadStore, check_upload, read_upload
 from app.main import create_app
 from tests.conftest import PERSON, build_settings, running_server
 from tests.helpers import ROOT
@@ -297,6 +300,65 @@ def test_a_real_server_refuses_a_request_that_would_not_fit_without_reading_it()
         head = "POST /sample HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Type: multipart/form-data; boundary=x\r\n"
         client.sendall(f"{head}Content-Length: 500000000\r\n\r\n".encode())
         assert b" 413 " in client.recv(4096).split(b"\r\n", 1)[0]
+
+
+def chunk(data: bytes) -> bytes:
+    return f"{len(data):x}\r\n".encode() + data + b"\r\n"
+
+
+def raw_post(port: int, headers: str, length: int) -> bytes:
+    """A valid form, sent in chunks on a real socket, and the first line of the answer."""
+    with socket.create_connection(("127.0.0.1", port), timeout=10) as client:
+        head = "POST /sample HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Type: multipart/form-data; boundary=x\r\n"
+        client.sendall(f"{head}{headers}\r\n".encode())
+        client.sendall(chunk(b'--x\r\nContent-Disposition: form-data; name="title"\r\n\r\n'))
+        client.sendall(chunk(b"a" * length) + chunk(b"\r\n--x--\r\n") + b"0\r\n\r\n")
+        return client.recv(4096).split(b"\r\n", 1)[0]
+
+
+@pytest.mark.rule("SEC-12")
+def test_a_request_with_both_framing_headers_is_refused_unread():
+    """h11 frames by Transfer-Encoding, so a small Content-Length beside it promised nothing and took any amount."""
+    application = limited(fake_identity=True, fake_groups=["admins"], trusted_proxies=[])
+    with running_server(application) as port:
+        assert b" 200 " in raw_post(port, "Transfer-Encoding: chunked\r\n", 10)
+        assert b" 400 " in raw_post(port, "Transfer-Encoding: chunked\r\nContent-Length: 5\r\n", 10)
+
+
+@pytest.mark.rule("SEC-12")
+def test_a_real_server_stops_a_chunked_body_at_the_limit():
+    application = limited(fake_identity=True, fake_groups=["admins"], trusted_proxies=[])
+    with running_server(application) as port:
+        assert b" 413 " in raw_post(port, "Transfer-Encoding: chunked\r\n", 3000)
+
+
+@pytest.mark.rule("SEC-12")
+@pytest.mark.parametrize("declared", ["5", "999999", ""])
+def test_what_is_counted_is_what_arrives_whatever_the_headers_say(declared):
+    """The limit reads the bytes, not the promise."""
+    seen = []
+
+    async def application(_scope, receive, _send):
+        while (message := await receive())["type"] == "http.request":
+            seen.append(len(message["body"]))
+
+    messages = iter([{"type": "http.request", "body": bytes(600), "more_body": True}] * 3)
+
+    async def arrives():
+        return next(messages, {"type": "http.disconnect"})
+
+    headers = [(b"content-length", declared.encode())] if declared else []
+    scope = {"type": "http", "headers": headers}
+    limit = RequestLimit(application, 1000)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        pool.submit(anyio.run, limit, scope, arrives, None).result()
+    assert seen == [600]
+    assert scope[BODY_TOO_LARGE]
+
+
+def test_a_length_of_thousands_of_digits_is_too_long_and_no_error():
+    request = Request({"type": "http", "headers": [(b"content-length", b"9" * 5000)], "app": limited()})
+    assert application_module._declared_too_long(request)
 
 
 @pytest.mark.parametrize(

@@ -20,7 +20,6 @@ from uuid import uuid4
 
 from fastapi import HTTPException, UploadFile
 from fastapi.responses import FileResponse
-from starlette.datastructures import Headers
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from app.core.formatters import format_file_size
@@ -154,9 +153,9 @@ class UploadStore:
 class RequestLimit:
     """The whole request has a limit, for every route: FastAPI reads a form to disk before any route or check runs.
 
-    A body that declares its length is judged by `_context` before a byte is read. One that does not is counted as it
-    arrives, and ends as if the client had left, with a note in the scope, because an exception raised while a request
-    is read does not cross `BaseHTTPMiddleware` as itself.
+    A declared length lets `_context` refuse a body before a byte is read, and that is all it does: what counts is what
+    arrives, so every body is counted, whatever its headers say. Past the limit it ends as if the client had left, with
+    a note in the scope, because an exception raised while a request is read does not cross `BaseHTTPMiddleware`.
     """
 
     def __init__(self, app: ASGIApp, limit: int) -> None:
@@ -164,10 +163,7 @@ class RequestLimit:
         self.limit = limit
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] != "http" or "content-length" in Headers(scope=scope):
-            await self.app(scope, receive, send)
-            return
-        await self.app(scope, self._counted(scope, receive), send)
+        await self.app(scope, self._counted(scope, receive) if scope["type"] == "http" else receive, send)
 
     def _counted(self, scope: Scope, receive: Receive) -> Callable[[], Awaitable[Message]]:
         seen = 0

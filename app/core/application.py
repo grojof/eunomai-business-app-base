@@ -25,6 +25,8 @@ logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent.parent
 THEMES = ("system", "light", "dark")
 ONE_YEAR = 60 * 60 * 24 * 365
+LONGEST_LENGTH = 18
+"""Digits in a Content-Length worth reading: more is past any limit, and Python refuses to read thousands of them."""
 
 CONTENT_SECURITY_POLICY = "; ".join(
     [
@@ -59,7 +61,14 @@ def _cross_site(request: Request) -> bool:
 
 def _declared_too_long(request: Request) -> bool:
     length = request.headers.get("content-length", "")
-    return length.isascii() and length.isdigit() and int(length) > request.app.state.settings.request_max_bytes
+    if not (length.isascii() and length.isdigit()):
+        return False
+    return len(length) > LONGEST_LENGTH or int(length) > request.app.state.settings.request_max_bytes
+
+
+def _framed_twice(request: Request) -> bool:
+    """Both headers mean two lengths, and a server and a proxy may each believe a different one: RFC 9112, 6.1."""
+    return "transfer-encoding" in request.headers and "content-length" in request.headers
 
 
 def _is_public(path: str) -> bool:
@@ -83,6 +92,8 @@ async def _context(request: Request, call_next: Callable[[Request], Awaitable[Re
             response = _error_page(request, 401)
         elif _cross_site(request):
             response = _error_page(request, 403)
+        elif _framed_twice(request):
+            response = _error_page(request, 400)
         elif _declared_too_long(request):
             response = _error_page(request, 413)
         else:
