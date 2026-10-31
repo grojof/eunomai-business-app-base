@@ -545,9 +545,9 @@ def test_with_htmx_a_save_goes_to_the_list_and_says_so(own_rows):
     page.keyboard.press("Enter")
     page.get_by_role("radio", name="High").check()
     page.get_by_role("button", name="Save").click()
-    page.wait_for_url("**/planning?saved=*")
+    page.get_by_text(" saved.").first.wait_for()
     assert page.get_by_text(" saved.").first.is_visible()
-    number = re.search(r"saved=(\d+)", page.url)[1]
+    number = re.search(r"Work order (\d+) saved", page.content())[1]
     edit = own_rows(f"/work-orders/{number}/edit")
     assert edit.locator("#field-fault").input_value() == "Belt slipping"
     assert edit.get_by_role("radio", name="High").is_checked()
@@ -578,7 +578,7 @@ def test_escape_twice_with_a_value_chosen_then_enter_sends_an_empty_box(own_rows
     page.locator("#field-fault").fill("bearing wear")
     page.keyboard.press("Tab")
     page.get_by_role("button", name="Save").click()
-    page.wait_for_url("**/planning?saved=1")
+    page.get_by_text(" saved.").first.wait_for()
 
     page = own_rows("/work-orders/1/edit?back=%2Fplanning")
     assert box_and_select(page) == ["Bearing wear", "bearing_wear"]
@@ -588,7 +588,7 @@ def test_escape_twice_with_a_value_chosen_then_enter_sends_an_empty_box(own_rows
     page.keyboard.press("Escape")
     assert box_and_select(page) == ["", ""]
     page.keyboard.press("Enter")
-    page.wait_for_url("**/planning?saved=1")
+    page.get_by_text(" saved.").first.wait_for()
     page = own_rows("/work-orders/1/edit")
     assert box_and_select(page) == ["", ""]
 
@@ -617,15 +617,15 @@ def test_without_javascript_every_step_works(own_rows):
     fill_in(page)
     page.locator("select[name=fault]").select_option("belt_slip")
     page.get_by_role("button", name="Save").click()
-    page.wait_for_url("**/planning?saved=*")
-    number = re.search(r"saved=(\d+)", page.url)[1]
+    page.get_by_text(" saved.").first.wait_for()
+    number = re.search(r"Work order (\d+) saved", page.content())[1]
 
     page.goto(page.url.split("/planning")[0] + f"/work-orders/{number}/edit?back=%2Fplanning")
     page.get_by_role("link", name="Delete").click()
     page.wait_for_url(re.compile(rf"/work-orders/{number}/delete"))
     assert "cannot be undone" in page.locator("main").inner_text()
     page.get_by_role("button", name="Delete it").click()
-    page.wait_for_url("**/planning?deleted=*")
+    page.get_by_text(" deleted.").first.wait_for()
     assert page.get_by_text(" deleted.").first.is_visible()
 
 
@@ -650,7 +650,7 @@ def test_the_delete_dialog_deletes(own_rows):
     page.get_by_role("link", name="Delete").click()
     page.wait_for_selector("dialog#confirm[open]")
     page.get_by_role("button", name="Delete it").click()
-    page.wait_for_url("**/planning?deleted=1")
+    page.get_by_text(" deleted.").first.wait_for()
     assert page.get_by_text("Work order 1 deleted.").is_visible()
 
 
@@ -915,7 +915,7 @@ def test_with_htmx_a_file_goes_with_the_form(upload_server):
     page = open_page("/work-orders/1/edit?back=%2Fplanning")
     choose(page)
     page.get_by_role("button", name="Save").click()
-    page.wait_for_url("**/planning?saved=1")
+    page.get_by_text(" saved.").first.wait_for()
     assert len(stored(folder)) == 1
     page = open_page("/work-orders/1/edit")
     assert page.get_by_role("link", name="report.pdf", exact=True).is_visible()
@@ -927,7 +927,7 @@ def test_without_javascript_a_file_goes_with_the_form(upload_server):
     page = open_page("/work-orders/1/edit?back=%2Fplanning", javascript=False)
     choose(page)
     page.get_by_role("button", name="Save").click()
-    page.wait_for_url("**/planning?saved=1")
+    page.get_by_text(" saved.").first.wait_for()
     assert len(stored(folder)) == 1
 
 
@@ -963,7 +963,7 @@ def test_removing_a_file_opens_a_dialog_and_comes_back(upload_server):
     page = open_page("/work-orders/1/edit?back=%2Fplanning")
     choose(page)
     page.get_by_role("button", name="Save").click()
-    page.wait_for_url("**/planning?saved=1")
+    page.get_by_text(" saved.").first.wait_for()
     page = open_page("/work-orders/1/edit?back=%2Fplanning")
     page.get_by_role("link", name="Remove report.pdf").click()
     page.wait_for_selector("dialog#confirm[open]")
@@ -984,7 +984,7 @@ def test_a_form_with_files_passes_the_scan(upload_server, theme, width):
     first = open_page("/work-orders/1/edit?back=%2Fplanning")
     choose(first)
     first.get_by_role("button", name="Save").click()
-    first.wait_for_url("**/planning?saved=1")
+    first.get_by_text(" saved.").first.wait_for()
     page = open_page("/work-orders/1/edit", theme=theme, width=width, bypass_csp=True)
     assert run_axe(page) == []
     assert not overflows_sideways(page)
