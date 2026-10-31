@@ -1,0 +1,7 @@
+# Where and with what eunomai-business's specialist may write code in a clone of this repository.
+# Treat it like AGENTS.md: changed through a reviewed pull request.
+
+[development]
+code = true
+technologies = ["Python", "FastAPI", "Pydantic", "SQLAlchemy", "Alembic", "PostgreSQL", "SQLite", "Jinja2", "htmx",
+                "Tailwind CSS", "daisyUI", "Chart.js", "XlsxWriter", "HTML and CSS"]

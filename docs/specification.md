@@ -64,8 +64,8 @@ Approved, not added yet:
 | Piece | Choice | Arrives in |
 |---|---|---|
 | Reading another system's SQL Server | pyodbc with Microsoft's ODBC Driver 18 and a read-only user | Milestone 2, optional |
-| Tables | Made on the server; Tabulator only where grouping or editing needs it ([open](decisions.md#open-questions)) | Milestone 2 |
-| Charts | Apache ECharts ([open](decisions.md#open-questions)) | Milestone 2 |
+| Tables | A native HTML table with daisyUI's classes; paging, sorting, filtering and grouping on the server | Milestone 2 |
+| Charts | Chart.js, with a text summary and the data as a table | Milestone 2 |
 | Excel | XlsxWriter, on the server | Milestone 2 |
 | Page behaviour | Alpine.js in its CSP build | Milestone 3 |
 

@@ -66,13 +66,13 @@ related: [specification.md, standards.md]
 | Batch mode on both databases, with foreign keys off for each SQLite migration | A migration written against one has to run on the other. On SQLite a batch change drops a table, and with foreign keys on that would empty the tables pointing to it | Batch on SQLite alone; leaving them on |
 | One Ubuntu job with PostgreSQL, through a service whose image is empty on Windows | The runner skips a service with an empty image, so the matrix stays one job and one list of steps | A separate job for PostgreSQL, which repeats its setup; starting a container from a step |
 | psycopg, under LGPL-3.0 | The usual driver, and the default of SQLAlchemy 2.1. It is installed as a package, neither copied into the repository nor changed. An organization that distributes an application to others should read that licence. Everything else added is MIT | psycopg2: its successor is psycopg 3. pg8000: pure Python, with a smaller user base |
+| A native table, everything on the server | Only one page of rows reaches the browser, and a native table needs no keyboard code of ours. W3C's sortable table example is this: `aria-sort` and a button in the header. daisyUI gives the look only, in all cases | Tabulator: 455 KB, `role="grid"` without the `aria-rowcount` W3C asks for when rows are not in the page, keyboard focus only on editable cells, and open keyboard and screen-reader issues. An application that needs spreadsheet-like editing can still add it |
+| Chart.js for charts | Compared on the same data under this Content Security Policy, in light, dark and at phone width. 210 KB, MIT, no policy violation, and its own tooltip fits both themes. A canvas says nothing to a screen reader, so the summary and the data table are always there | ECharts: 1.1 MB, its default tooltip breaks under the policy and needs `richText`, and it has no Catalan. SVG drawn on the server: no JavaScript, but no interaction, and each chart to maintain here |
 
 ## Open questions
 
 | Question | How it is settled |
 |---|---|
-| Does Tabulator pass with keyboard and screen reader? | Test it in milestone 2. If not, use the server table with row editing, and accept losing grouping or build it on the server |
-| Are ECharts' keyboard and screen-reader options enough? | Test it in milestone 2. The text summary and data table are required either way |
 | Which translation tool do translators use? | Files in git work for developers; decide if non-developers translate |
 | Can a person open a server running inside an assistant's sandbox? | Not documented. Until tested, the assistant shows results as screenshots or a self-contained HTML file |
 | Does generating the stylesheet in an assistant's sandbox work under every organization's network rules? | Confirmed only [as far as the executable starting](specification.md#stack), on one account. Generate a full stylesheet there |
