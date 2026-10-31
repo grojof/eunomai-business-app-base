@@ -168,6 +168,11 @@
     color: var(--color-base-content);
   }
 
+  /* A ghost button shows no edge: what lines up with the header is its label, past its padding and its border */
+  .row-actions .btn:last-child {
+    margin-inline-end: -0.5625rem;
+  }
+
   .sort-link {
     display: inline-flex;
     align-items: center;

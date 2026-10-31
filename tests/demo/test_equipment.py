@@ -483,3 +483,17 @@ def test_focus_lands_on_the_empty_state_when_no_table_comes_back(open_filled):
     until(page, "document.activeElement !== document.body")
     assert page.evaluate("document.activeElement.matches('[data-focus-fallback]')")
     assert "No equipment matches" in page.evaluate("document.activeElement.textContent")
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize("width", [1440, 1024])
+@pytest.mark.parametrize("path", ["/equipment", "/planning"])
+def test_the_actions_header_lines_up_with_what_is_under_it(open_filled, path, width):
+    edges = open_filled(path, width=width).evaluate("""() => {
+        const header = document.createRange();
+        header.selectNodeContents([...document.querySelectorAll('thead th')].at(-1));
+        const links = [...document.querySelectorAll('tbody td:last-child a')];
+        const parts = [...links.at(-1).children].filter((part) => part.getBoundingClientRect().width > 0);
+        return [header.getBoundingClientRect().right, parts.at(-1).getBoundingClientRect().right];
+    }""")
+    assert abs(edges[0] - edges[1]) <= 1

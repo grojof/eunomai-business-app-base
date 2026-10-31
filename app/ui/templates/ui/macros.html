@@ -365,7 +365,7 @@
 
 {#- `items`: (label, name for a screen reader, address, icon). The name says which row: a list of ten "View" says nothing. -#}
 {% macro row_actions(items) %}
-<td class="hidden text-end whitespace-nowrap sm:table-cell print:hidden">
+<td class="row-actions hidden text-end whitespace-nowrap sm:table-cell print:hidden">
   {% for label, name, href, picture in items %}
   <a class="btn btn-ghost btn-xs" href="{{ href }}" aria-label="{{ name }}">{{ icon(picture, "size-3.5") }}<span class="hidden xl:inline">{{ label }}</span></a>
   {% endfor %}
@@ -378,7 +378,7 @@
 
 {#- Opens a dialog with what the address gives; the address alone is a page of its own, without JavaScript. -#}
 {% macro dialog_action(label, name, href, identifier, target) %}
-<td class="text-end whitespace-nowrap print:hidden">
+<td class="row-actions text-end whitespace-nowrap print:hidden">
   <a id="{{ identifier }}" class="btn btn-ghost btn-xs" href="{{ href }}" aria-label="{{ name }}" aria-haspopup="dialog" hx-get="{{ href }}" hx-target="#{{ target }}-body">{{ icon("pencil", "size-3.5") }}<span class="hidden xl:inline">{{ label }}</span></a>
 </td>
 {% endmacro %}
