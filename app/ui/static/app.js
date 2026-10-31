@@ -60,6 +60,17 @@ document.addEventListener("click", (event) => {
 });
 document.addEventListener("close", hideProblem, true);
 
+// A message that came in the address is said once: a reload, or a change of theme, must not say it again.
+// `data-once` names the parameters to take out. Without JavaScript they stay, and the message with them.
+document.addEventListener("DOMContentLoaded", () => {
+  const marked = document.querySelector("[data-once]");
+  if (marked) {
+    const address = new URL(location.href);
+    marked.dataset.once.split(" ").forEach((name) => address.searchParams.delete(name));
+    history.replaceState(history.state, "", address);
+  }
+});
+
 function announce(text) {
   document.getElementById("announcements").textContent = text;
 }

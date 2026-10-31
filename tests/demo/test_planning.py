@@ -636,3 +636,13 @@ def test_without_javascript_a_save_shows_its_message(open_filled):
     page.get_by_role("button", name="Save").click()
     page.wait_for_url(re.compile(r"/planning\?saved="))
     assert page.get_by_text(" saved.").first.is_visible()
+
+
+@pytest.mark.browser
+def test_a_message_from_the_address_is_said_once(open_filled):
+    page = open_filled("/planning?status=&saved=1")
+    assert page.get_by_text("Work order 1 saved.").first.is_visible()
+    until(page, "!location.search.includes('saved=')")
+    assert "status=" in page.url
+    page.reload()
+    assert page.get_by_text("Work order 1 saved.").count() == 0

@@ -8,7 +8,8 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from fastapi.testclient import TestClient
-from sqlalchemy import select, update
+from sqlalchemy import make_url, select, update
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from app.core.database import create_database_engine
@@ -340,9 +341,58 @@ def test_a_delete_does_not_destroy_a_file_its_confirmation_never_named(writable)
     assert stored_in(folder) == []
 
 
+def on_postgresql(url):
+    return make_url(url).get_backend_name() == "postgresql"
+
+
+def waiting_briefly(url):
+    """The same database for a second person who gives up. In a test both people share one thread, so the second would
+    otherwise wait for ever on a lock that only the first, stopped behind it, can release."""
+    address = make_url(url)
+    options = address.query["options"] + " -clock_timeout=200ms"
+    return address.update_query_dict({"options": options}).render_as_string(hide_password=False)
+
+
+def add_a_file(url, moment):
+    engine = create_database_engine(url)
+    with Session(engine) as session:
+        session.add(
+            WorkOrderFile(
+                work_order_id=1,
+                name="late.pdf",
+                stored_name="a" * 32,
+                media_type="application/pdf",
+                size=len(PDF),
+                added_at=moment,
+            )
+        )
+        session.commit()
+    engine.dispose()
+
+
+def test_on_postgresql_a_lock_holds_a_late_file_back_until_the_delete_is_done(writable, monkeypatch):
+    client, url, _files = writable
+    if not on_postgresql(url):
+        pytest.skip("SQLite has one writer, and the next test covers it")
+    named, _html = asked(client)
+    moment = read_order(url).opened_at
+    real_delete = work_orders.sql_delete
+
+    def another_tries_to_add_a_file(*arguments):
+        with pytest.raises(OperationalError, match="lock timeout"):
+            add_a_file(waiting_briefly(url), moment)
+        return real_delete(*arguments)
+
+    monkeypatch.setattr(work_orders, "sql_delete", another_tries_to_add_a_file)
+    assert save(client, "/work-orders/1/delete", named, follow_redirects=False).status_code == 303
+    assert read_order(url) is None
+
+
 def test_a_file_added_in_the_instant_before_a_delete_is_not_destroyed_or_left_behind(writable, monkeypatch):
     """Past the last look at the list. The foreign key's cascade would take its row and leave it on the disk."""
     client, url, folder = writable
+    if on_postgresql(url):
+        pytest.skip("The lock closes this instant on PostgreSQL, as the test above proves")
     named, _html = asked(client)
     real_delete = work_orders.sql_delete
 
@@ -350,21 +400,7 @@ def test_a_file_added_in_the_instant_before_a_delete_is_not_destroyed_or_left_be
         monkeypatch.setattr(work_orders, "sql_delete", real_delete)
         folder.mkdir(exist_ok=True)
         (folder / ("a" * 32)).write_bytes(PDF)
-        moment = read_order(url).opened_at
-        engine = create_database_engine(url)
-        with Session(engine) as session:
-            session.add(
-                WorkOrderFile(
-                    work_order_id=1,
-                    name="late.pdf",
-                    stored_name="a" * 32,
-                    media_type="application/pdf",
-                    size=len(PDF),
-                    added_at=moment,
-                )
-            )
-            session.commit()
-        engine.dispose()
+        add_a_file(url, read_order(url).opened_at)
         return real_delete(*arguments)
 
     monkeypatch.setattr(work_orders, "sql_delete", another_adds_a_file)
@@ -395,12 +431,21 @@ def test_a_delete_that_gets_in_between_is_caught_too(writable, monkeypatch):
 
     def another_save_meanwhile(text):
         result = real(text)
-        someone_else_saves(url, title="Theirs")
+        if on_postgresql(url):  # the row is locked by now: the save has to wait, so the delete goes through
+            with pytest.raises(OperationalError, match="lock timeout"):
+                someone_else_saves(waiting_briefly(url), title="Theirs")
+        else:
+            someone_else_saves(url, title="Theirs")
         return result
 
     monkeypatch.setattr(work_orders, "read_version", another_save_meanwhile)
-    assert save(client, "/work-orders/1/delete", {"back": "/planning", "version": "1"}).status_code == 409
-    assert read_order(url).title == "Theirs"
+    response = save(client, "/work-orders/1/delete", {"back": "/planning", "version": "1"}, follow_redirects=False)
+    if on_postgresql(url):
+        assert response.status_code == 303
+        assert read_order(url) is None
+    else:
+        assert response.status_code == 409
+        assert read_order(url).title == "Theirs"
 
 
 @pytest.fixture

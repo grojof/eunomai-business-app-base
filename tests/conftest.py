@@ -62,7 +62,9 @@ def empty_database(engine_name: str, folder: Path) -> Iterator[str]:
     administrator = create_engine(TEST_DATABASE_URL)
     with administrator.begin() as connection:
         connection.exec_driver_sql(f"CREATE SCHEMA {schema}")
-    url = make_url(TEST_DATABASE_URL).update_query_dict({"options": f"-csearch_path={schema}"})
+    # A lock that nobody will release fails the test, instead of holding the whole run until its time limit.
+    options = f"-csearch_path={schema} -clock_timeout=30s"
+    url = make_url(TEST_DATABASE_URL).update_query_dict({"options": options})
     yield url.render_as_string(hide_password=False)
     with administrator.begin() as connection:
         connection.exec_driver_sql(f"DROP SCHEMA {schema} CASCADE")

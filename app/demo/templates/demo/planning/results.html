@@ -1,7 +1,7 @@
 {#- What changes when the list changes: a whole page includes it, htmx asks for it alone, and a save sends it again. -#}
 {% from "ui/macros.html" import filter_bar, list_summary, grouped_table, row_header, cell, status_label, dialog_action, pagination, empty_state, link_button, message %}
 {% if refill_filters %}{{ filter_bar(view, refill=true) }}{% endif %}
-{% if saved %}<div class="px-4 pt-3" role="status">{{ message("success", saved) }}</div>{% endif %}
+{% if saved %}<div class="px-4 pt-3" role="status" data-once="saved deleted">{{ message("success", saved) }}</div>{% endif %}
 {% set back = view.here|urlencode %}
 {% call list_summary(view, ngettext("%(count)s work order", "%(count)s work orders", view.total, count=view.total|decimal)) %}
 {% if can_edit %}{{ link_button(_("New work order"), "/work-orders/new?back=" ~ back, "primary", small=true, name="plus") }}{% endif %}
