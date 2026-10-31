@@ -1,5 +1,5 @@
 {#- The whole form, for the page and for htmx: a failed save comes back here, in the same place, with focus on its errors. -#}
-{% from "ui/macros.html" import card, checkbox_field, confirm_link, date_field, error_summary, form_actions, input_field, number_field, radio_group, searchable_select, select_field, textarea_field %}
+{% from "ui/macros.html" import card, checkbox_field, confirm_link, date_field, error_summary, file_field, form_actions, icon, input_field, message, number_field, radio_group, searchable_select, select_field, textarea_field %}
 <form class="space-y-6" method="post" action="{{ action }}" enctype="multipart/form-data" hx-post="{{ action }}" hx-target="#work-order" hx-disabled-elt="find button[type=submit]" hx-disinherit="*" novalidate>
   {% if errors %}{{ error_summary(_("Check what you entered"), summary) }}{% endif %}
   {% call card(_("The work"), "work-title") %}
@@ -20,6 +20,24 @@
     {{ radio_group("priority", _("Priority"), priority_options, values.priority, "field-priority", error=errors.get("priority", ""), required=true) }}
     <div class="md:col-span-2">{{ checkbox_field("stop_needed", _("The equipment must stop for this work"), values.stop_needed, "field-stop-needed", error=errors.get("stop_needed", "")) }}</div>
   </div>
+  {% endcall %}
+  {% call card(_("Files"), "files-title") %}
+  {% if removed %}<div role="status">{{ message("success", _("The file was removed.")) }}</div>{% endif %}
+  {% if files %}
+  <ul class="divide-y divide-base-300">
+    {% for file in files %}
+    <li class="flex flex-wrap items-center justify-between gap-2 py-2">
+      <span class="flex min-w-0 items-center gap-2">
+        {{ icon("paperclip", "size-4") }}
+        <a class="link font-medium" href="/work-orders/{{ order.id }}/files/{{ file.id }}" download>{{ file.name }}</a>
+        <span class="text-sm whitespace-nowrap">{{ file.size|filesize }}</span>
+      </span>
+      {{ confirm_link(_("Remove"), "/work-orders/" ~ order.id ~ "/files/" ~ file.id ~ "/delete?back=" ~ back|urlencode, "confirm", "trash-2", _("Remove %(name)s", name=file.name), "ghost", small=true) }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {{ file_field("attachment", _("Add a file") if files else _("Attachment"), "field-attachment", accepted, error=errors.get("attachment", ""), hint=file_hint, required=false) }}
   {% endcall %}
   <input type="hidden" name="back" value="{{ back }}">
   {% call form_actions(_("Save"), back, _("Cancel"), loading=_("Saving…")) %}

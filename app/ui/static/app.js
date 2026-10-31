@@ -38,7 +38,7 @@ function settleDialog(content, opener) {
 // A request that fails says so, in words, in one place for every screen. An open dialog is in the browser's top layer,
 // so the message goes inside it, or it would be behind it. role="alert" reads it out.
 const requestProblem = document.getElementById("request-problem");
-const PROBLEMS = { 403: "forbidden", 404: "gone", 409: "gone" };
+const PROBLEMS = { 403: "forbidden", 404: "gone", 409: "gone", 413: "tooLarge" };
 function showProblem(kind) {
   (document.querySelector("dialog[open]") ?? document.body).append(requestProblem);
   requestProblem.querySelector("[data-problem-text]").textContent = requestProblem.dataset[kind];

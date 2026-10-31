@@ -59,7 +59,7 @@ In use today:
 | Tables | A native HTML table with daisyUI's classes; paging, sorting, filtering and grouping on the server |
 | Excel | XlsxWriter, on the server |
 | Charts | Chart.js, with a text summary and the data as a table |
-| Support | python-multipart for posted forms; tzdata, because Windows has no time zone database |
+| Support | python-multipart for posted forms and uploads; tzdata, because Windows has no time zone database |
 | Development | pytest, httpx2, Playwright for Python, axe-core, Ruff, mypy |
 
 Approved, not added yet:
@@ -289,6 +289,34 @@ reached from Planning and from the equipment detail, and needing the `admin` rol
 The equipment is asked for by its code. A searchable select holds its options in the page, because without JavaScript it
 is a plain select, and 50,000 of them is a page of megabytes. So the searchable select is the list of faults.
 
+### Uploads
+
+`app/core/uploads.py` answers [SEC-12](standards.md#security). What a file calls itself proves nothing, so a file passes
+only if its name is safe and its first bytes say what its extension says.
+
+| What | How |
+|---|---|
+| The list | PDF, PNG and JPEG, each with its signature, in `KINDS`. A kind needs a signature to join: plain text or CSV has none, and needs a reader of its own. The browser's `accept` helps a person choose and decides nothing |
+| Refused | Too big, empty, a type off the list, a renamed extension, a real file under another kind's name, a path or a special character in the name, and a double extension. `report.v2.pdf` is refused with them: a rule with no exceptions is one that cannot be got round, and the message says what to do |
+| Stored | Under a random name of ours, with no extension and only the application able to read it, in `APP_UPLOAD_FOLDER`. By default that is `.data/uploads`, which git ignores, and a folder inside `app/` stops the application from starting. The folder appears with the first file |
+| Sent back | Reached only by the numbers of the order and the file, for the `admin` role, as an attachment, with `nosniff` and never cached. No path is built from anything a person sent: the stored name comes from the database and is checked again |
+| Limits | `APP_UPLOAD_MAX_BYTES`, 10 MB, for a file, and `APP_REQUEST_MAX_BYTES`, 32 MB, for any request, on every route, because the framework reads a form to disk before any route runs. Between the two, a person gets an error on the field and keeps what was typed. Past the second, a 413: a message with htmx, with the form intact, and a page without JavaScript |
+| A failed save | A browser cannot keep a chosen file when a form comes back, so the field says to choose it again. Nothing is stored until the whole form passes |
+| Removing | With a confirmation that names it. Deleting an order says how many files go with it. A file leaves the disk after its row, so a failure leaves an untidy file, never a row without one, and the log says so. `app.demo.generate` empties the folder of stored files, because their rows have gone |
+
+**What a clone must add for production.** This is a floor. Each of these depends on where the application lives, so none
+is in the base:
+
+| Add | Why |
+|---|---|
+| Virus scanning, with the file held back until it passes | A real PDF or JPEG can carry something harmful. Signatures say what a file is, not that it is good. Run a scanner such as ClamAV between the upload and the moment anyone can download it |
+| A limit at the reverse proxy, below `APP_REQUEST_MAX_BYTES` | It stops a long body before Python sees it, and answers cleanly: an application that answers without reading the body can have its connection reset |
+| Storage that fits the deployment | A local folder works on one server. Several servers need a shared volume or an object store, with `UploadStore` behind the same four calls, and a backup that moves together with the database |
+| Quotas and a rate limit, per person | Without them one person can fill the disk, 10 MB at a time |
+| Reading images again, where they are shown | Files here are only downloaded. An application that shows an image should decode it and write a new one, which drops what was hidden in it, and serve it from another origin |
+| A record of who added, downloaded and removed what | The demo keeps a moment and no name. A real application needs its audit trail, under the rules for personal data |
+| Retention, and sweeping files with no row | A crash between the two steps leaves a file behind. Decide how long files stay, and clear them on a schedule |
+
 ### Excel
 
 `app/core/excel.py` writes a list with XlsxWriter's `constant_memory`, so a row goes to disk as it arrives, and the route
@@ -424,10 +452,10 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Equipment list, `/equipment` | Server table with 50,000 rows, search, filters, sorting, paging, row actions, its empty and no-results states, Excel export | Milestone 2 |
 | Equipment detail, `/equipment/<id>` | Breadcrumbs, description list, tabs as links, history of work orders, status label, print style | Milestone 2 |
 | Planning, `/planning` | Rich table: groups on the server, and one row edited at a time in a dialog | Milestone 2 |
-| Work order form, `/work-orders/new` and `/work-orders/<id>/edit` | All form fields, validation, decimals, dates, delete with a confirmation | Milestone 3 |
+| Work order form, `/work-orders/new` and `/work-orders/<id>/edit` | All form fields, validation, decimals, dates, file upload, delete with a confirmation | Milestone 3 |
 | Import | Long task with progress, its result and its errors | Milestone 4 |
 
-The demo's tables, `equipment` and `work_order`, hold what `app/demo/generate.py` makes: 50,000 pieces of equipment and
+The demo's tables, `equipment` and `work_order`, with `work_order_file` for what people attach, hold what `app/demo/generate.py` makes: 50,000 pieces of equipment and
 10,000 work orders, from a seed, with no third-party package. Each row comes from a hash of the seed and its position, so
 the same seed gives the same rows on any computer and Python version. Work orders fall unevenly, so a detail page can
 show a history of three, of two, of one, or none. Generating refuses to run outside development, because it replaces what
@@ -551,6 +579,7 @@ each page says so.
 | Your languages | Each folder under `locales/` is a required language: add yours, run `tools/translations.py update` and translate it. Change `APP_LANGUAGES` too |
 | Your time zone | `APP_TIME_ZONE`; the default is UTC |
 | Your database | `APP_DATABASE_URL`, then `alembic upgrade head`. See [Data](#data) |
+| Your uploads | `APP_UPLOAD_FOLDER`, `APP_UPLOAD_MAX_BYTES`, `APP_REQUEST_MAX_BYTES`, and `KINDS` in `app/core/uploads.py`. Read [what production needs](#uploads) |
 | Add a table | A model on `Base`, its module imported in `migrations/env.py`, then `alembic revision --autogenerate` and read what it wrote. A test compares models and migrations |
 | Your identity proxy | Settings: `APP_TRUSTED_PROXIES`, `APP_HEADER_*`, `APP_GROUPS_SEPARATOR`, `APP_ROLE_GROUPS` |
 | Start an application | Clone your copy and run `tools/remove_demo.py`, then `tools/css.py`. It deletes the demo with its tests and icons, its models and first migration, the gallery's source and placeholders, renames `demo-admins` in `.env.example`, and turns the rules only the demo proved to *By hand*. The application keeps the settings menu, the palette, `app/core/`'s database and Alembic with no migrations, ready for its own, and its stylesheet shrinks by more than a quarter. Run it before adding a migration, which would otherwise follow the demo's. `tools/gallery.py` stays, with nothing to do |

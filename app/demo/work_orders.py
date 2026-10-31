@@ -10,21 +10,22 @@ from decimal import Decimal
 from typing import Annotated, Any
 from urllib.parse import parse_qsl, urlencode, urlsplit
 
-from fastapi import Depends, FastAPI, Form, Request
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.database import DatabaseSession
-from app.core.formatters import format_decimal
+from app.core.formatters import format_decimal, format_file_size
 from app.core.forms import Refused, read_choice, read_date, read_decimal, read_fields, read_flag, read_text, read_whole
-from app.core.i18n import N_, _
+from app.core.i18n import N_, _, ngettext
 from app.core.identity import Person, require_role
 from app.core.tables import fragment_requested, list_query, whole_page
 from app.core.templating import render
+from app.core.uploads import ACCEPTED, KINDS, UploadStore, read_upload
 from app.demo.data import READY, rows_state
 from app.demo.equipment import LARGEST_ID, equipment_view
-from app.demo.models import LAST_MOMENT, PRIORITIES, WORK_ORDER_STATUSES, Equipment, WorkOrder
+from app.demo.models import LAST_MOMENT, PRIORITIES, WORK_ORDER_STATUSES, Equipment, WorkOrder, WorkOrderFile
 from app.demo.planning import (
     EARLIEST,
     HOUR_DECIMALS,
@@ -49,6 +50,7 @@ FIELD_IDS = {
     "crew": "field-crew",
     "cost": "field-cost",
     "stop_needed": "field-stop-needed",
+    "attachment": "field-attachment",
 }
 """In the order of the page, which is the order of the error summary."""
 LONGEST_TITLE = 80
@@ -121,6 +123,7 @@ class Sent:
     cost: str
     stop_needed: str
     back: str
+    attachment: UploadFile | None
 
 
 def sent_form(
@@ -136,9 +139,22 @@ def sent_form(
     cost: Annotated[str, Form()] = "",
     stop_needed: Annotated[str, Form()] = "",
     back: Annotated[str, Form()] = "",
+    attachment: Annotated[UploadFile | None, File()] = None,
 ) -> Sent:
     return Sent(
-        title, equipment, description, fault, status, priority, planned_on, hours, crew, cost, stop_needed, back
+        title,
+        equipment,
+        description,
+        fault,
+        status,
+        priority,
+        planned_on,
+        hours,
+        crew,
+        cost,
+        stop_needed,
+        back,
+        attachment,
     )
 
 
@@ -153,7 +169,12 @@ def _equipment_of(session: Session, code: str) -> Equipment:
     return found
 
 
-def checked(sent: Sent, session: Session) -> tuple[dict[str, Any], dict[str, str]]:
+def _store(request: Request) -> UploadStore:
+    store: UploadStore = request.app.state.uploads
+    return store
+
+
+def checked(sent: Sent, session: Session, store: UploadStore) -> tuple[dict[str, Any], dict[str, str]]:
     """Every field, at the edge. The browser's `required` and `maxlength` help a person, and decide nothing."""
     return read_fields(
         {
@@ -172,12 +193,14 @@ def checked(sent: Sent, session: Session) -> tuple[dict[str, Any], dict[str, str
                 sent.cost, 0, LARGEST_COST, COST_DECIMALS, not_a_number=_("Enter the cost as a number, such as 120.50.")
             ),
             "stop_needed": lambda: read_flag(sent.stop_needed),
+            "attachment": lambda: read_upload(sent.attachment, store.largest),
         }
     )
 
 
 def _typed(sent: Sent) -> dict[str, Any]:
-    return {name: getattr(sent, name) for name in FIELD_IDS} | {"stop_needed": sent.stop_needed == "yes"}
+    typed = {name: getattr(sent, name) for name in FIELD_IDS if name != "attachment"}
+    return typed | {"stop_needed": sent.stop_needed == "yes"}
 
 
 def _stored(order: WorkOrder) -> dict[str, Any]:
@@ -219,8 +242,13 @@ def _form(
     values: dict[str, Any],
     errors: dict[str, str],
     status: int = 200,
+    file_sent: bool = False,
 ) -> Response:
     partial = fragment_requested(request) and request.method == "POST"
+    store = _store(request)
+    kinds = ", ".join(kind.label for kind in KINDS)
+    limits = {"kinds": kinds, "most": format_file_size(store.largest)}
+    hint = _("One file: %(kinds)s, of up to %(most)s.") % limits
     return render(
         request,
         "demo/work_orders/form.html" if partial else "demo/work_orders/page.html",
@@ -237,7 +265,39 @@ def _form(
         earliest=EARLIEST.isoformat(),
         latest=LATEST.isoformat(),
         came_from_planning=back.startswith("/planning"),
+        accepted=ACCEPTED,
+        file_hint=_("Choose the file again: a browser cannot keep it when a form comes back.") if file_sent else hint,
+        files=order.files if order else [],
+        removed="removed" in request.query_params,
     )
+
+
+def _attach(order: WorkOrder, sent: Sent, store: UploadStore, clean: dict[str, Any]) -> str:
+    """Stores a file that passed, and gives its stored name, or nothing. Called last: nothing else can refuse it."""
+    kind = clean["attachment"]
+    if kind is None or sent.attachment is None or sent.attachment.filename is None:
+        return ""
+    stored = store.save(sent.attachment.file)
+    size = store.path_of(stored).stat().st_size
+    name = sent.attachment.filename
+    order.files.append(
+        WorkOrderFile(name=name, stored_name=stored, media_type=kind.media_type, size=size, added_at=LAST_MOMENT)
+    )
+    return stored
+
+
+def _committed(session: Session, store: UploadStore, stored: str) -> None:
+    """A failed commit leaves no file behind: its row never was."""
+    try:
+        session.commit()
+    except Exception:
+        if stored:
+            store.remove(stored)
+        raise
+
+
+def _has_file(sent: Sent) -> bool:
+    return bool(sent.attachment and sent.attachment.filename)
 
 
 def _apply(order: WorkOrder, clean: dict[str, Any]) -> None:
@@ -264,13 +324,14 @@ def create(request: Request, session: DatabaseSession, _person: Admin, sent: Pos
     if rows_state(session) != READY:
         return whole_page(request, "/planning")
     back = way_back(sent.back)
-    clean, errors = checked(sent, session)
+    store = _store(request)
+    clean, errors = checked(sent, session, store)
     if errors:
-        return _form(request, None, back, _typed(sent), errors, 422)
+        return _form(request, None, back, _typed(sent), errors, 422, _has_file(sent))
     order = _new_order()
     _apply(order, clean)
     session.add(order)
-    session.commit()
+    _committed(session, store, _attach(order, sent, store, clean))
     return whole_page(request, _ending(back, "saved", order.id))
 
 
@@ -286,11 +347,12 @@ def update(request: Request, order_id: int, session: DatabaseSession, _person: A
         return whole_page(request, "/planning")
     order = _order_or_404(session, order_id)
     back = way_back(sent.back)
-    clean, errors = checked(sent, session)
+    store = _store(request)
+    clean, errors = checked(sent, session, store)
     if errors:
-        return _form(request, order, back, _typed(sent), errors, 422)
+        return _form(request, order, back, _typed(sent), errors, 422, _has_file(sent))
     _apply(order, clean)
-    session.commit()
+    _committed(session, store, _attach(order, sent, store, clean))
     return whole_page(request, _ending(back, "saved", order.id))
 
 
@@ -300,6 +362,11 @@ def _what_goes(order: WorkOrder) -> list[str]:
     return [
         _("%(work)s, on %(equipment)s") % {"work": order.title, "equipment": order.equipment.name},
         _("Hours recorded: %(hours)s") % {"hours": hours},
+        *(
+            [ngettext("%(count)s attached file", "%(count)s attached files", files) % {"count": files}]
+            if (files := len(order.files))
+            else []
+        ),
     ]
 
 
@@ -327,9 +394,53 @@ def delete(
     if rows_state(session) != READY:
         return whole_page(request, "/planning")
     order = _order_or_404(session, order_id)
+    stored = [file.stored_name for file in order.files]
     session.delete(order)
     session.commit()
+    for name in stored:
+        _store(request).remove(name)
     return whole_page(request, _ending(way_back(back), "deleted", order_id))
+
+
+def _file_or_404(session: Session, order_id: int, file_id: int) -> WorkOrderFile:
+    """A file is reached through its own order, and only by numbers: nothing from the address names a path."""
+    file = session.get(WorkOrderFile, file_id) if file_id <= LARGEST_ID else None
+    if file is None or file.work_order_id != order_id:
+        raise HTTPException(status_code=404)
+    return file
+
+
+def download(request: Request, order_id: int, file_id: int, session: DatabaseSession, _person: Admin) -> Response:
+    file = _file_or_404(session, order_id, file_id)
+    return _store(request).response(file.stored_name, file.name, file.media_type)
+
+
+def confirm_remove(request: Request, order_id: int, file_id: int, session: DatabaseSession, _person: Admin) -> Response:
+    file = _file_or_404(session, order_id, file_id)
+    return render(
+        request,
+        "demo/work_orders/confirm_file.html" if fragment_requested(request) else "demo/work_orders/remove_file.html",
+        file=file,
+        order_id=order_id,
+        back=way_back(request.query_params.get("back", "")),
+    )
+
+
+def remove_file(
+    request: Request,
+    order_id: int,
+    file_id: int,
+    session: DatabaseSession,
+    _person: Admin,
+    back: Annotated[str, Form()] = "",
+) -> Response:
+    file = _file_or_404(session, order_id, file_id)
+    stored = file.stored_name
+    session.delete(file)
+    session.commit()
+    _store(request).remove(stored)
+    keep = urlencode({"back": way_back(back), "removed": 1})
+    return whole_page(request, f"/work-orders/{order_id}/edit?{keep}")
 
 
 def install(application: FastAPI) -> None:
@@ -340,3 +451,8 @@ def install(application: FastAPI) -> None:
     add("/work-orders/{order_id:int}", update, methods=["POST"], include_in_schema=False)
     add("/work-orders/{order_id:int}/delete", confirm_delete, include_in_schema=False)
     add("/work-orders/{order_id:int}/delete", delete, methods=["POST"], include_in_schema=False)
+    add("/work-orders/{order_id:int}/files/{file_id:int}", download, include_in_schema=False)
+    add("/work-orders/{order_id:int}/files/{file_id:int}/delete", confirm_remove, include_in_schema=False)
+    add(
+        "/work-orders/{order_id:int}/files/{file_id:int}/delete", remove_file, methods=["POST"], include_in_schema=False
+    )

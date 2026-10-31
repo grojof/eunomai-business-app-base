@@ -63,6 +63,25 @@ class WorkOrder(Base):
     stop_needed: Mapped[bool] = mapped_column(server_default=false())
 
     equipment: Mapped[Equipment] = relationship(back_populates="work_orders")
+    files: Mapped[list["WorkOrderFile"]] = relationship(
+        back_populates="work_order", cascade="all, delete-orphan", passive_deletes=True, order_by="WorkOrderFile.id"
+    )
+
+
+class WorkOrderFile(Base):
+    """A file attached to a work order. `name` is what a person called it, for showing; `stored_name` is ours."""
+
+    __tablename__ = "work_order_file"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    work_order_id: Mapped[int] = mapped_column(ForeignKey("work_order.id", ondelete="CASCADE"), index=True)
+    name: Mapped[str] = mapped_column(String(200))
+    stored_name: Mapped[str] = mapped_column(String(32), unique=True)
+    media_type: Mapped[str] = mapped_column(String(40))
+    size: Mapped[int]
+    added_at: Mapped[datetime]
+
+    work_order: Mapped[WorkOrder] = relationship(back_populates="files")
 
 
 def overdue() -> ColumnElement[bool]:

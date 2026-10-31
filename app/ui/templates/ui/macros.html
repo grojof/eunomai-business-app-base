@@ -220,9 +220,7 @@
 {% endmacro %}
 
 {% macro _state(identifier, error, hint, required=none) %}
-{%- if required %} required{% endif -%}
-{%- if error %} aria-invalid="true"{% endif -%}
-{%- if error or hint %} aria-describedby="{{ identifier ~ '-hint' if hint else '' }}{{ ' ' if hint and error else '' }}{{ identifier ~ '-error' if error else '' }}"{% endif -%}
+{{- {"required": "" if required else none, "aria-invalid": "true" if error else none, "aria-describedby": ((identifier ~ "-hint") if hint else "") ~ (" " if hint and error else "") ~ ((identifier ~ "-error") if error else "") or none}|xmlattr -}}
 {% endmacro %}
 
 {% macro field_error(identifier, error) %}

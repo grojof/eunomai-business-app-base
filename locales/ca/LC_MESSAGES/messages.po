@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 19:54+0100\n"
+"POT-Creation-Date: 2026-10-31 20:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -201,6 +201,9 @@ msgstr "Accions del formulari"
 msgid "Full"
 msgstr "Completa"
 
+msgid "Go back and choose a smaller file."
+msgstr "Torna enrere i tria un fitxer més petit."
+
 msgid "Go back and try again. If it happens again, tell whoever runs this."
 msgstr ""
 "Torna enrere i torna-ho a provar. Si torna a passar, avisa qui gestiona "
@@ -346,6 +349,14 @@ msgstr "Treu el filtre %(name)s: %(value)s"
 msgid "Remove the special characters, such as tabs, from this text."
 msgstr "Treu d'aquest text els caràcters especials, com ara els tabuladors."
 
+msgid "Rename the file so that it has one extension, such as report.pdf."
+msgstr ""
+"Canvia el nom del fitxer perquè tingui una sola extensió, com ara "
+"informe.pdf."
+
+msgid "Rename the file: its name cannot have a path or special characters."
+msgstr "Canvia el nom del fitxer: no pot tenir una ruta ni caràcters especials."
+
 msgid "Results"
 msgstr "Resultats"
 
@@ -403,15 +414,43 @@ msgstr "No s'ha pogut llegir"
 msgid "That did not work. Try again in a moment."
 msgstr "No ha funcionat. Torna-ho a provar d'aquí a un moment."
 
+msgid "That is too large to send"
+msgstr "És massa gran per enviar-lo"
+
+msgid ""
+"That is too large to send. Choose a smaller file: what you typed is still"
+" here."
+msgstr ""
+"És massa gran per enviar-lo. Tria un fitxer més petit: el que has escrit "
+"continua aquí."
+
 msgid "The browser's own date field, read by the server in one strict form."
 msgstr ""
 "El camp de data del mateix navegador, que el servidor llegeix en una "
 "única forma estricta."
 
+msgid "The file is empty. Choose one with something in it."
+msgstr "El fitxer és buit. Tria'n un que tingui contingut."
+
+#, python-format
+msgid "The file must be %(most)s or smaller."
+msgstr "El fitxer ha d'ocupar %(most)s o menys."
+
+#, python-format
+msgid "The file must be one of these: %(kinds)s."
+msgstr "El fitxer ha de ser un d'aquests: %(kinds)s."
+
 msgid "The main action of a form, the way out, and anything else at the far end."
 msgstr ""
 "L'acció principal d'un formulari, la sortida, i qualsevol altra cosa a "
 "l'altre extrem."
+
+msgid ""
+"The name of this file does not match what it holds. Rename it, or choose "
+"another."
+msgstr ""
+"El nom d'aquest fitxer no coincideix amb el que conté. Canvia'l o tria'n "
+"un altre."
 
 msgid "The server cannot be reached. Check your connection and try again."
 msgstr ""
@@ -435,6 +474,10 @@ msgid ""
 msgstr ""
 "Això ja no és aquí: potser algú ho ha tret. Recarrega la pàgina per veure"
 " què hi ha ara."
+
+#, python-format
+msgid "This is not really a %(kind)s file. Choose another."
+msgstr "En realitat no és un fitxer %(kind)s. Tria'n un altre."
 
 msgid "Tick the box or leave it empty."
 msgstr "Marca la casella o deixa-la buida."

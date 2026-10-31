@@ -1,6 +1,7 @@
 """Settings, read from the environment (APP_*) or a local .env file. See .env.example."""
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal, Self
 
 from pydantic import SecretStr, model_validator
@@ -17,6 +18,9 @@ LAYOUTS: dict[str, tuple[str, ...]] = {
     "language_control": ("dropdown", "select", "menu"),
 }
 """What the settings menu offers, and the only values the server accepts. See docs/specification.md#layouts"""
+SERVED = Path(__file__).resolve().parent.parent
+"""The application's own folders, some of them served as they are: no upload ever goes here."""
+ONE_MEGABYTE = 1024 * 1024
 
 
 class Settings(BaseSettings):
@@ -28,6 +32,12 @@ class Settings(BaseSettings):
 
     # PostgreSQL is the real database. SQLite is for the demo and previews, and refuses to start in production.
     database_url: SecretStr = SecretStr("sqlite:///.data/app.db")
+
+    # Uploads: where they are kept, the largest file, and the largest request of any kind. The folder is outside
+    # anything served and, by default, under .data/, which git ignores. See docs/specification.md#uploads
+    upload_folder: Path = Path(".data/uploads")
+    upload_max_bytes: int = 10 * ONE_MEGABYTE
+    request_max_bytes: int = 32 * ONE_MEGABYTE
 
     # Languages: the first one the person accepts wins; `default_language` is the last resort.
     default_language: str = "en"
@@ -67,6 +77,10 @@ class Settings(BaseSettings):
         unknown = set(self.layout_choices) - set(LAYOUTS)
         if unknown:
             raise ValueError(f"layout_choices has unknown names: {sorted(unknown)}")
+        if self.upload_folder.resolve().is_relative_to(SERVED):
+            raise ValueError("upload_folder must be outside app/, where nothing a person sends can be served or run")
+        if self.request_max_bytes < self.upload_max_bytes:
+            raise ValueError("request_max_bytes must leave room for a whole file of upload_max_bytes")
         self._check_database()
         return self
 

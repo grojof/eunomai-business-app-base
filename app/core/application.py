@@ -19,6 +19,7 @@ from app.core.database import create_database_engine
 from app.core.i18n import Languages, _
 from app.core.settings import LAYOUTS, Settings
 from app.core.templating import UI, SearchItem, register_search, render, search_items
+from app.core.uploads import BODY_TOO_LARGE, RequestLimit, UploadStore
 
 logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -56,6 +57,11 @@ def _cross_site(request: Request) -> bool:
         return True
 
 
+def _declared_too_long(request: Request) -> bool:
+    length = request.headers.get("content-length", "")
+    return length.isascii() and length.isdigit() and int(length) > request.app.state.settings.request_max_bytes
+
+
 def _is_public(path: str) -> bool:
     return path == "/health" or path.startswith("/static/")
 
@@ -77,12 +83,16 @@ async def _context(request: Request, call_next: Callable[[Request], Awaitable[Re
             response = _error_page(request, 401)
         elif _cross_site(request):
             response = _error_page(request, 403)
+        elif _declared_too_long(request):
+            response = _error_page(request, 413)
         else:
             try:
                 response = await call_next(request)
             except Exception:  # here, so the error page keeps its language and the headers below
                 logger.exception("Unhandled error on %s", request.url.path)
                 response = _error_page(request, 500)
+            if request.scope.get(BODY_TOO_LARGE):
+                response = _error_page(request, 413)
 
     response.headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY
     response.headers["X-Content-Type-Options"] = "nosniff"
@@ -96,6 +106,7 @@ def _error_page(request: Request, status: int) -> Response:
         401: (_("Sign-in required"), _("We could not tell who you are. Open the application from your portal.")),
         403: (_("You do not have permission"), _("Ask whoever manages this application if you need access.")),
         404: (_("Page not found"), _("Check the address, or go back to the start.")),
+        413: (_("That is too large to send"), _("Go back and choose a smaller file.")),
         500: (_("Something went wrong"), _("It is not your fault. Try again in a moment.")),
     }
     title, advice = titles.get(status, titles[500])
@@ -221,6 +232,7 @@ def create_core(settings: Settings) -> FastAPI:
     application.state.search = []
     engine = create_database_engine(settings.database_url.get_secret_value())
     application.state.sessions = sessionmaker(engine, expire_on_commit=False)
+    application.state.uploads = UploadStore(settings.upload_folder, settings.upload_max_bytes)
     application.state.languages = Languages(
         settings.languages, settings.default_language, allow_pseudo=settings.environment == "development"
     )
@@ -237,6 +249,7 @@ def create_core(settings: Settings) -> FastAPI:
     application.add_exception_handler(RequestValidationError, _on_unreadable_form)
     application.add_exception_handler(StaleDataError, _on_stale_row)
     application.middleware("http")(_context)
+    application.add_middleware(RequestLimit, limit=settings.request_max_bytes)
     return application
 
 

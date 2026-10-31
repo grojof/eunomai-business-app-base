@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 19:54+0100\n"
+"POT-Creation-Date: 2026-10-31 20:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -27,6 +27,12 @@ msgid ""
 msgstr ""
 "%(components)s components, %(examples)s exemples oficials, daisyUI "
 "%(version)s"
+
+#, python-format
+msgid "%(count)s attached file"
+msgid_plural "%(count)s attached files"
+msgstr[0] "%(count)s fitxer adjunt"
+msgstr[1] "%(count)s fitxers adjunts"
 
 #, python-format
 msgid "%(count)s inspection is due in the next 30 days"
@@ -100,6 +106,9 @@ msgstr "Una taula al servidor"
 
 msgid "Actions"
 msgstr "Accions"
+
+msgid "Add a file"
+msgstr "Afegeix un fitxer"
 
 msgid "Administration"
 msgstr "Administració"
@@ -207,6 +216,11 @@ msgstr "Tria'n un"
 
 msgid "Choose one from the list."
 msgstr "Tria'n un de la llista."
+
+msgid "Choose the file again: a browser cannot keep it when a form comes back."
+msgstr ""
+"Torna a triar el fitxer: un navegador no el pot conservar quan un "
+"formulari torna."
 
 msgid "Class name"
 msgstr "Classe"
@@ -434,6 +448,9 @@ msgstr "Massa llarg"
 
 msgid "Fault"
 msgstr "Avaria"
+
+msgid "Files"
+msgstr "Fitxers"
 
 msgid "Fill in what is known: only what is marked as optional can wait."
 msgstr ""
@@ -677,6 +694,10 @@ msgstr ""
 msgid "On this page"
 msgstr "En aquesta pàgina"
 
+#, python-format
+msgid "One file: %(kinds)s, of up to %(most)s."
+msgstr "Un fitxer: %(kinds)s, de fins a %(most)s."
+
 msgid ""
 "One primary action, the way out beside it, and what is dangerous out of "
 "the way."
@@ -782,6 +803,19 @@ msgstr "Registres"
 
 msgid "Reference"
 msgstr "Referència"
+
+msgid "Remove"
+msgstr "Treu"
+
+#, python-format
+msgid "Remove %(name)s"
+msgstr "Treu %(name)s"
+
+msgid "Remove it"
+msgstr "Treu-lo"
+
+msgid "Remove this file?"
+msgstr "Vols treure aquest fitxer?"
 
 msgid "Reported"
 msgstr "Comunicat"
@@ -927,6 +961,9 @@ msgstr "L'equip s'ha d'aturar per a aquesta feina"
 msgid "The file is empty. Choose one with something in it."
 msgstr "El fitxer és buit. Tria'n un que tingui contingut."
 
+msgid "The file was removed."
+msgstr "S'ha tret el fitxer."
+
 msgid "The plan"
 msgstr "El pla"
 
@@ -962,6 +999,9 @@ msgstr ""
 
 msgid "This cannot be undone. These go with it:"
 msgstr "No es pot desfer. Això se'n va amb ella:"
+
+msgid "This cannot be undone. This goes:"
+msgstr "No es pot desfer. Se'n va això:"
 
 msgid "This equipment is due for inspection."
 msgstr "Aquest equip ha de passar la inspecció."

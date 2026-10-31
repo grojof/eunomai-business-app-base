@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 19:54+0100\n"
+"POT-Creation-Date: 2026-10-31 20:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -27,6 +27,12 @@ msgid ""
 msgstr ""
 "%(components)s componentes, %(examples)s ejemplos oficiales, daisyUI "
 "%(version)s"
+
+#, python-format
+msgid "%(count)s attached file"
+msgid_plural "%(count)s attached files"
+msgstr[0] "%(count)s archivo adjunto"
+msgstr[1] "%(count)s archivos adjuntos"
 
 #, python-format
 msgid "%(count)s inspection is due in the next 30 days"
@@ -100,6 +106,9 @@ msgstr "Una tabla en el servidor"
 
 msgid "Actions"
 msgstr "Acciones"
+
+msgid "Add a file"
+msgstr "Añadir un archivo"
 
 msgid "Administration"
 msgstr "Administración"
@@ -207,6 +216,11 @@ msgstr "Elige uno"
 
 msgid "Choose one from the list."
 msgstr "Elige uno de la lista."
+
+msgid "Choose the file again: a browser cannot keep it when a form comes back."
+msgstr ""
+"Vuelve a elegir el archivo: un navegador no puede conservarlo cuando un "
+"formulario vuelve."
 
 msgid "Class name"
 msgstr "Clase"
@@ -433,6 +447,9 @@ msgstr "Demasiado largo"
 
 msgid "Fault"
 msgstr "Avería"
+
+msgid "Files"
+msgstr "Archivos"
 
 msgid "Fill in what is known: only what is marked as optional can wait."
 msgstr "Rellena lo que se sepa: solo lo marcado como opcional puede esperar."
@@ -674,6 +691,10 @@ msgstr ""
 msgid "On this page"
 msgstr "En esta página"
 
+#, python-format
+msgid "One file: %(kinds)s, of up to %(most)s."
+msgstr "Un archivo: %(kinds)s, de hasta %(most)s."
+
 msgid ""
 "One primary action, the way out beside it, and what is dangerous out of "
 "the way."
@@ -777,6 +798,19 @@ msgstr "Registros"
 
 msgid "Reference"
 msgstr "Referencia"
+
+msgid "Remove"
+msgstr "Quitar"
+
+#, python-format
+msgid "Remove %(name)s"
+msgstr "Quitar %(name)s"
+
+msgid "Remove it"
+msgstr "Quitarlo"
+
+msgid "Remove this file?"
+msgstr "¿Quitar este archivo?"
 
 msgid "Reported"
 msgstr "Comunicado"
@@ -922,6 +956,9 @@ msgstr "El equipo debe parar para este trabajo"
 msgid "The file is empty. Choose one with something in it."
 msgstr "El archivo está vacío. Elige uno que tenga contenido."
 
+msgid "The file was removed."
+msgstr "Se ha quitado el archivo."
+
 msgid "The plan"
 msgstr "El plan"
 
@@ -957,6 +994,9 @@ msgstr ""
 
 msgid "This cannot be undone. These go with it:"
 msgstr "No se puede deshacer. Esto se va con ella:"
+
+msgid "This cannot be undone. This goes:"
+msgstr "No se puede deshacer. Se va esto:"
 
 msgid "This equipment is due for inspection."
 msgstr "A este equipo le toca inspección."

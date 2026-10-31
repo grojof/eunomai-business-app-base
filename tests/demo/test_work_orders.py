@@ -12,8 +12,9 @@ from sqlalchemy.orm import Session
 from app.core import i18n
 from app.core.database import create_database_engine, migrate
 from app.core.i18n import PSEUDO
+from app.demo import work_orders
 from app.demo.generate import work_order_row
-from app.demo.models import LAST_MOMENT, WorkOrder
+from app.demo.models import LAST_MOMENT, WorkOrder, WorkOrderFile
 from app.main import create_app
 from tests.conftest import build_settings, page_opener, running_server
 from tests.demo.support import fill, until
@@ -596,3 +597,299 @@ def test_the_migrations_leave_every_old_row_with_the_new_fields(tmp_path):
         "",
         None,
     )
+
+
+# Files
+
+
+PDF = b"%PDF-1.7\n1 0 obj\n"
+PNG = b"\x89PNG\r\n\x1a\n" + bytes(32)
+
+
+def attach(client, content=PDF, name="report.pdf", address="/work-orders/1", **changes):
+    files = {"attachment": (name, content, "application/octet-stream")}
+    return client.post(address, data=valid(**changes), files=files, headers=SAME_SITE, follow_redirects=False)
+
+
+@pytest.fixture
+def uploads(database_url, tmp_path):
+    """Its own rows and its own folder of files."""
+    fill(database_url, 100)
+    folder = tmp_path / "files"
+    settings = build_settings(database_url=database_url, upload_folder=folder, upload_max_bytes=1024)
+    client = TestClient(create_app(settings), raise_server_exceptions=False)
+    client.headers.update({"X-Remote-User": "demo.person", "X-Remote-Name": "Demo Person", "X-Remote-Groups": "admins"})
+    yield client, database_url, folder
+
+
+def files_of(url, number):
+    engine = create_database_engine(url)
+    with Session(engine) as session:
+        found = list(session.scalars(select(WorkOrderFile).where(WorkOrderFile.work_order_id == number)))
+    engine.dispose()
+    return found
+
+
+def stored(folder):
+    return sorted(path.name for path in folder.iterdir()) if folder.exists() else []
+
+
+@pytest.mark.rule("SEC-12")
+def test_a_file_is_saved_with_its_order_under_a_name_of_ours(uploads):
+    client, url, folder = uploads
+    assert attach(client).status_code == 303
+    row = files_of(url, 1)[0]
+    assert row.name == "report.pdf"
+    assert row.media_type == "application/pdf"
+    assert row.size == len(PDF)
+    assert stored(folder) == [row.stored_name]
+    assert "report" not in row.stored_name
+
+
+def test_a_new_order_takes_a_file_too(uploads):
+    client, url, _folder = uploads
+    response = attach(client, address="/work-orders")
+    number = int(re.search(r"saved=(\d+)", response.headers["location"])[1])
+    assert [file.name for file in files_of(url, number)] == ["report.pdf"]
+
+
+def test_a_form_with_no_file_chosen_saves_without_one(uploads):
+    client, url, _folder = uploads
+    response = client.post("/work-orders/1", data=valid(), files={"attachment": ("", b"")}, headers=SAME_SITE)
+    assert response.status_code == 200
+    assert files_of(url, 1) == []
+
+
+@pytest.mark.rule("SEC-12")
+@pytest.mark.parametrize(
+    ("content", "name", "words"),
+    [
+        (bytes(2000), "report.pdf", "1 KB or smaller"),
+        (b"", "report.pdf", "empty"),
+        (PDF, "virus.exe", "one of these"),
+        (b"MZ an executable", "photo.png", "not really"),
+        (PNG, "report.pdf", "does not match"),
+        (PDF, "../../etc/passwd.pdf", "Rename"),
+        (PDF, "..%2f..%2fpasswd.pdf", "Rename"),
+        (PDF, "report.pdf.exe", "one extension"),
+    ],
+)
+def test_a_refused_file_is_an_error_on_its_field_and_nothing_is_kept(uploads, content, name, words):
+    client, url, folder = uploads
+    before = read_order(url, 1).title
+    response = attach(client, content, name)
+    assert response.status_code == 422
+    assert words in response.text
+    assert 'href="#field-attachment"' in response.text
+    assert files_of(url, 1) == []
+    assert stored(folder) == []
+    assert read_order(url, 1).title == before
+
+
+def test_a_file_in_a_form_that_failed_is_not_kept_and_the_form_says_to_choose_it_again(uploads):
+    client, url, folder = uploads
+    response = attach(client, title="")
+    assert response.status_code == 422
+    assert "Choose the file again" in response.text
+    assert stored(folder) == []
+    assert files_of(url, 1) == []
+
+
+def test_a_commit_that_fails_leaves_no_file_behind(uploads, monkeypatch):
+    client, _url, folder = uploads
+    monkeypatch.setattr(work_orders, "_new_order", lambda: WorkOrder(status="reported"))  # no opened_at: it cannot save
+    assert attach(client, address="/work-orders").status_code == 500
+    assert stored(folder) == []
+
+
+@pytest.mark.rule("SEC-12")
+def test_a_download_is_an_attachment_with_the_real_type(uploads):
+    client, url, _folder = uploads
+    attach(client, PNG, "foto.png")
+    file = files_of(url, 1)[0]
+    response = client.get(f"/work-orders/1/files/{file.id}")
+    assert response.content == PNG
+    assert response.headers["content-type"] == "image/png"
+    assert response.headers["content-disposition"] == 'attachment; filename="foto.png"'
+    assert response.headers["x-content-type-options"] == "nosniff"
+
+
+@pytest.mark.rule("SEC-02")
+def test_a_viewer_cannot_reach_a_file(uploads):
+    client, url, _folder = uploads
+    attach(client)
+    file = files_of(url, 1)[0]
+    client.headers["X-Remote-Groups"] = "staff"
+    assert client.get(f"/work-orders/1/files/{file.id}").status_code == 403
+    assert client.get(f"/work-orders/1/files/{file.id}/delete").status_code == 403
+    assert client.post(f"/work-orders/1/files/{file.id}/delete", headers=SAME_SITE).status_code == 403
+
+
+@pytest.mark.rule("SEC-12")
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/work-orders/2/files/1",
+        "/work-orders/1/files/999999",
+        "/work-orders/1/files/99999999999999999999",
+        "/work-orders/1/files/..%2f..%2f.env",
+        "/work-orders/1/files/report.pdf",
+    ],
+)
+def test_a_file_is_reached_by_its_numbers_through_its_own_order_and_no_other_way(uploads, path):
+    client, _url, _folder = uploads
+    attach(client)
+    assert client.get(path).status_code == 404
+
+
+def test_the_form_lists_the_files_of_an_order(uploads):
+    client, url, _folder = uploads
+    attach(client, name="informe.pdf")
+    html = client.get("/work-orders/1/edit").text
+    file = files_of(url, 1)[0]
+    assert f'href="/work-orders/1/files/{file.id}"' in html
+    assert "informe.pdf" in html
+    assert f'href="/work-orders/1/files/{file.id}/delete?back=' in html
+
+
+def test_a_name_that_could_be_markup_stays_text(uploads):
+    client, _url, _folder = uploads
+    attach(client, name="<b>x.pdf")
+    assert "<b>x.pdf" not in client.get("/work-orders/1/edit").text
+
+
+def test_removing_a_file_asks_and_names_it(uploads):
+    client, url, _folder = uploads
+    attach(client, name="informe.pdf")
+    file = files_of(url, 1)[0]
+    html = client.get(f"/work-orders/1/files/{file.id}/delete").text
+    assert "<li>informe.pdf</li>" in html
+    assert "cannot be undone" in html
+    assert 'id="confirm-title"' in client.get(f"/work-orders/1/files/{file.id}/delete", headers=HTMX).text
+
+
+def test_removing_a_file_takes_it_from_the_disk_and_comes_back_to_the_form(uploads):
+    client, url, folder = uploads
+    attach(client)
+    file = files_of(url, 1)[0]
+    response = client.post(
+        f"/work-orders/1/files/{file.id}/delete", data={"back": "/planning"}, headers=SAME_SITE, follow_redirects=False
+    )
+    assert response.status_code == 303
+    assert response.headers["location"].startswith("/work-orders/1/edit?")
+    assert files_of(url, 1) == []
+    assert stored(folder) == []
+    assert "The file was removed." in client.get(response.headers["location"]).text
+
+
+def test_deleting_an_order_says_how_many_files_go_and_takes_them(uploads):
+    client, url, folder = uploads
+    attach(client)
+    attach(client, PNG, "photo.png")
+    assert "2 attached files" in client.get("/work-orders/1/delete").text
+    assert len(stored(folder)) == 2
+    client.post("/work-orders/1/delete", data={"back": "/planning"}, headers=SAME_SITE)
+    assert stored(folder) == []
+    assert files_of(url, 1) == []
+
+
+@pytest.fixture
+def upload_server(browser, tmp_path):
+    url = f"sqlite:///{(tmp_path / 'orders.db').as_posix()}"
+    fill(url, 200)
+    settings = build_settings(
+        database_url=url,
+        fake_identity=True,
+        fake_groups=["admins"],
+        trusted_proxies=[],
+        upload_folder=tmp_path / "files",
+        upload_max_bytes=2048,
+        request_max_bytes=100_000,
+    )
+    with running_server(create_app(settings)) as port, page_opener(browser, f"http://127.0.0.1:{port}") as opener:
+        yield opener, tmp_path / "files"
+
+
+def choose(page, content=PDF, name="report.pdf"):
+    page.locator("#field-attachment").set_input_files({"name": name, "mimeType": "application/pdf", "buffer": content})
+
+
+@pytest.mark.browser
+def test_with_htmx_a_file_goes_with_the_form(upload_server):
+    open_page, folder = upload_server
+    page = open_page("/work-orders/1/edit?back=%2Fplanning")
+    choose(page)
+    page.get_by_role("button", name="Save").click()
+    page.wait_for_url("**/planning?saved=1")
+    assert len(stored(folder)) == 1
+    page = open_page("/work-orders/1/edit")
+    assert page.get_by_role("link", name="report.pdf", exact=True).is_visible()
+
+
+@pytest.mark.browser
+def test_without_javascript_a_file_goes_with_the_form(upload_server):
+    open_page, folder = upload_server
+    page = open_page("/work-orders/1/edit?back=%2Fplanning", javascript=False)
+    choose(page)
+    page.get_by_role("button", name="Save").click()
+    page.wait_for_url("**/planning?saved=1")
+    assert len(stored(folder)) == 1
+
+
+@pytest.mark.browser
+def test_with_htmx_a_refused_file_stays_in_the_form_with_its_error(upload_server):
+    open_page, folder = upload_server
+    page = open_page("/work-orders/1/edit")
+    page.locator("#field-title").fill("Mine")
+    choose(page, b"MZ an executable", "report.pdf")
+    page.get_by_role("button", name="Save").click()
+    page.wait_for_selector("#work-order [role=alert]")
+    assert "not really" in page.locator("#work-order [role=alert]").inner_text()
+    assert page.locator("#field-title").input_value() == "Mine"
+    assert page.locator("#field-attachment").get_attribute("aria-invalid") == "true"
+    assert stored(folder) == []
+
+
+@pytest.mark.browser
+def test_with_htmx_a_request_too_long_says_so_and_keeps_what_was_typed(upload_server):
+    open_page, _folder = upload_server
+    page = open_page("/work-orders/1/edit")
+    page.locator("#field-title").fill("Mine")
+    choose(page, bytes(150_000))
+    page.get_by_role("button", name="Save").click()
+    until(page, "!document.querySelector('#request-problem').hidden")
+    assert "too large" in page.locator("#request-problem").inner_text()
+    assert page.locator("#field-title").input_value() == "Mine"
+
+
+@pytest.mark.browser
+def test_removing_a_file_opens_a_dialog_and_comes_back(upload_server):
+    open_page, folder = upload_server
+    page = open_page("/work-orders/1/edit?back=%2Fplanning")
+    choose(page)
+    page.get_by_role("button", name="Save").click()
+    page.wait_for_url("**/planning?saved=1")
+    page = open_page("/work-orders/1/edit?back=%2Fplanning")
+    page.get_by_role("link", name="Remove report.pdf").click()
+    page.wait_for_selector("dialog#confirm[open]")
+    assert "report.pdf" in page.locator("dialog#confirm").inner_text()
+    page.get_by_role("button", name="Remove it").click()
+    page.wait_for_url("**/work-orders/1/edit*removed=1*")
+    assert page.get_by_text("The file was removed.").is_visible()
+    assert stored(folder) == []
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-01")
+@pytest.mark.rule("A11Y-05")
+@pytest.mark.parametrize("theme", ["light", "dark"])
+@pytest.mark.parametrize("width", [1280, 390])
+def test_a_form_with_files_passes_the_scan(upload_server, theme, width):
+    open_page, _folder = upload_server
+    first = open_page("/work-orders/1/edit?back=%2Fplanning")
+    choose(first)
+    first.get_by_role("button", name="Save").click()
+    first.wait_for_url("**/planning?saved=1")
+    page = open_page("/work-orders/1/edit", theme=theme, width=width, bypass_csp=True)
+    assert run_axe(page) == []
+    assert not overflows_sideways(page)

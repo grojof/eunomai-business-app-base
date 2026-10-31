@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 19:54+0100\n"
+"POT-Creation-Date: 2026-10-31 20:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -203,6 +203,9 @@ msgstr "Acciones del formulario"
 msgid "Full"
 msgstr "Completa"
 
+msgid "Go back and choose a smaller file."
+msgstr "Vuelve atrás y elige un archivo más pequeño."
+
 msgid "Go back and try again. If it happens again, tell whoever runs this."
 msgstr ""
 "Vuelve atrás e inténtalo de nuevo. Si vuelve a pasar, avisa a quien "
@@ -348,6 +351,16 @@ msgstr "Quitar el filtro %(name)s: %(value)s"
 msgid "Remove the special characters, such as tabs, from this text."
 msgstr "Quita de este texto los caracteres especiales, como los tabuladores."
 
+msgid "Rename the file so that it has one extension, such as report.pdf."
+msgstr ""
+"Cambia el nombre del archivo para que tenga una sola extensión, como "
+"informe.pdf."
+
+msgid "Rename the file: its name cannot have a path or special characters."
+msgstr ""
+"Cambia el nombre del archivo: no puede tener una ruta ni caracteres "
+"especiales."
+
 msgid "Results"
 msgstr "Resultados"
 
@@ -405,15 +418,43 @@ msgstr "No se ha podido leer"
 msgid "That did not work. Try again in a moment."
 msgstr "No ha funcionado. Vuelve a intentarlo en un momento."
 
+msgid "That is too large to send"
+msgstr "Es demasiado grande para enviarlo"
+
+msgid ""
+"That is too large to send. Choose a smaller file: what you typed is still"
+" here."
+msgstr ""
+"Es demasiado grande para enviarlo. Elige un archivo más pequeño: lo que "
+"has escrito sigue aquí."
+
 msgid "The browser's own date field, read by the server in one strict form."
 msgstr ""
 "El campo de fecha del propio navegador, que el servidor lee en una única "
 "forma estricta."
 
+msgid "The file is empty. Choose one with something in it."
+msgstr "El archivo está vacío. Elige uno que tenga contenido."
+
+#, python-format
+msgid "The file must be %(most)s or smaller."
+msgstr "El archivo debe ocupar %(most)s o menos."
+
+#, python-format
+msgid "The file must be one of these: %(kinds)s."
+msgstr "El archivo debe ser uno de estos: %(kinds)s."
+
 msgid "The main action of a form, the way out, and anything else at the far end."
 msgstr ""
 "La acción principal de un formulario, la salida, y cualquier otra cosa al"
 " otro extremo."
+
+msgid ""
+"The name of this file does not match what it holds. Rename it, or choose "
+"another."
+msgstr ""
+"El nombre de este archivo no coincide con lo que contiene. Cámbialo o "
+"elige otro."
 
 msgid "The server cannot be reached. Check your connection and try again."
 msgstr ""
@@ -435,6 +476,10 @@ msgid ""
 msgstr ""
 "Esto ya no está aquí: quizá alguien lo ha quitado. Recarga la página para"
 " ver lo que hay ahora."
+
+#, python-format
+msgid "This is not really a %(kind)s file. Choose another."
+msgstr "En realidad no es un archivo %(kind)s. Elige otro."
 
 msgid "Tick the box or leave it empty."
 msgstr "Marca la casilla o déjala vacía."

@@ -44,6 +44,7 @@ environment.globals["chart_library"] = _script(
 environment.filters["decimal"] = formatters.format_decimal
 environment.filters["date"] = formatters.format_date
 environment.filters["percent"] = formatters.format_percent
+environment.filters["filesize"] = formatters.format_file_size
 
 
 @dataclass(frozen=True)

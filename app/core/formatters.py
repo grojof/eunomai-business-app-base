@@ -65,6 +65,15 @@ def format_decimal(value: Decimal | int, places: int | None = None) -> str:
         )
 
 
+def format_file_size(size: int) -> str:
+    """Bytes as a person says them: symbols of measure are the same in every language this base ships."""
+    if size < 1024:
+        return f"{format_decimal(size)} B"
+    amount = rounded(Decimal(size) / (1024 if size < 1024**2 else 1024**2), 1)
+    unit = "KB" if size < 1024**2 else "MB"
+    return f"{format_decimal(amount, 0 if amount == amount.to_integral_value() else 1)} {unit}"
+
+
 def parse_decimal(text: str) -> Decimal:
     """Reads a number as the person's language writes it. Raises ValueError if it is not one.
 
