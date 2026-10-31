@@ -60,7 +60,7 @@ passes by hand: keyboard only, then a screen reader (NVDA with a Chromium browse
 | A11Y-05 | Contrast of 4.5:1 for text and 3:1 for large text, by the scan on the pages it visits. It measures text against its own background, not whether a shape stands out from the page: that is USE-10. With daisyUI's themes as they come, coloured links, `btn-link`, `menu-title`, `chat-bubble-primary` and `chat-bubble-secondary` can fall below it, and are not used on real screens. A theme added to `theme.css` is computed too | [WCAG 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum) | Automatic |
 | A11Y-06 | Targets of at least 24 by 24 pixels | [WCAG 2.5.8](https://www.w3.org/TR/WCAG22/#target-size-minimum) | Automatic |
 | A11Y-07 | A status is never shown by colour alone | [WCAG 1.4.1](https://www.w3.org/TR/WCAG22/#use-of-color) | By hand |
-| A11Y-08 | Every field has a label; errors are listed in a summary, linked to the field, and say how to fix them | [WCAG 3.3.1](https://www.w3.org/TR/WCAG22/#error-identification), [3.3.2](https://www.w3.org/TR/WCAG22/#labels-or-instructions), [3.3.3](https://www.w3.org/TR/WCAG22/#error-suggestion), [GOV.UK error summary](https://design-system.service.gov.uk/components/error-summary/) | Milestone 3 |
+| A11Y-08 | Every field has a label; errors are listed in a summary, linked to the field, and say how to fix them | [WCAG 3.3.1](https://www.w3.org/TR/WCAG22/#error-identification), [3.3.2](https://www.w3.org/TR/WCAG22/#labels-or-instructions), [3.3.3](https://www.w3.org/TR/WCAG22/#error-suggestion), [GOV.UK error summary](https://design-system.service.gov.uk/components/error-summary/) | Automatic |
 | A11Y-09 | When content is replaced, focus stays somewhere sensible and the change is announced | [WCAG 4.1.3](https://www.w3.org/TR/WCAG22/#status-messages), [2.4.3](https://www.w3.org/TR/WCAG22/#focus-order) | Automatic |
 | A11Y-10 | A chart always has a text summary and its data as a table, and they remain without JavaScript or when the library fails to load | [WCAG 1.1.1](https://www.w3.org/TR/WCAG22/#non-text-content) | Automatic |
 | A11Y-11 | Nothing moves or flashes on its own; animation respects `prefers-reduced-motion` | [WCAG 2.2.2](https://www.w3.org/TR/WCAG22/#pause-stop-hide), [2.3.3](https://www.w3.org/TR/WCAG22/#animation-from-interactions) | By hand |
@@ -75,8 +75,8 @@ passes by hand: keyboard only, then a screen reader (NVDA with a Chromium browse
 
 daisyUI's examples in the gallery are reference material, not our screens. The scan is no gate on them and never decides
 what is shown: a person who asks to see what daisyUI offers sees all of it. It stays a gate on real screens: the shell,
-the dashboard, the equipment list and detail, planning, the settings menu with every look of its controls, the gallery's
-index, the frame of component pages, error pages and the palette.
+the dashboard, the equipment list and detail, planning, the work order form, the settings menu with every look of its
+controls, the gallery's index, the frame of component pages, error pages and the palette.
 
 So **Available is not a promise of accessibility.** It means an official example, shown as published, not audited by us.
 **Approved** means our macro, tests and a review. **Decorative** and **Not recommended** stay, with their notes. Before an
@@ -91,8 +91,8 @@ regions, marked in the page, and not our frame around them.
 |---|---|---|---|
 | USE-01 | Each screen designs its loading, empty, error, partial and no-permission states | [Nielsen 1: visibility of system status](https://www.nngroup.com/articles/ten-usability-heuristics/) | By hand |
 | USE-02 | Messages say what happened and what to do, in plain language | [Nielsen 9: recover from errors](https://www.nngroup.com/articles/ten-usability-heuristics/), [GOV.UK error message](https://design-system.service.gov.uk/components/error-message/) | By hand |
-| USE-03 | A failed submission keeps what was typed | [GOV.UK validation](https://design-system.service.gov.uk/patterns/validation/) | Milestone 3 |
-| USE-04 | Actions can be undone where possible; a confirmation names what will be lost | [Nielsen 3 and 5: user control, error prevention](https://www.nngroup.com/articles/ten-usability-heuristics/) | Milestone 3 |
+| USE-03 | A failed submission keeps what was typed | [GOV.UK validation](https://design-system.service.gov.uk/patterns/validation/) | Automatic |
+| USE-04 | Actions can be undone where possible; a confirmation names what will be lost | [Nielsen 3 and 5: user control, error prevention](https://www.nngroup.com/articles/ten-usability-heuristics/) | Automatic |
 | USE-05 | Filters, sort and page live in the URL, survive a reload and work with the back button | Project decision | Automatic |
 | USE-06 | Any action responds at once; a long task shows progress and can be left running | [Nielsen 1: visibility of system status](https://www.nngroup.com/articles/ten-usability-heuristics/) | Milestone 4 |
 | USE-07 | One primary action per screen | Project decision | By hand |
@@ -181,7 +181,7 @@ in the Ubuntu job.
 |---|---|---|---|
 | SEC-01 | Identity comes only from the proxy, and a repeated identity header means no identity; without it, nothing is served except `/health` and `/static/` | [ASVS V6](https://asvs.owasp.org/), [Top 10 A07](https://top10.owasp.org/2025/) | Automatic |
 | SEC-02 | Permissions are checked on the server, per action; hiding a button is not a control | [ASVS V8](https://asvs.owasp.org/), [Top 10 A01](https://top10.owasp.org/2025/) | Automatic |
-| SEC-03 | Input is validated at the edge | [ASVS V2](https://asvs.owasp.org/), [Top 10 A05](https://top10.owasp.org/2025/) | Milestone 3 |
+| SEC-03 | Input is validated at the edge | [ASVS V2](https://asvs.owasp.org/), [Top 10 A05](https://top10.owasp.org/2025/) | Automatic |
 | SEC-04 | Escaping is always on; user data is never marked as safe | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Automatic |
 | SEC-05 | Queries are parameterised; no text built from input | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Automatic |
 | SEC-06 | A Content Security Policy without inline scripts or styles, on every page, official examples included: none reaches a page with `style=`, `on*=` or an address on another server, and a browser opening each page finds no violation | [CSP 3](https://www.w3.org/TR/CSP3/), [OWASP CSP](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html) | Automatic |
@@ -190,7 +190,7 @@ in the Ubuntu job.
 | SEC-09 | Secrets stay out of the repository: every text file git tracks is scanned for obvious ones, and `.env` is ignored | [ASVS V13](https://asvs.owasp.org/) | Automatic |
 | SEC-10 | Every package in `uv.lock` has hashes, each supported platform has an executable hash, and each copied file matches its recorded hash | [Top 10 A03](https://top10.owasp.org/2025/), [NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/final), [SLSA](https://slsa.dev/spec/) | Automatic |
 | SEC-11 | An error reveals nothing to the person, and its detail reaches the log | [ASVS V16](https://asvs.owasp.org/), [Top 10 A10](https://top10.owasp.org/2025/) | Automatic |
-| SEC-12 | Uploads are checked by size and real type | [ASVS V5](https://asvs.owasp.org/), [OWASP File Upload](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html) | Milestone 3 |
+| SEC-12 | Uploads are checked by size and real type | [ASVS V5](https://asvs.owasp.org/), [OWASP File Upload](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html) | Automatic |
 | SEC-14 | Text is never run as code: no `eval`, `new Function` or `exec`, and the browser refuses them | [CWE-95](https://cwe.mitre.org/data/definitions/95.html), [CSP 3](https://www.w3.org/TR/CSP3/), [htmx security](https://htmx.org/essays/web-security-basics-with-htmx/) | Automatic |
 | SEC-15 | A spreadsheet never runs what it exports: text that could start a formula is neutralised, and no cell holds one | [OWASP CSV Injection](https://owasp.org/www-community/attacks/CSV_Injection) | Automatic |
 | SEC-13 | Cookies are `HttpOnly` and `SameSite`, and `Secure` in production; a redirect never leaves the application | [ASVS V3](https://asvs.owasp.org/), [Top 10 A01](https://top10.owasp.org/2025/) | Automatic |

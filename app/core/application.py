@@ -7,10 +7,12 @@ from typing import Annotated
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Form, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import StaleDataError
+from starlette.convertors import IntegerConvertor, register_url_convertor
 from starlette.exceptions import HTTPException
 
 from app.core import identity
@@ -18,11 +20,24 @@ from app.core.database import create_database_engine
 from app.core.i18n import Languages, _
 from app.core.settings import LAYOUTS, Settings
 from app.core.templating import UI, SearchItem, register_search, render, search_items
+from app.core.uploads import BODY_TOO_LARGE, RequestLimit, UploadStore
 
 logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent.parent
 THEMES = ("system", "light", "dark")
 ONE_YEAR = 60 * 60 * 24 * 365
+LONGEST_LENGTH = 18
+"""Digits in a Content-Length worth reading: more is past any limit, and Python refuses to read thousands of them."""
+
+
+class _Identifier(IntegerConvertor):
+    """A number in an address, of a length no row can have past. Longer is no such address, a 404, and not a 500: Python
+    refuses to read an int of more than 4,300 digits. Registered once, so every `{id:int}` route of a clone has it."""
+
+    regex = "[0-9]{1,19}"
+
+
+register_url_convertor("int", _Identifier())
 
 CONTENT_SECURITY_POLICY = "; ".join(
     [
@@ -55,6 +70,18 @@ def _cross_site(request: Request) -> bool:
         return True
 
 
+def _declared_too_long(request: Request) -> bool:
+    length = request.headers.get("content-length", "")
+    if not (length.isascii() and length.isdigit()):
+        return False
+    return len(length) > LONGEST_LENGTH or int(length) > request.app.state.settings.request_max_bytes
+
+
+def _framed_twice(request: Request) -> bool:
+    """Both headers mean two lengths, and a server and a proxy may each believe a different one: RFC 9112, 6.1."""
+    return "transfer-encoding" in request.headers and "content-length" in request.headers
+
+
 def _is_public(path: str) -> bool:
     return path == "/health" or path.startswith("/static/")
 
@@ -76,12 +103,18 @@ async def _context(request: Request, call_next: Callable[[Request], Awaitable[Re
             response = _error_page(request, 401)
         elif _cross_site(request):
             response = _error_page(request, 403)
+        elif _framed_twice(request):
+            response = _error_page(request, 400)
+        elif _declared_too_long(request):
+            response = _error_page(request, 413)
         else:
             try:
                 response = await call_next(request)
             except Exception:  # here, so the error page keeps its language and the headers below
                 logger.exception("Unhandled error on %s", request.url.path)
                 response = _error_page(request, 500)
+            if request.scope.get(BODY_TOO_LARGE):
+                response = _error_page(request, 413)
 
     response.headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY
     response.headers["X-Content-Type-Options"] = "nosniff"
@@ -91,9 +124,11 @@ async def _context(request: Request, call_next: Callable[[Request], Awaitable[Re
 
 def _error_page(request: Request, status: int) -> Response:
     titles = {
+        400: (_("That could not be read"), _("Go back and try again. If it happens again, tell whoever runs this.")),
         401: (_("Sign-in required"), _("We could not tell who you are. Open the application from your portal.")),
         403: (_("You do not have permission"), _("Ask whoever manages this application if you need access.")),
         404: (_("Page not found"), _("Check the address, or go back to the start.")),
+        413: (_("That is too large to send"), _("Go back and choose a smaller file.")),
         500: (_("Something went wrong"), _("It is not your fault. Try again in a moment.")),
     }
     title, advice = titles.get(status, titles[500])
@@ -103,6 +138,12 @@ def _error_page(request: Request, status: int) -> Response:
 async def _on_stale_row(request: Request, _error: Exception) -> Response:
     """Someone removed the row between reading and saving it: the same answer as if it had gone a moment earlier."""
     return _error_page(request, 404)
+
+
+async def _on_unreadable_form(request: Request, _error: Exception) -> Response:
+    """A form that is not what a page sends, as when a file arrives for a text field. No page of ours sends that, and
+    FastAPI's own answer repeats what came, so a person gets a page."""
+    return _error_page(request, 400)
 
 
 async def _on_http_error(request: Request, error: Exception) -> Response:
@@ -213,6 +254,7 @@ def create_core(settings: Settings) -> FastAPI:
     application.state.search = []
     engine = create_database_engine(settings.database_url.get_secret_value())
     application.state.sessions = sessionmaker(engine, expire_on_commit=False)
+    application.state.uploads = UploadStore(settings.upload_folder, settings.upload_max_bytes)
     application.state.languages = Languages(
         settings.languages, settings.default_language, allow_pseudo=settings.environment == "development"
     )
@@ -226,8 +268,10 @@ def create_core(settings: Settings) -> FastAPI:
         register_search(application.state, _settings_item)
     application.add_api_route("/health", _health, include_in_schema=False)
     application.add_exception_handler(HTTPException, _on_http_error)
+    application.add_exception_handler(RequestValidationError, _on_unreadable_form)
     application.add_exception_handler(StaleDataError, _on_stale_row)
     application.middleware("http")(_context)
+    application.add_middleware(RequestLimit, limit=settings.request_max_bytes)
     return application
 
 

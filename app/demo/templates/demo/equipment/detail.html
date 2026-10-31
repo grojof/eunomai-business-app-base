@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "ui/macros.html" import breadcrumbs, page_heading, status_label, button %}
+{% from "ui/macros.html" import breadcrumbs, page_heading, status_label, button, link_button, message %}
 {% block title %}{{ item.code }}{% endblock %}
 {% block content %}
 {% set label, kind = statuses[item.status] %}
@@ -7,7 +7,9 @@
 {% call page_heading(item.name, item.code) %}
 {{ status_label(_(label), kind) }}
 {{ button(_("Print"), attributes={"data-print": ""}, extra="noscript:hidden", name="printer") }}
+{% if can_edit %}{{ link_button(_("New work order"), "/work-orders/new?equipment=" ~ item.id ~ "&back=" ~ orders_address|urlencode, "primary", name="plus") }}{% endif %}
 {% endcall %}
+{% if outcome %}<div role="status">{{ message("success", outcome) }}</div>{% endif %}
 <div id="equipment-tabs" class="space-y-6">
   {% include "demo/equipment/tabs.html" %}
 </div>

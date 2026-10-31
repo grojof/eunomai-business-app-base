@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 18:54+0100\n"
+"POT-Creation-Date: 2026-10-31 21:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -76,6 +76,19 @@ msgstr ""
 "%(total)s órdenes de trabajo abiertas este año. El mes con más trabajo "
 "fue %(month)s, con %(count)s."
 
+#, python-format
+msgid "%(work)s, on %(equipment)s"
+msgstr "%(work)s, en %(equipment)s"
+
+msgid "2 attached files"
+msgstr "2 archivos adjuntos"
+
+msgid "7.50 hours of work"
+msgstr "7,50 horas de trabajo"
+
+msgid "A PDF, PNG or JPEG file of up to 10 MB."
+msgstr "Un archivo PDF, PNG o JPEG de hasta 10 MB."
+
 msgid "A card with a title, ready for any content."
 msgstr "Una tarjeta con título, lista para cualquier contenido."
 
@@ -87,6 +100,9 @@ msgstr "Una tabla en el servidor"
 
 msgid "Actions"
 msgstr "Acciones"
+
+msgid "Add a file"
+msgstr "Añadir un archivo"
 
 msgid "Administration"
 msgstr "Administración"
@@ -106,8 +122,31 @@ msgstr "Todas las ubicaciones"
 msgid "All states"
 msgstr "Todos los estados"
 
+msgid "All the fields"
+msgstr "Todos los campos"
+
+#, python-format
+msgid "All the fields of work order %(number)s: %(work)s"
+msgstr "Todos los campos de la orden de trabajo %(number)s: %(work)s"
+
 msgid "Any date"
 msgstr "Cualquier fecha"
+
+msgid ""
+"Arrow keys move through the list, Enter chooses, Escape closes it. "
+"Without JavaScript it is a plain select, which is why a list must fit in "
+"a page."
+msgstr ""
+"Las flechas recorren la lista, Intro elige y Escape la cierra. Sin "
+"JavaScript es un select normal, y por eso la lista debe caber en una "
+"página."
+
+#, python-format
+msgid "Attached file: %(name)s"
+msgstr "Archivo adjunto: %(name)s"
+
+msgid "Attachment"
+msgstr "Archivo adjunto"
 
 msgid "Audit"
 msgstr "Auditoría"
@@ -127,8 +166,20 @@ msgstr ""
 msgid "Backlog"
 msgstr "Pendientes"
 
+msgid "Bearing wear"
+msgstr "Desgaste de rodamiento"
+
 msgid "Behaviour"
 msgstr "Comportamiento"
+
+msgid "Belt slipping"
+msgstr "Correa que patina"
+
+msgid "Blocked filter"
+msgstr "Filtro obstruido"
+
+msgid "Blown fuse"
+msgstr "Fusible fundido"
 
 msgid "Both sites score well on safety. The south site is weakest on records."
 msgstr "Las dos plantas puntúan bien en seguridad. La sur flojea en registros."
@@ -149,8 +200,25 @@ msgstr "Revisa lo que has escrito"
 msgid "Checked"
 msgstr "Revisado"
 
+msgid "Choose a fault from the list."
+msgstr "Elige una avería de la lista."
+
+msgid "Choose a priority."
+msgstr "Elige una prioridad."
+
 msgid "Choose a state from the list."
 msgstr "Elige un estado de la lista."
+
+msgid "Choose one"
+msgstr "Elige uno"
+
+msgid "Choose one from the list."
+msgstr "Elige uno de la lista."
+
+msgid "Choose the file again: a browser cannot keep it when a form comes back."
+msgstr ""
+"Vuelve a elegir el archivo: un navegador no puede conservarlo cuando un "
+"formulario vuelve."
 
 msgid "Class name"
 msgstr "Clase"
@@ -204,6 +272,9 @@ msgstr "Copiar"
 msgid "Corrective"
 msgstr "Correctivo"
 
+msgid "Corrosion"
+msgstr "Corrosión"
+
 msgid "Cost"
 msgstr "Coste"
 
@@ -222,6 +293,9 @@ msgstr "Coste del trabajo, acumulado"
 msgid "Cost to date"
 msgstr "Coste hasta la fecha"
 
+msgid "Cracked housing"
+msgstr "Carcasa agrietada"
+
 msgid "Dashboard"
 msgstr "Panel"
 
@@ -231,14 +305,47 @@ msgstr "Decorativo: no pensado para aplicaciones de gestión."
 msgid "Delete"
 msgstr "Eliminar"
 
+msgid "Delete it"
+msgstr "Eliminarla"
+
+msgid "Delete this work order"
+msgstr "Eliminar esta orden de trabajo"
+
+msgid "Delete this work order?"
+msgstr "¿Eliminar esta orden de trabajo?"
+
+#, python-format
+msgid "Delete work order %(number)s"
+msgstr "Eliminar la orden de trabajo %(number)s"
+
+#, python-format
+msgid "Delete work order %(number)s?"
+msgstr "¿Eliminar la orden de trabajo %(number)s?"
+
+msgid "Description"
+msgstr "Descripción"
+
 msgid "Details"
 msgstr "Detalles"
 
 msgid "Direction"
 msgstr "Dirección"
 
+msgid "Dirty oil"
+msgstr "Aceite sucio"
+
+msgid "Dirty sensor"
+msgstr "Sensor sucio"
+
 msgid "Due soon"
 msgstr "Vence pronto"
+
+msgid ""
+"Each line is a link to its field. Focus comes to the summary when a form "
+"returns with errors, and a screen reader reads it."
+msgstr ""
+"Cada línea es un enlace a su campo. El foco va al resumen cuando un "
+"formulario vuelve con errores, y un lector de pantalla lo lee."
 
 msgid "Edit"
 msgstr "Editar"
@@ -254,12 +361,24 @@ msgstr "Escribe una fecha, o déjala vacía si aún no está planificada."
 msgid "Enter between 0 and %(most)s hours."
 msgstr "Escribe entre 0 y %(most)s horas."
 
+msgid "Enter the code of the equipment."
+msgstr "Escribe el código del equipo."
+
+msgid "Enter the cost as a number, such as 120.50."
+msgstr "Escribe el coste como un número, por ejemplo 120,50."
+
 #, python-format
 msgid "Enter the hours as a number, such as %(example)s."
 msgstr "Escribe las horas como un número, por ejemplo %(example)s."
 
+msgid "Enter the hours as a number, such as 7.50."
+msgstr "Escribe las horas como un número, por ejemplo 7,50."
+
 msgid "Enter the hours with two decimals at most."
 msgstr "Escribe las horas con dos decimales como máximo."
+
+msgid "Enter what has to be done."
+msgstr "Escribe qué hay que hacer."
 
 msgid "Equipment"
 msgstr "Equipos"
@@ -273,6 +392,9 @@ msgstr "Equipos por ubicación"
 msgid "Equipment by state"
 msgstr "Equipos por estado"
 
+msgid "Equipment code"
+msgstr "Código del equipo"
+
 msgid "Equipment list"
 msgstr "Lista de equipos"
 
@@ -284,6 +406,9 @@ msgstr "Equipos, dónde están, su próxima inspección y su estado"
 
 msgid "Equipment, where it is, its state, its next inspection and its cost"
 msgstr "Equipos, dónde están, su estado, su próxima inspección y su coste"
+
+msgid "Error"
+msgstr "Error"
 
 msgid ""
 "Every component on offer, with an honest status, and every official "
@@ -315,14 +440,32 @@ msgstr ""
 msgid "Export to Excel"
 msgstr "Exportar a Excel"
 
+msgid "Far too long"
+msgstr "Demasiado largo"
+
+msgid "Fault"
+msgstr "Avería"
+
+msgid "Files"
+msgstr "Archivos"
+
+msgid "Fill in what is known: only what is marked as optional can wait."
+msgstr "Rellena lo que se sepa: solo lo marcado como opcional puede esperar."
+
 msgid "Filter components"
 msgstr "Filtrar componentes"
+
+msgid "Fluid leak"
+msgstr "Fuga de líquido"
 
 msgid "Forklift"
 msgstr "Carretilla elevadora"
 
 msgid "Four in five pieces of equipment are in service."
 msgstr "Cuatro de cada cinco equipos están en servicio."
+
+msgid "From 1 to 50."
+msgstr "De 1 a 50."
 
 msgid "Gallery"
 msgstr "Galería"
@@ -340,11 +483,31 @@ msgstr ""
 "Aquí es un formulario sencillo y recarga la página. En una pantalla, htmx"
 " sustituye solo los resultados."
 
+msgid ""
+"Here nothing is deleted. Focus starts on the way out, and comes back to "
+"the button when it closes. Without JavaScript the same address is a page "
+"of its own, with the same words: the work order form shows both."
+msgstr ""
+"Aquí no se elimina nada. El foco empieza en la salida y vuelve al botón "
+"al cerrarse. Sin JavaScript la misma dirección es una página propia, con "
+"las mismas palabras: el formulario de orden de trabajo muestra ambas "
+"cosas."
+
+msgid "High"
+msgstr "Alta"
+
+msgid "High goes first in the plan."
+msgstr "La alta va primero en el plan."
+
 msgid "Hours"
 msgstr "Horas"
 
 msgid "Hours planned and worked"
 msgstr "Horas previstas y trabajadas"
+
+#, python-format
+msgid "Hours recorded: %(hours)s"
+msgstr "Horas registradas: %(hours)s"
 
 msgid "Hours worked"
 msgstr "Horas trabajadas"
@@ -354,6 +517,12 @@ msgid "Hours worked stayed within 6 % of the plan in every month."
 msgstr ""
 "Las horas trabajadas no se alejaron más de un 6 % de lo previsto en "
 "ningún mes."
+
+msgid "I have read the safety sheet"
+msgstr "He leído la ficha de seguridad"
+
+msgid "In a few words, as it will read in a list."
+msgstr "En pocas palabras, como se leerá en una lista."
 
 msgid ""
 "In groups, grouped_table does the same with one tbody per group and a "
@@ -372,11 +541,21 @@ msgid "Inspections"
 msgstr "Inspecciones"
 
 msgid ""
+"It has its icon and its words, so it does not depend on colour. Every "
+"field macro writes it and ties it to the control."
+msgstr ""
+"Tiene su icono y sus palabras, así que no depende del color. Cada macro "
+"de campo lo escribe y lo vincula al control."
+
+msgid ""
 "It uses Tailwind's own colours, which this base removes, so some colours "
 "differ from the published example."
 msgstr ""
 "Usa los colores propios de Tailwind, que esta base elimina, así que "
 "algunos colores difieren del ejemplo publicado."
+
+msgid "Keep it"
+msgstr "Conservarla"
 
 msgid "Leave it empty if it is not planned yet."
 msgstr "Déjala vacía si aún no está planificada."
@@ -390,11 +569,23 @@ msgstr "Cargando"
 msgid "Location"
 msgstr "Ubicación"
 
+msgid "Loose connection"
+msgstr "Conexión floja"
+
+msgid "Low"
+msgstr "Baja"
+
+msgid "Low pressure"
+msgstr "Presión baja"
+
 msgid "Maintenance plan"
 msgstr "Plan de mantenimiento"
 
 msgid "Maintenance to date"
 msgstr "Mantenimiento hasta hoy"
+
+msgid "Misalignment"
+msgstr "Desalineación"
 
 msgid "Modifier"
 msgstr "Modificador"
@@ -404,6 +595,9 @@ msgstr "Mes"
 
 msgid "Month planned"
 msgstr "Mes previsto"
+
+msgid "Motor overload"
+msgstr "Sobrecarga del motor"
 
 msgid "Name"
 msgstr "Nombre"
@@ -417,6 +611,9 @@ msgstr ""
 "Escape y devuelve el foco. Su contenido llega con htmx, y app.js lo abre "
 "entonces. Planificación lo usa para editar una fila."
 
+msgid "New work order"
+msgstr "Nueva orden de trabajo"
+
 msgid "Next"
 msgstr "Siguiente"
 
@@ -426,8 +623,14 @@ msgstr "Próxima inspección"
 msgid "Next inspections"
 msgstr "Próximas inspecciones"
 
+msgid "No"
+msgstr "No"
+
 msgid "No component matches"
 msgstr "Ningún componente coincide"
+
+msgid "No equipment has that code. Look it up in the list of equipment."
+msgstr "Ningún equipo tiene ese código. Búscalo en la lista de equipos."
 
 msgid "No equipment matches"
 msgstr "Ningún equipo coincide"
@@ -438,14 +641,35 @@ msgstr "Ninguna orden de trabajo coincide"
 msgid "No work orders yet"
 msgstr "Aún no hay órdenes de trabajo"
 
+msgid "Noise or vibration"
+msgstr "Ruido o vibración"
+
+msgid "None"
+msgstr "Ninguno"
+
+msgid "Normal"
+msgstr "Normal"
+
 msgid "North plant"
 msgstr "Planta norte"
 
 msgid "Not closed"
 msgstr "Sin cerrar"
 
+msgid "Not known"
+msgstr "Sin determinar"
+
 msgid "Not planned yet"
 msgstr "Aún sin planificar"
+
+msgid ""
+"Nothing of yours is saved yet, and what you typed is still here. They "
+"saved what is listed below. Save again to replace it with what you typed,"
+" or cancel to keep theirs."
+msgstr ""
+"Aún no se ha guardado nada tuyo, y lo que has escrito sigue aquí. Esa "
+"persona guardó lo que aparece abajo. Guarda otra vez para sustituirlo por"
+" lo que has escrito, o cancela para conservar lo suyo."
 
 msgid "Nothing overdue"
 msgstr "Nada vencido"
@@ -464,6 +688,9 @@ msgstr "De %(total)s equipos, el %(share)s está en servicio."
 msgid "Official examples"
 msgstr "Ejemplos oficiales"
 
+msgid "Oil change on the air compressor"
+msgstr "Cambio de aceite del compresor de aire"
+
 msgid ""
 "Older equipment costs more to repair, and the rise steepens after ten "
 "years."
@@ -473,6 +700,15 @@ msgstr ""
 
 msgid "On this page"
 msgstr "En esta página"
+
+#, python-format
+msgid "One file: %(kinds)s, of up to %(most)s."
+msgstr "Un archivo: %(kinds)s, de hasta %(most)s."
+
+msgid ""
+"One primary action, the way out beside it, and what is dangerous out of "
+"the way."
+msgstr "Una acción principal, la salida al lado, y lo peligroso bien apartado."
 
 msgid "Only people with the administrator role can open this page."
 msgstr "Solo pueden abrir esta página las personas con el rol de administrador."
@@ -500,6 +736,9 @@ msgstr "Nuestra macro"
 msgid "Overdue"
 msgstr "Vencidos"
 
+msgid "Overheating"
+msgstr "Sobrecalentamiento"
+
 msgid "Overview"
 msgstr "Resumen"
 
@@ -508,6 +747,9 @@ msgstr "Embalaje"
 
 msgid "Part"
 msgstr "Parte"
+
+msgid "People needed"
+msgstr "Personas necesarias"
 
 msgid "Placement"
 msgstr "Posición"
@@ -527,6 +769,9 @@ msgstr "Planificación"
 msgid "Plant room"
 msgstr "Sala de máquinas"
 
+msgid "Power loss"
+msgstr "Pérdida de alimentación"
+
 msgid "Preventive"
 msgstr "Preventivo"
 
@@ -545,6 +790,12 @@ msgstr "Anterior"
 msgid "Print"
 msgstr "Imprimir"
 
+msgid "Priority"
+msgstr "Prioridad"
+
+msgid "Production is told a day before."
+msgstr "Se avisa a producción un día antes."
+
 msgid ""
 "Published by daisyUI, in English. Their text is left as it is. Pictures "
 "are replaced by a neutral placeholder."
@@ -554,6 +805,22 @@ msgstr ""
 
 msgid "Records"
 msgstr "Registros"
+
+msgid "Reference"
+msgstr "Referencia"
+
+msgid "Remove"
+msgstr "Quitar"
+
+#, python-format
+msgid "Remove %(name)s"
+msgstr "Quitar %(name)s"
+
+msgid "Remove it"
+msgstr "Quitarlo"
+
+msgid "Remove this file?"
+msgstr "¿Quitar este archivo?"
 
 msgid "Reported"
 msgstr "Comunicado"
@@ -570,6 +837,9 @@ msgstr "Controles de seguridad"
 msgid "Save"
 msgstr "Guardar"
 
+msgid "Saving…"
+msgstr "Guardando…"
+
 msgid ""
 "Screens call this macro, with tests and a review behind it. Use it "
 "instead of the classes below."
@@ -583,6 +853,9 @@ msgid ""
 msgstr ""
 "Las pantallas llaman a esta macro. Tiene pruebas, y falta la revisión de "
 "una persona."
+
+msgid "Seal failure"
+msgstr "Fallo de junta"
 
 msgid "Sections of this page"
 msgstr "Secciones de esta página"
@@ -605,6 +878,12 @@ msgstr ""
 
 msgid "Size"
 msgstr "Tamaño"
+
+msgid "Software fault"
+msgstr "Fallo de software"
+
+msgid "Someone else changed this work order"
+msgstr "Otra persona ha cambiado esta orden de trabajo"
 
 msgid ""
 "Sorting, filtering and paging happen in the database, and the state lives"
@@ -645,8 +924,14 @@ msgstr ""
 msgid "Stopped"
 msgstr "Parado"
 
+msgid "Stuck valve"
+msgstr "Válvula atascada"
+
 msgid "Style"
 msgstr "Estilo"
+
+msgid "Such as EQ-000123. It is in the list of equipment."
+msgstr "Por ejemplo EQ-000123. Está en la lista de equipos."
 
 msgid "Summary"
 msgstr "Resumen"
@@ -655,6 +940,15 @@ msgid "The backlog grew until April, then fell as more orders closed than opened
 msgstr ""
 "Las pendientes crecieron hasta abril y luego bajaron al cerrarse más "
 "órdenes de las que se abrían."
+
+msgid ""
+"The browser's list of accepted types helps a person choose and decides "
+"nothing. The server reads the file itself: see Uploads in the "
+"specification."
+msgstr ""
+"La lista de tipos aceptados del navegador ayuda a elegir y no decide "
+"nada. El servidor lee el propio archivo: consulta Subidas en la "
+"especificación."
 
 msgid ""
 "The database does not answer. Check APP_DATABASE_URL, and that its server"
@@ -669,10 +963,25 @@ msgstr "Las filas de la demo aún no están aquí"
 msgid "The dot is decoration: its colour never says anything the word does not."
 msgstr "El punto es decoración: su color nunca dice nada que no diga la palabra."
 
+msgid "The equipment must stop for this work"
+msgstr "El equipo debe parar para este trabajo"
+
+msgid "The file is empty. Choose one with something in it."
+msgstr "El archivo está vacío. Elige uno que tenga contenido."
+
+msgid "The file was removed."
+msgstr "Se ha quitado el archivo."
+
+msgid "The plan"
+msgstr "El plan"
+
 msgid ""
 "The warehouse takes the most hours, the roof the most money for each "
 "order."
 msgstr "El almacén se lleva más horas, y la cubierta, más dinero por orden."
+
+msgid "The work"
+msgstr "El trabajo"
 
 msgid "The work order could not be saved. Try again."
 msgstr "La orden de trabajo no se ha podido guardar. Vuelve a intentarlo."
@@ -696,6 +1005,12 @@ msgstr ""
 "ya presentes, usa el patrón de pestañas del selector Vista previa y "
 "Código de la galería."
 
+msgid "This cannot be undone. These go with it:"
+msgstr "No se puede deshacer. Esto se va con ella:"
+
+msgid "This cannot be undone. This goes:"
+msgstr "No se puede deshacer. Se va esto:"
+
 msgid "This equipment is due for inspection."
 msgstr "A este equipo le toca inspección."
 
@@ -709,8 +1024,21 @@ msgstr ""
 "Esta pantalla lee 50.000 filas generadas. Ejecuta este comando una vez y "
 "recarga la página. El resto de la demo no lo necesita."
 
+msgid ""
+"This work order has changed since you opened it, so nothing is deleted "
+"yet. This is what is there now."
+msgstr ""
+"Esta orden de trabajo ha cambiado desde que la abriste, así que aún no se"
+" ha eliminado nada. Esto es lo que hay ahora."
+
 msgid "This year"
 msgstr "Este año"
+
+msgid "Tick this to go on."
+msgstr "Márcalo para continuar."
+
+msgid "Title"
+msgstr "Título"
 
 msgid "Total"
 msgstr "Total"
@@ -718,14 +1046,23 @@ msgstr "Total"
 msgid "Training"
 msgstr "Formación"
 
+msgid "Tripped breaker"
+msgstr "Interruptor disparado"
+
 msgid "Try another word, or look through the categories."
 msgstr "Prueba con otra palabra, o mira las categorías."
 
 msgid "Try fewer filters, or another word."
 msgstr "Prueba con menos filtros o con otra palabra."
 
+msgid "Try it in a dialog"
+msgstr "Probarlo en un diálogo"
+
 msgid "Type"
 msgstr "Tipo"
+
+msgid "Type to narrow the list."
+msgstr "Escribe para acotar la lista."
 
 msgid "Updated"
 msgstr "Actualizado"
@@ -733,6 +1070,12 @@ msgstr "Actualizado"
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualizado: %(moment)s"
+
+msgid "Use 2000 characters at most."
+msgstr "Usa 2000 caracteres como máximo."
+
+msgid "Use letters and numbers, with no spaces."
+msgstr "Usa letras y números, sin espacios."
 
 msgid "View"
 msgstr "Ver"
@@ -744,8 +1087,23 @@ msgstr "Ver %(code)s"
 msgid "Warehouse"
 msgstr "Almacén"
 
+msgid "What has to be done"
+msgstr "Qué hay que hacer"
+
+msgid "What has to be done, in a few words."
+msgstr "Qué hay que hacer, en pocas palabras."
+
 msgid "What it does"
 msgstr "Qué hace"
+
+msgid "What was seen, and when."
+msgstr "Qué se vio y cuándo."
+
+msgid "Where the equipment stands today."
+msgstr "Cómo está el equipo hoy."
+
+msgid "With two decimals at most."
+msgstr "Con dos decimales como máximo."
 
 msgid "Work"
 msgstr "Trabajo"
@@ -767,6 +1125,10 @@ msgstr "El trabajo hecho en este equipo aparecerá aquí."
 #, python-format
 msgid "Work order %(number)s"
 msgstr "Orden de trabajo %(number)s"
+
+#, python-format
+msgid "Work order %(number)s deleted."
+msgstr "Orden de trabajo %(number)s eliminada."
 
 #, python-format
 msgid "Work order %(number)s saved."
@@ -811,6 +1173,12 @@ msgstr "Trabajadas"
 
 msgid "Workshop"
 msgstr "Taller"
+
+msgid "Worn gasket"
+msgstr "Junta desgastada"
+
+msgid "Yes"
+msgstr "Sí"
 
 msgid "Your changes are saved as you type."
 msgstr "Tus cambios se guardan mientras escribes."

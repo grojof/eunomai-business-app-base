@@ -3,7 +3,7 @@ import socket
 import tempfile
 import threading
 import time
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
@@ -23,6 +23,18 @@ TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "")
 """A PostgreSQL to run the database tests on as well. Nothing in it is touched: each test gets a schema of its own."""
 NO_DATABASE = (Path(tempfile.gettempdir()) / "business-app-base-tests" / "nothing-here.db").as_posix()
 """Where a test looks unless it asks for a database: a person's own `.data/` must not change what tests see."""
+
+
+def postgresql_is_missing(environment: Mapping[str, str]) -> bool:
+    """On GitHub Actions on Linux the tests must reach PostgreSQL: a job whose database setting went wrong would run on
+    SQLite alone and pass. Only the Dependencies workflow means to do that, and says so in `TESTS_ON_SQLITE_ALONE`."""
+    on_linux_ci = environment.get("GITHUB_ACTIONS") == "true" and environment.get("RUNNER_OS") == "Linux"
+    return on_linux_ci and not environment.get("TEST_DATABASE_URL") and not environment.get("TESTS_ON_SQLITE_ALONE")
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    if postgresql_is_missing(os.environ):
+        raise pytest.UsageError("TEST_DATABASE_URL is empty on Linux in CI: these tests would not reach PostgreSQL")
 
 
 def build_settings(**overrides: Any) -> Settings:
@@ -50,7 +62,9 @@ def empty_database(engine_name: str, folder: Path) -> Iterator[str]:
     administrator = create_engine(TEST_DATABASE_URL)
     with administrator.begin() as connection:
         connection.exec_driver_sql(f"CREATE SCHEMA {schema}")
-    url = make_url(TEST_DATABASE_URL).update_query_dict({"options": f"-csearch_path={schema}"})
+    # A lock that nobody will release fails the test, instead of holding the whole run until its time limit.
+    options = f"-csearch_path={schema} -clock_timeout=30s"
+    url = make_url(TEST_DATABASE_URL).update_query_dict({"options": options})
     yield url.render_as_string(hide_password=False)
     with administrator.begin() as connection:
         connection.exec_driver_sql(f"DROP SCHEMA {schema} CASCADE")

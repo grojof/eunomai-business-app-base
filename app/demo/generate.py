@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import create_database_engine, migrate
 from app.core.settings import get_settings
+from app.core.uploads import UploadStore
 from app.demo.models import (
     EQUIPMENT_STATUSES,
     FIRST_MOMENT,
@@ -151,6 +152,7 @@ def main() -> None:
         orders = replace_rows(session, arguments.rows, arguments.seed)
         session.commit()
     engine.dispose()
+    UploadStore(settings.upload_folder, settings.upload_max_bytes).clear()  # their rows have just gone
     print(f"{arguments.rows} equipment rows and {orders} work orders, in {time.perf_counter() - started:.1f} seconds")
 
 

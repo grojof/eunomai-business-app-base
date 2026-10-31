@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 18:54+0100\n"
+"POT-Creation-Date: 2026-10-31 21:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -76,6 +76,19 @@ msgstr ""
 "%(total)s ordres de treball obertes aquest any. El mes amb més feina va "
 "ser %(month)s, amb %(count)s."
 
+#, python-format
+msgid "%(work)s, on %(equipment)s"
+msgstr "%(work)s, a %(equipment)s"
+
+msgid "2 attached files"
+msgstr "2 fitxers adjunts"
+
+msgid "7.50 hours of work"
+msgstr "7,50 hores de feina"
+
+msgid "A PDF, PNG or JPEG file of up to 10 MB."
+msgstr "Un fitxer PDF, PNG o JPEG de fins a 10 MB."
+
 msgid "A card with a title, ready for any content."
 msgstr "Una targeta amb títol, a punt per a qualsevol contingut."
 
@@ -87,6 +100,9 @@ msgstr "Una taula al servidor"
 
 msgid "Actions"
 msgstr "Accions"
+
+msgid "Add a file"
+msgstr "Afegeix un fitxer"
 
 msgid "Administration"
 msgstr "Administració"
@@ -106,8 +122,31 @@ msgstr "Totes les ubicacions"
 msgid "All states"
 msgstr "Tots els estats"
 
+msgid "All the fields"
+msgstr "Tots els camps"
+
+#, python-format
+msgid "All the fields of work order %(number)s: %(work)s"
+msgstr "Tots els camps de l'ordre de treball %(number)s: %(work)s"
+
 msgid "Any date"
 msgstr "Qualsevol data"
+
+msgid ""
+"Arrow keys move through the list, Enter chooses, Escape closes it. "
+"Without JavaScript it is a plain select, which is why a list must fit in "
+"a page."
+msgstr ""
+"Les fletxes recorren la llista, Retorn tria i Escapada la tanca. Sense "
+"JavaScript és un select normal, i per això la llista ha de cabre en una "
+"pàgina."
+
+#, python-format
+msgid "Attached file: %(name)s"
+msgstr "Fitxer adjunt: %(name)s"
+
+msgid "Attachment"
+msgstr "Fitxer adjunt"
 
 msgid "Audit"
 msgstr "Auditoria"
@@ -127,8 +166,20 @@ msgstr ""
 msgid "Backlog"
 msgstr "Pendents"
 
+msgid "Bearing wear"
+msgstr "Desgast de coixinet"
+
 msgid "Behaviour"
 msgstr "Comportament"
+
+msgid "Belt slipping"
+msgstr "Corretja que patina"
+
+msgid "Blocked filter"
+msgstr "Filtre obstruït"
+
+msgid "Blown fuse"
+msgstr "Fusible fos"
 
 msgid "Both sites score well on safety. The south site is weakest on records."
 msgstr "Les dues plantes puntuen bé en seguretat. La sud fluixeja en registres."
@@ -149,8 +200,25 @@ msgstr "Revisa el que has escrit"
 msgid "Checked"
 msgstr "Revisat"
 
+msgid "Choose a fault from the list."
+msgstr "Tria una avaria de la llista."
+
+msgid "Choose a priority."
+msgstr "Tria una prioritat."
+
 msgid "Choose a state from the list."
 msgstr "Tria un estat de la llista."
+
+msgid "Choose one"
+msgstr "Tria'n un"
+
+msgid "Choose one from the list."
+msgstr "Tria'n un de la llista."
+
+msgid "Choose the file again: a browser cannot keep it when a form comes back."
+msgstr ""
+"Torna a triar el fitxer: un navegador no el pot conservar quan un "
+"formulari torna."
 
 msgid "Class name"
 msgstr "Classe"
@@ -204,6 +272,9 @@ msgstr "Copia"
 msgid "Corrective"
 msgstr "Correctiva"
 
+msgid "Corrosion"
+msgstr "Corrosió"
+
 msgid "Cost"
 msgstr "Cost"
 
@@ -222,6 +293,9 @@ msgstr "Cost de la feina, acumulat"
 msgid "Cost to date"
 msgstr "Cost fins avui"
 
+msgid "Cracked housing"
+msgstr "Carcassa esquerdada"
+
 msgid "Dashboard"
 msgstr "Tauler"
 
@@ -231,14 +305,47 @@ msgstr "Decoratiu: no pensat per a aplicacions de gestió."
 msgid "Delete"
 msgstr "Suprimeix"
 
+msgid "Delete it"
+msgstr "Elimina-la"
+
+msgid "Delete this work order"
+msgstr "Elimina aquesta ordre de treball"
+
+msgid "Delete this work order?"
+msgstr "Vols eliminar aquesta ordre de treball?"
+
+#, python-format
+msgid "Delete work order %(number)s"
+msgstr "Elimina l'ordre de treball %(number)s"
+
+#, python-format
+msgid "Delete work order %(number)s?"
+msgstr "Vols eliminar l'ordre de treball %(number)s?"
+
+msgid "Description"
+msgstr "Descripció"
+
 msgid "Details"
 msgstr "Detalls"
 
 msgid "Direction"
 msgstr "Direcció"
 
+msgid "Dirty oil"
+msgstr "Oli brut"
+
+msgid "Dirty sensor"
+msgstr "Sensor brut"
+
 msgid "Due soon"
 msgstr "Venç aviat"
+
+msgid ""
+"Each line is a link to its field. Focus comes to the summary when a form "
+"returns with errors, and a screen reader reads it."
+msgstr ""
+"Cada línia és un enllaç al seu camp. El focus va al resum quan un "
+"formulari torna amb errors, i un lector de pantalla el llegeix."
 
 msgid "Edit"
 msgstr "Edita"
@@ -254,12 +361,24 @@ msgstr "Escriu una data, o deixa-la buida si encara no està planificada."
 msgid "Enter between 0 and %(most)s hours."
 msgstr "Escriu entre 0 i %(most)s hores."
 
+msgid "Enter the code of the equipment."
+msgstr "Escriu el codi de l'equip."
+
+msgid "Enter the cost as a number, such as 120.50."
+msgstr "Escriu el cost com un nombre, per exemple 120,50."
+
 #, python-format
 msgid "Enter the hours as a number, such as %(example)s."
 msgstr "Escriu les hores com un número, per exemple %(example)s."
 
+msgid "Enter the hours as a number, such as 7.50."
+msgstr "Escriu les hores com un nombre, per exemple 7,50."
+
 msgid "Enter the hours with two decimals at most."
 msgstr "Escriu les hores amb dos decimals com a màxim."
+
+msgid "Enter what has to be done."
+msgstr "Escriu què cal fer."
 
 msgid "Equipment"
 msgstr "Equips"
@@ -273,6 +392,9 @@ msgstr "Equips per ubicació"
 msgid "Equipment by state"
 msgstr "Equips per estat"
 
+msgid "Equipment code"
+msgstr "Codi de l'equip"
+
 msgid "Equipment list"
 msgstr "Llista d'equips"
 
@@ -284,6 +406,9 @@ msgstr "Equips, on són, la seva pròxima inspecció i el seu estat"
 
 msgid "Equipment, where it is, its state, its next inspection and its cost"
 msgstr "Equips, on són, el seu estat, la seva propera inspecció i el seu cost"
+
+msgid "Error"
+msgstr "Error"
 
 msgid ""
 "Every component on offer, with an honest status, and every official "
@@ -316,14 +441,34 @@ msgstr ""
 msgid "Export to Excel"
 msgstr "Exporta a Excel"
 
+msgid "Far too long"
+msgstr "Massa llarg"
+
+msgid "Fault"
+msgstr "Avaria"
+
+msgid "Files"
+msgstr "Fitxers"
+
+msgid "Fill in what is known: only what is marked as optional can wait."
+msgstr ""
+"Omple el que se sàpiga: només el que està marcat com a opcional pot "
+"esperar."
+
 msgid "Filter components"
 msgstr "Filtra els components"
+
+msgid "Fluid leak"
+msgstr "Fuita de líquid"
 
 msgid "Forklift"
 msgstr "Carretó elevador"
 
 msgid "Four in five pieces of equipment are in service."
 msgstr "Quatre de cada cinc equips són en servei."
+
+msgid "From 1 to 50."
+msgstr "D'1 a 50."
 
 msgid "Gallery"
 msgstr "Galeria"
@@ -341,11 +486,31 @@ msgstr ""
 "Aquí és un formulari senzill i recarrega la pàgina. En una pantalla, htmx"
 " substitueix només els resultats."
 
+msgid ""
+"Here nothing is deleted. Focus starts on the way out, and comes back to "
+"the button when it closes. Without JavaScript the same address is a page "
+"of its own, with the same words: the work order form shows both."
+msgstr ""
+"Aquí no s'elimina res. El focus comença a la sortida i torna al botó en "
+"tancar-se. Sense JavaScript la mateixa adreça és una pàgina pròpia, amb "
+"les mateixes paraules: el formulari d'ordre de treball mostra totes dues "
+"coses."
+
+msgid "High"
+msgstr "Alta"
+
+msgid "High goes first in the plan."
+msgstr "L'alta va primer en el pla."
+
 msgid "Hours"
 msgstr "Hores"
 
 msgid "Hours planned and worked"
 msgstr "Hores previstes i treballades"
+
+#, python-format
+msgid "Hours recorded: %(hours)s"
+msgstr "Hores registrades: %(hours)s"
 
 msgid "Hours worked"
 msgstr "Hores treballades"
@@ -355,6 +520,12 @@ msgid "Hours worked stayed within 6 % of the plan in every month."
 msgstr ""
 "Les hores treballades no es van allunyar més d'un 6 % del previst en cap "
 "mes."
+
+msgid "I have read the safety sheet"
+msgstr "He llegit la fitxa de seguretat"
+
+msgid "In a few words, as it will read in a list."
+msgstr "En poques paraules, com es llegirà en una llista."
 
 msgid ""
 "In groups, grouped_table does the same with one tbody per group and a "
@@ -373,11 +544,21 @@ msgid "Inspections"
 msgstr "Inspeccions"
 
 msgid ""
+"It has its icon and its words, so it does not depend on colour. Every "
+"field macro writes it and ties it to the control."
+msgstr ""
+"Té la seva icona i les seves paraules, així que no depèn del color. Cada "
+"macro de camp l'escriu i el vincula al control."
+
+msgid ""
 "It uses Tailwind's own colours, which this base removes, so some colours "
 "differ from the published example."
 msgstr ""
 "Fa servir els colors propis de Tailwind, que aquesta base elimina, de "
 "manera que alguns colors difereixen de l'exemple publicat."
+
+msgid "Keep it"
+msgstr "Conserva-la"
 
 msgid "Leave it empty if it is not planned yet."
 msgstr "Deixa-la buida si encara no està planificada."
@@ -391,11 +572,23 @@ msgstr "S'està carregant"
 msgid "Location"
 msgstr "Ubicació"
 
+msgid "Loose connection"
+msgstr "Connexió fluixa"
+
+msgid "Low"
+msgstr "Baixa"
+
+msgid "Low pressure"
+msgstr "Pressió baixa"
+
 msgid "Maintenance plan"
 msgstr "Pla de manteniment"
 
 msgid "Maintenance to date"
 msgstr "Manteniment fins avui"
+
+msgid "Misalignment"
+msgstr "Desalineació"
 
 msgid "Modifier"
 msgstr "Modificador"
@@ -405,6 +598,9 @@ msgstr "Mes"
 
 msgid "Month planned"
 msgstr "Mes previst"
+
+msgid "Motor overload"
+msgstr "Sobrecàrrega del motor"
 
 msgid "Name"
 msgstr "Nom"
@@ -418,6 +614,9 @@ msgstr ""
 "i torna el focus. El seu contingut arriba amb htmx, i app.js l'obre "
 "aleshores. Planificació el fa servir per editar una fila."
 
+msgid "New work order"
+msgstr "Nova ordre de treball"
+
 msgid "Next"
 msgstr "Següent"
 
@@ -427,8 +626,14 @@ msgstr "Propera inspecció"
 msgid "Next inspections"
 msgstr "Properes inspeccions"
 
+msgid "No"
+msgstr "No"
+
 msgid "No component matches"
 msgstr "Cap component no coincideix"
+
+msgid "No equipment has that code. Look it up in the list of equipment."
+msgstr "Cap equip no té aquest codi. Cerca'l a la llista d'equips."
 
 msgid "No equipment matches"
 msgstr "Cap equip no coincideix"
@@ -439,14 +644,35 @@ msgstr "Cap ordre de treball no coincideix"
 msgid "No work orders yet"
 msgstr "Encara no hi ha ordres de treball"
 
+msgid "Noise or vibration"
+msgstr "Soroll o vibració"
+
+msgid "None"
+msgstr "Cap"
+
+msgid "Normal"
+msgstr "Normal"
+
 msgid "North plant"
 msgstr "Planta nord"
 
 msgid "Not closed"
 msgstr "Sense tancar"
 
+msgid "Not known"
+msgstr "Sense determinar"
+
 msgid "Not planned yet"
 msgstr "Encara sense planificar"
+
+msgid ""
+"Nothing of yours is saved yet, and what you typed is still here. They "
+"saved what is listed below. Save again to replace it with what you typed,"
+" or cancel to keep theirs."
+msgstr ""
+"Encara no s'ha desat res teu, i el que has escrit continua aquí. Aquesta "
+"persona va desar el que apareix a sota. Desa una altra vegada per "
+"substituir-ho pel que has escrit, o cancel·la per conservar el seu."
 
 msgid "Nothing overdue"
 msgstr "Res vençut"
@@ -465,6 +691,9 @@ msgstr "De %(total)s equips, el %(share)s és en servei."
 msgid "Official examples"
 msgstr "Exemples oficials"
 
+msgid "Oil change on the air compressor"
+msgstr "Canvi d'oli del compressor d'aire"
+
 msgid ""
 "Older equipment costs more to repair, and the rise steepens after ten "
 "years."
@@ -474,6 +703,17 @@ msgstr ""
 
 msgid "On this page"
 msgstr "En aquesta pàgina"
+
+#, python-format
+msgid "One file: %(kinds)s, of up to %(most)s."
+msgstr "Un fitxer: %(kinds)s, de fins a %(most)s."
+
+msgid ""
+"One primary action, the way out beside it, and what is dangerous out of "
+"the way."
+msgstr ""
+"Una acció principal, la sortida al costat, i el que és perillós ben "
+"apartat."
 
 msgid "Only people with the administrator role can open this page."
 msgstr "Només poden obrir aquesta pàgina les persones amb el rol d'administrador."
@@ -501,6 +741,9 @@ msgstr "La nostra macro"
 msgid "Overdue"
 msgstr "Vençuts"
 
+msgid "Overheating"
+msgstr "Sobreescalfament"
+
 msgid "Overview"
 msgstr "Resum"
 
@@ -509,6 +752,9 @@ msgstr "Embalatge"
 
 msgid "Part"
 msgstr "Part"
+
+msgid "People needed"
+msgstr "Persones necessàries"
 
 msgid "Placement"
 msgstr "Posició"
@@ -528,6 +774,9 @@ msgstr "Planificació"
 msgid "Plant room"
 msgstr "Sala de màquines"
 
+msgid "Power loss"
+msgstr "Pèrdua d'alimentació"
+
 msgid "Preventive"
 msgstr "Preventiva"
 
@@ -546,6 +795,12 @@ msgstr "Anterior"
 msgid "Print"
 msgstr "Imprimeix"
 
+msgid "Priority"
+msgstr "Prioritat"
+
+msgid "Production is told a day before."
+msgstr "S'avisa producció un dia abans."
+
 msgid ""
 "Published by daisyUI, in English. Their text is left as it is. Pictures "
 "are replaced by a neutral placeholder."
@@ -555,6 +810,22 @@ msgstr ""
 
 msgid "Records"
 msgstr "Registres"
+
+msgid "Reference"
+msgstr "Referència"
+
+msgid "Remove"
+msgstr "Treu"
+
+#, python-format
+msgid "Remove %(name)s"
+msgstr "Treu %(name)s"
+
+msgid "Remove it"
+msgstr "Treu-lo"
+
+msgid "Remove this file?"
+msgstr "Vols treure aquest fitxer?"
 
 msgid "Reported"
 msgstr "Comunicat"
@@ -571,6 +842,9 @@ msgstr "Controls de seguretat"
 msgid "Save"
 msgstr "Desa"
 
+msgid "Saving…"
+msgstr "Desant…"
+
 msgid ""
 "Screens call this macro, with tests and a review behind it. Use it "
 "instead of the classes below."
@@ -584,6 +858,9 @@ msgid ""
 msgstr ""
 "Les pantalles criden aquesta macro. Té proves, i falta la revisió d'una "
 "persona."
+
+msgid "Seal failure"
+msgstr "Fallada de junta"
 
 msgid "Sections of this page"
 msgstr "Seccions d'aquesta pàgina"
@@ -606,6 +883,12 @@ msgstr ""
 
 msgid "Size"
 msgstr "Mida"
+
+msgid "Software fault"
+msgstr "Fallada de programari"
+
+msgid "Someone else changed this work order"
+msgstr "Una altra persona ha canviat aquesta ordre de treball"
 
 msgid ""
 "Sorting, filtering and paging happen in the database, and the state lives"
@@ -646,8 +929,14 @@ msgstr ""
 msgid "Stopped"
 msgstr "Aturat"
 
+msgid "Stuck valve"
+msgstr "Vàlvula encallada"
+
 msgid "Style"
 msgstr "Estil"
+
+msgid "Such as EQ-000123. It is in the list of equipment."
+msgstr "Per exemple EQ-000123. És a la llista d'equips."
 
 msgid "Summary"
 msgstr "Resum"
@@ -656,6 +945,15 @@ msgid "The backlog grew until April, then fell as more orders closed than opened
 msgstr ""
 "Les pendents van créixer fins a l'abril i després van baixar en tancar-se"
 " més ordres de les que s'obrien."
+
+msgid ""
+"The browser's list of accepted types helps a person choose and decides "
+"nothing. The server reads the file itself: see Uploads in the "
+"specification."
+msgstr ""
+"La llista de tipus acceptats del navegador ajuda a triar i no decideix "
+"res. El servidor llegeix el mateix fitxer: consulta Pujades a "
+"l'especificació."
 
 msgid ""
 "The database does not answer. Check APP_DATABASE_URL, and that its server"
@@ -670,10 +968,25 @@ msgstr "Les files de la demo encara no són aquí"
 msgid "The dot is decoration: its colour never says anything the word does not."
 msgstr "El punt és decoració: el seu color mai no diu res que no digui la paraula."
 
+msgid "The equipment must stop for this work"
+msgstr "L'equip s'ha d'aturar per a aquesta feina"
+
+msgid "The file is empty. Choose one with something in it."
+msgstr "El fitxer és buit. Tria'n un que tingui contingut."
+
+msgid "The file was removed."
+msgstr "S'ha tret el fitxer."
+
+msgid "The plan"
+msgstr "El pla"
+
 msgid ""
 "The warehouse takes the most hours, the roof the most money for each "
 "order."
 msgstr "El magatzem s'emporta més hores, i la coberta, més diners per ordre."
+
+msgid "The work"
+msgstr "La feina"
 
 msgid "The work order could not be saved. Try again."
 msgstr "L'ordre de treball no s'ha pogut desar. Torna-ho a provar."
@@ -697,6 +1010,12 @@ msgstr ""
 "panells ja presents, fes servir el patró de pestanyes del selector "
 "Previsualització i Codi de la galeria."
 
+msgid "This cannot be undone. These go with it:"
+msgstr "No es pot desfer. Això se'n va amb ella:"
+
+msgid "This cannot be undone. This goes:"
+msgstr "No es pot desfer. Se'n va això:"
+
 msgid "This equipment is due for inspection."
 msgstr "Aquest equip ha de passar la inspecció."
 
@@ -710,8 +1029,21 @@ msgstr ""
 "Aquesta pantalla llegeix 50.000 files generades. Executa aquesta ordre "
 "una vegada i recarrega la pàgina. La resta de la demo no ho necessita."
 
+msgid ""
+"This work order has changed since you opened it, so nothing is deleted "
+"yet. This is what is there now."
+msgstr ""
+"Aquesta ordre de treball ha canviat des que la vas obrir, així que encara"
+" no s'ha eliminat res. Això és el que hi ha ara."
+
 msgid "This year"
 msgstr "Aquest any"
+
+msgid "Tick this to go on."
+msgstr "Marca-ho per continuar."
+
+msgid "Title"
+msgstr "Títol"
 
 msgid "Total"
 msgstr "Total"
@@ -719,14 +1051,23 @@ msgstr "Total"
 msgid "Training"
 msgstr "Formació"
 
+msgid "Tripped breaker"
+msgstr "Interruptor disparat"
+
 msgid "Try another word, or look through the categories."
 msgstr "Prova amb una altra paraula, o mira les categories."
 
 msgid "Try fewer filters, or another word."
 msgstr "Prova amb menys filtres o amb una altra paraula."
 
+msgid "Try it in a dialog"
+msgstr "Prova-ho en un diàleg"
+
 msgid "Type"
 msgstr "Tipus"
+
+msgid "Type to narrow the list."
+msgstr "Escriu per acotar la llista."
 
 msgid "Updated"
 msgstr "Actualitzat"
@@ -734,6 +1075,12 @@ msgstr "Actualitzat"
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualitzat: %(moment)s"
+
+msgid "Use 2000 characters at most."
+msgstr "Fes servir 2000 caràcters com a màxim."
+
+msgid "Use letters and numbers, with no spaces."
+msgstr "Fes servir lletres i nombres, sense espais."
 
 msgid "View"
 msgstr "Mostra"
@@ -745,8 +1092,23 @@ msgstr "Mostra %(code)s"
 msgid "Warehouse"
 msgstr "Magatzem"
 
+msgid "What has to be done"
+msgstr "Què cal fer"
+
+msgid "What has to be done, in a few words."
+msgstr "Què cal fer, en poques paraules."
+
 msgid "What it does"
 msgstr "Què fa"
+
+msgid "What was seen, and when."
+msgstr "Què es va veure i quan."
+
+msgid "Where the equipment stands today."
+msgstr "Com està l'equip avui."
+
+msgid "With two decimals at most."
+msgstr "Amb dos decimals com a màxim."
 
 msgid "Work"
 msgstr "Feina"
@@ -768,6 +1130,10 @@ msgstr "La feina feta en aquest equip apareixerà aquí."
 #, python-format
 msgid "Work order %(number)s"
 msgstr "Ordre de treball %(number)s"
+
+#, python-format
+msgid "Work order %(number)s deleted."
+msgstr "Ordre de treball %(number)s eliminada."
 
 #, python-format
 msgid "Work order %(number)s saved."
@@ -810,6 +1176,12 @@ msgstr "Treballades"
 
 msgid "Workshop"
 msgstr "Taller"
+
+msgid "Worn gasket"
+msgstr "Junta desgastada"
+
+msgid "Yes"
+msgstr "Sí"
 
 msgid "Your changes are saved as you type."
 msgstr "Els canvis es desen mentre escrius."

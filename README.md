@@ -22,10 +22,11 @@ flowchart LR
 ```
 
 > **Status:** milestone 1: the application's shell with its layouts, a settings menu and a command palette (Ctrl+K or
-> Cmd+K), the gallery, identity, languages, themes and every check running. Milestone 2, in review: PostgreSQL and SQLite
-> with exact decimals, a server table on 50,000 rows with Excel export, an equipment detail with tabs and a print style,
-> charts with their tables, and a planning screen that groups rows and edits one at a time. The rest is in the
-> [milestones](docs/specification.md#milestones).
+> Cmd+K), the gallery, identity, languages, themes and every check running. Milestone 2: PostgreSQL and SQLite with exact
+> decimals, a server table on 50,000 rows with Excel export, an equipment detail with tabs and a print style, charts with
+> their tables, and a planning screen that groups rows and edits one at a time. Milestone 3, in review: every form field,
+> a work order form with validation at the edge, file upload, a confirmation dialog, and two people on one row finding
+> out. The rest is in the [milestones](docs/specification.md#milestones).
 
 ## Try it
 
@@ -56,6 +57,10 @@ run on it too if `TEST_DATABASE_URL` gives one. [Data](docs/specification.md#dat
 ```bash
 uv run --frozen alembic upgrade head
 ```
+
+On GitHub, a pull request runs the tests on Ubuntu, with SQLite and PostgreSQL. To run them on Windows too, start the
+workflow by hand: *Actions*, *Tests*, *Run workflow*, or `gh workflow run tests.yml --ref <branch>`. Do it before
+publishing, and after a change to paths or tools.
 
 To start an application of your own, clone this, then run `uv run --frozen python tools/remove_demo.py` and
 `uv run --frozen python tools/css.py`.

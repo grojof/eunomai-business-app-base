@@ -1,5 +1,7 @@
 """The command palette, in every application: opened with the keyboard, a click or a tap, and needing no service."""
 
+import time
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -7,9 +9,13 @@ from app.core.i18n import PSEUDO
 from app.core.templating import SearchItem, register_search
 from app.main import create_app
 from tests.conftest import build_settings
-from tests.helpers import run_axe, untranslated
+from tests.helpers import ANIMATIONS_FINISHED, run_axe, untranslated
 
 pages = pytest.mark.browser
+ANIMATING = """document.getAnimations()
+    .filter((animation) => animation.timeline === document.timeline && animation.effect.target.checkVisibility())
+    .filter((animation) => animation.playState === 'running')
+    .map((animation) => animation.animationName ?? animation.transitionProperty)"""
 ALLOWED = ("Business App", "Demo Person")
 
 
@@ -100,6 +106,26 @@ def test_the_open_palette_passes_the_scan(open_page, theme, width):
     assert run_axe(page) == []
     page.keyboard.type("nothing like this anywhere")
     assert run_axe(page) == []
+
+
+@pages
+def test_the_wait_before_a_scan_lets_what_fades_in_finish_and_no_more(open_page):
+    """It waits for what changes how text looks. An open dialog also starts daisyUI's scroll-driven animation, with no
+    end to wait for, and an element that is not drawn may never finish: each cost a scan its three seconds."""
+    page = open_page("/")
+    open_palette(page)
+    started = time.monotonic()
+    page.evaluate(ANIMATIONS_FINISHED)
+    assert time.monotonic() - started < 1.5
+    assert page.evaluate(ANIMATING) == []
+
+
+@pages
+def test_the_wait_does_not_wait_for_what_is_not_drawn(open_page):
+    page = open_page("/", layout={"language_control": "select"})
+    started = time.monotonic()
+    page.evaluate(ANIMATIONS_FINISHED)
+    assert time.monotonic() - started < 1.5
 
 
 @pages

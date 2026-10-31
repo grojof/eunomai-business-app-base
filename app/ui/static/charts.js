@@ -5,6 +5,7 @@
   const ROUND = new Set(["pie", "doughnut", "polarArea"]);
   const POINTS = new Set(["scatter", "bubble"]);
   const NAMES = { stacked: "bar", area: "line", polar: "polarArea", mixed: "bar" };
+  const LABEL_GAP = 4;
   const language = document.documentElement.lang;
   const drawn = new Map();
   let theme = {};
@@ -118,6 +119,29 @@
     return { type, label: series.label, data, order: type ? 0 : position + 1, ...shape, ...seriesStyle(spec, series, position) };
   }
 
+  // Chart.js thins an axis at even steps from the start, which can leave out the last month. So every label that fits
+  // stays, and when they do not all fit they spread evenly with both ends kept.
+  function thinLabels(scale) {
+    const { ctx: context, ticks } = scale;
+    context.save();
+    context.font = Chart.helpers.toFont(scale.options.ticks.font).string;
+    const widest = Math.max(...ticks.map((tick) => context.measureText(tick.label).width));
+    context.restore();
+    const room = Math.max(Math.floor((scale.width + LABEL_GAP) / (widest + LABEL_GAP)), 2);
+    if (room >= ticks.length) {
+      return;
+    }
+    const last = ticks.length - 1;
+    // A step that lands on the last label looks regular. Where none does, the labels spread as evenly as they can.
+    const places = Array.from({ length: room - 2 }, (_, less) => room - less).find((count) => last % (count - 1) === 0) ?? room;
+    const kept = new Set(Array.from({ length: places }, (_, place) => Math.round((place * last) / (places - 1))));
+    ticks.forEach((tick, position) => {
+      if (!kept.has(position)) {
+        tick.label = "";
+      }
+    });
+  }
+
   function axis(title, extra = {}) {
     return {
       grid: { color: solid(theme.grid), drawTicks: false },
@@ -149,7 +173,8 @@
     const categories = {
       grid: { display: false },
       border: { color: solid(theme.grid) },
-      ticks: { color: solid(theme.text), maxRotation: 0, autoSkipPadding: 12 },
+      ticks: { color: solid(theme.text), maxRotation: 0, autoSkip: false },
+      afterTickToLabelConversion: thinLabels,
       title: { display: Boolean(spec.axes.x), text: spec.axes.x, color: solid(theme.text) },
       stacked: spec.type === "stacked",
     };

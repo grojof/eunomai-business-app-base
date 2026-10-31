@@ -1,0 +1,4 @@
+{% from "ui/macros.html" import field_error %}
+{{ field_error("sample", _("Enter the hours as a number, such as 7.50.")) }}
+<p class="mt-3 text-sm">{{ _("It has its icon and its words, so it does not depend on colour. Every field macro writes it and ties it to the control.") }}</p>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ field_error(identifier, error) }}{% endraw %}</code></pre>

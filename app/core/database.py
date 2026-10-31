@@ -2,7 +2,7 @@
 
 import re
 import sqlite3
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from datetime import datetime
 from decimal import MAX_PREC, Decimal, localcontext
 from pathlib import Path
@@ -32,6 +32,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import DeclarativeBase, InstrumentedAttribute, Session
+from sqlalchemy.orm.exc import StaleDataError
 from sqlalchemy.sql import operators, visitors
 
 from app.core.columns import COLLATION, ExactDecimal, UtcDateTime
@@ -156,6 +157,24 @@ def get_session(request: Request) -> Iterator[Session]:
 
 
 DatabaseSession = Annotated[Session, Depends(get_session)]
+
+
+def saved(session: Session, change: Callable[[], object] | None = None) -> bool:
+    """Makes `change`, commits, and says whether it could. False means a row with a version column changed, or went,
+    since it was read: the database's own `WHERE version`, the only check two people saving at once cannot pass
+    together. Nothing was saved, and the route says so to the person. See docs/specification.md#two-people-on-one-row.
+
+    A change that loads anything flushes what came before it, and the check fires there, not at the commit, so changes
+    made through several steps belong in `change`.
+    """
+    try:
+        if change:
+            change()
+        session.commit()
+    except StaleDataError:
+        session.rollback()
+        return False
+    return True
 
 
 def exact_sum(values: Iterable[Decimal | None]) -> Decimal:

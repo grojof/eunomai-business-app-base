@@ -1,0 +1,14 @@
+{% from "ui/macros.html" import button, dialog, searchable_select %}
+{% with choices = [("a", _("Air compressor")), ("b", _("Conveyor belt")), ("c", _("Cooling tower")), ("d", _("Forklift")), ("e", _("Standby generator"))] %}
+<div class="grid max-w-md gap-4">
+  {{ searchable_select("sample-equipment", _("Equipment"), choices, "b", "sample-equipment", every=_("None"), hint=_("Type to narrow the list.")) }}
+  {{ searchable_select("sample-wrong", _("Equipment"), choices, "", "sample-wrong", every=_("None"), error=_("Choose one from the list.")) }}
+  <div>{{ button(_("Try it in a dialog"), attributes={"data-dialog": "sample-list-dialog", "aria-haspopup": "dialog"}, extra="noscript:hidden") }}</div>
+</div>
+{% call dialog("sample-list-dialog", _("Close")) %}
+<h2 id="sample-list-dialog-title">{{ _("Equipment") }}</h2>
+<div class="mt-4">{{ searchable_select("sample-in-dialog", _("Equipment"), choices, "", "sample-in-dialog", every=_("None")) }}</div>
+{% endcall %}
+{% endwith %}
+<p class="mt-3 text-sm">{{ _("Arrow keys move through the list, Enter chooses, Escape closes it. Without JavaScript it is a plain select, which is why a list must fit in a page.") }}</p>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ searchable_select("fault", _("Fault"), options, values.fault, "field-fault", every=_("Not known"), error=errors.get("fault", ""), required=false) }}{% endraw %}</code></pre>

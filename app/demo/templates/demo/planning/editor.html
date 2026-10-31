@@ -1,10 +1,11 @@
 {#- What opens in the dialog. A failed save comes back here, in the same dialog. -#}
-{% from "ui/macros.html" import button, dialog_buttons %}
+{% from "ui/macros.html" import button, dialog_buttons, link_button %}
 <h2 id="editor-title">{{ _("Work order %(number)s", number=order.id) }}</h2>
 <p class="text-sm">{{ order.equipment.name }} · {{ order.title }}</p>
 <form class="mt-4 grid gap-4" method="post" action="/planning/{{ order.id }}" hx-post="/planning/{{ order.id }}" hx-target="#editor-body" novalidate>
   {% include "demo/planning/fields.html" %}
   {% call dialog_buttons() %}
+  {{ link_button(_("All the fields"), "/work-orders/" ~ order.id ~ "/edit?back=" ~ back|urlencode, "ghost") }}
   {{ button(_("Cancel"), attributes={"data-dialog-close": "editor"}) }}
   {{ button(_("Save"), "primary", "submit") }}
   {% endcall %}

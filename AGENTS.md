@@ -7,7 +7,7 @@ person or real system: it stays neutral so anyone can clone it.
 
 | Folder | Contents | Rule |
 |---|---|---|
-| `app/core/` | Identity, roles, settings, the database and its column types, lists on the server, languages, formatters, errors, health | Never imports from `app/demo/` |
+| `app/core/` | Identity, roles, settings, the database and its column types, lists on the server, reading forms, uploads, languages, formatters, errors, health | Never imports from `app/demo/` |
 | `app/ui/` | Components as macros, the settings menu, the command palette, the stylesheet's source, the few JavaScript files | Screens call macros; daisyUI classes stay here where possible |
 | `app/brand/` | The theme, logos | The only folder an organization must change |
 | `app/demo/` | Demo screens, models, generated data, the gallery and their translations | Deleting it leaves a working application |
@@ -43,6 +43,8 @@ Add your own components as [the specification](docs/specification.md#adapting-it
 - A long list uses `ListView` from `app/core/tables.py`, whose values are checked against lists, never text from the
   address in SQL: read [Lists on the server](docs/specification.md#lists-on-the-server). Charts come from
   `app/core/charts.py` and the `chart` macro, always with a summary. Excel comes from `app/core/excel.py`.
+- A form uses the field macros and reads every value with `app/core/forms.py`, at the edge: read
+  [Forms](docs/specification.md#forms). It is `novalidate`, and a failed save keeps what was typed.
 - Add a dependency only if the [stack](docs/specification.md#stack) needs it. Pin it and check it for known
   vulnerabilities.
 - No secrets in the repository, and no real people or companies in demo data.

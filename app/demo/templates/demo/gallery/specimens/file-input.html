@@ -1,0 +1,7 @@
+{% from "ui/macros.html" import file_field %}
+<div class="grid max-w-md gap-4">
+  {{ file_field("sample-file", _("Attachment"), "sample-file", ".pdf,.png,.jpg,.jpeg", hint=_("A PDF, PNG or JPEG file of up to 10 MB."), required=false) }}
+  {{ file_field("sample-wrong", _("Attachment"), "sample-wrong", error=_("The file is empty. Choose one with something in it.")) }}
+</div>
+<p class="mt-3 text-sm">{{ _("The browser's list of accepted types helps a person choose and decides nothing. The server reads the file itself: see Uploads in the specification.") }}</p>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ file_field("attachment", _("Attachment"), "field-attachment", accept, hint=_("A PDF, PNG or JPEG file."), error=errors.get("attachment", ""), required=false) }}{% endraw %}</code></pre>

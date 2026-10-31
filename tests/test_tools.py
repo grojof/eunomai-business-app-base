@@ -16,6 +16,7 @@ from tests.helpers import ROOT
 from tools import css, update_dependencies, vendor
 
 WORKFLOW = (ROOT / ".github" / "workflows" / "dependencies.yml").read_text(encoding="utf-8")
+TESTS_WORKFLOW = (ROOT / ".github" / "workflows" / "tests.yml").read_text(encoding="utf-8")
 
 
 def sha384(content: bytes) -> str:
@@ -496,6 +497,15 @@ def test_the_database_tests_run_on_a_postgresql_pinned_by_digest():
     assert re.search(r"postgres: postgres:[\d.]+@sha256:[0-9a-f]{64}\n", tests)
     assert "image: ${{ matrix.postgres }}" in tests
     assert "TEST_DATABASE_URL: ${{ matrix.test_database_url }}" in tests
+    ubuntu = re.search(r"- os: (\S+)\n\s+postgres: \S+\n\s+test_database_url: postgresql\S+", tests)
+    assert ubuntu, "the Ubuntu run must get its database from `include`"
+    assert ubuntu[1] in systems_for("pull_request"), "`include` adds to a run only if its name is the same"
+
+
+def test_the_one_linux_job_without_a_database_says_so():
+    """Tests with no `TEST_DATABASE_URL` fail a Linux job, so that one cannot pass on SQLite by mistake."""
+    update = job("update")[: WORKFLOW.index("\n  propose:\n")]
+    assert "TESTS_ON_SQLITE_ALONE:" in update
 
 
 def test_the_update_job_uses_no_cache():
@@ -522,3 +532,30 @@ def test_only_a_tested_update_is_proposed():
     assert propose[: propose.index("runs-on")].count("always()") == 0
     tested = job("update")
     assert tested.index("pytest") < tested.index("update.tar")
+
+
+def systems_for(event: str) -> list[str]:
+    """What the workflow's one expression gives for an event, read as GitHub reads `a == b && c || d`."""
+    pattern = r"os: \$\{\{ fromJSON\(github\.event_name == '(\w+)' && '(\[.*?\])' \|\| '(\[.*?\])'\) \}\}"
+    found = re.search(pattern, TESTS_WORKFLOW)
+    assert found, "the matrix should be built from the event"
+    return json.loads(found[2] if event == found[1] else found[3])
+
+
+def test_a_pull_request_runs_on_ubuntu_alone():
+    assert systems_for("pull_request") == ["ubuntu-latest"]
+
+
+def test_a_run_started_by_hand_adds_windows():
+    assert systems_for("workflow_dispatch") == ["ubuntu-latest", "windows-latest"]
+
+
+def test_the_tests_workflow_keeps_its_rules():
+    assert TESTS_WORKFLOW.count("runs-on:") == 1
+    assert "runs-on: ${{ matrix.os }}" in TESTS_WORKFLOW
+    assert "timeout-minutes: 25" in TESTS_WORKFLOW
+    assert re.search(r"postgres: postgres:[\d.]+@sha256:[0-9a-f]{64}", TESTS_WORKFLOW)
+    assert "image: ${{ matrix.postgres }}" in TESTS_WORKFLOW
+    commands = re.findall(r"^\s+- run: (.+)$", TESTS_WORKFLOW, re.M)
+    assert commands[0] == "uv lock --check"
+    assert all("--frozen" in command for command in commands[1:])

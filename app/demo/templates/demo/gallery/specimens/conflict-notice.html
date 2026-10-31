@@ -1,0 +1,3 @@
+{% from "ui/macros.html" import conflict_notice %}
+{{ conflict_notice(_("Someone else changed this work order"), _("Nothing of yours is saved yet, and what you typed is still here. They saved what is listed below. Save again to replace it with what you typed, or cancel to keep theirs."), [(_("State"), _("Closed")), (_("Hours"), "12.50")]) }}
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{% if conflict %}{{ conflict_notice(title, advice, conflict) }}{% endif %}{% endraw %}</code></pre>

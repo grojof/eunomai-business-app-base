@@ -14,13 +14,16 @@ NOT_OURS = {".git", ".venv", ".cache", ".data", "__pycache__", ".pytest_cache", 
 ANIMATIONS_FINISHED = """Promise.race([
     Promise.allSettled(
         document.getAnimations()
+            .filter((animation) => animation.timeline === document.timeline)
             .filter((animation) => animation.effect.getComputedTiming().iterations !== Infinity)
+            .filter((animation) => animation.effect.target.checkVisibility())
             .map((animation) => animation.finished)
     ),
     new Promise((resolve) => setTimeout(resolve, 3000)),
 ]).then(() => null)"""
 """Text still fading in fails the contrast scan: what is measured must be what stays on the page. An animation on an
-element that never renders never finishes, so the wait has an end."""
+element that never renders may never finish, and one driven by scrolling has no end: neither changes what is measured,
+so neither is waited for. The wait keeps a limit anyway."""
 FOCUSABLE = (
     "a[href], summary, select:not([disabled]), textarea:not([disabled]), button:not([disabled]), "
     'input:not([disabled]):not([type="hidden"]):not([type="radio"]:not(:checked)), [tabindex]:not([tabindex="-1"])'
@@ -132,6 +135,7 @@ def run_in(folder: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
         capture_output=True,
         text=True,
         encoding="utf-8",
+        errors="replace",  # a child's traceback can be in the system's encoding, and it must still be read
     )
 
 

@@ -1,0 +1,8 @@
+{% from "ui/macros.html" import number_field %}
+<div class="grid max-w-md gap-4">
+  {{ number_field("sample-hours", _("Hours"), "7.50", "sample-hours", hint=_("With two decimals at most."), required=true) }}
+  {{ number_field("sample-crew", _("People needed"), "2", "sample-crew", decimals=0, required=true) }}
+  {{ number_field("sample-wrong", _("Hours"), "many", "sample-wrong", error=_("Enter the hours as a number, such as 7.50.")) }}
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ number_field("hours", _("Hours"), values.hours, "field-hours", error=errors.get("hours", ""), required=true) }}
+{{ number_field("crew", _("People needed"), values.crew, "field-crew", decimals=0, error=errors.get("crew", ""), required=true) }}{% endraw %}</code></pre>

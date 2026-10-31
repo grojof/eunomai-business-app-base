@@ -1,0 +1,67 @@
+{#- The whole form, for the page and for htmx: a failed save comes back here, in the same place, with focus on its errors. -#}
+{% from "ui/macros.html" import card, checkbox_field, conflict_notice, confirm_link, date_field, error_summary, file_field, form_actions, icon, input_field, message, number_field, radio_group, searchable_select, select_field, textarea_field %}
+{#- One field. Which fields, and in what order, comes from `FIELDS` in app/demo/work_orders.py. -#}
+{% macro field(item) %}
+{% set label = _(item.label) %}
+{% set error = errors.get(item.name, "") %}
+{% if item.name == "title" %}
+{{ input_field(item.name, label, values.title, item.identifier, error=error, hint=_("In a few words, as it will read in a list."), required=true, attributes={"maxlength": 80, "autocomplete": "off"}) }}
+{% elif item.name == "equipment" %}
+{{ input_field(item.name, label, values.equipment, item.identifier, error=error, hint=_("Such as EQ-000123. It is in the list of equipment."), required=true, attributes={"autocomplete": "off", "maxlength": 16}) }}
+{% elif item.name == "fault" %}
+{{ searchable_select(item.name, label, fault_options, values.fault, item.identifier, every=_("Not known"), error=error, hint=_("Type to narrow the list."), required=false) }}
+{% elif item.name == "description" %}
+{{ textarea_field(item.name, label, values.description, item.identifier, error=error, hint=_("What was seen, and when."), required=false, attributes={"maxlength": 2000}) }}
+{% elif item.name == "status" %}
+{{ select_field(item.name, label, state_options, values.status, item.identifier, error=error, required=true) }}
+{% elif item.name == "planned_on" %}
+{{ date_field(item.name, label, values.planned_on, item.identifier, error=error, hint=_("Leave it empty if it is not planned yet."), required=false, earliest=earliest, latest=latest) }}
+{% elif item.name == "hours" %}
+{{ number_field(item.name, label, values.hours, item.identifier, error=error, hint=_("With two decimals at most."), required=true) }}
+{% elif item.name == "crew" %}
+{{ number_field(item.name, label, values.crew, item.identifier, decimals=0, error=error, hint=_("From 1 to 50."), required=true) }}
+{% elif item.name == "cost" %}
+{{ number_field(item.name, label, values.cost, item.identifier, error=error, required=true) }}
+{% elif item.name == "priority" %}
+{{ radio_group(item.name, label, priority_options, values.priority, item.identifier, error=error, required=true) }}
+{% elif item.name == "stop_needed" %}
+{{ checkbox_field(item.name, label, values.stop_needed, item.identifier, error=error) }}
+{% endif %}
+{% endmacro %}
+<form class="space-y-6" method="post" action="{{ action }}" enctype="multipart/form-data" hx-post="{{ action }}" hx-target="#work-order" hx-disabled-elt="find button[type=submit]" hx-disinherit="*" novalidate>
+  {% if errors %}{{ error_summary(_("Check what you entered"), summary) }}{% endif %}
+  {% if conflict %}{{ conflict_notice(_("Someone else changed this work order"), _("Nothing of yours is saved yet, and what you typed is still here. They saved what is listed below. Save again to replace it with what you typed, or cancel to keep theirs."), conflict) }}{% endif %}
+  {% call card(_("The work"), "work-title") %}
+  <div class="grid gap-4 md:grid-cols-2">
+    {% for item in work_fields %}<div class="min-w-0{{ ' md:col-span-2' if item.wide else '' }}">{{ field(item) }}</div>{% endfor %}
+  </div>
+  {% endcall %}
+  {% call card(_("The plan"), "plan-title") %}
+  <div class="grid gap-4 md:grid-cols-2">
+    {% for item in plan_fields %}<div class="min-w-0{{ ' md:col-span-2' if item.wide else '' }}">{{ field(item) }}</div>{% endfor %}
+  </div>
+  {% endcall %}
+  {% call card(_("Files"), "files-title") %}
+  {% if removed %}<div role="status">{{ message("success", _("The file was removed.")) }}</div>{% endif %}
+  {% if files %}
+  <ul class="divide-y divide-base-300">
+    {% for file in files %}
+    <li class="flex flex-wrap items-center justify-between gap-2 py-2">
+      <span class="flex min-w-0 items-center gap-2">
+        {{ icon("paperclip", "size-4") }}
+        <a class="link font-medium" href="/work-orders/{{ order.id }}/files/{{ file.id }}" download>{{ file.name }}</a>
+        <span class="text-sm whitespace-nowrap">{{ file.size|filesize }}</span>
+      </span>
+      {{ confirm_link(_("Remove"), "/work-orders/" ~ order.id ~ "/files/" ~ file.id ~ "/delete?back=" ~ back|urlencode, "confirm", "trash-2", _("Remove %(name)s", name=file.name), "ghost", small=true) }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {{ file_field(file_item.name, _("Add a file") if files else _(file_item.label), file_item.identifier, accepted, error=errors.get(file_item.name, ""), hint=file_hint, required=false) }}
+  {% endcall %}
+  <input type="hidden" name="back" value="{{ back }}">
+  {% if order %}<input type="hidden" name="version" value="{{ values.version }}">{% endif %}
+  {% call form_actions(_("Save"), back, _("Cancel"), loading=_("Saving…")) %}
+  {% if order %}{{ confirm_link(_("Delete"), "/work-orders/" ~ order.id ~ "/delete?back=" ~ back|urlencode, "confirm", "trash-2", _("Delete work order %(number)s", number=order.id)) }}{% endif %}
+  {% endcall %}
+</form>

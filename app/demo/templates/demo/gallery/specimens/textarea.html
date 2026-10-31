@@ -1,0 +1,6 @@
+{% from "ui/macros.html" import textarea_field %}
+<div class="grid max-w-md gap-4">
+  {{ textarea_field("sample-text", _("Description"), "", "sample-text", hint=_("What was seen, and when."), required=false) }}
+  {{ textarea_field("sample-long", _("Description"), _("Far too long"), "sample-long", error=_("Use 2000 characters at most."), rows=2) }}
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ textarea_field("description", _("Description"), values.description, "field-description", error=errors.get("description", ""), required=false) }}{% endraw %}</code></pre>

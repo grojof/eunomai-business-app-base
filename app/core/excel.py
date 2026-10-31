@@ -19,17 +19,18 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from pathlib import Path
-from typing import Any, Literal
+from typing import IO, Any, Literal
+from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
-from fastapi.responses import FileResponse
-from starlette.background import BackgroundTask
+from fastapi.responses import StreamingResponse
+from starlette.types import Receive, Scope, Send
 from xlsxwriter import Workbook  # type: ignore[import-untyped]
 
 from app.core.formatters import rounded
 
 logger = logging.getLogger(__name__)
+_BLOCK = 64 * 1024
 SIGNIFICANT_DIGITS = 15
 FIRST_YEAR = 1900
 """Excel's calendar starts here. An earlier date cannot be a date cell, so it goes as text."""
@@ -106,7 +107,7 @@ def _write_row(
 
 
 def write_workbook(
-    target: str, title: str, columns: Sequence[ExcelColumn], rows: Iterable[Sequence[Any]], zone: str
+    target: str | IO[bytes], title: str, columns: Sequence[ExcelColumn], rows: Iterable[Sequence[Any]], zone: str
 ) -> int:
     """Writes the file and returns how many rows it holds. More rows than Excel has is an error, never a shorter file.
 
@@ -139,20 +140,37 @@ def write_workbook(
     return last
 
 
+class _TemporaryDownload(StreamingResponse):
+    """Sends an open temporary file, and closes it however the download ends: the client leaving, a failed send, or the
+    server stopping. A background task runs only after a response that finished."""
+
+    def __init__(self, file: IO[bytes], filename: str) -> None:
+        size = file.seek(0, os.SEEK_END)
+        file.seek(0)
+        self._file = file
+        quoted = quote(filename)
+        name = f'filename="{filename}"' if quoted == filename else f"filename*=utf-8''{quoted}"
+        headers = {"Content-Length": str(size), "Content-Disposition": f"attachment; {name}"}
+        super().__init__(iter(lambda: file.read(_BLOCK), b""), media_type=MEDIA_TYPE, headers=headers)
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        try:
+            await super().__call__(scope, receive, send)
+        finally:
+            self._file.close()
+
+
 def excel_response(
     title: str, columns: Sequence[ExcelColumn], rows: Iterable[Sequence[Any]], zone: str
-) -> FileResponse:
-    """A download, from a file that goes away once it is sent. A failure leaves nothing behind."""
-    descriptor, path = tempfile.mkstemp(suffix=".xlsx")
-    os.close(descriptor)
+) -> StreamingResponse:
+    """A download from a temporary file with no name to find it by, where the system allows that, and which the system
+    deletes when it closes: the file holds business data, so a download that ends any way leaves it behind nowhere.
+    While a file is written, XlsxWriter's own temporary file does exist under a name. Its `with` clears that when a row
+    fails, and only a server killed in those seconds could leave it."""
+    file = tempfile.TemporaryFile(suffix=".xlsx")  # the response closes it
     try:
-        write_workbook(path, title, columns, rows, zone)
+        write_workbook(file, title, columns, rows, zone)
     except Exception:
-        Path(path).unlink()
+        file.close()
         raise
-    return FileResponse(
-        path,
-        media_type=MEDIA_TYPE,
-        filename=f"{title}-{datetime.now(ZoneInfo(zone)).date().isoformat()}.xlsx",
-        background=BackgroundTask(Path(path).unlink),
-    )
+    return _TemporaryDownload(file, f"{title}-{datetime.now(ZoneInfo(zone)).date().isoformat()}.xlsx")

@@ -1,0 +1,3 @@
+{#- What opens in the dialog. -#}
+{% from "ui/macros.html" import confirmation %}
+{{ confirmation("confirm", _("Remove this file?"), _("This cannot be undone. This goes:"), [file.name], _("Remove it"), _("Keep it"), "/work-orders/" ~ order_id ~ "/files/" ~ file.id ~ "/delete", [("back", back)]) }}

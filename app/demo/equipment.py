@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import Response
 from sqlalchemy import ColumnElement, case, select
+from sqlalchemy.orm import Session
 
 from app.core.database import DatabaseSession, exact_sum
 from app.core.excel import ExcelColumn, excel_response
@@ -32,6 +33,34 @@ LARGEST_ID = 2**31 - 1
 """The database's integer. A longer number in an address is a page that does not exist, not an error."""
 STATUS_ORDER = ("stopped", "due_soon", "in_service")
 """What needs attention first: sorted by what it means, not by its letters."""
+
+
+def can_edit(request: Request) -> bool:
+    """Whether to offer it. The routes check again: hiding a link is not a control."""
+    person = getattr(request.state, "person", None)
+    return bool(person and "admin" in person.roles)
+
+
+def record_number(number: str) -> int | None:
+    """A number from an address, or nothing. The length comes first: Python refuses to read thousands of digits."""
+    readable = number.isascii() and number.isdigit() and len(number) <= len(str(LARGEST_ID))
+    return int(number) if readable and int(number) <= LARGEST_ID else None
+
+
+def saved_message(session: Session, number: str) -> str:
+    """Without JavaScript the address says what was saved. A value that is no order says nothing."""
+    order = record_number(number)
+    if order is None or session.get(WorkOrder, order) is None:
+        return ""
+    return _("Work order %(number)s saved.") % {"number": number}
+
+
+def outcome_message(session: Session, params: Mapping[str, str]) -> str:
+    """What the last action did, from the address. A row said to be deleted must really be gone."""
+    deleted = record_number(params.get("deleted", ""))
+    if deleted is not None and session.get(WorkOrder, deleted) is None:
+        return _("Work order %(number)s deleted.") % {"number": deleted}
+    return saved_message(session, params.get("saved", ""))
 
 
 def ranked(column: Any, values: Iterable[str]) -> ColumnElement[int]:
@@ -165,11 +194,13 @@ def equipment_detail(request: Request, equipment_id: int, session: DatabaseSessi
         "cost": exact_sum(order.cost for order in orders),
         "statuses": STATUS_LABELS,
         "order_statuses": ORDER_LABELS,
+        "can_edit": can_edit(request),
     }
     if fragment_requested(request):
         response = render(request, "demo/equipment/tabs.html", **context)
     else:
-        response = render(request, "demo/equipment/detail.html", back=back, **context)
+        message = outcome_message(session, request.query_params)
+        response = render(request, "demo/equipment/detail.html", back=back, outcome=message, **context)
     response.headers["Vary"] = "HX-Request"
     return response
 

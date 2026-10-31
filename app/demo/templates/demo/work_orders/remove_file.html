@@ -1,0 +1,11 @@
+{#- The same question as the dialog's, on a page of its own without JavaScript. -#}
+{% extends "layout.html" %}
+{% from "ui/macros.html" import breadcrumbs, confirmation %}
+{% set order_address = "/work-orders/" ~ order_id ~ "/edit?back=" ~ back|urlencode %}
+{% block title %}{{ _("Remove this file?") }}{% endblock %}
+{% block content %}
+{{ breadcrumbs([(_("Work order %(number)s", number=order_id), order_address), (_("Remove"), "")]) }}
+<div class="max-w-xl">
+  {{ confirmation("confirm", _("Remove this file?"), _("This cannot be undone. This goes:"), [file.name], _("Remove it"), _("Keep it"), "/work-orders/" ~ order_id ~ "/files/" ~ file.id ~ "/delete", [("back", back)], back=order_address, level=1) }}
+</div>
+{% endblock %}

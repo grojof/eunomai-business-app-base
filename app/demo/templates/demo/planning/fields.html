@@ -1,7 +1,9 @@
 {#- The form of one work order, for the dialog and for the page without JavaScript. -#}
-{% from "ui/macros.html" import select_field, input_field, error_summary %}
+{% from "ui/macros.html" import select_field, date_field, number_field, error_summary, conflict_notice %}
 {% if errors %}{{ error_summary(_("Check what you entered"), summary) }}{% endif %}
-{{ select_field("status", _("State"), options, values.status, "field-status", error=errors.get("status", ""), attributes={} if errors else {"data-focus": "", "autofocus": ""}) }}
-{{ input_field("planned_on", _("Planned for"), values.planned_on, "field-planned", "date", error=errors.get("planned_on", ""), hint=_("Leave it empty if it is not planned yet.")) }}
-{{ input_field("hours", _("Hours"), values.hours, "field-hours", error=errors.get("hours", ""), attributes={"inputmode": "decimal", "autocomplete": "off"}) }}
+{% if conflict %}{{ conflict_notice(_("Someone else changed this work order"), _("Nothing of yours is saved yet, and what you typed is still here. They saved what is listed below. Save again to replace it with what you typed, or cancel to keep theirs."), conflict) }}{% endif %}
+{{ select_field("status", _("State"), options, values.status, "field-status", error=errors.get("status", ""), attributes={} if errors or conflict else {"data-focus": "", "autofocus": ""}) }}
+{{ date_field("planned_on", _("Planned for"), values.planned_on, "field-planned", error=errors.get("planned_on", ""), hint=_("Leave it empty if it is not planned yet.")) }}
+{{ number_field("hours", _("Hours"), values.hours, "field-hours", error=errors.get("hours", "")) }}
 <input type="hidden" name="back" value="{{ back }}">
+<input type="hidden" name="version" value="{{ values.version }}">

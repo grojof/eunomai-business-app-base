@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 18:54+0100\n"
+"POT-Creation-Date: 2026-10-31 21:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -28,6 +28,9 @@ msgstr ""
 "%(count)s. Es mostren del %(first)s al %(last)s, ordenats per %(column)s,"
 " %(direction)s."
 
+msgid "(optional)"
+msgstr "(opcional)"
+
 msgid ""
 "A figure with its text summary and its data as a table, drawn with "
 "Chart.js."
@@ -37,6 +40,11 @@ msgstr ""
 
 msgid "A list of terms and their values, for one record's details."
 msgstr "Una llista de termes i els seus valors, per als detalls d'un registre."
+
+msgid "A list to type in, by keyboard, that is a plain select without JavaScript."
+msgstr ""
+"Una llista on es pot escriure, amb el teclat, que sense JavaScript és un "
+"select normal."
 
 msgid ""
 "A plain form that filters a list on the server. daisyUI's filter is a set"
@@ -59,6 +67,9 @@ msgstr "Com el sistema"
 
 msgid "Ask whoever manages this application if you need access."
 msgstr "Si necessites accés, demana'l a qui gestiona aquesta aplicació."
+
+msgid "Asks before an action that cannot be undone, and names what will be lost."
+msgstr "Pregunta abans d'una acció que no es pot desfer i diu què es perdrà."
 
 msgid "Available"
 msgstr "Disponible"
@@ -97,6 +108,12 @@ msgstr "Tanca aquest missatge"
 msgid "Compact"
 msgstr "Compacta"
 
+msgid "Confirmation dialog"
+msgstr "Diàleg de confirmació"
+
+msgid "Conflict notice"
+msgstr "Avís de conflicte"
+
 msgid "Copied"
 msgstr "Copiat"
 
@@ -118,6 +135,9 @@ msgstr "Entrada de dades"
 msgid "Data table"
 msgstr "Taula de dades"
 
+msgid "Date field"
+msgstr "Camp de data"
+
 msgid "Decorative"
 msgstr "Decoratiu"
 
@@ -136,11 +156,38 @@ msgstr "Desplegable"
 msgid "Each one is real: try it here, then choose the one the header should show."
 msgstr "Cada un és real: prova'l aquí i tria el que ha de mostrar la capçalera."
 
+#, python-format
+msgid "Enter a date between %(earliest)s and %(latest)s."
+msgstr "Escriu una data entre %(earliest)s i %(latest)s."
+
+#, python-format
+msgid "Enter a number between %(low)s and %(high)s."
+msgstr "Escriu un nombre entre %(low)s i %(high)s."
+
+#, python-format
+msgid "Enter a number, such as %(example)s."
+msgstr "Escriu un nombre, per exemple %(example)s."
+
+#, python-format
+msgid "Enter a whole number between %(low)s and %(high)s."
+msgstr "Escriu un nombre enter entre %(low)s i %(high)s."
+
 msgid "Error"
 msgstr "Error"
 
+msgid "Error summary"
+msgstr "Resum d'errors"
+
+msgid "Every problem of a form in one place, each a link to its field."
+msgstr ""
+"Tots els problemes d'un formulari en un sol lloc, cadascun amb un enllaç "
+"al seu camp."
+
 msgid "Feedback"
 msgstr "Avisos"
+
+msgid "Field error"
+msgstr "Error de camp"
 
 msgid "Filter bar"
 msgstr "Barra de filtres"
@@ -151,8 +198,19 @@ msgstr "Filtres"
 msgid "Fixed header"
 msgstr "Capçalera fixa"
 
+msgid "Form actions"
+msgstr "Accions del formulari"
+
 msgid "Full"
 msgstr "Completa"
+
+msgid "Go back and choose a smaller file."
+msgstr "Torna enrere i tria un fitxer més petit."
+
+msgid "Go back and try again. If it happens again, tell whoever runs this."
+msgstr ""
+"Torna enrere i torna-ho a provar. Si torna a passar, avisa qui gestiona "
+"això."
 
 msgid "Hidden"
 msgstr "Oculta"
@@ -242,6 +300,12 @@ msgstr "Normal"
 msgid "Not recommended"
 msgstr "No recomanat"
 
+msgid "Nothing matches. Try another word."
+msgstr "Res no coincideix. Prova amb una altra paraula."
+
+msgid "Number field"
+msgstr "Camp numèric"
+
 msgid ""
 "On its own it changes the theme without saving it, and it cannot say that"
 " the theme should follow the system. The shell uses its class inside a "
@@ -253,6 +317,10 @@ msgstr ""
 
 msgid "Open menu"
 msgstr "Obre el menú"
+
+#, python-format
+msgid "Options: %(count)s"
+msgstr "Opcions: %(count)s"
 
 #, python-format
 msgid "Page %(page)s"
@@ -281,6 +349,17 @@ msgstr "Opció"
 msgid "Remove filter %(name)s: %(value)s"
 msgstr "Treu el filtre %(name)s: %(value)s"
 
+msgid "Remove the special characters, such as tabs, from this text."
+msgstr "Treu d'aquest text els caràcters especials, com ara els tabuladors."
+
+msgid "Rename the file so that it has one extension, such as report.pdf."
+msgstr ""
+"Canvia el nom del fitxer perquè tingui una sola extensió, com ara "
+"informe.pdf."
+
+msgid "Rename the file: its name cannot have a path or special characters."
+msgstr "Canvia el nom del fitxer: no pot tenir una ruta ni caràcters especials."
+
 msgid "Results"
 msgstr "Resultats"
 
@@ -291,17 +370,30 @@ msgstr "Resultats: %(count)s"
 msgid "Rows per page"
 msgstr "Files per pàgina"
 
+msgid ""
+"Says that someone else saved first, and what they saved, above what was "
+"typed."
+msgstr ""
+"Diu que una altra persona va desar abans, i què va desar, a sobre del que"
+" s'ha escrit."
+
 msgid "Search"
 msgstr "Cerca"
 
 msgid "Search is not available right now. Try again in a moment."
 msgstr "La cerca no està disponible ara. Torna-ho a provar d'aquí a un moment."
 
+msgid "Searchable select"
+msgstr "Llista amb cerca"
+
 msgid "Select"
 msgstr "Llista"
 
 msgid "Settings"
 msgstr "Configuració"
+
+msgid "Show the options"
+msgstr "Mostra les opcions"
 
 msgid "Side"
 msgstr "Lateral"
@@ -321,8 +413,54 @@ msgstr "Inici"
 msgid "Swap"
 msgstr "Intercanvi"
 
+msgid "Text a person types as their language writes numbers. Never a float."
+msgstr ""
+"Text que cada persona escriu com el seu idioma escriu els nombres. Mai un"
+" float."
+
+msgid "That could not be read"
+msgstr "No s'ha pogut llegir"
+
 msgid "That did not work. Try again in a moment."
 msgstr "No ha funcionat. Torna-ho a provar d'aquí a un moment."
+
+msgid "That is too large to send"
+msgstr "És massa gran per enviar-lo"
+
+msgid ""
+"That is too large to send. Choose a smaller file: what you typed is still"
+" here."
+msgstr ""
+"És massa gran per enviar-lo. Tria un fitxer més petit: el que has escrit "
+"continua aquí."
+
+msgid "The browser's own date field, read by the server in one strict form."
+msgstr ""
+"El camp de data del mateix navegador, que el servidor llegeix en una "
+"única forma estricta."
+
+msgid "The file is empty. Choose one with something in it."
+msgstr "El fitxer és buit. Tria'n un que tingui contingut."
+
+#, python-format
+msgid "The file must be %(most)s or smaller."
+msgstr "El fitxer ha d'ocupar %(most)s o menys."
+
+#, python-format
+msgid "The file must be one of these: %(kinds)s."
+msgstr "El fitxer ha de ser un d'aquests: %(kinds)s."
+
+msgid "The main action of a form, the way out, and anything else at the far end."
+msgstr ""
+"L'acció principal d'un formulari, la sortida, i qualsevol altra cosa a "
+"l'altre extrem."
+
+msgid ""
+"The name of this file does not match what it holds. Rename it, or choose "
+"another."
+msgstr ""
+"El nom d'aquest fitxer no coincideix amb el que conté. Canvia'l o tria'n "
+"un altre."
 
 msgid "The server cannot be reached. Check your connection and try again."
 msgstr ""
@@ -347,6 +485,16 @@ msgstr ""
 "Això ja no és aquí: potser algú ho ha tret. Recarrega la pàgina per veure"
 " què hi ha ara."
 
+msgid "This is not on the list. Choose one of its options."
+msgstr "Això no és a la llista. Tria una de les seves opcions."
+
+#, python-format
+msgid "This is not really a %(kind)s file. Choose another."
+msgstr "En realitat no és un fitxer %(kind)s. Tria'n un altre."
+
+msgid "Tick the box or leave it empty."
+msgstr "Marca la casella o deixa-la buida."
+
 msgid "Toggle"
 msgstr "Interruptor"
 
@@ -358,6 +506,16 @@ msgstr "Prova amb una altra paraula, o amb una de més curta."
 
 msgid "Type to search"
 msgstr "Escriu per cercar"
+
+#, python-format
+msgid "Use %(most)s characters at most."
+msgstr "Fes servir %(most)s caràcters com a màxim."
+
+#, python-format
+msgid "Use %(places)s decimal at most."
+msgid_plural "Use %(places)s decimals at most."
+msgstr[0] "Fes servir %(places)s decimal com a màxim."
+msgstr[1] "Fes servir %(places)s decimals com a màxim."
 
 msgid "Use this one"
 msgstr "Fes servir aquest"
@@ -371,6 +529,9 @@ msgstr "Avís"
 
 msgid "We could not tell who you are. Open the application from your portal."
 msgstr "No hem pogut saber qui ets. Obre l'aplicació des del teu portal."
+
+msgid "What is wrong with one field, and how to fix it, tied to that field."
+msgstr "Què falla en un camp i com arreglar-ho, vinculat a aquest camp."
 
 msgid "Width"
 msgstr "Amplada"

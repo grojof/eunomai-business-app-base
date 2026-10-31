@@ -9,7 +9,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-ONLY_ON_DEMO = {"A11Y-09", "COMP-03", "DATA-07"}
+ONLY_ON_DEMO = {"A11Y-09", "COMP-03", "DATA-07", "USE-03"}
 """Rules whose only proof is a demo screen. Without the demo nothing proves them automatically, so they stop saying so:
 they become `By hand` until the application has a screen, and a test, of its own. A test keeps this set exact."""
 DEMO_ICONS = (
@@ -19,12 +19,16 @@ DEMO_ICONS = (
     "clock",
     "component",
     "database",
+    "download",
     "eye",
     "file-spreadsheet",
     "gauge",
     "history",
+    "paperclip",
+    "plus",
     "printer",
     "shield",
+    "trash-2",
     "wallet",
     "wrench",
 )

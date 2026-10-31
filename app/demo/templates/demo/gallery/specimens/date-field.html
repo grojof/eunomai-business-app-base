@@ -1,0 +1,6 @@
+{% from "ui/macros.html" import date_field %}
+<div class="grid max-w-md gap-4">
+  {{ date_field("sample-date", _("Planned for"), "2027-03-15", "sample-date", hint=_("Leave it empty if it is not planned yet."), required=false) }}
+  {{ date_field("sample-wrong", _("Planned for"), "", "sample-wrong", error=_("Enter a date, or leave it empty if it is not planned yet."), earliest="2000-01-01", latest="2099-12-31") }}
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ date_field("planned_on", _("Planned for"), values.planned_on, "field-planned", error=errors.get("planned_on", ""), required=false) }}{% endraw %}</code></pre>

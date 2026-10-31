@@ -34,6 +34,21 @@
   max-height: min(40rem, calc(100dvh - 1rem));
 }
 
+/* A searchable select with text that is not on its list, as a server's error would mark it */
+.input:has(> [role="combobox"][aria-invalid="true"]) {
+  border-color: var(--color-error);
+}
+
+/* A dialog's box scrolls, so what hangs out of it is cut: there a searchable select's list takes its place in the box */
+.modal-box [data-combobox-popup] {
+  position: static;
+}
+
+/* A box around a text box shows the focus, as daisyUI draws it: a second line inside would only compete with it */
+.input > input:focus-visible {
+  outline: none;
+}
+
 /* A table's box takes the keyboard so it can scroll, and shows it inside: the box touches the edge of its panel */
 .table-scroll:focus-visible {
   outline: 2px solid var(--color-primary);
@@ -202,6 +217,12 @@
     [data-results] {
       transition: none;
     }
+  }
+
+  /* A searchable select's options: the one the arrow keys are on, as in the palette */
+  [data-combobox] [role="option"][aria-selected="true"] > span {
+    background-color: var(--color-neutral);
+    color: var(--color-neutral-content);
   }
 
   #palette-results [role="option"][aria-selected="true"] {

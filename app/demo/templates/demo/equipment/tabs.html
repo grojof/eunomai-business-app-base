@@ -50,7 +50,7 @@
     {% set order_label, order_kind = order_statuses[order.status] %}
     <tr>
       <td class="hidden tabular-nums md:table-cell">{{ order.id }}</td>
-      <th scope="row" class="font-medium">{{ order.title }}</th>
+      <th scope="row" class="font-medium">{% if can_edit %}<a class="link link-hover" href="/work-orders/{{ order.id }}/edit?back={{ orders_address|urlencode }}" aria-label="{{ _('All the fields of work order %(number)s: %(work)s', number=order.id, work=order.title) }}">{{ order.title }}</a>{% else %}{{ order.title }}{% endif %}</th>
       <td>{{ status_label(_(order_label), order_kind) }}</td>
       <td class="hidden whitespace-nowrap md:table-cell">{{ local_date(order.opened_at) }}</td>
       <td class="hidden whitespace-nowrap md:table-cell">{{ local_date(order.closed_at) if order.closed_at else "" }}</td>

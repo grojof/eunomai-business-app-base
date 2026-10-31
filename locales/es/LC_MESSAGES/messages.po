@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 18:54+0100\n"
+"POT-Creation-Date: 2026-10-31 21:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -28,6 +28,9 @@ msgstr ""
 "%(count)s. Se muestran del %(first)s al %(last)s, ordenados por "
 "%(column)s, %(direction)s."
 
+msgid "(optional)"
+msgstr "(opcional)"
+
 msgid ""
 "A figure with its text summary and its data as a table, drawn with "
 "Chart.js."
@@ -37,6 +40,11 @@ msgstr ""
 
 msgid "A list of terms and their values, for one record's details."
 msgstr "Una lista de términos y sus valores, para los detalles de un registro."
+
+msgid "A list to type in, by keyboard, that is a plain select without JavaScript."
+msgstr ""
+"Una lista en la que se puede escribir, con el teclado, que sin JavaScript"
+" es un select normal."
 
 msgid ""
 "A plain form that filters a list on the server. daisyUI's filter is a set"
@@ -59,6 +67,11 @@ msgstr "Como el sistema"
 
 msgid "Ask whoever manages this application if you need access."
 msgstr "Si necesitas acceso, pídelo a quien gestiona esta aplicación."
+
+msgid "Asks before an action that cannot be undone, and names what will be lost."
+msgstr ""
+"Pregunta antes de una acción que no se puede deshacer y dice qué se "
+"perderá."
 
 msgid "Available"
 msgstr "Disponible"
@@ -97,6 +110,12 @@ msgstr "Cerrar este mensaje"
 msgid "Compact"
 msgstr "Compacta"
 
+msgid "Confirmation dialog"
+msgstr "Diálogo de confirmación"
+
+msgid "Conflict notice"
+msgstr "Aviso de conflicto"
+
 msgid "Copied"
 msgstr "Copiado"
 
@@ -118,6 +137,9 @@ msgstr "Entrada de datos"
 msgid "Data table"
 msgstr "Tabla de datos"
 
+msgid "Date field"
+msgstr "Campo de fecha"
+
 msgid "Decorative"
 msgstr "Decorativo"
 
@@ -136,11 +158,38 @@ msgstr "Desplegable"
 msgid "Each one is real: try it here, then choose the one the header should show."
 msgstr "Cada uno es real: pruébalo aquí y elige el que debe mostrar la cabecera."
 
+#, python-format
+msgid "Enter a date between %(earliest)s and %(latest)s."
+msgstr "Escribe una fecha entre %(earliest)s y %(latest)s."
+
+#, python-format
+msgid "Enter a number between %(low)s and %(high)s."
+msgstr "Escribe un número entre %(low)s y %(high)s."
+
+#, python-format
+msgid "Enter a number, such as %(example)s."
+msgstr "Escribe un número, por ejemplo %(example)s."
+
+#, python-format
+msgid "Enter a whole number between %(low)s and %(high)s."
+msgstr "Escribe un número entero entre %(low)s y %(high)s."
+
 msgid "Error"
 msgstr "Error"
 
+msgid "Error summary"
+msgstr "Resumen de errores"
+
+msgid "Every problem of a form in one place, each a link to its field."
+msgstr ""
+"Todos los problemas de un formulario en un solo lugar, cada uno con un "
+"enlace a su campo."
+
 msgid "Feedback"
 msgstr "Avisos"
+
+msgid "Field error"
+msgstr "Error de campo"
 
 msgid "Filter bar"
 msgstr "Barra de filtros"
@@ -151,8 +200,19 @@ msgstr "Filtros"
 msgid "Fixed header"
 msgstr "Cabecera fija"
 
+msgid "Form actions"
+msgstr "Acciones del formulario"
+
 msgid "Full"
 msgstr "Completa"
+
+msgid "Go back and choose a smaller file."
+msgstr "Vuelve atrás y elige un archivo más pequeño."
+
+msgid "Go back and try again. If it happens again, tell whoever runs this."
+msgstr ""
+"Vuelve atrás e inténtalo de nuevo. Si vuelve a pasar, avisa a quien "
+"gestiona esto."
 
 msgid "Hidden"
 msgstr "Oculta"
@@ -242,6 +302,12 @@ msgstr "Normal"
 msgid "Not recommended"
 msgstr "No recomendado"
 
+msgid "Nothing matches. Try another word."
+msgstr "Nada coincide. Prueba con otra palabra."
+
+msgid "Number field"
+msgstr "Campo numérico"
+
 msgid ""
 "On its own it changes the theme without saving it, and it cannot say that"
 " the theme should follow the system. The shell uses its class inside a "
@@ -253,6 +319,10 @@ msgstr ""
 
 msgid "Open menu"
 msgstr "Abrir el menú"
+
+#, python-format
+msgid "Options: %(count)s"
+msgstr "Opciones: %(count)s"
 
 #, python-format
 msgid "Page %(page)s"
@@ -281,6 +351,19 @@ msgstr "Opción"
 msgid "Remove filter %(name)s: %(value)s"
 msgstr "Quitar el filtro %(name)s: %(value)s"
 
+msgid "Remove the special characters, such as tabs, from this text."
+msgstr "Quita de este texto los caracteres especiales, como los tabuladores."
+
+msgid "Rename the file so that it has one extension, such as report.pdf."
+msgstr ""
+"Cambia el nombre del archivo para que tenga una sola extensión, como "
+"informe.pdf."
+
+msgid "Rename the file: its name cannot have a path or special characters."
+msgstr ""
+"Cambia el nombre del archivo: no puede tener una ruta ni caracteres "
+"especiales."
+
 msgid "Results"
 msgstr "Resultados"
 
@@ -291,17 +374,28 @@ msgstr "Resultados: %(count)s"
 msgid "Rows per page"
 msgstr "Filas por página"
 
+msgid ""
+"Says that someone else saved first, and what they saved, above what was "
+"typed."
+msgstr "Dice que otra persona guardó antes, y qué guardó, encima de lo escrito."
+
 msgid "Search"
 msgstr "Buscar"
 
 msgid "Search is not available right now. Try again in a moment."
 msgstr "La búsqueda no está disponible ahora. Inténtalo de nuevo en un momento."
 
+msgid "Searchable select"
+msgstr "Lista con búsqueda"
+
 msgid "Select"
 msgstr "Lista"
 
 msgid "Settings"
 msgstr "Ajustes"
+
+msgid "Show the options"
+msgstr "Mostrar las opciones"
 
 msgid "Side"
 msgstr "Lateral"
@@ -321,8 +415,54 @@ msgstr "Inicio"
 msgid "Swap"
 msgstr "Intercambio"
 
+msgid "Text a person types as their language writes numbers. Never a float."
+msgstr ""
+"Texto que cada persona escribe como su idioma escribe los números. Nunca "
+"un float."
+
+msgid "That could not be read"
+msgstr "No se ha podido leer"
+
 msgid "That did not work. Try again in a moment."
 msgstr "No ha funcionado. Vuelve a intentarlo en un momento."
+
+msgid "That is too large to send"
+msgstr "Es demasiado grande para enviarlo"
+
+msgid ""
+"That is too large to send. Choose a smaller file: what you typed is still"
+" here."
+msgstr ""
+"Es demasiado grande para enviarlo. Elige un archivo más pequeño: lo que "
+"has escrito sigue aquí."
+
+msgid "The browser's own date field, read by the server in one strict form."
+msgstr ""
+"El campo de fecha del propio navegador, que el servidor lee en una única "
+"forma estricta."
+
+msgid "The file is empty. Choose one with something in it."
+msgstr "El archivo está vacío. Elige uno que tenga contenido."
+
+#, python-format
+msgid "The file must be %(most)s or smaller."
+msgstr "El archivo debe ocupar %(most)s o menos."
+
+#, python-format
+msgid "The file must be one of these: %(kinds)s."
+msgstr "El archivo debe ser uno de estos: %(kinds)s."
+
+msgid "The main action of a form, the way out, and anything else at the far end."
+msgstr ""
+"La acción principal de un formulario, la salida, y cualquier otra cosa al"
+" otro extremo."
+
+msgid ""
+"The name of this file does not match what it holds. Rename it, or choose "
+"another."
+msgstr ""
+"El nombre de este archivo no coincide con lo que contiene. Cámbialo o "
+"elige otro."
 
 msgid "The server cannot be reached. Check your connection and try again."
 msgstr ""
@@ -345,6 +485,16 @@ msgstr ""
 "Esto ya no está aquí: quizá alguien lo ha quitado. Recarga la página para"
 " ver lo que hay ahora."
 
+msgid "This is not on the list. Choose one of its options."
+msgstr "Esto no está en la lista. Elige una de sus opciones."
+
+#, python-format
+msgid "This is not really a %(kind)s file. Choose another."
+msgstr "En realidad no es un archivo %(kind)s. Elige otro."
+
+msgid "Tick the box or leave it empty."
+msgstr "Marca la casilla o déjala vacía."
+
 msgid "Toggle"
 msgstr "Interruptor"
 
@@ -356,6 +506,16 @@ msgstr "Prueba con otra palabra, o con una más corta."
 
 msgid "Type to search"
 msgstr "Escribe para buscar"
+
+#, python-format
+msgid "Use %(most)s characters at most."
+msgstr "Usa %(most)s caracteres como máximo."
+
+#, python-format
+msgid "Use %(places)s decimal at most."
+msgid_plural "Use %(places)s decimals at most."
+msgstr[0] "Usa %(places)s decimal como máximo."
+msgstr[1] "Usa %(places)s decimales como máximo."
 
 msgid "Use this one"
 msgstr "Usar este"
@@ -369,6 +529,9 @@ msgstr "Aviso"
 
 msgid "We could not tell who you are. Open the application from your portal."
 msgstr "No hemos podido saber quién eres. Abre la aplicación desde tu portal."
+
+msgid "What is wrong with one field, and how to fix it, tied to that field."
+msgstr "Qué falla en un campo y cómo arreglarlo, vinculado a ese campo."
 
 msgid "Width"
 msgstr "Anchura"

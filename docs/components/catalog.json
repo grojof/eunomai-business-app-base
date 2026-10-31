@@ -8,6 +8,14 @@
     "page": "docs/components/button.md"
   },
   {
+    "name": "confirmation-dialog",
+    "category": "actions",
+    "status": "available",
+    "note": "Asks before an action that cannot be undone, and names what will be lost.",
+    "use": "Asks before an action that cannot be undone, and names what will be lost.",
+    "page": "docs/components/confirmation-dialog.md"
+  },
+  {
     "name": "dropdown",
     "category": "actions",
     "status": "available",
@@ -296,6 +304,14 @@
     "page": "docs/components/progress.md"
   },
   {
+    "name": "conflict-notice",
+    "category": "feedback",
+    "status": "available",
+    "note": "Says that someone else saved first, and what they saved, above what was typed.",
+    "use": "Says that someone else saved first, and what they saved, above what was typed.",
+    "page": "docs/components/conflict-notice.md"
+  },
+  {
     "name": "radial-progress",
     "category": "feedback",
     "status": "available",
@@ -344,6 +360,30 @@
     "page": "docs/components/checkbox.md"
   },
   {
+    "name": "date-field",
+    "category": "data-input",
+    "status": "available",
+    "note": "The browser's own date field, read by the server in one strict form.",
+    "use": "The browser's own date field, read by the server in one strict form.",
+    "page": "docs/components/date-field.md"
+  },
+  {
+    "name": "error-summary",
+    "category": "data-input",
+    "status": "available",
+    "note": "Every problem of a form in one place, each a link to its field.",
+    "use": "Every problem of a form in one place, each a link to its field.",
+    "page": "docs/components/error-summary.md"
+  },
+  {
+    "name": "field-error",
+    "category": "data-input",
+    "status": "available",
+    "note": "What is wrong with one field, and how to fix it, tied to that field.",
+    "use": "What is wrong with one field, and how to fix it, tied to that field.",
+    "page": "docs/components/field-error.md"
+  },
+  {
     "name": "fieldset",
     "category": "data-input",
     "status": "available",
@@ -376,6 +416,14 @@
     "page": "docs/components/filter-bar.md"
   },
   {
+    "name": "form-actions",
+    "category": "data-input",
+    "status": "available",
+    "note": "The main action of a form, the way out, and anything else at the far end.",
+    "use": "The main action of a form, the way out, and anything else at the far end.",
+    "page": "docs/components/form-actions.md"
+  },
+  {
     "name": "input",
     "category": "data-input",
     "status": "available",
@@ -390,6 +438,14 @@
     "note": "",
     "use": "Use a label to give a name or title to an input field. Put the label before or after the field.",
     "page": "docs/components/label.md"
+  },
+  {
+    "name": "number-field",
+    "category": "data-input",
+    "status": "available",
+    "note": "Text a person types as their language writes numbers. Never a float.",
+    "use": "Text a person types as their language writes numbers. Never a float.",
+    "page": "docs/components/number-field.md"
   },
   {
     "name": "otp",
@@ -422,6 +478,14 @@
     "note": "",
     "use": "A rating is a set of radio buttons that lets the user give a rating.",
     "page": "docs/components/rating.md"
+  },
+  {
+    "name": "searchable-select",
+    "category": "data-input",
+    "status": "available",
+    "note": "A list to type in, by keyboard, that is a plain select without JavaScript.",
+    "use": "A list to type in, by keyboard, that is a plain select without JavaScript.",
+    "page": "docs/components/searchable-select.md"
   },
   {
     "name": "select",

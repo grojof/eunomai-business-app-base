@@ -39,6 +39,8 @@ jobs:
             --summary "$RUNNER_TEMP/out/summary.md" --problems "$RUNNER_TEMP/out/problems.md"
 
       - name: Test the update
+        env:
+          TESTS_ON_SQLITE_ALONE: "true"  # no database in this job: the pull request it opens runs them on PostgreSQL
         id: changes
         run: |
           if [ -z "$(git status --porcelain)" ]; then echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0; fi

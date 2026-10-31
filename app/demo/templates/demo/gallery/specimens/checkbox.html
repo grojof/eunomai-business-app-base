@@ -1,0 +1,6 @@
+{% from "ui/macros.html" import checkbox_field %}
+<div class="grid max-w-md gap-4">
+  {{ checkbox_field("sample-stop", _("The equipment must stop for this work"), true, "sample-stop", hint=_("Production is told a day before.")) }}
+  {{ checkbox_field("sample-sure", _("I have read the safety sheet"), false, "sample-sure", error=_("Tick this to go on.")) }}
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ checkbox_field("stop_needed", _("The equipment must stop for this work"), values.stop_needed, "field-stop", error=errors.get("stop_needed", "")) }}{% endraw %}</code></pre>
