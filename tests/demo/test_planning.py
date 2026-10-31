@@ -10,6 +10,7 @@ from sqlalchemy import delete, func, select, update
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Session
 
+from app.core import i18n
 from app.core.database import create_database_engine, totals_by
 from app.core.i18n import PSEUDO
 from app.demo import planning
@@ -261,6 +262,7 @@ def test_an_empty_date_means_not_planned(writable):
     ],
 )
 def test_a_wrong_value_is_refused_by_field(changes, field):
+    i18n._language.set("en")  # another test may have left its language: 7.5 is a number only in some
     form = {"status": "planned", "planned_on": "2027-01-15", "hours": "7.5"} | changes
     _clean, errors = checked(**form)
     assert list(errors) == [field]

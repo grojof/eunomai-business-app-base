@@ -7,7 +7,7 @@ from decimal import Decimal
 
 import pytest
 
-from app.core.charts import CHART_TYPES, Point, Series, chart_data, point_data
+from app.core.charts import CHART_TYPES, SLICE_COLOURS, Point, Series, chart_data, point_data
 from app.core.templating import environment
 from tests.helpers import ROOT
 from tools import vendor
@@ -125,3 +125,38 @@ def test_the_copied_files_are_past_the_two_week_rule(name):
     except OSError:
         pytest.skip("the registry cannot be reached")
     assert datetime.now(UTC) - datetime.fromisoformat(published) >= vendor.WINDOW
+
+
+@pytest.mark.parametrize("colour", ["bogus", "neutral", "base-100", "#ff0000", "red"])
+def test_a_colour_outside_the_theme_is_refused_on_the_server(colour):
+    with pytest.raises(ValueError, match="colour"):
+        chart_data(["A"], [Series("S", [1], colour)], "L")
+
+
+@pytest.mark.parametrize("colour", ["bogus", "neutral"])
+def test_a_slice_colour_outside_the_theme_is_refused(colour):
+    with pytest.raises(ValueError, match="colour"):
+        chart_data(["A"], [Series("S", [1])], "L", colours=(colour,))
+
+
+@pytest.mark.parametrize("colour", ["primary", "accent", "secondary", "info", "success", "warning", "error"])
+def test_every_colour_the_script_knows_is_accepted(colour):
+    assert chart_data(["A"], [Series("S", [1], colour)], "L").config["series"][0]["colour"] == colour
+
+
+def test_the_script_and_the_server_know_the_same_colours():
+    script = (ROOT / "app" / "ui" / "static" / "charts.js").read_text(encoding="utf-8")
+    known = json.loads(re.search(r"const COLOURS = (\[.*?\]);", script)[1])
+    assert set(known) == set(SLICE_COLOURS)
+
+
+@pytest.mark.parametrize("kind", ["pie", "doughnut", "polar"])
+def test_a_negative_value_in_a_round_chart_is_refused(kind):
+    data = chart_data(["A", "B"], [Series("S", [Decimal(-5), Decimal(5)])], "L")
+    with pytest.raises(ValueError, match="negative"):
+        data.config_for(kind)
+
+
+def test_a_negative_value_is_fine_on_bars():
+    data = chart_data(["A", "B"], [Series("S", [Decimal(-5), Decimal(5)])], "L")
+    assert data.config_for("bar")["series"][0]["values"] == ["-5", "5"]

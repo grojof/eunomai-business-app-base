@@ -342,3 +342,48 @@ def test_a_chart_is_redrawn_by_a_screen_size_change(open_page):
     box = canvas.bounding_box()
     assert box["width"] < wide
     assert not overflows_sideways(page)
+
+
+def spoiled(route, old, new):
+    response = route.fetch()
+    route.fulfill(response=response, body=response.text().replace(old, new, 1))
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-10")
+@pytest.mark.parametrize(
+    ("old", "new"),
+    [('"colour": "primary"', '"colour": "neutral"'), ('"type": "bar"', '"type": "invented"')],
+)
+def test_one_chart_failing_stops_no_other_and_leaves_its_table(open_page, old, new):
+    page = open_page("/settings")
+    problems = []
+    page.on("pageerror", lambda error: problems.append(str(error)))
+    target = page.url.replace("/settings", "/gallery/chart")
+    page.route(target, lambda route: spoiled(route, old, new))
+    page.goto(target)
+    until(page, CHARTS_READY)
+    state = page.evaluate(
+        """[...document.querySelectorAll('[data-chart-examples] [data-chart]')].map((figure) => ({
+            drawn: Boolean(Chart.getChart(figure.querySelector('canvas'))),
+            open: figure.querySelector('details').open,
+            box: figure.querySelector('[data-chart-box]').hidden,
+        }))"""
+    )
+    assert state[0] == {"drawn": False, "open": True, "box": True}
+    assert all(figure["drawn"] and not figure["box"] for figure in state[1:])
+    assert problems == []
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-10")
+def test_a_chart_that_fails_on_a_change_of_theme_stops_no_other(open_page):
+    page = open_page("/gallery/chart", theme="system")
+    page.emulate_media(color_scheme="light")
+    until(page, CHARTS_READY)
+    first = "document.querySelectorAll('[data-chart-examples] canvas')[0]"
+    second = "Chart.getChart(document.querySelectorAll('[data-chart-examples] canvas')[1])"
+    before = page.evaluate(f"{second}.options.plugins.tooltip.backgroundColor")
+    page.evaluate(f"void (Chart.getChart({first}).update = () => {{ throw new Error('broken'); }})")
+    page.emulate_media(color_scheme="dark")
+    until(page, f"{second}.options.plugins.tooltip.backgroundColor !== {json.dumps(before)}")

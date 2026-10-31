@@ -12,6 +12,8 @@ from typing import Any
 from app.core.formatters import format_decimal
 
 CHART_TYPES = {"bar", "stacked", "line", "area", "pie", "doughnut", "radar", "polar", "scatter", "bubble", "mixed"}
+ROUND_TYPES = {"pie", "doughnut", "polar"}
+"""Chart.js draws a negative value in these as if it were positive: the picture would lie."""
 SERIES_COLOURS = ("primary", "accent", "secondary", "info")
 """The fixed order for series, from the theme. `neutral` is left out: on the dark theme it cannot be told from the page.
 A fifth series is a sign that the chart should be two charts."""
@@ -50,9 +52,16 @@ def _cell(value: Number | None, places: int | None) -> str:
     return "" if value is None else format_decimal(value, places)
 
 
+def _known(colour: str) -> str:
+    """A colour the browser cannot find leaves a chart with nothing to draw: better an error here, while writing it."""
+    if colour not in SLICE_COLOURS:
+        raise ValueError(f"Not a colour a chart can use: {colour}. It takes {', '.join(SLICE_COLOURS)}")
+    return colour
+
+
 def _colour_of(series: Series, position: int) -> str:
     if series.colour:
-        return series.colour
+        return _known(series.colour)
     if position >= len(SERIES_COLOURS):
         raise ValueError("A chart holds four series: make it two charts, or join the small ones")
     return SERIES_COLOURS[position]
@@ -69,6 +78,10 @@ class ChartData:
     def config_for(self, chart_type: str) -> dict[str, Any]:
         if chart_type not in CHART_TYPES:
             raise ValueError(f"Not a chart type: {chart_type}")
+        if chart_type in ROUND_TYPES and any(
+            value is not None and value.startswith("-") for line in self.config["series"] for value in line["values"]
+        ):
+            raise ValueError(f"A {chart_type} chart cannot show a negative value: use bars")
         return {**self.config, "type": chart_type}
 
 
@@ -87,6 +100,8 @@ def chart_data(
         raise ValueError("Each series needs one value per label")
     if len(labels) > len(colours) and len(series) == 1 and colours is not SLICE_COLOURS:
         raise ValueError("One colour per slice")
+    for colour in colours:
+        _known(colour)
     config = {
         "labels": list(labels),
         "series": [

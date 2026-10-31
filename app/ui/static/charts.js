@@ -223,13 +223,19 @@
     if (drawn.has(canvas)) {
       return;
     }
-    const spec = JSON.parse(figure.querySelector('script[type="application/json"]').textContent);
-    const chart = new Chart(canvas, {
-      type: NAMES[spec.type] ?? spec.type,
-      data: { labels: spec.labels, datasets: spec.series.map((series, position) => dataset(spec, series, position)) },
-      options: optionsOf(spec),
-    });
-    drawn.set(canvas, { chart, spec });
+    try {
+      const spec = JSON.parse(figure.querySelector('script[type="application/json"]').textContent);
+      const chart = new Chart(canvas, {
+        type: NAMES[spec.type] ?? spec.type,
+        data: { labels: spec.labels, datasets: spec.series.map((series, position) => dataset(spec, series, position)) },
+        options: optionsOf(spec),
+      });
+      drawn.set(canvas, { chart, spec });
+    } catch (error) {
+      console.warn("A chart could not be drawn: its table stays", error);
+      Chart.getChart(canvas)?.destroy(); // a chart that failed half way stays attached to its canvas
+      withoutPicture([figure]);
+    }
   }
 
   // Colours change with no reload when the theme does. Series a person hid in the legend stay hidden.
@@ -241,12 +247,16 @@
         drawn.delete(canvas);
         continue;
       }
-      chart.options = optionsOf(spec);
-      spec.series.forEach((series, position) => {
-        const style = ROUND.has(chart.config.type) ? sliceStyle(spec) : seriesStyle(spec, series, position);
-        Object.assign(chart.data.datasets[position], style);
-      });
-      chart.update("none");
+      try {
+        chart.options = optionsOf(spec);
+        spec.series.forEach((series, position) => {
+          const style = ROUND.has(chart.config.type) ? sliceStyle(spec) : seriesStyle(spec, series, position);
+          Object.assign(chart.data.datasets[position], style);
+        });
+        chart.update("none");
+      } catch (error) {
+        console.warn("A chart could not follow the theme", error);
+      }
     }
   }
 

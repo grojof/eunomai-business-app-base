@@ -243,7 +243,8 @@ data = chart_data(months, [Series(_("Planned"), planned), Series(_("Worked"), wo
 | Hover | On bars and lines, the `index` interaction and a thin guide line on the month, from a small plugin of ours. On pie and doughnut the slice grows, with `hoverOffset` |
 | Language | Numbers in tooltips and axes use the page's locale through `Intl`, and large axes use its compact form. Chart.js has no text of its own on these charts: every word comes from the server, translated |
 | Motion | None if a person asks for `prefers-reduced-motion` |
-| Without the picture | Without JavaScript the canvas is hidden and the summary and table remain. If Chart.js fails to load, the table opens by itself |
+| Without the picture | Without JavaScript the canvas is hidden and the summary and table remain. If Chart.js fails to load, or one chart fails to draw, its table opens by itself, and no other chart stops |
+| What is refused | A colour outside the list and a negative value in a pie, a doughnut or a polar area are errors on the server, while the code is written. Chart.js would draw the negative as positive |
 | On a phone | Axes thin their labels, and a chart keeps its height |
 
 daisyUI's colours pass the checks for colour blindness (neighbouring series stay apart) and normal vision, on both
@@ -281,7 +282,7 @@ return excel_response(_("Equipment"), columns, rows, settings.time_zone)
 | What | How |
 |---|---|
 | Numbers | Rounded by the application's rule, half up, to the column's decimals, because Excel keeps 15 significant digits. A value still too long goes as right-aligned text, every digit there |
-| Dates and moments | Real date cells in Excel's own short format, so they read as the computer that opens the file writes them. A moment is shown in the application's time zone |
+| Dates and moments | Real date cells in Excel's own short format, so they read as the computer that opens the file writes them. A moment is shown in the application's time zone. |
 | Text | Always text, so a long code keeps its zeros. What could start a formula begins with an apostrophe: see [SEC-15](standards.md#security) |
 | Language | Headers, the sheet's name, the file's name and labels are the person's |
 | Too many rows | More than Excel holds is an error, never a shorter file |
