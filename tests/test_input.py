@@ -189,3 +189,17 @@ def test_a_part_too_long_for_any_field_is_a_page_too():
     response = client.post("/sample", data={"title": "x" * 2_000_000}, files={"other": ("", b"")}, headers=PERSON)
     assert response.status_code == 400
     assert "could not be read" in response.text
+
+
+@pytest.mark.rule("SEC-03")
+@pytest.mark.parametrize("digits", [20, 4301, 5000, 20000])
+def test_an_id_too_long_for_any_row_is_not_found_on_every_route_a_clone_adds(digits):
+    application: FastAPI = create_app(build_settings())
+
+    def route(number: int) -> int:
+        return number
+
+    application.add_api_route("/things/{number:int}", route)
+    client = TestClient(application, raise_server_exceptions=False)
+    assert client.get(f"/things/{'1' * digits}", headers=PERSON).status_code == 404
+    assert client.get("/things/1", headers=PERSON).json() == 1

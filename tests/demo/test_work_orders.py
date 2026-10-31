@@ -138,6 +138,25 @@ def test_without_the_rows_a_file_is_simply_not_there(client, person, path):
     assert client.get(path, headers=person).status_code == 404
 
 
+@pytest.mark.parametrize(
+    ("method", "path"),
+    [
+        ("GET", "/work-orders/{0}/edit"),
+        ("POST", "/work-orders/{0}"),
+        ("GET", "/work-orders/{0}/delete"),
+        ("POST", "/work-orders/{0}/delete"),
+        ("GET", "/work-orders/1/files/{0}"),
+        ("GET", "/work-orders/{0}/files/1/delete"),
+        ("POST", "/work-orders/1/files/{0}/delete"),
+        ("GET", "/planning/{0}/edit"),
+        ("POST", "/planning/{0}"),
+        ("GET", "/equipment/{0}"),
+    ],
+)
+def test_an_id_of_thousands_of_digits_is_not_found_on_every_route(filled, method, path):
+    assert filled.request(method, path.format("1" * 5000), headers=SAME_SITE).status_code == 404
+
+
 def test_without_the_rows_it_says_what_to_run(client, person):
     response = client.get("/work-orders/new", headers=person, follow_redirects=False)
     assert (response.status_code, response.headers["location"]) == (303, "/planning")

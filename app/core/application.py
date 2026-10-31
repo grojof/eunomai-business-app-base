@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Resp
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import StaleDataError
+from starlette.convertors import IntegerConvertor, register_url_convertor
 from starlette.exceptions import HTTPException
 
 from app.core import identity
@@ -27,6 +28,16 @@ THEMES = ("system", "light", "dark")
 ONE_YEAR = 60 * 60 * 24 * 365
 LONGEST_LENGTH = 18
 """Digits in a Content-Length worth reading: more is past any limit, and Python refuses to read thousands of them."""
+
+
+class _Identifier(IntegerConvertor):
+    """A number in an address, of a length no row can have past. Longer is no such address, a 404, and not a 500: Python
+    refuses to read an int of more than 4,300 digits. Registered once, so every `{id:int}` route of a clone has it."""
+
+    regex = "[0-9]{1,19}"
+
+
+register_url_convertor("int", _Identifier())
 
 CONTENT_SECURITY_POLICY = "; ".join(
     [
