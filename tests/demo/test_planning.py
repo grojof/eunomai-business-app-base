@@ -6,18 +6,19 @@ from decimal import Decimal
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Session
 
 from app.core.database import create_database_engine, totals_by
 from app.core.i18n import PSEUDO
+from app.demo import planning
 from app.demo.data import GENERATE
 from app.demo.generate import work_order_row
 from app.demo.models import Equipment, WorkOrder
 from app.demo.planning import checked, month_of, planning_view
 from app.main import create_app
-from tests.conftest import build_settings
+from tests.conftest import build_settings, page_opener, running_server
 from tests.demo.support import fill, until
 from tests.helpers import overflows_sideways, run_axe, untranslated
 
@@ -502,3 +503,65 @@ def test_a_malformed_back_is_ignored(writable, back):
     assert client.get("/planning/1/edit", params={"back": back}).status_code == 200
     response = client.post("/planning/1", data=valid(back=back), headers=SAME_SITE, follow_redirects=False)
     assert (response.status_code, response.headers["location"]) == (303, "/planning")
+
+
+def test_a_row_that_goes_while_it_is_saved_is_not_found_and_not_an_error(writable, monkeypatch):
+    """Deleted between reading it and writing it: SQLAlchemy raises StaleDataError at the commit."""
+    client, url = writable
+
+    def deleted_meanwhile(*arguments):
+        engine = create_database_engine(url)
+        with engine.begin() as connection:
+            connection.execute(delete(WorkOrder).where(WorkOrder.id == 1))
+        engine.dispose()
+        return real_checked(*arguments)
+
+    real_checked = planning.checked
+    monkeypatch.setattr(planning, "checked", deleted_meanwhile)
+    assert client.post("/planning/1", data=valid(), headers=SAME_SITE | HTMX).status_code == 404
+
+
+def problem_shown(page):
+    return page.locator("#request-problem")
+
+
+def in_a_page_of_its_own(browser, tmp_path):
+    url = f"sqlite:///{(tmp_path / 'gone.db').as_posix()}"
+    fill(url, 200)
+    settings = build_settings(database_url=url, fake_identity=True, fake_groups=["admins"], trusted_proxies=[])
+    return url, create_app(settings)
+
+
+@pytest.mark.browser
+def test_a_row_that_has_gone_says_so_in_the_dialog(browser, tmp_path):
+    url, application = in_a_page_of_its_own(browser, tmp_path)
+    with running_server(application) as port, page_opener(browser, f"http://127.0.0.1:{port}") as opener:
+        page = opener("/planning")
+        identifier = open_editor(page)
+        engine = create_database_engine(url)
+        with engine.begin() as connection:
+            connection.execute(delete(WorkOrder).where(WorkOrder.id == int(identifier.removeprefix("edit-"))))
+        engine.dispose()
+        page.get_by_role("button", name="Save").click()
+        until(page, "!document.querySelector('#request-problem').hidden")
+        assert page.evaluate("document.querySelector('dialog[open] #request-problem') !== null")
+        problem = problem_shown(page)
+        assert problem.is_visible()
+        assert "no longer here" in problem.inner_text()
+        assert problem.get_attribute("role") == "alert"
+
+
+@pytest.mark.browser
+def test_edit_on_a_row_that_has_gone_says_so(browser, tmp_path):
+    url, application = in_a_page_of_its_own(browser, tmp_path)
+    with running_server(application) as port, page_opener(browser, f"http://127.0.0.1:{port}") as opener:
+        page = opener("/planning")
+        edit = page.locator("[id^=edit-]").first
+        engine = create_database_engine(url)
+        with engine.begin() as connection:
+            connection.execute(delete(WorkOrder).where(WorkOrder.id == int(edit.get_attribute("id")[5:])))
+        engine.dispose()
+        edit.click()
+        until(page, "!document.querySelector('#request-problem').hidden")
+        assert "no longer here" in problem_shown(page).inner_text()
+        assert not page.evaluate("document.querySelector('dialog#editor').open")

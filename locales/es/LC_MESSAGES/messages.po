@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 18:23+0100\n"
+"POT-Creation-Date: 2026-10-31 18:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -90,6 +90,9 @@ msgstr "Quitar todos"
 
 msgid "Close"
 msgstr "Cerrar"
+
+msgid "Close this message"
+msgstr "Cerrar este mensaje"
 
 msgid "Compact"
 msgstr "Compacta"
@@ -318,6 +321,14 @@ msgstr "Inicio"
 msgid "Swap"
 msgstr "Intercambio"
 
+msgid "That did not work. Try again in a moment."
+msgstr "No ha funcionado. Vuelve a intentarlo en un momento."
+
+msgid "The server cannot be reached. Check your connection and try again."
+msgstr ""
+"No se puede contactar con el servidor. Revisa tu conexión y vuelve a "
+"intentarlo."
+
 msgid "Theme"
 msgstr "Tema"
 
@@ -326,6 +337,13 @@ msgstr "Tema e idioma"
 
 msgid "This application is ready. Replace this page with your first screen."
 msgstr "Esta aplicación está lista. Sustituye esta página por tu primera pantalla."
+
+msgid ""
+"This is no longer here: someone may have removed it. Reload the page to "
+"see what there is now."
+msgstr ""
+"Esto ya no está aquí: quizá alguien lo ha quitado. Recarga la página para"
+" ver lo que hay ahora."
 
 msgid "Toggle"
 msgstr "Interruptor"
@@ -360,6 +378,9 @@ msgstr "Sí"
 
 msgid "You do not have permission"
 msgstr "No tienes permiso"
+
+msgid "You do not have permission to do this."
+msgstr "No tienes permiso para hacer esto."
 
 msgid "ascending"
 msgstr "ascendente"

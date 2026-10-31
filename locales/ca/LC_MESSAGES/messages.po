@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 18:23+0100\n"
+"POT-Creation-Date: 2026-10-31 18:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -90,6 +90,9 @@ msgstr "Treu-los tots"
 
 msgid "Close"
 msgstr "Tanca"
+
+msgid "Close this message"
+msgstr "Tanca aquest missatge"
 
 msgid "Compact"
 msgstr "Compacta"
@@ -318,6 +321,14 @@ msgstr "Inici"
 msgid "Swap"
 msgstr "Intercanvi"
 
+msgid "That did not work. Try again in a moment."
+msgstr "No ha funcionat. Torna-ho a provar d'aquí a un moment."
+
+msgid "The server cannot be reached. Check your connection and try again."
+msgstr ""
+"No es pot contactar amb el servidor. Revisa la connexió i torna-ho a "
+"provar."
+
 msgid "Theme"
 msgstr "Tema"
 
@@ -328,6 +339,13 @@ msgid "This application is ready. Replace this page with your first screen."
 msgstr ""
 "Aquesta aplicació està a punt. Substitueix aquesta pàgina per la teva "
 "primera pantalla."
+
+msgid ""
+"This is no longer here: someone may have removed it. Reload the page to "
+"see what there is now."
+msgstr ""
+"Això ja no és aquí: potser algú ho ha tret. Recarrega la pàgina per veure"
+" què hi ha ara."
 
 msgid "Toggle"
 msgstr "Interruptor"
@@ -362,6 +380,9 @@ msgstr "Sí"
 
 msgid "You do not have permission"
 msgstr "No tens permís"
+
+msgid "You do not have permission to do this."
+msgstr "No tens permís per fer això."
 
 msgid "ascending"
 msgstr "ascendent"

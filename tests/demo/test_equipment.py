@@ -425,3 +425,49 @@ def test_the_list_works_under_its_own_security_policy(open_filled):
     page.wait_for_url("**/equipment?sort=cost")
     page.wait_for_load_state("networkidle")
     assert problems == []
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-09")
+@pytest.mark.parametrize(
+    ("status", "words"),
+    [(500, "did not work"), (403, "permission"), (404, "no longer here")],
+)
+def test_a_failed_request_says_so_where_a_person_can_see_and_hear_it(open_filled, status, words):
+    page = open_filled("/equipment")
+    page.route("**/equipment?sort=cost*", lambda route: route.fulfill(status=status, body="nothing"))
+    page.locator("#equipment-sort-cost").click()
+    until(page, "!document.querySelector('#request-problem').hidden")
+    problem = page.locator("#request-problem")
+    assert problem.is_visible()
+    assert words in problem.inner_text()
+    assert problem.get_attribute("role") == "alert"
+
+
+@pytest.mark.browser
+def test_a_server_that_cannot_be_reached_says_so(open_filled):
+    page = open_filled("/equipment")
+    page.route("**/equipment?sort=cost*", lambda route: route.abort())
+    page.locator("#equipment-sort-cost").click()
+    until(page, "!document.querySelector('#request-problem').hidden")
+    assert "cannot be reached" in page.locator("#request-problem").inner_text()
+
+
+@pytest.mark.browser
+def test_the_message_of_a_failed_request_goes_when_the_next_one_starts(open_filled):
+    page = open_filled("/equipment")
+    page.route("**/equipment?sort=cost*", lambda route: route.fulfill(status=500, body="nothing"))
+    page.locator("#equipment-sort-cost").click()
+    until(page, "!document.querySelector('#request-problem').hidden")
+    page.locator("#equipment-sort-name").click()
+    until(page, "document.querySelector('#request-problem').hidden")
+
+
+@pytest.mark.browser
+def test_the_message_of_a_failed_request_can_be_closed(open_filled):
+    page = open_filled("/equipment")
+    page.route("**/equipment?sort=cost*", lambda route: route.fulfill(status=500, body="nothing"))
+    page.locator("#equipment-sort-cost").click()
+    until(page, "!document.querySelector('#request-problem').hidden")
+    page.locator("#request-problem button").click()
+    assert not page.locator("#request-problem").is_visible()

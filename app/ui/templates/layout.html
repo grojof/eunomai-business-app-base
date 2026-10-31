@@ -54,5 +54,15 @@
   </div>
   {% if person %}{% include "ui/palette.html" %}{% endif %}
   <div id="announcements" class="sr-only" role="status" aria-live="polite"></div>
+  <div id="request-problem" class="toast toast-end z-50 print:hidden" role="alert" hidden
+       data-gone="{{ _('This is no longer here: someone may have removed it. Reload the page to see what there is now.') }}"
+       data-forbidden="{{ _('You do not have permission to do this.') }}"
+       data-failed="{{ _('That did not work. Try again in a moment.') }}"
+       data-unreachable="{{ _('The server cannot be reached. Check your connection and try again.') }}">
+    <div class="alert alert-error max-w-sm whitespace-normal">
+      <p data-problem-text></p>
+      <button class="btn btn-ghost btn-square btn-xs" type="button" data-problem-close aria-label="{{ _('Close this message') }}">{{ icon("x", "size-4") }}</button>
+    </div>
+  </div>
 </body>
 </html>

@@ -213,6 +213,7 @@ return render_list(request, view, "orders/list.html", "orders/results.html")
 | Without JavaScript | Headers and pages are links, and filters are a GET form with an Apply button |
 | With htmx | The same address answers with its results alone. `Vary: HX-Request` keeps the two apart, and `HX-Push-Url` gives the address its one form. History is not kept in the browser: going back reloads the address, so a form can never show an older state than the table, and no row is left in `localStorage` |
 | Focus | htmx puts it back on an element that kept its id, as a sort header does. If none did, as the Next link on the last page, `data-focus-fallback` takes it |
+| A request that fails | `app.js` shows a message for every htmx failure, on any screen, inside an open dialog if there is one, with `role="alert"`. A 404 says the thing is no longer there, and a row removed while it was being saved gets that same 404 |
 | Announcement | `data-announce` on the summary goes to the announcement region after each change: rows, order and direction |
 
 Measured on one laptop, on SQLite with 50,000 rows and the demo's indexes: the first page takes 0.6 milliseconds whether
