@@ -16,7 +16,7 @@ from sqlalchemy import ColumnElement, String, func, literal_column, select
 from sqlalchemy.orm import Session, contains_eager
 
 from app.core.database import DatabaseSession, totals_by
-from app.core.formatters import format_decimal, format_month_and_year, parse_decimal
+from app.core.formatters import format_decimal, format_month_and_year, parse_date, parse_decimal
 from app.core.i18n import N_, _, ngettext
 from app.core.identity import Person, require_role
 from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list, whole_page
@@ -264,7 +264,7 @@ def checked(status: str, planned_on: str, hours: str) -> tuple[dict[str, Any], d
     else:
         errors["status"] = _("Choose a state from the list.")
     try:
-        clean["planned_on"] = date.fromisoformat(planned_on) if planned_on else None
+        clean["planned_on"] = parse_date(planned_on) if planned_on else None
     except ValueError:
         errors["planned_on"] = _("Enter a date, or leave it empty if it is not planned yet.")
     try:

@@ -1,9 +1,11 @@
 """Numbers, dates and times as the person's language writes them. Values stay exact: only their look changes."""
 
 import json
+import re
 from datetime import date, datetime
 from decimal import ROUND_HALF_UP, Decimal, localcontext
 from pathlib import Path
+from string import digits as ascii_digits
 from zoneinfo import ZoneInfo
 
 from babel.dates import format_date as babel_date
@@ -11,6 +13,7 @@ from babel.dates import format_datetime as babel_datetime
 from babel.dates import format_skeleton
 from babel.numbers import format_decimal as babel_decimal
 from babel.numbers import format_percent as babel_percent
+from babel.numbers import get_decimal_symbol, get_group_symbol, get_minus_sign_symbol
 from babel.numbers import parse_decimal as babel_parse
 
 from app.core.i18n import current_language
@@ -22,6 +25,7 @@ _GROUPING: dict[str, int] = json.loads(Path(__file__).with_name("cldr_grouping.j
 
 
 _MARGIN = 8
+_ISO_DATE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
 
 
 def _minimum_grouping(locale: str) -> int:
@@ -61,13 +65,29 @@ def format_decimal(value: Decimal | int, places: int | None = None) -> str:
 
 
 def parse_decimal(text: str) -> Decimal:
-    """Reads a number as the person's language writes it. Raises ValueError if it is not one."""
+    """Reads a number as the person's language writes it. Raises ValueError if it is not one.
+
+    Only the digits 0 to 9 and the language's own signs pass: Python's Decimal, underneath Babel, also reads 1e3, 1_000
+    and digits from other scripts, which nobody here writes, and 0e400, whose value cannot be stored.
+    """
+    language = current_language()
     cleaned = text.strip()
+    signs = {get_decimal_symbol(language), get_group_symbol(language), get_minus_sign_symbol(language)}
+    if not set(cleaned) <= set(ascii_digits) | signs:
+        raise ValueError(text)
     with localcontext(prec=len(cleaned) + 2):
-        value = babel_parse(cleaned, locale=current_language(), strict=True)
+        value = babel_parse(cleaned, locale=language, strict=True)
     if not value.is_finite():
         raise ValueError(text)
     return value
+
+
+def parse_date(text: str) -> date:
+    """Reads a date in its one form, YYYY-MM-DD, which is what a date field sends. Raises ValueError for anything else:
+    `date.fromisoformat` also reads 20270315 and 2027-W11-1."""
+    if not _ISO_DATE.fullmatch(text):
+        raise ValueError(text)
+    return date.fromisoformat(text)
 
 
 def format_percent(value: int | Decimal) -> str:

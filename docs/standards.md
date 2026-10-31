@@ -114,7 +114,7 @@ applies anyway.
 | LANG-04 | Plurals follow each language's rules | [CLDR plural rules](https://cldr.unicode.org/index/cldr-spec/plural-rules) | Automatic |
 | LANG-05 | A context wherever one word has two meanings | [gettext manual](https://www.gnu.org/software/gettext/manual/gettext.html) | By hand |
 | LANG-06 | The formatters write numbers, dates and times as the locale does | [Unicode CLDR](https://cldr.unicode.org/) | Automatic |
-| LANG-07 | A number is read as the person's language writes it; a wrong format is refused, never guessed | [Unicode CLDR](https://cldr.unicode.org/) | Automatic |
+| LANG-07 | A number is read as the person's language writes it, with the digits 0 to 9 and its own signs; a wrong format is refused, never guessed. A date is read only as YYYY-MM-DD, the form a date field sends | [Unicode CLDR](https://cldr.unicode.org/) | Automatic |
 | LANG-08 | Exact values stay exact: the locale changes how a `Decimal` looks, never its value | Project decision | Automatic |
 | LANG-09 | Moments are shown in the application's time zone | [W3C Working with Time Zones](https://www.w3.org/TR/timezone/) | Automatic |
 | LANG-10 | `lang` on every page, and on any passage in another language | [WCAG 3.1.1](https://www.w3.org/TR/WCAG22/#language-of-page), [3.1.2](https://www.w3.org/TR/WCAG22/#language-of-parts), [BCP 47](https://www.rfc-editor.org/info/bcp47), [W3C](https://www.w3.org/International/questions/qa-html-language-declarations) | Automatic |
