@@ -1,4 +1,4 @@
-{% from "ui/macros.html" import table, badge %}
+{% from "ui/macros.html" import table, badge, server_table, row_header, cell, status_label, list_summary %}
 {% call table(_("Equipment, where it is, its next inspection and its state"), "specimen-table") %}
 <thead><tr><th scope="col">{{ _("Equipment") }}</th><th scope="col">{{ _("State") }}</th></tr></thead>
 <tbody><tr><th scope="row">{{ _("Forklift") }}</th><td>{{ badge(_("In service"), "success") }}</td></tr></tbody>
@@ -7,3 +7,19 @@
 <thead>...</thead>
 <tbody>...</tbody>
 {% endcall %}{% endraw %}</code></pre>
+<h3 class="mt-6 mb-2 font-semibold">{{ _("A table on the server") }}</h3>
+<p class="mb-3 text-sm">{{ _("Sorting, filtering and paging happen in the database, and the state lives in the address. The equipment list uses it with 50,000 rows.") }}</p>
+<div hx-disable class="rounded-box border border-base-300">
+  {% call(row) server_table(sample, _("Equipment and its state")) %}
+  {{ row_header(row.code) }}
+  {{ cell(row.name) }}
+  {{ cell(status_label(row.label, row.kind)) }}
+  {% endcall %}
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{% call(row) server_table(view, _("Equipment and its state"), _("Actions")) %}
+{{ row_header(row.code, "/equipment/" ~ row.id) }}
+{{ cell(row.name) }}
+{{ cell(row.cost|decimal(2), numeric=true) }}
+{{ row_actions([(_("View"), _("View %(code)s", code=row.code), "/equipment/" ~ row.id, "eye")]) }}
+{% endcall %}
+{{ pagination(view) }}{% endraw %}</code></pre>

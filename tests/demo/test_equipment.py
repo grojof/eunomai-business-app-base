@@ -5,6 +5,7 @@ import time
 
 import pytest
 from fastapi.testclient import TestClient
+from playwright.sync_api import Error as PlaywrightError
 from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
@@ -259,8 +260,11 @@ def until(page, expression, seconds=5):
     """Waits for a condition. `wait_for_function` runs through eval, which this application's policy refuses."""
     deadline = time.monotonic() + seconds
     while time.monotonic() < deadline:
-        if page.evaluate(expression):
-            return
+        try:
+            if page.evaluate(expression):
+                return
+        except PlaywrightError:  # the page was reloading, which going back does on purpose
+            pass
         page.wait_for_timeout(25)
     raise AssertionError(f"still not true: {expression}")
 
@@ -403,9 +407,11 @@ def test_the_table_box_stays_in_the_tab_order_of_the_page(open_filled):
     page = open_filled("/equipment")
     page.locator("#equipment-location").focus()
     page.keyboard.press("Tab")
-    assert page.evaluate("document.activeElement.id") == "equipment-sort-code" or page.evaluate(
-        "document.activeElement.matches('.table-scroll')"
-    )
+    assert page.evaluate("document.activeElement.textContent.trim()") == "Export to Excel"
+    page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement.matches('.table-scroll')")
+    page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement.id") == "equipment-sort-code"
 
 
 @pytest.mark.browser

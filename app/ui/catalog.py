@@ -29,12 +29,17 @@ THEME = N_(
 )
 
 
+OWN_TITLES = (N_("Description list"), N_("Filter bar"))
+"""Components of this base with no page in daisyUI: the gallery names them from their catalogue name."""
+
+
 @dataclass(frozen=True)
 class Component:
     name: str
     status: str = AVAILABLE
     note: str = ""
     macro: str = ""  # its macro, if it has one, in app/ui/templates/ui/macros.html
+    icon: str = "calendar"  # what the gallery's index shows when daisyUI gives no small example
 
 
 CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
@@ -60,14 +65,20 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("chat"),
             Component("collapse"),
             Component("countdown"),
+            Component(
+                "description-list",
+                note=N_("A list of terms and their values, for one record's details."),
+                macro="description_list",
+                icon="clipboard-list",
+            ),
             Component("diff", DECORATIVE),
             Component("hover-3d", DECORATIVE),
             Component("hover-gallery", DECORATIVE),
             Component("kbd"),
             Component("list"),
             Component("stat", macro="stat"),
-            Component("status"),
-            Component("table", macro="table"),
+            Component("status", macro="status_label"),
+            Component("table", macro="server_table"),
             Component("text-rotate", PROBLEMS, MOTION),
             Component("timeline"),
         ),
@@ -75,14 +86,14 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
     "navigation": (
         N_("Navigation"),
         (
-            Component("breadcrumbs"),
+            Component("breadcrumbs", macro="breadcrumbs"),
             Component("dock"),
             Component("link"),
             Component("menu"),
             Component("navbar"),
-            Component("pagination"),
+            Component("pagination", macro="pagination"),
             Component("steps", macro="steps"),
-            Component("tab"),
+            Component("tab", macro="tabs"),
         ),
     ),
     "feedback": (
@@ -105,6 +116,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("fieldset"),
             Component("file-input"),
             Component("filter"),
+            Component(
+                "filter-bar",
+                note=N_("A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons."),
+                macro="filter_bar",
+                icon="search",
+            ),
             Component("input"),
             Component("label"),
             Component("otp"),

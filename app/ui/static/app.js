@@ -42,6 +42,27 @@ document.addEventListener("click", (event) => {
   }
 });
 
+// Printing. Paper is white whatever the theme, and a browser leaves out backgrounds, so a dark theme's light text would
+// vanish: the page wears the light theme for as long as it prints.
+document.addEventListener("click", (event) => {
+  if (event.target.closest("[data-print]")) {
+    print();
+  }
+});
+const page = document.documentElement;
+let themeOnScreen;
+addEventListener("beforeprint", () => {
+  themeOnScreen = page.dataset.theme;
+  page.dataset.theme = "light";
+});
+addEventListener("afterprint", () => {
+  if (themeOnScreen) {
+    page.dataset.theme = themeOnScreen;
+  } else {
+    delete page.dataset.theme;
+  }
+});
+
 // Menus: Escape closes the innermost one and returns to its button; a click elsewhere closes them.
 document.addEventListener("keydown", (event) => {
   const menus = document.querySelectorAll("details[data-menu][open]");

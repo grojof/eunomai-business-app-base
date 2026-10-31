@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "ui/macros.html" import icon, message %}
+{% from "ui/macros.html" import icon, message, breadcrumbs %}
 {% block title %}{{ title.text }}{% endblock %}
 {% block scripts %}<script src="/static/demo/gallery.js" defer></script>{% endblock %}
 
@@ -7,12 +7,7 @@
 <div class="flex items-start gap-10">
   <div class="min-w-0 max-w-5xl grow space-y-10">
     <header class="space-y-3">
-      <nav class="breadcrumbs text-sm" aria-label="{{ _('Breadcrumbs') }}">
-        <ul>
-          <li><a href="/gallery">{{ _("Gallery") }}</a></li>
-          <li>{{ category }}</li>
-        </ul>
-      </nav>
+      {{ breadcrumbs([(_("Gallery"), "/gallery"), (category, "")]) }}
       <div class="flex flex-wrap items-center gap-3">
         <h1 class="text-4xl"{% if title.lang %} lang="{{ title.lang }}"{% endif %}>{{ title.text }}</h1>
         <span class="badge {{ status.classes }}" data-status="{{ status.status }}">{{ status.label }}</span>

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 17:00+0100\n"
+"POT-Creation-Date: 2026-10-31 17:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -52,6 +52,9 @@ msgstr "Una targeta amb títol, a punt per a qualsevol contingut."
 msgid "A fictional company that maintains its equipment."
 msgstr "Una empresa fictícia que manté els seus equips."
 
+msgid "A table on the server"
+msgstr "Una taula al servidor"
+
 msgid "Actions"
 msgstr "Accions"
 
@@ -79,9 +82,6 @@ msgstr ""
 msgid "Behaviour"
 msgstr "Comportament"
 
-msgid "Breadcrumbs"
-msgstr "Ruta de navegació"
-
 msgid "Cancel"
 msgstr "Cancel·la"
 
@@ -98,7 +98,7 @@ msgid "Clear all"
 msgstr "Treu-los tots"
 
 msgid "Closed"
-msgstr "Tancat"
+msgstr "Tancada"
 
 msgid "Code"
 msgstr "Codi"
@@ -134,6 +134,9 @@ msgstr "Copia"
 msgid "Cost"
 msgstr "Cost"
 
+msgid "Cost of the work"
+msgstr "Cost de la feina"
+
 msgid "Cost to date"
 msgstr "Cost fins avui"
 
@@ -157,6 +160,9 @@ msgstr "Venç aviat"
 
 msgid "Equipment"
 msgstr "Equips"
+
+msgid "Equipment and its state"
+msgstr "Equips i el seu estat"
 
 msgid "Equipment list"
 msgstr "Llista d'equips"
@@ -210,6 +216,16 @@ msgstr "Galeria"
 msgid "Generated rows"
 msgstr "Files generades"
 
+msgid ""
+"Here it is a plain form, and it reloads the page. In a screen htmx "
+"replaces only the results."
+msgstr ""
+"Aquí és un formulari senzill i recarrega la pàgina. En una pantalla, htmx"
+" substitueix només els resultats."
+
+msgid "Hours"
+msgstr "Hores"
+
 msgid "Hours worked"
 msgstr "Hores treballades"
 
@@ -241,6 +257,9 @@ msgstr "Ubicació"
 msgid "Maintenance plan"
 msgstr "Pla de manteniment"
 
+msgid "Maintenance to date"
+msgstr "Manteniment fins avui"
+
 msgid "Modifier"
 msgstr "Modificador"
 
@@ -259,8 +278,14 @@ msgstr "Cap component no coincideix"
 msgid "No equipment matches"
 msgstr "Cap equip no coincideix"
 
+msgid "No work orders yet"
+msgstr "Encara no hi ha ordres de treball"
+
 msgid "Nothing overdue"
 msgstr "Res vençut"
+
+msgid "Number"
+msgstr "Número"
 
 msgid "Official examples"
 msgstr "Exemples oficials"
@@ -274,6 +299,9 @@ msgstr "Només poden obrir aquesta pàgina les persones amb el rol d'administrad
 msgid "Open work orders"
 msgstr "Ordres de treball obertes"
 
+msgid "Opened"
+msgstr "Oberta"
+
 msgid "Other components"
 msgstr "Altres components"
 
@@ -282,6 +310,9 @@ msgstr "La nostra macro"
 
 msgid "Overdue"
 msgstr "Vençuts"
+
+msgid "Overview"
+msgstr "Resum"
 
 msgid "Packing"
 msgstr "Embalatge"
@@ -306,6 +337,9 @@ msgstr "Previsualització"
 
 msgid "Previous"
 msgstr "Anterior"
+
+msgid "Print"
+msgstr "Imprimeix"
 
 msgid ""
 "Published by daisyUI, in English. Their text is left as it is. Pictures "
@@ -340,6 +374,9 @@ msgstr ""
 "Les pantalles criden aquesta macro. Té proves, i falta la revisió d'una "
 "persona."
 
+msgid "Sections of this page"
+msgstr "Seccions d'aquesta pàgina"
+
 msgid "Settings"
 msgstr "Configuració"
 
@@ -355,6 +392,13 @@ msgstr ""
 
 msgid "Size"
 msgstr "Mida"
+
+msgid ""
+"Sorting, filtering and paging happen in the database, and the state lives"
+" in the address. The equipment list uses it with 50,000 rows."
+msgstr ""
+"Ordenar, filtrar i paginar passen a la base de dades, i l'estat viu a "
+"l'adreça. La llista d'equips ho fa servir amb 50.000 files."
 
 msgid "Spare parts in stock"
 msgstr "Recanvis en estoc"
@@ -387,11 +431,24 @@ msgstr ""
 msgid "The demo's rows are not here yet"
 msgstr "Les files de la demo encara no són aquí"
 
+msgid "The dot is decoration: its colour never says anything the word does not."
+msgstr "El punt és decoració: el seu color mai no diu res que no digui la paraula."
+
 msgid "The work order could not be saved. Try again."
 msgstr "L'ordre de treball no s'ha pogut desar. Torna-ho a provar."
 
 msgid "The work order was saved."
 msgstr "L'ordre de treball s'ha desat."
+
+msgid ""
+"These tabs are links, one address each: they work without JavaScript and "
+"with the back button. On a page whose panels are all there already, use "
+"the tab pattern the gallery's Preview and Code switch shows."
+msgstr ""
+"Aquestes pestanyes són enllaços, amb una adreça cadascuna: funcionen "
+"sense JavaScript i amb el botó d'enrere. En una pàgina amb tots els "
+"panells ja presents, fes servir el patró de pestanyes del selector "
+"Previsualització i Codi de la galeria."
 
 msgid "This equipment is due for inspection."
 msgstr "Aquest equip ha de passar la inspecció."
@@ -405,6 +462,9 @@ msgid ""
 msgstr ""
 "Aquesta pantalla llegeix 50.000 files generades. Executa aquesta ordre "
 "una vegada i recarrega la pàgina. La resta de la demo no ho necessita."
+
+msgid "Total"
+msgstr "Total"
 
 msgid "Try another word, or look through the categories."
 msgstr "Prova amb una altra paraula, o mira les categories."
@@ -435,11 +495,21 @@ msgstr "Magatzem"
 msgid "What it does"
 msgstr "Què fa"
 
+msgid "Work"
+msgstr "Feina"
+
+msgid "Work done on this equipment will appear here."
+msgstr "La feina feta en aquest equip apareixerà aquí."
+
 msgid "Work order for the cooling tower"
 msgstr "Ordre de treball de la torre de refrigeració"
 
 msgid "Work orders"
 msgstr "Ordres de treball"
+
+#, python-format
+msgid "Work orders (%(count)s)"
+msgstr "Ordres de treball (%(count)s)"
 
 msgid "Work orders appear here when their date passes."
 msgstr "Les ordres de treball apareixen aquí quan passa la seva data."
@@ -447,6 +517,9 @@ msgstr "Les ordres de treball apareixen aquí quan passa la seva data."
 #, python-format
 msgid "Work orders of %(code)s"
 msgstr "Ordres de treball de %(code)s"
+
+msgid "Work orders of this equipment, newest first"
+msgstr "Ordres de treball d'aquest equip, les més recents primer"
 
 msgid "Workshop"
 msgstr "Taller"

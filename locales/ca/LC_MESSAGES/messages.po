@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 17:00+0100\n"
+"POT-Creation-Date: 2026-10-31 17:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -27,6 +27,16 @@ msgid ""
 msgstr ""
 "%(count)s. Es mostren del %(first)s al %(last)s, ordenats per %(column)s,"
 " %(direction)s."
+
+msgid "A list of terms and their values, for one record's details."
+msgstr "Una llista de termes i els seus valors, per als detalls d'un registre."
+
+msgid ""
+"A plain form that filters a list on the server. daisyUI's filter is a set"
+" of radio buttons."
+msgstr ""
+"Un formulari senzill que filtra una llista al servidor. El filter de "
+"daisyUI és un grup de botons d'opció."
 
 msgid "Actions"
 msgstr "Accions"
@@ -48,6 +58,9 @@ msgstr "Disponible"
 
 msgid "Back to the start"
 msgstr "Torna a l'inici"
+
+msgid "Breadcrumbs"
+msgstr "Fil d'Ariadna"
 
 msgid "Centred"
 msgstr "Centrat"
@@ -95,6 +108,9 @@ msgstr "Decoratiu"
 msgid "Density"
 msgstr "Densitat"
 
+msgid "Description list"
+msgstr "Llista de descripcions"
+
 msgid "Done"
 msgstr "Fet"
 
@@ -109,6 +125,9 @@ msgstr "Error"
 
 msgid "Feedback"
 msgstr "Avisos"
+
+msgid "Filter bar"
+msgstr "Barra de filtres"
 
 msgid "Filters"
 msgstr "Filtres"

@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import breadcrumbs, page_heading %}
+{% block title %}{{ _("Equipment") }}{% endblock %}
+{% block content %}
+{{ breadcrumbs([(_("Equipment"), "/equipment"), (_("Details"), "")]) }}
+{{ page_heading(_("Equipment")) }}
+{% include "demo/rows_missing.html" %}
+{% endblock %}

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 17:00+0100\n"
+"POT-Creation-Date: 2026-10-31 17:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -52,6 +52,9 @@ msgstr "Una tarjeta con título, lista para cualquier contenido."
 msgid "A fictional company that maintains its equipment."
 msgstr "Una empresa ficticia que mantiene sus equipos."
 
+msgid "A table on the server"
+msgstr "Una tabla en el servidor"
+
 msgid "Actions"
 msgstr "Acciones"
 
@@ -79,9 +82,6 @@ msgstr ""
 msgid "Behaviour"
 msgstr "Comportamiento"
 
-msgid "Breadcrumbs"
-msgstr "Ruta de navegación"
-
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -98,7 +98,7 @@ msgid "Clear all"
 msgstr "Quitar todos"
 
 msgid "Closed"
-msgstr "Cerrado"
+msgstr "Cerrada"
 
 msgid "Code"
 msgstr "Código"
@@ -134,6 +134,9 @@ msgstr "Copiar"
 msgid "Cost"
 msgstr "Coste"
 
+msgid "Cost of the work"
+msgstr "Coste del trabajo"
+
 msgid "Cost to date"
 msgstr "Coste hasta la fecha"
 
@@ -157,6 +160,9 @@ msgstr "Vence pronto"
 
 msgid "Equipment"
 msgstr "Equipos"
+
+msgid "Equipment and its state"
+msgstr "Equipos y su estado"
 
 msgid "Equipment list"
 msgstr "Lista de equipos"
@@ -209,6 +215,16 @@ msgstr "Galería"
 msgid "Generated rows"
 msgstr "Filas generadas"
 
+msgid ""
+"Here it is a plain form, and it reloads the page. In a screen htmx "
+"replaces only the results."
+msgstr ""
+"Aquí es un formulario sencillo y recarga la página. En una pantalla, htmx"
+" sustituye solo los resultados."
+
+msgid "Hours"
+msgstr "Horas"
+
 msgid "Hours worked"
 msgstr "Horas trabajadas"
 
@@ -240,6 +256,9 @@ msgstr "Ubicación"
 msgid "Maintenance plan"
 msgstr "Plan de mantenimiento"
 
+msgid "Maintenance to date"
+msgstr "Mantenimiento hasta hoy"
+
 msgid "Modifier"
 msgstr "Modificador"
 
@@ -258,8 +277,14 @@ msgstr "Ningún componente coincide"
 msgid "No equipment matches"
 msgstr "Ningún equipo coincide"
 
+msgid "No work orders yet"
+msgstr "Aún no hay órdenes de trabajo"
+
 msgid "Nothing overdue"
 msgstr "Nada vencido"
+
+msgid "Number"
+msgstr "Número"
 
 msgid "Official examples"
 msgstr "Ejemplos oficiales"
@@ -273,6 +298,9 @@ msgstr "Solo pueden abrir esta página las personas con el rol de administrador.
 msgid "Open work orders"
 msgstr "Órdenes de trabajo abiertas"
 
+msgid "Opened"
+msgstr "Abierta"
+
 msgid "Other components"
 msgstr "Otros componentes"
 
@@ -281,6 +309,9 @@ msgstr "Nuestra macro"
 
 msgid "Overdue"
 msgstr "Vencidos"
+
+msgid "Overview"
+msgstr "Resumen"
 
 msgid "Packing"
 msgstr "Embalaje"
@@ -305,6 +336,9 @@ msgstr "Vista previa"
 
 msgid "Previous"
 msgstr "Anterior"
+
+msgid "Print"
+msgstr "Imprimir"
 
 msgid ""
 "Published by daisyUI, in English. Their text is left as it is. Pictures "
@@ -339,6 +373,9 @@ msgstr ""
 "Las pantallas llaman a esta macro. Tiene pruebas, y falta la revisión de "
 "una persona."
 
+msgid "Sections of this page"
+msgstr "Secciones de esta página"
+
 msgid "Settings"
 msgstr "Ajustes"
 
@@ -354,6 +391,13 @@ msgstr ""
 
 msgid "Size"
 msgstr "Tamaño"
+
+msgid ""
+"Sorting, filtering and paging happen in the database, and the state lives"
+" in the address. The equipment list uses it with 50,000 rows."
+msgstr ""
+"Ordenar, filtrar y paginar ocurren en la base de datos, y el estado vive "
+"en la dirección. La lista de equipos lo usa con 50.000 filas."
 
 msgid "Spare parts in stock"
 msgstr "Repuestos en existencias"
@@ -386,11 +430,24 @@ msgstr ""
 msgid "The demo's rows are not here yet"
 msgstr "Las filas de la demo aún no están aquí"
 
+msgid "The dot is decoration: its colour never says anything the word does not."
+msgstr "El punto es decoración: su color nunca dice nada que no diga la palabra."
+
 msgid "The work order could not be saved. Try again."
 msgstr "La orden de trabajo no se ha podido guardar. Vuelve a intentarlo."
 
 msgid "The work order was saved."
 msgstr "La orden de trabajo se ha guardado."
+
+msgid ""
+"These tabs are links, one address each: they work without JavaScript and "
+"with the back button. On a page whose panels are all there already, use "
+"the tab pattern the gallery's Preview and Code switch shows."
+msgstr ""
+"Estas pestañas son enlaces, con una dirección cada una: funcionan sin "
+"JavaScript y con el botón de volver. En una página con todos los paneles "
+"ya presentes, usa el patrón de pestañas del selector Vista previa y "
+"Código de la galería."
 
 msgid "This equipment is due for inspection."
 msgstr "A este equipo le toca inspección."
@@ -404,6 +461,9 @@ msgid ""
 msgstr ""
 "Esta pantalla lee 50.000 filas generadas. Ejecuta este comando una vez y "
 "recarga la página. El resto de la demo no lo necesita."
+
+msgid "Total"
+msgstr "Total"
 
 msgid "Try another word, or look through the categories."
 msgstr "Prueba con otra palabra, o mira las categorías."
@@ -434,11 +494,21 @@ msgstr "Almacén"
 msgid "What it does"
 msgstr "Qué hace"
 
+msgid "Work"
+msgstr "Trabajo"
+
+msgid "Work done on this equipment will appear here."
+msgstr "El trabajo hecho en este equipo aparecerá aquí."
+
 msgid "Work order for the cooling tower"
 msgstr "Orden de trabajo de la torre de refrigeración"
 
 msgid "Work orders"
 msgstr "Órdenes de trabajo"
+
+#, python-format
+msgid "Work orders (%(count)s)"
+msgstr "Órdenes de trabajo (%(count)s)"
 
 msgid "Work orders appear here when their date passes."
 msgstr "Las órdenes de trabajo aparecen aquí cuando pasa su fecha."
@@ -446,6 +516,9 @@ msgstr "Las órdenes de trabajo aparecen aquí cuando pasa su fecha."
 #, python-format
 msgid "Work orders of %(code)s"
 msgstr "Órdenes de trabajo de %(code)s"
+
+msgid "Work orders of this equipment, newest first"
+msgstr "Órdenes de trabajo de este equipo, las más recientes primero"
 
 msgid "Workshop"
 msgstr "Taller"

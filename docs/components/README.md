@@ -34,6 +34,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`chat`](chat.md) | available | A chat bubble shows one line of a conversation and its related data. This data can include the author image, name, and time. |
 | [`collapse`](collapse.md) | available | Use the collapse component to show and hide content. |
 | [`countdown`](countdown.md) | available | A countdown gives a transition effect when a number changes from 0 through 999. |
+| [`description-list`](description-list.md) | available | A list of terms and their values, for one record's details. |
 | [`diff`](diff.md) | decorative | Use the diff component to show a side-by-side comparison of two items. |
 | [`hover-3d`](hover-3d.md) | decorative | The hover 3D component is a wrapper that adds a 3D effect to its content. When the pointer is on the component, the component tilts and turns in relation to the pointer position. |
 | [`hover-gallery`](hover-gallery.md) | decorative | A hover gallery is a container for images. The first image is visible by default. When the pointer moves horizontally on it, the other images appear. Use a hover gallery for product cards, e-commerce sites, portfolios, or image galleries. A hover gallery can contain a maximum of 10 images. |
@@ -79,6 +80,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`fieldset`](fieldset.md) | available | Use a fieldset as a container for related form elements. Use `fieldset-legend` as the title. Use `label` as the description. |
 | [`file-input`](file-input.md) | available | Use a file input to upload files. |
 | [`filter`](filter.md) | available | A filter is a group of radio buttons. When the user selects an option, the filter hides the other options. It also shows a reset button next to the selected option. |
+| [`filter-bar`](filter-bar.md) | available | A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons. |
 | [`input`](input.md) | available | Use a text input as a simple input field. |
 | [`label`](label.md) | available | Use a label to give a name or title to an input field. Put the label before or after the field. |
 | [`otp`](otp.md) | available | An OTP is a one-time password component that lets a user enter a verification code. The code usually contains four to six digits. Use it for two-factor authentication (2FA) or passwordless login. |

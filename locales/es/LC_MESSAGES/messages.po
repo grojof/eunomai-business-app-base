@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 17:00+0100\n"
+"POT-Creation-Date: 2026-10-31 17:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -27,6 +27,16 @@ msgid ""
 msgstr ""
 "%(count)s. Se muestran del %(first)s al %(last)s, ordenados por "
 "%(column)s, %(direction)s."
+
+msgid "A list of terms and their values, for one record's details."
+msgstr "Una lista de términos y sus valores, para los detalles de un registro."
+
+msgid ""
+"A plain form that filters a list on the server. daisyUI's filter is a set"
+" of radio buttons."
+msgstr ""
+"Un formulario sencillo que filtra una lista en el servidor. El filter de "
+"daisyUI es un grupo de botones de opción."
 
 msgid "Actions"
 msgstr "Acciones"
@@ -48,6 +58,9 @@ msgstr "Disponible"
 
 msgid "Back to the start"
 msgstr "Volver al inicio"
+
+msgid "Breadcrumbs"
+msgstr "Migas de pan"
 
 msgid "Centred"
 msgstr "Centrado"
@@ -95,6 +108,9 @@ msgstr "Decorativo"
 msgid "Density"
 msgstr "Densidad"
 
+msgid "Description list"
+msgstr "Lista de descripciones"
+
 msgid "Done"
 msgstr "Hecho"
 
@@ -109,6 +125,9 @@ msgstr "Error"
 
 msgid "Feedback"
 msgstr "Avisos"
+
+msgid "Filter bar"
+msgstr "Barra de filtros"
 
 msgid "Filters"
 msgstr "Filtros"

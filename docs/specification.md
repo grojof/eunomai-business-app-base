@@ -308,7 +308,17 @@ A component is one Jinja macro or one piece of the shell, using only the brand's
 daisyUI classes, so the look can change in one place. Each macro appears on the page of its component in the
 [gallery](#gallery), and has tests. The macros today are `icon`, `page_heading`, `message`, `button`, `link_button`, `card`,
 `panel`, `stats`, `stat`, `badge`, `status_label`, `progress`, `steps`, `table`, `empty_state`, `command`, `select_field`,
-`filter_bar`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions` and `pagination`.
+`breadcrumbs`, `description_list`, `tabs`, `filter_bar`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`
+and `pagination`.
+
+Tabs come in two kinds. `tabs` are links, one address each, as on the equipment detail: they work without JavaScript and
+with the back button, and only the open one is read from the database, so they are a navigation with `aria-current`. Where
+all panels are already on the page, as the gallery's Preview and Code switch, `app.js` gives ARIA's tab pattern with its
+arrow keys.
+
+Printing belongs to the shell: navigation, header and actions leave, a table's scrolling box opens, its header repeats on
+each page, and a row stays whole. The page wears the light theme while it prints, because paper is white and a browser
+leaves out backgrounds. The equipment detail prints both of its tabs.
 
 | Group | Components | Since |
 |---|---|---|
@@ -336,15 +346,16 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Gallery | [Every component on offer](#gallery), by category, with its status, its macro and every official example | Milestone 1 |
 | Administration | Visible only to one role, proving permissions | Milestone 1 |
 | Equipment list, `/equipment` | Server table with 50,000 rows, search, filters, sorting, paging, row actions, its empty and no-results states, Excel export | Milestone 2 |
-| Equipment detail | Description list, tabs, history | Milestone 2 |
+| Equipment detail, `/equipment/<id>` | Breadcrumbs, description list, tabs as links, history of work orders, status label, print style | Milestone 2 |
 | Planning | Rich table: grouping and editing, or its accessible replacement | Milestone 2 |
 | Work order form | All form fields, validation, decimals, dates, file upload | Milestone 3 |
 | Import | Long task with progress, its result and its errors | Milestone 4 |
 
 The demo's tables, `equipment` and `work_order`, hold what `app/demo/generate.py` makes: 50,000 pieces of equipment and
 10,000 work orders, from a seed, with no third-party package. Each row comes from a hash of the seed and its position, so
-the same seed gives the same rows on any computer and Python version. Generating refuses to run outside development,
-because it replaces what those tables hold. One fictional role exists, `admin`.
+the same seed gives the same rows on any computer and Python version. Work orders fall unevenly, so a detail page can
+show a history of three, of two, of one, or none. Generating refuses to run outside development, because it replaces what
+those tables hold. One fictional role exists, `admin`.
 
 A first run stays `cp .env.example .env` and one command, with no database to prepare. Generating is one more command,
 in seconds, and it can run while the server does. A screen that reads the rows asks first, in `app/demo/data.py`: if the

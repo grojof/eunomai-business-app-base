@@ -46,6 +46,33 @@
   outline-offset: 2px;
 }
 
+/* On paper a table has no box to scroll in, its header repeats on each page, and a row stays whole */
+@media print {
+  .table-scroll {
+    max-block-size: none;
+    overflow: visible;
+  }
+
+  .table-pin-rows thead tr,
+  .table-pin-first tr > :first-child {
+    position: static;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr,
+  figure {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2 {
+    break-after: avoid;
+  }
+}
+
 @layer base {
   /* What the keyboard reaches, and any #link, stops clear of the sticky header: WCAG 2.4.11 */
   html {

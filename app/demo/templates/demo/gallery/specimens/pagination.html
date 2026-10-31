@@ -1,0 +1,4 @@
+{% from "ui/macros.html" import pagination %}
+{% set _unused = sample.__setattr__("total", 120) %}
+<div hx-disable class="rounded-box border border-base-300">{{ pagination(sample) }}</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ pagination(view) }}{% endraw %}</code></pre>

@@ -2,25 +2,34 @@
 
 from collections.abc import Iterable, Mapping
 from typing import Any
+from urllib.parse import parse_qsl, urlsplit
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse, Response
 from sqlalchemy import ColumnElement, case, select
 
-from app.core.database import DatabaseSession
+from app.core.database import DatabaseSession, exact_sum
 from app.core.excel import ExcelColumn, excel_response
 from app.core.i18n import N_, _
-from app.core.tables import Column, Filter, ListView, render_list
+from app.core.tables import Column, Filter, ListView, fragment_requested, render_list
 from app.core.templating import render
 from app.demo.data import GENERATE, READY, rows_state
-from app.demo.generate import LOCATIONS
-from app.demo.models import EQUIPMENT_STATUSES, Equipment
+from app.demo.models import EQUIPMENT_STATUSES, LOCATIONS, Equipment, WorkOrder
 
 STATUS_LABELS = {
     "in_service": (N_("In service"), "success"),
     "due_soon": (N_("Due soon"), "warning"),
     "stopped": (N_("Stopped"), "danger"),
 }
+ORDER_LABELS = {
+    "reported": (N_("Reported"), "neutral"),
+    "planned": (N_("Planned"), "info"),
+    "in_progress": (N_("In progress"), "warning"),
+    "checked": (N_("Checked"), "info"),
+    "closed": (N_("Closed"), "success"),
+}
+LARGEST_ID = 2**31 - 1
+"""The database's integer. A longer number in an address is a page that does not exist, not an error."""
 STATUS_ORDER = ("stopped", "due_soon", "in_service")
 """What needs attention first: sorted by what it means, not by its letters."""
 
@@ -119,6 +128,45 @@ def equipment_export(request: Request, session: DatabaseSession) -> Response:
     return excel_response(_("Equipment"), columns, rows, request.app.state.settings.time_zone)
 
 
+def _list_address(request: Request) -> str:
+    """Back to the list a person came from, with its filters. Only the query is kept, and it is read like any other."""
+    came_from = urlsplit(request.headers.get("referer", ""))
+    if came_from.path != "/equipment":
+        return "/equipment"
+    return equipment_view(dict(parse_qsl(came_from.query))).here
+
+
+def equipment_detail(request: Request, equipment_id: int, session: DatabaseSession) -> Response:
+    state = rows_state(session)
+    if state != READY:
+        return render(request, "demo/equipment/detail_missing.html", state=state, command=GENERATE)
+    item = session.get(Equipment, equipment_id) if equipment_id <= LARGEST_ID else None
+    if item is None:
+        raise HTTPException(status_code=404)
+    tab = request.query_params.get("tab")
+    orders = session.scalars(
+        select(WorkOrder)
+        .where(WorkOrder.equipment_id == equipment_id)
+        .order_by(WorkOrder.opened_at.desc(), WorkOrder.id.desc())
+    ).all()
+    context: dict[str, Any] = {
+        "item": item,
+        "tab": tab if tab == "orders" else "overview",
+        "orders": orders,
+        "hours": exact_sum(order.hours for order in orders),
+        "cost": exact_sum(order.cost for order in orders),
+        "statuses": STATUS_LABELS,
+        "order_statuses": ORDER_LABELS,
+    }
+    if fragment_requested(request):
+        response = render(request, "demo/equipment/tabs.html", **context)
+    else:
+        response = render(request, "demo/equipment/detail.html", back=_list_address(request), **context)
+    response.headers["Vary"] = "HX-Request"
+    return response
+
+
 def install(application: FastAPI) -> None:
     application.add_api_route("/equipment", equipment_list, include_in_schema=False)
     application.add_api_route("/equipment/export", equipment_export, include_in_schema=False)
+    application.add_api_route("/equipment/{equipment_id:int}", equipment_detail, include_in_schema=False)

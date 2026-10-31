@@ -20,15 +20,26 @@ from sqlalchemy.orm import Session
 
 from app.core.database import create_database_engine, migrate
 from app.core.settings import get_settings
-from app.demo.models import EQUIPMENT_STATUSES, WORK_ORDER_STATUSES, Equipment, WorkOrder
+from app.demo.models import EQUIPMENT_STATUSES, LOCATIONS, WORK_ORDER_STATUSES, Equipment, WorkOrder
 
 EQUIPMENT_ROWS = 50_000
 WORK_ORDER_EVERY = 5
-"""One piece of equipment in this many has a work order."""
+"""One work order for this many pieces of equipment."""
+ORDER_SPREAD = (0, 0, 0, 5, 5, 10)
+"""Each six work orders fall on thirty pieces of equipment like this: one has a history of three, one of two, one of
+one, and the rest have none yet, so a detail page shows each of those cases."""
 SEED = 2027
 KINDS = ("Air compressor", "Conveyor belt", "Standby generator", "Cooling tower", "Forklift")
-LOCATIONS = ("Workshop", "Packing", "Plant room", "Roof", "Warehouse")
-TITLES = ("Preventive plan", "Safety checks")
+TITLES = (
+    "Preventive plan",
+    "Safety checks",
+    "Oil change",
+    "Filter replacement",
+    "Belt replacement",
+    "Calibration",
+    "Leak repair",
+    "Electrical inspection",
+)
 FIRST_INSPECTION = date(2026, 11, 1)
 INSPECTION_DAYS = 730
 START = datetime(2026, 1, 1, tzinfo=UTC)
@@ -73,7 +84,7 @@ def work_order_row(position: int, seed: int = SEED) -> dict[str, Any]:
     opened = START + timedelta(seconds=numbers[1] % YEAR_SECONDS)
     return {
         "id": position + 1,
-        "equipment_id": position * WORK_ORDER_EVERY + 1,
+        "equipment_id": (position // len(ORDER_SPREAD)) * 30 + ORDER_SPREAD[position % len(ORDER_SPREAD)] + 1,
         "title": TITLES[numbers[2] % len(TITLES)],
         "status": status,
         "hours": Decimal(numbers[3] % 400) / 4,

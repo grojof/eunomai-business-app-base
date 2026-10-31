@@ -3,6 +3,7 @@
 import json
 import os
 import re
+import shutil
 
 import pytest
 
@@ -113,9 +114,15 @@ def test_the_catalogue_can_be_read_by_a_program():
         assert entry["use"]
 
 
+def with_this_bases_own_pages(folder):
+    for name in set(catalog.components()) - OFFICIAL - {"signature"}:
+        shutil.copy(PAGES / f"{name}.md", folder)
+
+
 def test_an_organizations_own_component_keeps_its_hand_written_page(tmp_path, monkeypatch):
     own = tmp_path / "signature.md"
     own.write_text(OWN_PAGE, encoding="utf-8")
+    with_this_bases_own_pages(tmp_path)
     categories = {**catalog.CATEGORIES, "own": ("Own", (Component("signature"),))}
     monkeypatch.setattr(components, "CATEGORIES", categories)
     monkeypatch.setattr(components, "TARGET", tmp_path)
@@ -125,6 +132,7 @@ def test_an_organizations_own_component_keeps_its_hand_written_page(tmp_path, mo
 
 
 def test_a_component_with_no_page_stops_the_generator(tmp_path, monkeypatch):
+    with_this_bases_own_pages(tmp_path)
     categories = {**catalog.CATEGORIES, "own": ("Own", (Component("signature"),))}
     monkeypatch.setattr(components, "CATEGORIES", categories)
     monkeypatch.setattr(components, "TARGET", tmp_path)

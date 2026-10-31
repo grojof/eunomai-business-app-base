@@ -10,6 +10,7 @@ from app.core.database import Base
 
 EQUIPMENT_STATUSES = ("in_service", "due_soon", "stopped")
 WORK_ORDER_STATUSES = ("reported", "planned", "in_progress", "checked", "closed")
+LOCATIONS = ("Workshop", "Packing", "Plant room", "Roof", "Warehouse")
 
 
 def _one_of(values: tuple[str, ...]) -> str:

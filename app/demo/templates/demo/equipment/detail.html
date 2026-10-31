@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import breadcrumbs, page_heading, status_label, button %}
+{% block title %}{{ item.code }}{% endblock %}
+{% block content %}
+{% set label, kind = statuses[item.status] %}
+{{ breadcrumbs([(_("Equipment"), back), (item.code, "")]) }}
+{% call page_heading(item.name, item.code) %}
+{{ status_label(_(label), kind) }}
+{{ button(_("Print"), attributes={"data-print": ""}, extra="noscript:hidden", name="printer") }}
+{% endcall %}
+<div id="equipment-tabs" class="space-y-6">
+  {% include "demo/equipment/tabs.html" %}
+</div>
+{% endblock %}

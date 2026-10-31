@@ -1,0 +1,3 @@
+{% from "ui/macros.html" import breadcrumbs %}
+{{ breadcrumbs([(_("Equipment"), "/equipment"), (_("Details"), "")]) }}
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ breadcrumbs([(_("Equipment"), "/equipment"), (item.code, "")]) }}{% endraw %}</code></pre>

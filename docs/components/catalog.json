@@ -112,6 +112,14 @@
     "page": "docs/components/countdown.md"
   },
   {
+    "name": "description-list",
+    "category": "data-display",
+    "status": "available",
+    "note": "A list of terms and their values, for one record's details.",
+    "use": "A list of terms and their values, for one record's details.",
+    "page": "docs/components/description-list.md"
+  },
+  {
     "name": "diff",
     "category": "data-display",
     "status": "decorative",
@@ -350,6 +358,14 @@
     "note": "",
     "use": "A filter is a group of radio buttons. When the user selects an option, the filter hides the other options. It also shows a reset button next to the selected option.",
     "page": "docs/components/filter.md"
+  },
+  {
+    "name": "filter-bar",
+    "category": "data-input",
+    "status": "available",
+    "note": "A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons.",
+    "use": "A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons.",
+    "page": "docs/components/filter-bar.md"
   },
   {
     "name": "input",

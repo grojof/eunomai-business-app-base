@@ -1,0 +1,76 @@
+{#- The tabs and their panels. htmx asks for this alone, and only the open panel shows: on paper, both do. -#}
+{% from "ui/macros.html" import tabs, description_list, status_label, card, table, empty_state %}
+{% set label, kind = statuses[item.status] %}
+{% set page = "/equipment/" ~ item.id %}
+{{ tabs(_("Sections of this page"), [
+  ("overview", _("Overview"), page),
+  ("orders", _("Work orders (%(count)s)", count=orders|length|decimal), page ~ "?tab=orders"),
+], tab, "#equipment-tabs") }}
+<div class="hidden" data-announce="{{ _('Overview') if tab == 'overview' else _('Work orders') }}"></div>
+
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-3{{ '' if tab == 'overview' else ' hidden print:grid' }}">
+  <div class="min-w-0 xl:col-span-2">
+    {% call card(_("Details"), "details-title") %}
+    {{ description_list([
+      (_("Code"), item.code),
+      (_("Name"), item.name),
+      (_("Location"), _(item.location)),
+      (_("State"), status_label(_(label), kind)),
+      (_("Next inspection"), item.next_inspection|date),
+      (_("Cost"), item.cost|decimal(2)),
+      (_("Updated"), local_datetime(item.updated_at)),
+    ]) }}
+    {% endcall %}
+  </div>
+  {% call card(_("Maintenance to date"), "maintenance-title") %}
+  {{ description_list([
+    (_("Work orders"), orders|length|decimal),
+    (_("Hours worked"), hours|decimal(2)),
+    (_("Cost of the work"), cost|decimal(2)),
+  ]) }}
+  {% endcall %}
+</div>
+
+<div class="{{ '' if tab == 'orders' else 'hidden print:block' }}">
+  {% call card(_("Work orders"), "orders-title") %}
+  {% if orders %}
+  {% call table(_("Work orders of this equipment, newest first"), "orders-caption") %}
+  <thead>
+    <tr>
+      <th scope="col" class="hidden md:table-cell">{{ _("Number") }}</th>
+      <th scope="col">{{ _("Work") }}</th>
+      <th scope="col">{{ _("State") }}</th>
+      <th scope="col" class="hidden md:table-cell">{{ _("Opened") }}</th>
+      <th scope="col" class="hidden md:table-cell">{{ _("Closed") }}</th>
+      <th scope="col" class="text-end">{{ _("Hours") }}</th>
+      <th scope="col" class="text-end">{{ _("Cost") }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    {% set order_label, order_kind = order_statuses[order.status] %}
+    <tr>
+      <td class="hidden tabular-nums md:table-cell">{{ order.id|decimal }}</td>
+      <th scope="row" class="font-medium">{{ order.title }}</th>
+      <td>{{ status_label(_(order_label), order_kind) }}</td>
+      <td class="hidden whitespace-nowrap md:table-cell">{{ local_date(order.opened_at) }}</td>
+      <td class="hidden whitespace-nowrap md:table-cell">{{ local_date(order.closed_at) if order.closed_at else "" }}</td>
+      <td class="text-end tabular-nums">{{ order.hours|decimal(2) }}</td>
+      <td class="text-end tabular-nums">{{ order.cost|decimal(2) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <th scope="row" colspan="5" class="hidden md:table-cell">{{ _("Total") }}</th>
+      <th scope="row" colspan="2" class="md:hidden">{{ _("Total") }}</th>
+      <td class="text-end tabular-nums">{{ hours|decimal(2) }}</td>
+      <td class="text-end tabular-nums">{{ cost|decimal(2) }}</td>
+    </tr>
+  </tfoot>
+  {% endcall %}
+  {% else %}
+  {{ empty_state(_("No work orders yet"), _("Work done on this equipment will appear here.")) }}
+  {% endif %}
+  {% endcall %}
+</div>

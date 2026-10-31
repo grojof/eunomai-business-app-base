@@ -12,6 +12,7 @@ from fastapi.responses import Response
 from markupsafe import Markup, escape
 
 from app.core.i18n import N_, _, current_language
+from app.core.tables import Column, Filter, ListView
 from app.core.templating import NavigationGroup, SearchItem, add_templates, environment, register_search, render
 from app.ui.catalog import CATEGORIES, STATUSES, Component, components
 
@@ -28,6 +29,13 @@ GROUPS = {
     "placement": N_("Placement"),
     "direction": N_("Direction"),
 }
+SAMPLE_MACROS = {"filter_bar", "pagination", "server_table"}
+"""Macros whose specimen is a list. It keeps its state in the page's own address, on three fixed rows."""
+SAMPLE_ROWS = (
+    ("A-100", N_("Air compressor"), "in_service", N_("In service"), "success"),
+    ("B-200", N_("Conveyor belt"), "due_soon", N_("Due soon"), "warning"),
+    ("C-300", N_("Cooling tower"), "stopped", N_("Stopped"), "danger"),
+)
 _TAG = re.compile(r"(<!--.*?-->|<[^>]+>)", re.S)
 _ATTRIBUTE = re.compile(r"""([^\s=/>]+)(=)("[^"]*"|'[^']*')""")
 
@@ -123,6 +131,7 @@ def card_of(component: Component) -> dict[str, Any]:
         "status": badge_of(component),
         "examples": len(page["examples"]) if page else 0,
         "thumbnail": Markup(index_data()["thumbnails"].get(component.name, "")),  # noqa: S704  # generated, see tools/gallery.py
+        "icon": component.icon,
     }
 
 
@@ -160,6 +169,43 @@ def example_view(example: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def sample_view(path: str, params: Mapping[str, str]) -> ListView:
+    """A list without a database, so a macro can be tried here. The rows are filtered and sorted in Python, which a real
+    screen must not do: see app/demo/equipment.py for that."""
+    view = ListView.read(
+        "sample",
+        path,
+        params,
+        (
+            Column("code", _("Code"), "code"),
+            Column("name", _("Name"), "name"),
+            Column("status", _("State"), "status"),
+        ),
+        None,
+        "code",
+        (
+            Filter(
+                "status",
+                _("State"),
+                [(row[2], _(row[3])) for row in SAMPLE_ROWS],
+                every=_("All states"),
+                condition=lambda _value: None,  # type: ignore[arg-type,return-value]
+            ),
+        ),
+        ("name",),
+        _("Code or name"),
+    )
+    term = view.term.casefold()
+    rows = [
+        {"code": code, "name": _(name), "status": status, "label": _(label), "kind": kind}
+        for code, name, status, label, kind in SAMPLE_ROWS
+        if status == (view.chosen["status"] or status) and term in f"{code} {_(name)}".casefold()
+    ]
+    rows.sort(key=lambda row: row[view.sort], reverse=view.direction == "desc")
+    view.rows, view.total = rows, len(rows)
+    return view
+
+
 async def gallery_component(request: Request, name: str) -> Response:
     every = list(ordered())
     position = next((number for number, (_category, item) in enumerate(every) if item.name == name), None)
@@ -171,6 +217,7 @@ async def gallery_component(request: Request, name: str) -> Response:
     neighbours = [every[position - 1][1] if position else None, every[(position + 1) % len(every)][1]]
     neighbours[1] = neighbours[1] if position + 1 < len(every) else None
     examples = [example_view(example) for example in page.get("examples", [])]
+    sample = sample_view(request.url.path, request.query_params) if item.macro in SAMPLE_MACROS else None
     return render(
         request,
         "demo/gallery/component.html",
@@ -189,6 +236,7 @@ async def gallery_component(request: Request, name: str) -> Response:
             for group in page.get("classes", [])
         ],
         examples=examples,
+        sample=sample,
         previous=(neighbours[0].name, title_of(neighbours[0].name)) if neighbours[0] else None,
         following=(neighbours[1].name, title_of(neighbours[1].name)) if neighbours[1] else None,
     )

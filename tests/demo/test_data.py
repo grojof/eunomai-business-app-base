@@ -21,7 +21,7 @@ from app.main import create_app
 from tests.conftest import build_settings
 from tests.helpers import ROOT
 
-FROZEN = "47f7f950bbb70474cafc6c0669d0533791010ec0837b7214f406223acfd52c11"
+FROZEN = "edee581fe6e4ea0831fae196d8d1893e3c208192d47c4b8b1d3523fe6d0c7c96"
 """The hash of the first thousand rows. If it changes, the demo's data changed on everyone's computer."""
 
 
@@ -88,7 +88,7 @@ def test_fifty_thousand_rows_arrive_whole(session):
     assert session.get(Equipment, 1).cost == equipment_row(0)["cost"]
     last = session.get(Equipment, 50_000)
     assert (last.code, last.next_inspection) == ("EQ-050000", equipment_row(49_999)["next_inspection"])
-    assert session.get(WorkOrder, 10_000).equipment.id == 49_996
+    assert session.get(WorkOrder, 10_000).equipment.id == 49_986
     assert total(session, Equipment.cost) == exact_sum(equipment_row(n)["cost"] for n in range(50_000))
 
 

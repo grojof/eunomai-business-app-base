@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, cast
+from zoneinfo import ZoneInfo
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
@@ -119,6 +120,9 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
     def local_datetime(value: datetime) -> str:
         return formatters.format_datetime(value, state.settings.time_zone)
 
+    def local_date(value: datetime) -> str:
+        return formatters.format_date(value.astimezone(ZoneInfo(state.settings.time_zone)).date())
+
     html = environment.get_template(name).render(
         app_name=state.settings.name,
         version=__version__,
@@ -139,6 +143,7 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
         here=request.url.path + query,
         vendor_scripts=_VENDOR_SCRIPTS,
         local_datetime=local_datetime,
+        local_date=local_date,
         **context,
     )
     return HTMLResponse(html, status_code=status_code)
