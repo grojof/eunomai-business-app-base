@@ -2,23 +2,33 @@
 
 from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from typing import Any
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, contains_eager
 
 from app.core.charts import STATE_COLOURS, ChartData, Point, Series, chart_data, point_data
 from app.core.database import exact_sum, total
 from app.core.formatters import format_decimal, format_month, format_percent, rounded
 from app.core.i18n import _
 from app.demo.equipment import STATUS_LABELS
-from app.demo.models import EQUIPMENT_STATUSES, LOCATIONS, Equipment, WorkOrder
+from app.demo.models import (
+    EQUIPMENT_STATUSES,
+    LAST_DAY,
+    LAST_MOMENT,
+    LOCATIONS,
+    OPEN_STATES,
+    Equipment,
+    WorkOrder,
+    overdue,
+)
 
 YEAR = 2026
-OPEN_STATES = ("reported", "planned", "in_progress", "checked")
+OVERDUE_SHOWN = 5
+INSPECTIONS_AHEAD = timedelta(days=30)
 
 
 @dataclass(frozen=True)
@@ -32,8 +42,8 @@ class Figure:
     type: str
 
 
-def months() -> list[str]:
-    return [format_month(date(YEAR, month, 1)) for month in range(1, 13)]
+def months(count: int = 12) -> list[str]:
+    return [format_month(date(YEAR, month, 1)) for month in range(1, count + 1)]
 
 
 def equipment_by_state(session: Session) -> Figure:
@@ -64,10 +74,12 @@ def monthly_figures(session: Session, zone: str) -> tuple[Figure, Figure]:
         month = moment.astimezone(time_zone).month - 1
         (closed if status == "closed" else opened)[month] += 1
         costs[month].append(amount)
-    labels = months()
-    by_month = [rounded(exact_sum(month), 0) for month in costs]
-    busiest = max(range(12), key=lambda month: opened[month] + closed[month])
-    dearest = max(range(12), key=lambda month: by_month[month])
+    shown = max((month + 1 for month in range(12) if costs[month]), default=1)  # no empty months ahead of the data
+    labels = months(shown)
+    opened, closed = opened[:shown], closed[:shown]
+    by_month = [rounded(exact_sum(month), 0) for month in costs[:shown]]
+    busiest = max(range(shown), key=lambda month: opened[month] + closed[month])
+    dearest = max(range(shown), key=lambda month: by_month[month])
     orders = Figure(
         "figure-orders",
         _("Work orders by month"),
@@ -99,9 +111,30 @@ def monthly_figures(session: Session, zone: str) -> tuple[Figure, Figure]:
     return orders, cost
 
 
+def _closed_share(session: Session, title: str) -> int:
+    """How much of one kind of work is done, as a whole percentage."""
+    orders = WorkOrder.title == title
+    everything = session.scalar(select(func.count()).select_from(WorkOrder).where(orders)) or 0
+    done = session.scalar(select(func.count()).select_from(WorkOrder).where(orders, WorkOrder.status == "closed")) or 0
+    return 100 * done // everything if everything else 0
+
+
+def inspections_due(session: Session) -> int:
+    limit = LAST_DAY + INSPECTIONS_AHEAD
+    return session.scalar(select(func.count()).select_from(Equipment).where(Equipment.next_inspection <= limit)) or 0
+
+
 def dashboard_figures(session: Session, zone: str) -> dict[str, Any]:
     """What the dashboard shows when the rows are there."""
     open_orders = WorkOrder.status.in_(OPEN_STATES)
+    oldest = session.scalars(
+        select(WorkOrder)
+        .join(WorkOrder.equipment)
+        .options(contains_eager(WorkOrder.equipment))
+        .where(overdue())
+        .order_by(WorkOrder.planned_on, WorkOrder.id)
+        .limit(OVERDUE_SHOWN)
+    ).all()
     next_up = session.scalars(select(Equipment).order_by(Equipment.next_inspection, Equipment.id).limit(5)).all()
     orders, cost = monthly_figures(session, zone)
     return {
@@ -115,6 +148,14 @@ def dashboard_figures(session: Session, zone: str) -> dict[str, Any]:
         "orders_chart": orders,
         "cost_chart": cost,
         "states_chart": equipment_by_state(session),
+        "overdue_count": session.scalar(select(func.count()).select_from(WorkOrder).where(overdue())) or 0,
+        "overdue_orders": oldest,
+        "updated": LAST_MOMENT,
+        "plan": [
+            ("Preventive plan", _closed_share(session, "Preventive plan"), "primary"),
+            ("Spare parts in stock", 88, "success"),
+            ("Safety checks", _closed_share(session, "Safety checks"), "warning"),
+        ],
     }
 
 

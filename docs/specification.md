@@ -357,7 +357,7 @@ with daisyUI's translated names and descriptions, and its class names as keyword
 A component is one Jinja macro or one piece of the shell, using only the brand's colours. Screens call macros, not
 daisyUI classes, so the look can change in one place. Each macro appears on the page of its component in the
 [gallery](#gallery), and has tests. The macros today are `icon`, `page_heading`, `message`, `button`, `link_button`, `card`,
-`panel`, `stats`, `stat`, `badge`, `status_label`, `progress`, `steps`, `table`, `empty_state`, `command`, `select_field`,
+`panel`, `stats`, `stat`, `badge`, `status_label`, `progress`, `steps`, `table`, `empty_state`, `command`, `select_field`, `item_list`,
 `breadcrumbs`, `description_list`, `tabs`, `chart`, `dialog`, `dialog_buttons`, `input_field`, `field_error`,
 `error_summary`, `grouped_table`, `dialog_action`, `filter_bar`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`
 and `pagination`.
@@ -406,7 +406,14 @@ The demo's tables, `equipment` and `work_order`, hold what `app/demo/generate.py
 10,000 work orders, from a seed, with no third-party package. Each row comes from a hash of the seed and its position, so
 the same seed gives the same rows on any computer and Python version. Work orders fall unevenly, so a detail page can
 show a history of three, of two, of one, or none. Generating refuses to run outside development, because it replaces what
-those tables hold. One fictional role exists, `admin`.
+those tables hold.
+
+The data tells one story, and every screen reads the same one. It ends on a fixed day, `LAST_DAY` in `app/demo/models.py`,
+which is the demo's today whenever it is read, so what is overdue does not change with the calendar. Orders open from
+1 January to that day. Those opened more than 60 days earlier are nearly all closed, about 96 %, and the few left open are
+really late; newer ones spread across the states. Moments fall at noon at the ends of that range, so no time zone moves
+one to another month. The dashboard's figures, charts and Overdue card come from these rows, Overdue leads to Planning's
+own overdue filter, and `overdue()` is the one definition of the word. One fictional role exists, `admin`.
 
 A first run stays `cp .env.example .env` and one command, with no database to prepare. Generating is one more command,
 in seconds, and it can run while the server does. A screen that reads the rows asks first, in `app/demo/data.py`: if the

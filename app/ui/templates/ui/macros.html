@@ -143,6 +143,18 @@
 </div>
 {% endmacro %}
 
+{#- A short list of records that lead somewhere. `items`: (title, note, address, value at the end of the line). -#}
+{% macro item_list(items) %}
+<ul class="divide-y divide-base-300">
+  {% for title, note, href, value in items %}
+  <li class="flex items-baseline justify-between gap-3 py-2">
+    <span class="min-w-0"><a class="link link-hover font-medium" href="{{ href }}">{{ title }}</a><span class="block text-sm">{{ note }}</span></span>
+    <span class="shrink-0 text-sm whitespace-nowrap">{{ value }}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% endmacro %}
+
 {% macro status_label(text, kind="neutral") %}
 {% set classes = {"neutral": "status-neutral", "info": "status-info", "success": "status-success", "warning": "status-warning", "danger": "status-error"} %}
 <span class="inline-flex items-center gap-2 whitespace-nowrap"><span class="status {{ classes[kind] }}" aria-hidden="true"></span>{{ text }}</span>

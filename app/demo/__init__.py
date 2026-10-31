@@ -15,8 +15,9 @@ from app.core.i18n import N_, _
 from app.core.identity import Person, require_role
 from app.core.templating import NavigationItem, add_templates, render
 from app.demo import equipment, gallery, planning
-from app.demo.charts import dashboard_figures
+from app.demo.charts import dashboard_figures, inspections_due
 from app.demo.data import GENERATE, READY, rows_state
+from app.demo.models import LAST_DAY
 
 HERE = Path(__file__).resolve().parent
 IN_SERVICE = (N_("In service"), "success")
@@ -48,6 +49,10 @@ def dashboard(request: Request, session: DatabaseSession) -> Response:
         "next_equipment": N_("Air compressor"),
         "equipment": EQUIPMENT,
         "orders_chart": None,
+        "overdue_count": 0,
+        "overdue_orders": [],
+        "updated": datetime(2026, 10, 30, 7, 30, tzinfo=UTC),
+        "plan": PLAN,
     }
     if state == READY:
         figures |= dashboard_figures(session, request.app.state.settings.time_zone)
@@ -56,16 +61,16 @@ def dashboard(request: Request, session: DatabaseSession) -> Response:
         "demo/dashboard.html",
         **figures,
         cost_rounded=rounded(figures["cost"]),
-        updated=datetime(2026, 10, 30, 7, 30, tzinfo=UTC),
-        plan=PLAN,
+        today=LAST_DAY,
         steps=[_(step) for step in WORK_ORDER_STEPS],
         state=state,
         command=GENERATE,
     )
 
 
-async def inspections(request: Request) -> Response:
-    return render(request, "demo/inspections.html", due=1)
+def inspections(request: Request, session: DatabaseSession) -> Response:
+    due = inspections_due(session) if rows_state(session) == READY else 1
+    return render(request, "demo/inspections.html", due=due)
 
 
 async def administration(request: Request, person: Annotated[Person, Depends(require_role("admin"))]) -> Response:

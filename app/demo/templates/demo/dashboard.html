@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "ui/macros.html" import page_heading, button, card, stats, stat, badge, progress, steps as work_steps, table, empty_state, chart %}
+{% from "ui/macros.html" import page_heading, button, link_button, card, stats, stat, badge, progress, steps as work_steps, table, empty_state, chart, item_list %}
 {% block title %}{{ _("Dashboard") }}{% endblock %}
 {% block content %}
 {% macro figure(item) %}{{ chart(item.title, item.summary, item.data, item.type, item.identifier) }}{% endmacro %}
@@ -51,7 +51,17 @@
 
 {% set overdue_card %}
 {% call card(_("Overdue"), "overdue-title") %}
+{% if overdue_orders %}
+<p class="text-sm">{{ ngettext("%(count)s open work order planned before today", "%(count)s open work orders planned before today", overdue_count, count=overdue_count|decimal) }}</p>
+{% set late = namespace(items=[]) %}
+{% for order in overdue_orders %}
+{% set late.items = late.items + [(order.equipment.name, order.title, "/equipment/" ~ order.equipment_id ~ "?tab=orders", order.planned_on|date)] %}
+{% endfor %}
+{{ item_list(late.items) }}
+{{ link_button(_("See them in Planning"), "/planning?due=overdue&group=month", small=true) }}
+{% else %}
 {{ empty_state(_("Nothing overdue"), _("Work orders appear here when their date passes.")) }}
+{% endif %}
 {% endcall %}
 {% endset %}
 

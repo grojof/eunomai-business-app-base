@@ -21,7 +21,7 @@ from app.main import create_app
 from tests.conftest import build_settings
 from tests.helpers import ROOT
 
-FROZEN = "bb550dcd2cb2adcdf8df3a55150d9a6b2f31e2fbd8f933e3560517ff4b89b927"
+FROZEN = "1fcccdc4888d3a7a6eea92e344293886dbe117e79b177ae333c2fda8739bda68"
 """The hash of the first thousand rows. If it changes, the demo's data changed on everyone's computer."""
 
 

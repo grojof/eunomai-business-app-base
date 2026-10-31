@@ -24,7 +24,7 @@ from app.core.tables import Column, Filter, ListView, fragment_requested, render
 from app.core.templating import render
 from app.demo.data import GENERATE, READY, rows_state
 from app.demo.equipment import LARGEST_ID, ORDER_LABELS, labels_in_order, ranked
-from app.demo.models import LOCATIONS, WORK_ORDER_STATUSES, Equipment, WorkOrder
+from app.demo.models import LOCATIONS, WORK_ORDER_STATUSES, Equipment, WorkOrder, overdue
 
 OPEN = "open"
 FIELD_IDS = {"status": "field-status", "planned_on": "field-planned", "hours": "field-hours"}
@@ -81,6 +81,13 @@ def planning_view(params: Mapping[str, str]) -> ListView:
                 [(value, _(value)) for value in locations],
                 lambda value: Equipment.location == value,
                 every=_("All locations"),
+            ),
+            Filter(
+                "due",
+                _("Planned for"),
+                [("overdue", _("Overdue"))],
+                lambda _value: overdue(),
+                every=_("Any date"),
             ),
             Filter("group", _("Group by"), [(key, _(label)) for key, label in GROUPS.items()], default="location"),
         ),

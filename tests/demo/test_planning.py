@@ -76,9 +76,9 @@ def test_a_group_header_counts_the_whole_group_not_just_the_page(filled, filled_
 
 
 def test_a_group_cut_by_a_page_says_so(filled):
-    second = filled.get("/planning?location=Roof&size=10&page=2").text
+    second = filled.get("/planning?status=&location=Roof&size=10&page=2").text
     assert "Roof, continued" in second
-    assert "Roof, continued" not in filled.get("/planning?location=Roof&size=10").text
+    assert "Roof, continued" not in filled.get("/planning?status=&location=Roof&size=10").text
 
 
 @pytest.mark.parametrize(

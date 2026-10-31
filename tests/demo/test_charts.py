@@ -17,6 +17,8 @@ from tests.helpers import overflows_sideways, run_axe, untranslated
 TYPES = ["bar", "stacked", "line", "area", "pie", "doughnut", "radar", "scatter", "bubble", "mixed"]
 CHARTS_READY = "document.documentElement.dataset.chartsReady !== undefined"
 ALLOWED = ("Business App", "Demo Person", "EQ-", "Cooling tower", "Air compressor", "Conveyor belt", "Forklift")
+ALLOWED += ("Preventive plan", "Safety checks", "Oil change", "Filter replacement", "Belt replacement", "Calibration")
+ALLOWED += ("Leak repair", "Electrical inspection")
 ALLOWED += ("Standby generator", "Jan ", "Feb ", "Mar ", "Apr ", "May ", "Jun ", "Jul ", "Aug ", "Sep ", "Oct ")
 ALLOWED += ("Nov ", "Dec ", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 17:59+0100\n"
+"POT-Creation-Date: 2026-10-31 18:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -29,10 +29,22 @@ msgstr ""
 "%(version)s"
 
 #, python-format
+msgid "%(count)s inspection is due in the next 30 days"
+msgid_plural "%(count)s inspections are due in the next 30 days"
+msgstr[0] "%(count)s inspecció venç en els propers 30 dies"
+msgstr[1] "%(count)s inspeccions vencen en els propers 30 dies"
+
+#, python-format
 msgid "%(count)s open work order"
 msgid_plural "%(count)s open work orders"
 msgstr[0] "%(count)s ordre de treball oberta"
 msgstr[1] "%(count)s ordres de treball obertes"
+
+#, python-format
+msgid "%(count)s open work order planned before today"
+msgid_plural "%(count)s open work orders planned before today"
+msgstr[0] "%(count)s ordre de treball oberta prevista abans d'avui"
+msgstr[1] "%(count)s ordres de treball obertes previstes abans d'avui"
 
 #, python-format
 msgid "%(count)s order, %(hours)s hours"
@@ -55,12 +67,6 @@ msgstr[1] "%(count)s ordres de treball"
 #, python-format
 msgid "%(group)s, continued"
 msgstr "%(group)s, continuació"
-
-#, python-format
-msgid "%(num)d inspection is due"
-msgid_plural "%(num)d inspections are due"
-msgstr[0] "%(num)d inspecció pendent"
-msgstr[1] "%(num)d inspeccions pendents"
 
 #, python-format
 msgid ""
@@ -99,6 +105,9 @@ msgstr "Totes les ubicacions"
 
 msgid "All states"
 msgstr "Tots els estats"
+
+msgid "Any date"
+msgstr "Qualsevol data"
 
 msgid "Audit"
 msgstr "Auditoria"
@@ -578,6 +587,9 @@ msgstr ""
 
 msgid "Sections of this page"
 msgstr "Seccions d'aquesta pàgina"
+
+msgid "See them in Planning"
+msgstr "Mostra-les a Planificació"
 
 msgid "Settings"
 msgstr "Configuració"

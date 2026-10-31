@@ -86,6 +86,7 @@ related: [specification.md, standards.md]
 | After a save, the whole list comes back | A changed state or date can move the row to another group, or out of the filter. Replacing one row would leave it in the wrong place | Replacing the row alone |
 | The last save wins, for now | The demo has one person. A real application needs a version column and a conflict message, and milestone 3 is where forms grow up | A version column now, for a case the demo cannot show |
 | An identifier has no thousands separator | It is a name, not a quantity: *4059* is how a person repeats it | Formatting every number alike |
+| The demo's today is a fixed day | Overdue, charts and summaries must agree with each other and stay the same on any day, and a test must be able to read them. With the real date, every open order would be overdue a year from now | `date.today()`, which makes figures drift and tests depend on when they run |
 | Chart.js for charts | Compared on the same data under this Content Security Policy, in light, dark and at phone width. 210 KB, MIT, no policy violation, and its own tooltip fits both themes. A canvas says nothing to a screen reader, so the summary and the data table are always there | ECharts: 1.1 MB, its default tooltip breaks under the policy and needs `richText`, and it has no Catalan. SVG drawn on the server: no JavaScript, but no interaction, and each chart to maintain here |
 
 ## Open questions

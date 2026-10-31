@@ -1,3 +1,2 @@
-<p tabindex="-1" data-focus data-announce="{{ ngettext('%(num)d inspection is due', '%(num)d inspections are due', due) }}">
-  {{ ngettext("%(num)d inspection is due", "%(num)d inspections are due", due) }}
-</p>
+{% set text = ngettext("%(count)s inspection is due in the next 30 days", "%(count)s inspections are due in the next 30 days", due, count=due|decimal) %}
+<p tabindex="-1" data-focus data-announce="{{ text }}">{{ text }}</p>
