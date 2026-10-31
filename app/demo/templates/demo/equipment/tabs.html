@@ -50,7 +50,7 @@
     {% for order in orders %}
     {% set order_label, order_kind = order_statuses[order.status] %}
     <tr>
-      <td class="hidden tabular-nums md:table-cell">{{ order.id|decimal }}</td>
+      <td class="hidden tabular-nums md:table-cell">{{ order.id }}</td>
       <th scope="row" class="font-medium">{{ order.title }}</th>
       <td>{{ status_label(_(order_label), order_kind) }}</td>
       <td class="hidden whitespace-nowrap md:table-cell">{{ local_date(order.opened_at) }}</td>

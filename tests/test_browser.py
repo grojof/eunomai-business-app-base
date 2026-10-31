@@ -115,6 +115,14 @@ def test_htmx_has_evaluation_turned_off(open_page):
     assert page.evaluate("htmx.config.allowEval") is False
 
 
+@pytest.mark.rule("SEC-06")
+def test_htmx_never_writes_a_style_attribute(open_page):
+    """It would copy `style` onto swapped elements, which the policy refuses."""
+    page = open_page("/")
+    page.wait_for_load_state("networkidle")
+    assert "style" not in page.evaluate("htmx.config.attributesToSettle")
+
+
 @pytest.mark.rule("A11Y-02")
 def test_escape_closes_the_user_menu_and_returns_to_its_button(open_page):
     page = open_page("/")

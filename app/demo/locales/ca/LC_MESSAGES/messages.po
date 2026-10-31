@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 17:18+0100\n"
+"POT-Creation-Date: 2026-10-31 17:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -35,10 +35,26 @@ msgstr[0] "%(count)s ordre de treball oberta"
 msgstr[1] "%(count)s ordres de treball obertes"
 
 #, python-format
+msgid "%(count)s order, %(hours)s hours"
+msgid_plural "%(count)s orders, %(hours)s hours"
+msgstr[0] "%(count)s ordre, %(hours)s hores"
+msgstr[1] "%(count)s ordres, %(hours)s hores"
+
+#, python-format
 msgid "%(count)s piece of equipment"
 msgid_plural "%(count)s pieces of equipment"
 msgstr[0] "%(count)s equip"
 msgstr[1] "%(count)s equips"
+
+#, python-format
+msgid "%(count)s work order"
+msgid_plural "%(count)s work orders"
+msgstr[0] "%(count)s ordre de treball"
+msgstr[1] "%(count)s ordres de treball"
+
+#, python-format
+msgid "%(group)s, continued"
+msgstr "%(group)s, continuació"
 
 #, python-format
 msgid "%(num)d inspection is due"
@@ -118,8 +134,14 @@ msgstr ""
 "Els gràfics i les xifres reals apareixen aquí quan es generen les files "
 "de la demo. Executa aquesta ordre una vegada i recarrega la pàgina."
 
+msgid "Check what you entered"
+msgstr "Revisa el que has escrit"
+
 msgid "Checked"
 msgstr "Revisat"
+
+msgid "Choose a state from the list."
+msgstr "Tria un estat de la llista."
 
 msgid "Class name"
 msgstr "Classe"
@@ -132,6 +154,9 @@ msgstr "Neteja"
 
 msgid "Clear all"
 msgstr "Treu-los tots"
+
+msgid "Close"
+msgstr "Tanca"
 
 msgid "Closed"
 msgstr "Tancada"
@@ -206,6 +231,27 @@ msgstr "Direcció"
 msgid "Due soon"
 msgstr "Venç aviat"
 
+msgid "Edit"
+msgstr "Edita"
+
+#, python-format
+msgid "Edit work order %(number)s"
+msgstr "Edita l'ordre de treball %(number)s"
+
+msgid "Enter a date, or leave it empty if it is not planned yet."
+msgstr "Escriu una data, o deixa-la buida si encara no està planificada."
+
+#, python-format
+msgid "Enter between 0 and %(most)s hours."
+msgstr "Escriu entre 0 i %(most)s hores."
+
+#, python-format
+msgid "Enter the hours as a number, such as %(example)s."
+msgstr "Escriu les hores com un número, per exemple %(example)s."
+
+msgid "Enter the hours with two decimals at most."
+msgstr "Escriu les hores amb dos decimals com a màxim."
+
 msgid "Equipment"
 msgstr "Equips"
 
@@ -220,6 +266,9 @@ msgstr "Equips per estat"
 
 msgid "Equipment list"
 msgstr "Llista d'equips"
+
+msgid "Equipment or work"
+msgstr "Equip o feina"
 
 msgid "Equipment, where it is, its next inspection and its state"
 msgstr "Equips, on són, la seva pròxima inspecció i el seu estat"
@@ -273,6 +322,9 @@ msgstr "Galeria"
 msgid "Generated rows"
 msgstr "Files generades"
 
+msgid "Group by"
+msgstr "Agrupa per"
+
 msgid ""
 "Here it is a plain form, and it reloads the page. In a screen htmx "
 "replaces only the results."
@@ -295,6 +347,13 @@ msgstr ""
 "Les hores treballades no es van allunyar més d'un 6 % del previst en cap "
 "mes."
 
+msgid ""
+"In groups, grouped_table does the same with one tbody per group and a "
+"header row that says what the group holds. Planning uses it."
+msgstr ""
+"En grups, grouped_table fa el mateix amb un tbody per grup i una fila de "
+"capçalera que diu què conté el grup. Planificació el fa servir."
+
 msgid "In progress"
 msgstr "En curs"
 
@@ -310,6 +369,9 @@ msgid ""
 msgstr ""
 "Fa servir els colors propis de Tailwind, que aquesta base elimina, de "
 "manera que alguns colors difereixen de l'exemple publicat."
+
+msgid "Leave it empty if it is not planned yet."
+msgstr "Deixa-la buida si encara no està planificada."
 
 msgid "Link to this example"
 msgstr "Enllaç a aquest exemple"
@@ -332,8 +394,20 @@ msgstr "Modificador"
 msgid "Month"
 msgstr "Mes"
 
+msgid "Month planned"
+msgstr "Mes previst"
+
 msgid "Name"
 msgstr "Nom"
+
+msgid ""
+"Native, so the browser keeps the keyboard inside it, closes it with "
+"Escape and gives focus back. Its body arrives with htmx, and app.js opens"
+" it then. Planning uses it to edit a row."
+msgstr ""
+"Natiu, així que el navegador manté el teclat a dins, el tanca amb Escape "
+"i torna el focus. El seu contingut arriba amb htmx, i app.js l'obre "
+"aleshores. Planificació el fa servir per editar una fila."
 
 msgid "Next"
 msgstr "Següent"
@@ -350,11 +424,20 @@ msgstr "Cap component no coincideix"
 msgid "No equipment matches"
 msgstr "Cap equip no coincideix"
 
+msgid "No work order matches"
+msgstr "Cap ordre de treball no coincideix"
+
 msgid "No work orders yet"
 msgstr "Encara no hi ha ordres de treball"
 
 msgid "North plant"
 msgstr "Planta nord"
+
+msgid "Not closed"
+msgstr "Sense tancar"
+
+msgid "Not planned yet"
+msgstr "Encara sense planificar"
 
 msgid "Nothing overdue"
 msgstr "Res vençut"
@@ -363,11 +446,12 @@ msgid "Number"
 msgstr "Número"
 
 #, python-format
+msgid "Of %(total)s opened this year"
+msgstr "De %(total)s obertes aquest any"
+
+#, python-format
 msgid "Of %(total)s pieces of equipment, %(share)s are in service."
 msgstr "De %(total)s equips, el %(share)s és en servei."
-
-msgid "Of 10,000 opened this year"
-msgstr "De 10.000 obertes aquest any"
 
 msgid "Official examples"
 msgstr "Exemples oficials"
@@ -387,6 +471,11 @@ msgstr "Només poden obrir aquesta pàgina les persones amb el rol d'administrad
 
 msgid "Open work orders"
 msgstr "Ordres de treball obertes"
+
+msgid "Open work, grouped on the server. Edit one work order at a time."
+msgstr ""
+"Feina oberta, agrupada al servidor. Edita una ordre de treball cada "
+"vegada."
 
 msgid "Opened"
 msgstr "Oberta"
@@ -417,6 +506,15 @@ msgstr "Posició"
 
 msgid "Planned"
 msgstr "Prevista"
+
+msgid "Planned for"
+msgstr "Prevista per a"
+
+msgid "Planned work"
+msgstr "Feina planificada"
+
+msgid "Planning"
+msgstr "Planificació"
 
 msgid "Plant room"
 msgstr "Sala de màquines"
@@ -655,6 +753,14 @@ msgstr ""
 msgid "Work done on this equipment will appear here."
 msgstr "La feina feta en aquest equip apareixerà aquí."
 
+#, python-format
+msgid "Work order %(number)s"
+msgstr "Ordre de treball %(number)s"
+
+#, python-format
+msgid "Work order %(number)s saved."
+msgstr "Ordre de treball %(number)s desada."
+
 msgid "Work order for the cooling tower"
 msgstr "Ordre de treball de la torre de refrigeració"
 
@@ -667,6 +773,9 @@ msgstr "Ordres de treball (%(count)s)"
 
 msgid "Work orders appear here when their date passes."
 msgstr "Les ordres de treball apareixen aquí quan passa la seva data."
+
+msgid "Work orders by group, with their equipment, state, planned date and hours"
+msgstr "Ordres de treball per grup, amb el seu equip, estat, data prevista i hores"
 
 msgid "Work orders by kind"
 msgstr "Ordres de treball per tipus"

@@ -84,5 +84,9 @@ def format_month(value: date) -> str:
     return format_skeleton("MMM", value, locale=current_language())
 
 
+def format_month_and_year(value: date) -> str:
+    return format_skeleton("yMMMM", value, locale=current_language())
+
+
 def format_datetime(value: datetime, time_zone: str) -> str:
     return babel_datetime(value, format="medium", tzinfo=ZoneInfo(time_zone), locale=current_language())

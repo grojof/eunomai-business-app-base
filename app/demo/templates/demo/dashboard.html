@@ -59,7 +59,7 @@
 
 {% call stats() %}
 {% if orders_chart %}
-{{ stat(_("Open work orders"), open_orders|decimal, "clipboard-list", _("Of 10,000 opened this year")) }}
+{{ stat(_("Open work orders"), open_orders|decimal, "clipboard-list", _("Of %(total)s opened this year", total=all_orders|decimal)) }}
 {{ stat(_("Hours worked"), hours|decimal(2), "clock", _("This year")) }}
 {{ stat(_("Cost to date"), cost_rounded|decimal(2), "wallet", _("This year")) }}
 {% else %}

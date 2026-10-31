@@ -45,5 +45,6 @@ class WorkOrder(Base):
     cost: Mapped[Decimal]
     opened_at: Mapped[datetime]
     closed_at: Mapped[datetime | None]
+    planned_on: Mapped[date | None] = mapped_column(index=True)
 
     equipment: Mapped[Equipment] = relationship(back_populates="work_orders")

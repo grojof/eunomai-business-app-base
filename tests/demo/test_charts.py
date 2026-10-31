@@ -11,7 +11,7 @@ from app.core.database import create_database_engine, exact_sum
 from app.core.i18n import PSEUDO
 from app.demo.charts import chart_examples
 from app.demo.models import WorkOrder
-from tests.demo.test_equipment import until
+from tests.demo.support import until
 from tests.helpers import overflows_sideways, run_axe, untranslated
 
 TYPES = ["bar", "stacked", "line", "area", "pie", "doughnut", "radar", "scatter", "bubble", "mixed"]
@@ -57,6 +57,7 @@ def test_the_dashboard_has_real_figures_from_the_rows(filled, filled_url):
     engine.dispose()
     html = filled.get("/").text
     assert f"{expected:,.2f}" in html
+    assert "Of 200 opened this year" in html
     assert html.count("data-chart ") == 3
 
 

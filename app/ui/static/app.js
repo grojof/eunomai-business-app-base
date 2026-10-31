@@ -7,12 +7,31 @@ document.addEventListener("htmx:afterSettle", (event) => {
   if (announcement) {
     announce(announcement.dataset.announce);
   }
+  settleDialog(content);
   content.querySelector("[data-focus]")?.focus();
   if (document.activeElement === document.body) {
     content.querySelector("[data-focus-fallback]")?.focus();
   }
   applyStyles(content);
 });
+
+// A dialog whose body arrives with htmx opens then. `data-close-dialog` in what arrives closes it, and names where focus
+// goes: the row that opened it was replaced, so the browser cannot return there by itself.
+function settleDialog(content) {
+  const dialog = content.closest("dialog");
+  if (!dialog) {
+    return;
+  }
+  const done = content.querySelector("[data-close-dialog]");
+  if (done) {
+    const row = document.getElementById(done.dataset.closeDialog);
+    dialog.close();
+    content.replaceChildren();
+    (row ?? document.querySelector("[data-focus-fallback]"))?.focus();
+  } else if (!dialog.open && content.children.length) {
+    dialog.showModal();
+  }
+}
 
 function announce(text) {
   document.getElementById("announcements").textContent = text;

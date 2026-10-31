@@ -21,7 +21,7 @@ from app.main import create_app
 from tests.conftest import build_settings
 from tests.helpers import ROOT
 
-FROZEN = "edee581fe6e4ea0831fae196d8d1893e3c208192d47c4b8b1d3523fe6d0c7c96"
+FROZEN = "bb550dcd2cb2adcdf8df3a55150d9a6b2f31e2fbd8f933e3560517ff4b89b927"
 """The hash of the first thousand rows. If it changes, the demo's data changed on everyone's computer."""
 
 
@@ -153,6 +153,8 @@ def test_the_first_migration_gives_postgresql_its_exact_types():
     assert "cost NUMERIC(38, 20) NOT NULL" in sql
     assert "updated_at TIMESTAMP WITH TIME ZONE NOT NULL" in sql
     assert "FLOAT" not in sql
+    assert "ADD COLUMN planned_on DATE" in sql
+    assert "CREATE INDEX ix_equipment_cost ON equipment (cost)" in sql
 
 
 @pytest.mark.parametrize("path", ["/", "/inspections", "/administration", "/settings", "/gallery", "/gallery/button"])

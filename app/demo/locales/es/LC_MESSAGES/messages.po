@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 17:18+0100\n"
+"POT-Creation-Date: 2026-10-31 17:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -35,10 +35,26 @@ msgstr[0] "%(count)s orden de trabajo abierta"
 msgstr[1] "%(count)s órdenes de trabajo abiertas"
 
 #, python-format
+msgid "%(count)s order, %(hours)s hours"
+msgid_plural "%(count)s orders, %(hours)s hours"
+msgstr[0] "%(count)s orden, %(hours)s horas"
+msgstr[1] "%(count)s órdenes, %(hours)s horas"
+
+#, python-format
 msgid "%(count)s piece of equipment"
 msgid_plural "%(count)s pieces of equipment"
 msgstr[0] "%(count)s equipo"
 msgstr[1] "%(count)s equipos"
+
+#, python-format
+msgid "%(count)s work order"
+msgid_plural "%(count)s work orders"
+msgstr[0] "%(count)s orden de trabajo"
+msgstr[1] "%(count)s órdenes de trabajo"
+
+#, python-format
+msgid "%(group)s, continued"
+msgstr "%(group)s, continuación"
 
 #, python-format
 msgid "%(num)d inspection is due"
@@ -118,8 +134,14 @@ msgstr ""
 "Los gráficos y las cifras reales aparecen aquí cuando se generan las "
 "filas de la demo. Ejecuta este comando una vez y recarga la página."
 
+msgid "Check what you entered"
+msgstr "Revisa lo que has escrito"
+
 msgid "Checked"
 msgstr "Revisado"
+
+msgid "Choose a state from the list."
+msgstr "Elige un estado de la lista."
 
 msgid "Class name"
 msgstr "Clase"
@@ -132,6 +154,9 @@ msgstr "Limpieza"
 
 msgid "Clear all"
 msgstr "Quitar todos"
+
+msgid "Close"
+msgstr "Cerrar"
 
 msgid "Closed"
 msgstr "Cerrada"
@@ -206,6 +231,27 @@ msgstr "Dirección"
 msgid "Due soon"
 msgstr "Vence pronto"
 
+msgid "Edit"
+msgstr "Editar"
+
+#, python-format
+msgid "Edit work order %(number)s"
+msgstr "Editar la orden de trabajo %(number)s"
+
+msgid "Enter a date, or leave it empty if it is not planned yet."
+msgstr "Escribe una fecha, o déjala vacía si aún no está planificada."
+
+#, python-format
+msgid "Enter between 0 and %(most)s hours."
+msgstr "Escribe entre 0 y %(most)s horas."
+
+#, python-format
+msgid "Enter the hours as a number, such as %(example)s."
+msgstr "Escribe las horas como un número, por ejemplo %(example)s."
+
+msgid "Enter the hours with two decimals at most."
+msgstr "Escribe las horas con dos decimales como máximo."
+
 msgid "Equipment"
 msgstr "Equipos"
 
@@ -220,6 +266,9 @@ msgstr "Equipos por estado"
 
 msgid "Equipment list"
 msgstr "Lista de equipos"
+
+msgid "Equipment or work"
+msgstr "Equipo o trabajo"
 
 msgid "Equipment, where it is, its next inspection and its state"
 msgstr "Equipos, dónde están, su próxima inspección y su estado"
@@ -272,6 +321,9 @@ msgstr "Galería"
 msgid "Generated rows"
 msgstr "Filas generadas"
 
+msgid "Group by"
+msgstr "Agrupar por"
+
 msgid ""
 "Here it is a plain form, and it reloads the page. In a screen htmx "
 "replaces only the results."
@@ -294,6 +346,13 @@ msgstr ""
 "Las horas trabajadas no se alejaron más de un 6 % de lo previsto en "
 "ningún mes."
 
+msgid ""
+"In groups, grouped_table does the same with one tbody per group and a "
+"header row that says what the group holds. Planning uses it."
+msgstr ""
+"En grupos, grouped_table hace lo mismo con un tbody por grupo y una fila "
+"de cabecera que dice qué contiene el grupo. Planificación lo usa."
+
 msgid "In progress"
 msgstr "En curso"
 
@@ -309,6 +368,9 @@ msgid ""
 msgstr ""
 "Usa los colores propios de Tailwind, que esta base elimina, así que "
 "algunos colores difieren del ejemplo publicado."
+
+msgid "Leave it empty if it is not planned yet."
+msgstr "Déjala vacía si aún no está planificada."
 
 msgid "Link to this example"
 msgstr "Enlace a este ejemplo"
@@ -331,8 +393,20 @@ msgstr "Modificador"
 msgid "Month"
 msgstr "Mes"
 
+msgid "Month planned"
+msgstr "Mes previsto"
+
 msgid "Name"
 msgstr "Nombre"
+
+msgid ""
+"Native, so the browser keeps the keyboard inside it, closes it with "
+"Escape and gives focus back. Its body arrives with htmx, and app.js opens"
+" it then. Planning uses it to edit a row."
+msgstr ""
+"Nativo, así que el navegador mantiene el teclado dentro, lo cierra con "
+"Escape y devuelve el foco. Su contenido llega con htmx, y app.js lo abre "
+"entonces. Planificación lo usa para editar una fila."
 
 msgid "Next"
 msgstr "Siguiente"
@@ -349,11 +423,20 @@ msgstr "Ningún componente coincide"
 msgid "No equipment matches"
 msgstr "Ningún equipo coincide"
 
+msgid "No work order matches"
+msgstr "Ninguna orden de trabajo coincide"
+
 msgid "No work orders yet"
 msgstr "Aún no hay órdenes de trabajo"
 
 msgid "North plant"
 msgstr "Planta norte"
+
+msgid "Not closed"
+msgstr "Sin cerrar"
+
+msgid "Not planned yet"
+msgstr "Aún sin planificar"
 
 msgid "Nothing overdue"
 msgstr "Nada vencido"
@@ -362,11 +445,12 @@ msgid "Number"
 msgstr "Número"
 
 #, python-format
+msgid "Of %(total)s opened this year"
+msgstr "De %(total)s abiertas este año"
+
+#, python-format
 msgid "Of %(total)s pieces of equipment, %(share)s are in service."
 msgstr "De %(total)s equipos, el %(share)s está en servicio."
-
-msgid "Of 10,000 opened this year"
-msgstr "De 10.000 abiertas este año"
 
 msgid "Official examples"
 msgstr "Ejemplos oficiales"
@@ -386,6 +470,11 @@ msgstr "Solo pueden abrir esta página las personas con el rol de administrador.
 
 msgid "Open work orders"
 msgstr "Órdenes de trabajo abiertas"
+
+msgid "Open work, grouped on the server. Edit one work order at a time."
+msgstr ""
+"Trabajo abierto, agrupado en el servidor. Edita una orden de trabajo cada"
+" vez."
 
 msgid "Opened"
 msgstr "Abierta"
@@ -416,6 +505,15 @@ msgstr "Posición"
 
 msgid "Planned"
 msgstr "Prevista"
+
+msgid "Planned for"
+msgstr "Prevista para"
+
+msgid "Planned work"
+msgstr "Trabajo planificado"
+
+msgid "Planning"
+msgstr "Planificación"
 
 msgid "Plant room"
 msgstr "Sala de máquinas"
@@ -654,6 +752,14 @@ msgstr ""
 msgid "Work done on this equipment will appear here."
 msgstr "El trabajo hecho en este equipo aparecerá aquí."
 
+#, python-format
+msgid "Work order %(number)s"
+msgstr "Orden de trabajo %(number)s"
+
+#, python-format
+msgid "Work order %(number)s saved."
+msgstr "Orden de trabajo %(number)s guardada."
+
 msgid "Work order for the cooling tower"
 msgstr "Orden de trabajo de la torre de refrigeración"
 
@@ -666,6 +772,11 @@ msgstr "Órdenes de trabajo (%(count)s)"
 
 msgid "Work orders appear here when their date passes."
 msgstr "Las órdenes de trabajo aparecen aquí cuando pasa su fecha."
+
+msgid "Work orders by group, with their equipment, state, planned date and hours"
+msgstr ""
+"Órdenes de trabajo por grupo, con su equipo, estado, fecha prevista y "
+"horas"
 
 msgid "Work orders by kind"
 msgstr "Órdenes de trabajo por tipo"

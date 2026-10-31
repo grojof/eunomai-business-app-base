@@ -193,26 +193,59 @@
 </section>
 {% endmacro %}
 
-{% macro select_field(name, label, options, value, identifier, every="") %}
+{% macro field_error(identifier, error) %}
+{% if error %}<p id="{{ identifier }}-error" class="text-sm font-medium">{{ icon("triangle-alert", "size-4 me-1 inline-block") }}{{ error }}</p>{% endif %}
+{% endmacro %}
+
+{% macro select_field(name, label, options, value, identifier, every="", error="", attributes={}) %}
 <div class="grid gap-1">
   <label class="text-sm font-medium" for="{{ identifier }}">{{ label }}</label>
-  <select class="select select-sm w-full" id="{{ identifier }}" name="{{ name }}">
+  <select class="select select-sm w-full{{ ' select-error' if error else '' }}" id="{{ identifier }}" name="{{ name }}"{% if error %} aria-invalid="true" aria-describedby="{{ identifier }}-error"{% endif %}{{ attributes|xmlattr }}>
     {% if every %}<option value=""{% if value == "" %} selected{% endif %}>{{ every }}</option>{% endif %}
     {% for option, text in options %}
     <option value="{{ option }}"{% if option == value %} selected{% endif %}>{{ text }}</option>
     {% endfor %}
   </select>
+  {{ field_error(identifier, error) }}
 </div>
+{% endmacro %}
+
+{% macro input_field(name, label, value, identifier, type="text", error="", hint="", attributes={}) %}
+<div class="grid gap-1">
+  <label class="text-sm font-medium" for="{{ identifier }}">{{ label }}</label>
+  {% if hint %}<p id="{{ identifier }}-hint" class="text-sm">{{ hint }}</p>{% endif %}
+  <input class="input input-sm w-full{{ ' input-error' if error else '' }}" id="{{ identifier }}" name="{{ name }}" type="{{ type }}" value="{{ value }}"{% if error %} aria-invalid="true" aria-describedby="{{ identifier }}-error"{% elif hint %} aria-describedby="{{ identifier }}-hint"{% endif %}{{ attributes|xmlattr }}>
+  {{ field_error(identifier, error) }}
+</div>
+{% endmacro %}
+
+{#- Every problem of a form in one place, each a link to its field, as GOV.UK's pattern says. Focus comes here. -#}
+{% macro error_summary(title, errors) %}
+<div class="alert alert-error block" role="alert" tabindex="-1" data-focus>
+  <p class="font-semibold">{{ title }}</p>
+  <ul class="mt-1 text-sm">
+    {% for identifier, error in errors %}<li><a class="underline" href="#{{ identifier }}">{{ error }}</a></li>{% endfor %}
+  </ul>
+</div>
+{% endmacro %}
+
+{#- A native dialog: the browser keeps the keyboard inside it, closes it with Escape and gives focus back. Its body arrives
+    with htmx, and app.js opens it then. The backdrop's button is what daisyUI asks for: a click outside closes it too. -#}
+{% macro dialog(identifier, label) %}
+<dialog id="{{ identifier }}" class="modal" aria-labelledby="{{ identifier }}-title">
+  <div class="modal-box" id="{{ identifier }}-body"></div>
+  <form method="dialog" class="modal-backdrop"><button>{{ label }}</button></form>
+</dialog>
 {% endmacro %}
 
 {#- A plain GET form: daisyUI's `filter` is a set of radio buttons, not this. With JavaScript, htmx sends it as it changes;
     without it, the Apply button appears. -#}
 {% macro filter_bar(view, refill=false) %}
-<form id="{{ view.form_id }}" class="grid gap-3 border-b border-base-300 p-4 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-end print:hidden" role="search" aria-label="{{ _('Filters') }}"
+<form id="{{ view.form_id }}" class="grid grid-cols-2 gap-3 border-b border-base-300 p-4 lg:flex lg:flex-wrap lg:items-end print:hidden" role="search" aria-label="{{ _('Filters') }}"
       method="get" action="{{ view.path }}" data-autosubmit
       hx-get="{{ view.path }}" hx-target="#{{ view.name }}-results" hx-push-url="true" hx-sync="this:replace" hx-indicator="#{{ view.name }}-results"
       hx-trigger="submit, input changed delay:300ms from:#{{ view.name }}-search"{% if refill %} hx-swap-oob="true"{% endif %}>
-  <div class="grid gap-1 sm:col-span-2 lg:min-w-64 lg:flex-1">
+  <div class="col-span-2 grid gap-1 lg:min-w-64 lg:flex-1">
     <label class="text-sm font-medium" for="{{ view.name }}-search">{{ view.search_label }}</label>
     <div class="input input-sm w-full">
       {{ icon("search", "size-4") }}
@@ -220,7 +253,7 @@
     </div>
   </div>
   {% for choice in view.filters %}
-  <div class="lg:w-48">
+  <div class="min-w-0 lg:w-48">
     {{ select_field(choice.key, choice.label, choice.options, view.chosen[choice.key], view.name ~ "-" ~ choice.key, choice.every) }}
   </div>
   {% endfor %}
@@ -249,13 +282,7 @@
 </div>
 {% endmacro %}
 
-{#- A native table, sorted, paged and filtered on the server. Its box scrolls by itself, so the header stays in sight, and
-    the keyboard can reach the box. W3C's sortable table: a link in the header, and `aria-sort` only on the sorted one.
-    The caller writes the cells of a row. -#}
-{% macro server_table(view, caption, actions="") %}
-<div class="table-scroll" role="region" tabindex="0" aria-labelledby="{{ view.name }}-caption" data-focus-fallback>
-  <table class="table table-sm table-pin-rows table-pin-first">
-    <caption id="{{ view.name }}-caption" class="sr-only">{{ caption }}. {{ _("Links in the column headers sort the table.") }}</caption>
+{% macro _table_head(view, actions, actions_on_a_phone) %}
     <thead>
       <tr>
         {% for column in view.columns %}
@@ -269,14 +296,48 @@
           {% else %}{{ column.label }}{% endif %}
         </th>
         {% endfor %}
-        {% if actions %}<th scope="col" class="hidden text-end sm:table-cell print:hidden">{{ actions }}</th>{% endif %}
+        {% if actions %}<th scope="col" class="{{ '' if actions_on_a_phone else 'hidden sm:table-cell ' }}text-end print:hidden">{{ actions }}</th>{% endif %}
       </tr>
     </thead>
+{% endmacro %}
+
+{#- A native table, sorted, paged and filtered on the server. Its box scrolls by itself, so the header stays in sight, and
+    the keyboard can reach the box. W3C's sortable table: a link in the header, and `aria-sort` only on the sorted one.
+    The caller writes the cells of a row. -#}
+{% macro server_table(view, caption, actions="") %}
+<div class="table-scroll" role="region" tabindex="0" aria-labelledby="{{ view.name }}-caption" data-focus-fallback>
+  <table class="table table-sm table-pin-rows table-pin-first">
+    <caption id="{{ view.name }}-caption" class="sr-only">{{ caption }}. {{ _("Links in the column headers sort the table.") }}</caption>
+    {{ _table_head(view, actions, false) }}
     <tbody>
       {% for row in view.rows %}
       <tr class="hover:bg-base-200">{{ caller(row) }}</tr>
       {% endfor %}
     </tbody>
+  </table>
+</div>
+{% endmacro %}
+
+{#- The same table in groups. Each group is a `tbody` with a header row, and `scope="rowgroup"` ties that header to its rows
+    for a screen reader. `sections` have a title, a note with the group's totals, and rows. -#}
+{% macro grouped_table(view, caption, sections, actions="") %}
+<div class="table-scroll" role="region" tabindex="0" aria-labelledby="{{ view.name }}-caption" data-focus-fallback>
+  <table class="table table-sm table-pin-rows table-groups">
+    <caption id="{{ view.name }}-caption" class="sr-only">{{ caption }}. {{ _("Links in the column headers sort the table inside each group.") }}</caption>
+    {{ _table_head(view, actions, true) }}
+    {% for section in sections %}
+    <tbody>
+      <tr>
+        <th scope="rowgroup" colspan="{{ view.columns|length + (1 if actions else 0) }}">
+          <span class="font-semibold">{{ section.title }}</span>
+          <span class="ms-2 font-normal">{{ section.note }}</span>
+        </th>
+      </tr>
+      {% for row in section.rows %}
+      <tr class="hover:bg-base-200">{{ caller(row) }}</tr>
+      {% endfor %}
+    </tbody>
+    {% endfor %}
   </table>
 </div>
 {% endmacro %}
@@ -295,6 +356,17 @@
   {% for label, name, href, picture in items %}
   <a class="btn btn-ghost btn-xs" href="{{ href }}" aria-label="{{ name }}">{{ icon(picture, "size-3.5") }}<span class="hidden xl:inline">{{ label }}</span></a>
   {% endfor %}
+</td>
+{% endmacro %}
+
+{% macro dialog_buttons() %}
+<div class="modal-action mt-2">{{ caller() }}</div>
+{% endmacro %}
+
+{#- Opens a dialog with what the address gives; the address alone is a page of its own, without JavaScript. -#}
+{% macro dialog_action(label, name, href, identifier, target) %}
+<td class="text-end whitespace-nowrap print:hidden">
+  <a id="{{ identifier }}" class="btn btn-ghost btn-xs" href="{{ href }}" aria-label="{{ name }}" aria-haspopup="dialog" hx-get="{{ href }}" hx-target="#{{ target }}-body">{{ icon("pencil", "size-3.5") }}<span class="hidden xl:inline">{{ label }}</span></a>
 </td>
 {% endmacro %}
 

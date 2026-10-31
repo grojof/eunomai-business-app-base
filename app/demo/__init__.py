@@ -14,7 +14,7 @@ from app.core.formatters import rounded
 from app.core.i18n import N_, _
 from app.core.identity import Person, require_role
 from app.core.templating import NavigationItem, add_templates, render
-from app.demo import equipment, gallery
+from app.demo import equipment, gallery, planning
 from app.demo.charts import dashboard_figures
 from app.demo.data import GENERATE, READY, rows_state
 
@@ -78,14 +78,16 @@ def install(application: FastAPI) -> None:
     application.state.navigation += [
         NavigationItem(N_("Dashboard"), "/", "gauge"),
         NavigationItem(N_("Equipment"), "/equipment", "wrench"),
+        NavigationItem(N_("Planning"), "/planning", "calendar-range"),
         NavigationItem(N_("Gallery"), "/gallery", "component", children=gallery.navigation_groups),
         NavigationItem(N_("Administration"), "/administration", "shield", role="admin"),
     ]
     if application.state.settings.layout_choices:
-        application.state.navigation.insert(3, NavigationItem(N_("Settings"), "/settings", "sliders-horizontal"))
+        application.state.navigation.insert(4, NavigationItem(N_("Settings"), "/settings", "sliders-horizontal"))
     application.mount("/static/demo", StaticFiles(directory=HERE / "static"), name="demo")
     application.add_api_route("/", dashboard, include_in_schema=False)
     application.add_api_route("/inspections", inspections, include_in_schema=False)
     application.add_api_route("/administration", administration, include_in_schema=False)
     equipment.install(application)
+    planning.install(application)
     gallery.install(application)

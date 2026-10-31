@@ -49,7 +49,7 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("button", APPROVED, macro="button"),
             Component("dropdown"),
             Component("fab"),
-            Component("modal"),
+            Component("modal", macro="dialog"),
             Component("swap"),
             Component("theme-controller", AVAILABLE, THEME),
         ),

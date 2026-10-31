@@ -14,6 +14,7 @@ ONLY_ON_DEMO = {"A11Y-09", "COMP-03", "DATA-07"}
 they become `By hand` until the application has a screen, and a test, of its own. A test keeps this set exact."""
 DEMO_ICONS = (
     "calendar",
+    "calendar-range",
     "clipboard-list",
     "clock",
     "component",

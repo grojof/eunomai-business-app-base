@@ -42,6 +42,7 @@ TITLES = (
 )
 FIRST_INSPECTION = date(2026, 11, 1)
 INSPECTION_DAYS = 730
+PLANNING_DAYS = 60
 START = datetime(2026, 1, 1, tzinfo=UTC)
 YEAR_SECONDS = 365 * 24 * 60 * 60
 
@@ -91,6 +92,7 @@ def work_order_row(position: int, seed: int = SEED) -> dict[str, Any]:
         "cost": _amount(50 + numbers[4] % 9_950, numbers[5]),
         "opened_at": opened,
         "closed_at": opened + timedelta(hours=numbers[6] % 200) if status == "closed" else None,
+        "planned_on": None if status == "reported" else opened.date() + timedelta(days=numbers[7] % PLANNING_DAYS),
     }
 
 

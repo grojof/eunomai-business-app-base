@@ -75,8 +75,8 @@ passes by hand: keyboard only, then a screen reader (NVDA with a Chromium browse
 
 daisyUI's examples in the gallery are reference material, not our screens. The scan is no gate on them and never decides
 what is shown: a person who asks to see what daisyUI offers sees all of it. It stays a gate on real screens: the shell,
-the dashboard, the settings menu with every look of its controls, the gallery's index, the frame of component pages,
-error pages and the palette.
+the dashboard, the equipment list and detail, planning, the settings menu with every look of its controls, the gallery's
+index, the frame of component pages, error pages and the palette.
 
 So **Available is not a promise of accessibility.** It means an official example, shown as published, not audited by us.
 **Approved** means our macro, tests and a review. **Decorative** and **Not recommended** stay, with their notes. Before an

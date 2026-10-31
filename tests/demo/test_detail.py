@@ -9,7 +9,7 @@ from app.core.i18n import PSEUDO
 from app.demo.generate import equipment_row, work_order_row
 from app.main import create_app
 from tests.conftest import build_settings
-from tests.demo.test_equipment import until
+from tests.demo.support import until
 from tests.helpers import overflows_sideways, run_axe, untranslated
 
 ALLOWED = (

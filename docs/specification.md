@@ -250,6 +250,23 @@ themes. `accent` and `warning` are light, at 1.9:1 against white, under the 3:1 
 they come, so the legend, the summary and the table carry what those marks cannot. An organization can solve it in its
 theme.
 
+### Groups and editing a row
+
+The planning screen is what a spreadsheet-like grid would be asked for, without one. People who need to change one work
+order among thousands get a native table and a native form, which a screen reader and a keyboard already know, with
+nothing to learn in between.
+
+| What | How |
+|---|---|
+| Groups | `grouped_table` writes one `<tbody>` per group, with a header row and `scope="rowgroup"`. The group goes first in `ORDER BY`, so paging and sorting work inside it. Grouping is a filter with no condition: it lives in the address like the rest |
+| Totals | The whole group's, not the page's. `totals_by` groups in SQL on PostgreSQL. SQLite cannot add exact columns, so it adds in Python, with the same answer. A group cut by a page says *continued* |
+| Editing | One row at a time, in a native `<dialog>` that htmx fills. The browser keeps the keyboard inside, and Escape closes it. Without JavaScript the same address is a page of its own |
+| Saving | A POST, checked by `_context` as [SEC-07](standards.md#security) says: a request from another site is refused before it reaches the route. Editing needs the `admin` role, on the server, and without it the Edit action is not offered |
+| Errors | Listed at the top of the form, each a link to its field, with focus on the list. What was typed stays. This is the pattern milestone 3 turns into a form component |
+| After a save | The list comes back in the order and on the page it was, because the row may now belong to another group, or to none. Focus returns to the row's Edit link, or to the table if the row left the list. A message says what was saved, on screen and to a screen reader |
+
+Two people editing one row: the last save wins. Nothing warns the first.
+
 ### Excel
 
 `app/core/excel.py` writes a list with XlsxWriter's `constant_memory`, so a row goes to disk as it arrives, and the route
@@ -341,7 +358,8 @@ A component is one Jinja macro or one piece of the shell, using only the brand's
 daisyUI classes, so the look can change in one place. Each macro appears on the page of its component in the
 [gallery](#gallery), and has tests. The macros today are `icon`, `page_heading`, `message`, `button`, `link_button`, `card`,
 `panel`, `stats`, `stat`, `badge`, `status_label`, `progress`, `steps`, `table`, `empty_state`, `command`, `select_field`,
-`breadcrumbs`, `description_list`, `tabs`, `chart`, `filter_bar`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`
+`breadcrumbs`, `description_list`, `tabs`, `chart`, `dialog`, `dialog_buttons`, `input_field`, `field_error`,
+`error_summary`, `grouped_table`, `dialog_action`, `filter_bar`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`
 and `pagination`.
 
 Tabs come in two kinds. `tabs` are links, one address each, as on the equipment detail: they work without JavaScript and
@@ -380,7 +398,7 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Administration | Visible only to one role, proving permissions | Milestone 1 |
 | Equipment list, `/equipment` | Server table with 50,000 rows, search, filters, sorting, paging, row actions, its empty and no-results states, Excel export | Milestone 2 |
 | Equipment detail, `/equipment/<id>` | Breadcrumbs, description list, tabs as links, history of work orders, status label, print style | Milestone 2 |
-| Planning | Rich table: grouping and editing, or its accessible replacement | Milestone 2 |
+| Planning, `/planning` | Rich table: groups on the server, and one row edited at a time in a dialog | Milestone 2 |
 | Work order form | All form fields, validation, decimals, dates, file upload | Milestone 3 |
 | Import | Long task with progress, its result and its errors | Milestone 4 |
 
@@ -520,12 +538,14 @@ still runs.
 |---|---|
 | Unit and integration tests | Behaviour, including permissions per role |
 | Tests with `app/demo/` deleted | In a copy without the demo, the stylesheet builds, every tool check passes and the tests pass, browser tests included |
-| Accessibility scan, in both themes | No automatically detectable failure on real screens: the start, error, settings and administration pages, every layout, each look of the theme and language controls, the open palette, the gallery's index and the frame of its pages. Official examples are left out: see [Standards](standards.md#official-examples) |
+| Accessibility scan, in both themes | No automatically detectable failure on real screens: the start, error, settings and administration pages, every layout, each look of the theme and language controls, the open palette, the equipment list and its detail, the dashboard with charts and an open data table, planning with the editor open, the gallery's index and the frame of its pages. Official examples are left out: see [Standards](standards.md#official-examples) |
 | Brand contrast | Each text colour of a theme added to `theme.css` against its background |
-| Keyboard tests | Every control of the start page is reached with visible focus; focus stops clear of the sticky header; Escape closes the user menu, the phone menu, a dialog and the palette, and returns focus; each look of the theme and language controls, the Preview and Code switch and the copy button work with a keyboard |
+| Keyboard tests | Sorting, paging and changing tab keep focus, the table's box scrolls, and the editor opens, keeps the keyboard and gives focus back. Every control of the start page is reached with visible focus; focus stops clear of the sticky header; Escape closes the user menu, the phone menu, a dialog and the palette, and returns focus; each look of the theme and language controls, the Preview and Code switch and the copy button work with a keyboard |
 | Tab order | The Tab key visits the visible controls in the order of the page, on the start page and on a page full of controls |
 | Language checks | See [Standards](standards.md#how-language-is-checked) |
-| Database tests | The [data rules](standards.md#data): on SQLite on every system, and on PostgreSQL in the Ubuntu job, with `TEST_DATABASE_URL` set. Each test gets a schema of its own, so nothing in that database is touched. Windows runs SQLite alone: its runners have no service containers |
+| Screens without JavaScript | A real browser with JavaScript off sorts, filters and pages the list, changes tab and reaches the editor |
+| Exports | Each file is unzipped and read as XML: order, rows, cell types, rounding and neutralised text |
+| Database tests | The [data rules](standards.md#data), the lists and the screens on generated rows: on SQLite on every system, and on PostgreSQL in the Ubuntu job, with `TEST_DATABASE_URL` set. Each test gets a schema of its own, so nothing in that database is touched. Windows runs SQLite alone: its runners have no service containers |
 | Rule tracing | Every rule has a source and a check. Tests are read from pytest's collection, so a comment or a string cannot pass as one, and no *Automatic* rule lacks its test |
 | Invented values | No invented colours or sizes in templates, including `[color:#ff0000]`, and Tailwind's palette removed |
 | Invented classes | Every class in use generates CSS, as [COMP-04](standards.md#components) says |
@@ -554,7 +574,7 @@ real platform.
 | 1 | Gallery and generated documentation | Every free daisyUI component shown with its status and every official example, and one generated page for each | Done |
 | 1 | Settings and search | A settings menu to try layouts and control styles live, and a command palette, both in the shell | Done |
 | 2 | Data layer | PostgreSQL and SQLite, exact decimals, migrations on both, 50,000 generated rows | Done |
-| 2 | Data | Server table with 50,000 rows, filters, export, indicators, charts | Planned |
+| 2 | Data | Server table with 50,000 rows, filters, export, indicators, charts | In review |
 | 3 | Forms | Every field, with validation in three languages | Planned |
 | 4 | Feedback and long tasks | Every state in the catalogue | Planned |
 | 5 | Registration | Deployed behind a real identity proxy | Planned |

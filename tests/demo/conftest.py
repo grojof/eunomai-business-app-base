@@ -6,24 +6,13 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
-from app.core.database import create_database_engine, migrate
-from app.demo.generate import replace_rows
 from app.main import create_app
 from tests.conftest import ENGINES, PERSON, build_settings, empty_database, page_opener, running_server
+from tests.demo.support import fill
 
 ROWS = 1_000
 """Enough for several pages, every filter and work orders, and quick to make."""
-
-
-def fill(url: str, rows: int) -> None:
-    migrate(url)
-    engine = create_database_engine(url)
-    with Session(engine) as session:
-        replace_rows(session, rows=rows)
-        session.commit()
-    engine.dispose()
 
 
 @pytest.fixture(scope="session", params=ENGINES)

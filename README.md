@@ -22,8 +22,9 @@ flowchart LR
 ```
 
 > **Status:** milestone 1: the application's shell with its layouts, a settings menu and a command palette (Ctrl+K or
-> Cmd+K), the gallery, identity, languages, themes and every check running. From milestone 2, the data layer: PostgreSQL
-> and SQLite, exact decimals, migrations and generated demo data, with no screen on them yet. The rest is in the
+> Cmd+K), the gallery, identity, languages, themes and every check running. Milestone 2, in review: PostgreSQL and SQLite
+> with exact decimals, a server table on 50,000 rows with Excel export, an equipment detail with tabs and a print style,
+> charts with their tables, and a planning screen that groups rows and edits one at a time. The rest is in the
 > [milestones](docs/specification.md#milestones).
 
 ## Try it
@@ -41,8 +42,9 @@ address stops being trusted, and everyone gets 401.
 No database is needed for that. Without `.env` the application refuses to start, because production is the default and
 production never runs on SQLite.
 
-The screens with 50,000 rows read generated data. They say so, and show this command, which takes seconds, makes a SQLite
-file under `.data/` and can run while the server does. Then reload the page:
+Equipment, planning and the dashboard's charts read generated rows. They say so, and show this command, which takes
+seconds, makes a SQLite file under `.data/` and can run while the server does. Then reload the page. Everything else
+works without it.
 
 ```bash
 uv run --frozen python -m app.demo.generate

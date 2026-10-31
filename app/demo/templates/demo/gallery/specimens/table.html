@@ -23,3 +23,4 @@
 {{ row_actions([(_("View"), _("View %(code)s", code=row.code), "/equipment/" ~ row.id, "eye")]) }}
 {% endcall %}
 {{ pagination(view) }}{% endraw %}</code></pre>
+<p class="mt-3 text-sm">{{ _("In groups, grouped_table does the same with one tbody per group and a header row that says what the group holds. Planning uses it.") }}</p>

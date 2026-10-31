@@ -18,6 +18,7 @@ from sqlalchemy import (
     Engine,
     FunctionElement,
     MetaData,
+    Select,
     TypeCoerce,
     UnaryExpression,
     create_engine,
@@ -139,6 +140,19 @@ def total(session: Session, column: InstrumentedAttribute[Any], *conditions: Col
     if session.get_bind().dialect.name == "sqlite":
         return exact_sum(session.scalars(select(column).where(*conditions)))
     return session.scalar(select(func.sum(column)).where(*conditions)) or Decimal(0)
+
+
+def totals_by(
+    session: Session, statement: Select[*tuple[Any, ...]], key: Any, column: Any
+) -> dict[Any, tuple[int, Decimal]]:
+    """Rows and the sum of an exact column for each group, the same answer on both databases, as `total()` gives."""
+    if session.get_bind().dialect.name != "sqlite":
+        grouped = statement.with_only_columns(key, func.count(), func.sum(column), maintain_column_froms=True)
+        return {group: (count, amount or Decimal(0)) for group, count, amount in session.execute(grouped.group_by(key))}
+    values: dict[Any, list[Decimal]] = {}
+    for group, value in session.execute(statement.with_only_columns(key, column, maintain_column_froms=True)):
+        values.setdefault(group, []).append(value)
+    return {group: (len(found), exact_sum(found)) for group, found in values.items()}
 
 
 def migrate(url: str) -> None:

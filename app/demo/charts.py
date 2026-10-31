@@ -106,6 +106,7 @@ def dashboard_figures(session: Session, zone: str) -> dict[str, Any]:
     orders, cost = monthly_figures(session, zone)
     return {
         "open_orders": session.scalar(select(func.count()).select_from(WorkOrder).where(open_orders)) or 0,
+        "all_orders": session.scalar(select(func.count()).select_from(WorkOrder)) or 0,
         "hours": total(session, WorkOrder.hours),
         "cost": total(session, WorkOrder.cost),
         "next_inspection": next_up[0].next_inspection,

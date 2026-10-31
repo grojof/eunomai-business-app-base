@@ -5,7 +5,6 @@ import time
 
 import pytest
 from fastapi.testclient import TestClient
-from playwright.sync_api import Error as PlaywrightError
 from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
@@ -15,6 +14,7 @@ from app.demo.generate import equipment_row
 from app.demo.models import Equipment
 from app.main import create_app
 from tests.conftest import build_settings
+from tests.demo.support import announced, until
 from tests.helpers import ROOT, overflows_sideways, run_axe, untranslated
 
 ROW = re.compile(r'<a class="link link-hover" href="/equipment/\d+">(EQ-\d+)</a>')
@@ -250,23 +250,6 @@ def test_it_fits_a_phone_with_longer_texts(open_filled):
 
 def first_code(page):
     return page.locator("tbody th a").first.inner_text()
-
-
-def announced(page, text):
-    until(page, f"document.querySelector('#announcements').textContent.includes({text!r})")
-
-
-def until(page, expression, seconds=5):
-    """Waits for a condition. `wait_for_function` runs through eval, which this application's policy refuses."""
-    deadline = time.monotonic() + seconds
-    while time.monotonic() < deadline:
-        try:
-            if page.evaluate(expression):
-                return
-        except PlaywrightError:  # the page was reloading, which going back does on purpose
-            pass
-        page.wait_for_timeout(25)
-    raise AssertionError(f"still not true: {expression}")
 
 
 @pytest.mark.browser
