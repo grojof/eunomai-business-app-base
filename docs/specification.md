@@ -365,9 +365,9 @@ daisyUI classes, so the look can change in one place. Each macro appears on the 
 and `pagination`.
 
 Tabs come in two kinds. `tabs` are links, one address each, as on the equipment detail: they work without JavaScript and
-with the back button, and only the open one is read from the database, so they are a navigation with `aria-current`. Where
-all panels are already on the page, as the gallery's Preview and Code switch, `app.js` gives ARIA's tab pattern with its
-arrow keys.
+with the back button, so they are a navigation with `aria-current`. The server reads what every panel needs and sends them
+all, with the closed one hidden, so that paper can show both. Where panels are switched in the browser, as the gallery's
+Preview and Code switch, `app.js` gives ARIA's tab pattern with its arrow keys.
 
 Printing belongs to the shell: navigation, header and actions leave, a table's scrolling box opens, its header repeats on
 each page, and a row stays whole. The page wears the light theme while it prints, because paper is white and a browser

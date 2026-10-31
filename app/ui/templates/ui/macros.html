@@ -184,8 +184,8 @@
 </dl>
 {% endmacro %}
 
-{#- Tabs as links, one address each: they work without JavaScript, can be bookmarked and go with the back button, and only
-    the open one is read from the database. So they are a navigation, with `aria-current`, and not ARIA's tab pattern,
+{#- Tabs as links, one address each: they work without JavaScript, can be bookmarked and go with the back button. So they
+    are a navigation, with `aria-current`, and not ARIA's tab pattern,
     whose arrow keys promise that a panel is already on the page. For panels that are, see the tab markup in app.js.
     `items`: (key, label, address). `target`, if given, is what htmx replaces, so focus stays on the tab. -#}
 {% macro tabs(label, items, current, target="") %}
