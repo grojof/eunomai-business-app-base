@@ -304,6 +304,14 @@
     "page": "docs/components/progress.md"
   },
   {
+    "name": "conflict-notice",
+    "category": "feedback",
+    "status": "available",
+    "note": "Says that someone else saved first, and what they saved, above what was typed.",
+    "use": "Says that someone else saved first, and what they saved, above what was typed.",
+    "page": "docs/components/conflict-notice.md"
+  },
+  {
     "name": "radial-progress",
     "category": "feedback",
     "status": "available",

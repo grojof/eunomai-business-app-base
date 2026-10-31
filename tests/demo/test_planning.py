@@ -34,7 +34,8 @@ GROUP = re.compile(r'<th scope="rowgroup"[^>]*>\s*<span[^>]*>([^<]+)</span>', re
 
 
 def valid(**changes):
-    return {"status": "planned", "planned_on": "2027-01-15", "hours": "7.5", "back": "/planning"} | changes
+    form = {"status": "planned", "planned_on": "2027-01-15", "hours": "7.5", "back": "/planning", "version": "1"}
+    return form | changes
 
 
 @pytest.fixture
@@ -235,7 +236,7 @@ def test_closing_records_when_and_reopening_clears_it(writable):
     order = 2
     client.post(f"/planning/{order}", data=valid(status="closed"), headers=SAME_SITE)
     assert read_order(url, order).closed_at is not None
-    client.post(f"/planning/{order}", data=valid(status="planned"), headers=SAME_SITE)
+    client.post(f"/planning/{order}", data=valid(status="planned", version="2"), headers=SAME_SITE)
     assert read_order(url, order).closed_at is None
 
 
@@ -610,7 +611,7 @@ def test_without_javascript_the_list_says_what_was_saved(writable):
     assert "Work order 1 saved." in response.text
 
 
-@pytest.mark.parametrize("value", ["x", "", "-1", "999999", "99999999999999999999"])
+@pytest.mark.parametrize("value", ["x", "", "-1", "999999", "99999999999999999999", "9" * 5000])
 def test_a_saved_message_for_nothing_says_nothing(filled, value):
     assert " saved." not in filled.get("/planning", params={"saved": value}).text
 

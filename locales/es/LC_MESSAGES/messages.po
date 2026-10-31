@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 20:09+0100\n"
+"POT-Creation-Date: 2026-10-31 20:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -112,6 +112,9 @@ msgstr "Compacta"
 
 msgid "Confirmation dialog"
 msgstr "Diálogo de confirmación"
+
+msgid "Conflict notice"
+msgstr "Aviso de conflicto"
 
 msgid "Copied"
 msgstr "Copiado"
@@ -370,6 +373,11 @@ msgstr "Resultados: %(count)s"
 
 msgid "Rows per page"
 msgstr "Filas por página"
+
+msgid ""
+"Says that someone else saved first, and what they saved, above what was "
+"typed."
+msgstr "Dice que otra persona guardó antes, y qué guardó, encima de lo escrito."
 
 msgid "Search"
 msgstr "Buscar"

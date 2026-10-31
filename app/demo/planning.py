@@ -4,7 +4,7 @@ It is what a spreadsheet-like grid would be asked for, without one: a native tab
 form it already knows, with nothing to learn in between. See docs/decisions.md.
 """
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from decimal import Decimal
@@ -15,8 +15,8 @@ from fastapi.responses import RedirectResponse, Response
 from sqlalchemy import ColumnElement, String, func, literal_column, select
 from sqlalchemy.orm import Session, contains_eager
 
-from app.core.database import DatabaseSession, exact_sum, totals_by
-from app.core.formatters import format_decimal, format_month_and_year
+from app.core.database import DatabaseSession, exact_sum, saved, totals_by
+from app.core.formatters import format_date, format_decimal, format_month_and_year
 from app.core.forms import read_choice, read_date, read_decimal, read_fields
 from app.core.i18n import N_, _, ngettext
 from app.core.identity import Person, require_role
@@ -234,14 +234,16 @@ def _form(
     template: str,
     order: WorkOrder,
     back: str,
-    values: dict[str, str],
+    values: dict[str, Any],
     errors: dict[str, str],
     status: int = 200,
+    conflict: Sequence[tuple[str, str]] = (),
 ) -> Response:
     return render(
         request,
         template,
         status_code=status,
+        conflict=conflict,
         order=order,
         back=back,
         values=values,
@@ -266,6 +268,7 @@ def planning_edit(
         "status": order.status,
         "planned_on": order.planned_on.isoformat() if order.planned_on else "",
         "hours": _hours_text(order.hours),
+        "version": order.version,
     }
     template = "demo/planning/editor.html" if fragment_requested(request) else "demo/planning/edit.html"
     return _form(request, template, order, back, values, {})
@@ -281,6 +284,30 @@ def read_hours(text: str) -> Decimal:
         out_of_range=_("Enter between 0 and %(most)s hours.") % {"most": format_decimal(LONGEST_JOB)},
         too_precise=_("Enter the hours with two decimals at most."),
     )
+
+
+def read_version(text: str) -> int | None:
+    """What a form says it read. Anything else matches no row, so it saves nothing."""
+    return int(text) if text.isascii() and text.isdigit() and len(text) < 10 else None
+
+
+def differences(
+    order: WorkOrder, clean: Mapping[str, Any], shown: Mapping[str, tuple[str, Callable[[WorkOrder], str]]]
+) -> list[tuple[str, str]]:
+    """What the row holds now that differs from what a person sent, in words: their label, and the row's value."""
+    return [(label, show(order)) for name, (label, show) in shown.items() if clean[name] != getattr(order, name)]
+
+
+def planned_text(order: WorkOrder) -> str:
+    return format_date(order.planned_on) if order.planned_on else _("Not planned yet")
+
+
+def _shown_here() -> dict[str, tuple[str, Callable[[WorkOrder], str]]]:
+    return {
+        "status": (_("State"), lambda order: _(ORDER_LABELS[order.status][0])),
+        "planned_on": (_("Planned for"), planned_text),
+        "hours": (_("Hours"), lambda order: _hours_text(order.hours)),
+    }
 
 
 def set_status(order: WorkOrder, status: str) -> None:
@@ -312,6 +339,7 @@ def planning_save(
     planned_on: Annotated[str, Form()] = "",
     hours: Annotated[str, Form()] = "",
     back: Annotated[str, Form()] = "",
+    version: Annotated[str, Form()] = "",
 ) -> Response:
     """Saves one row. Cross-site posts never reach this: `_context` refuses them, as SEC-07 says."""
     if rows_state(session) != READY:
@@ -320,15 +348,24 @@ def planning_save(
     view = _view_of(back)
     partial = fragment_requested(request)
     clean, errors = checked(status, planned_on, hours)
+    values: dict[str, Any] = {"status": status, "planned_on": planned_on, "hours": hours, "version": version}  # USE-03
+    template = "demo/planning/editor.html" if partial else "demo/planning/edit.html"
     if errors:
-        values = {"status": status, "planned_on": planned_on, "hours": hours}  # as typed: USE-03
-        template = "demo/planning/editor.html" if partial else "demo/planning/edit.html"
         return _form(request, template, order, view.here, values, errors, 200 if partial else 422)
 
+    def conflict(row: WorkOrder, changes: list[tuple[str, str]]) -> Response:
+        typed = values | {"version": row.version}  # a second Save replaces their work, knowingly
+        return _form(request, template, row, view.here, typed, {}, 200 if partial else 409, changes)
+
+    late = read_version(version) != order.version
+    if late and (changes := differences(order, clean, _shown_here())):
+        return conflict(order, changes)
     set_status(order, clean["status"])
     order.planned_on = clean["planned_on"]
     order.hours = clean["hours"]
-    session.commit()
+    if not saved(session):
+        order = _order_or_404(session, order_id)
+        return conflict(order, differences(order, clean, _shown_here()))
 
     if not partial:
         separator = "&" if "?" in view.here else "?"

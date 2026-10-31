@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 20:09+0100\n"
+"POT-Creation-Date: 2026-10-31 20:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -625,6 +625,9 @@ msgstr "Próxima inspección"
 msgid "Next inspections"
 msgstr "Próximas inspecciones"
 
+msgid "No"
+msgstr "No"
+
 msgid "No component matches"
 msgstr "Ningún componente coincide"
 
@@ -660,6 +663,15 @@ msgstr "Sin determinar"
 
 msgid "Not planned yet"
 msgstr "Aún sin planificar"
+
+msgid ""
+"Nothing of yours is saved yet, and what you typed is still here. They "
+"saved what is listed below. Save again to replace it with what you typed,"
+" or cancel to keep theirs."
+msgstr ""
+"Aún no se ha guardado nada tuyo, y lo que has escrito sigue aquí. Esa "
+"persona guardó lo que aparece abajo. Guarda otra vez para sustituirlo por"
+" lo que has escrito, o cancela para conservar lo suyo."
 
 msgid "Nothing overdue"
 msgstr "Nada vencido"
@@ -872,6 +884,9 @@ msgstr "Tamaño"
 msgid "Software fault"
 msgstr "Fallo de software"
 
+msgid "Someone else changed this work order"
+msgstr "Otra persona ha cambiado esta orden de trabajo"
+
 msgid ""
 "Sorting, filtering and paging happen in the database, and the state lives"
 " in the address. The equipment list uses it with 50,000 rows."
@@ -1010,6 +1025,13 @@ msgid ""
 msgstr ""
 "Esta pantalla lee 50.000 filas generadas. Ejecuta este comando una vez y "
 "recarga la página. El resto de la demo no lo necesita."
+
+msgid ""
+"This work order has changed since you opened it, so nothing is deleted "
+"yet. This is what is there now."
+msgstr ""
+"Esta orden de trabajo ha cambiado desde que la abriste, así que aún no se"
+" ha eliminado nada. Esto es lo que hay ahora."
 
 msgid "This year"
 msgstr "Este año"
@@ -1153,6 +1175,9 @@ msgstr "Taller"
 
 msgid "Worn gasket"
 msgstr "Junta desgastada"
+
+msgid "Yes"
+msgstr "Sí"
 
 msgid "Your changes are saved as you type."
 msgstr "Tus cambios se guardan mientras escribes."

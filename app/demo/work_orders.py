@@ -5,6 +5,7 @@ without JavaScript it is a plain select, so that field is the list of faults. Se
 """
 
 import re
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Annotated, Any
@@ -15,7 +16,7 @@ from fastapi.responses import Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.database import DatabaseSession
+from app.core.database import DatabaseSession, saved
 from app.core.formatters import format_decimal, format_file_size
 from app.core.forms import Refused, read_choice, read_date, read_decimal, read_fields, read_flag, read_text, read_whole
 from app.core.i18n import N_, _, ngettext
@@ -24,7 +25,7 @@ from app.core.tables import fragment_requested, list_query, whole_page
 from app.core.templating import render
 from app.core.uploads import ACCEPTED, KINDS, UploadStore, read_upload
 from app.demo.data import READY, rows_state
-from app.demo.equipment import LARGEST_ID, equipment_view
+from app.demo.equipment import LARGEST_ID, ORDER_LABELS, equipment_view, record_number
 from app.demo.models import LAST_MOMENT, PRIORITIES, WORK_ORDER_STATUSES, Equipment, WorkOrder, WorkOrderFile
 from app.demo.planning import (
     EARLIEST,
@@ -32,8 +33,11 @@ from app.demo.planning import (
     LATEST,
     _order_or_404,
     _state_options,
+    differences,
+    planned_text,
     planning_view,
     read_hours,
+    read_version,
     set_status,
 )
 
@@ -123,6 +127,7 @@ class Sent:
     cost: str
     stop_needed: str
     back: str
+    version: str
     attachment: UploadFile | None
 
 
@@ -139,6 +144,7 @@ def sent_form(
     cost: Annotated[str, Form()] = "",
     stop_needed: Annotated[str, Form()] = "",
     back: Annotated[str, Form()] = "",
+    version: Annotated[str, Form()] = "",
     attachment: Annotated[UploadFile | None, File()] = None,
 ) -> Sent:
     return Sent(
@@ -154,6 +160,7 @@ def sent_form(
         cost,
         stop_needed,
         back,
+        version,
         attachment,
     )
 
@@ -200,7 +207,7 @@ def checked(sent: Sent, session: Session, store: UploadStore) -> tuple[dict[str,
 
 def _typed(sent: Sent) -> dict[str, Any]:
     typed = {name: getattr(sent, name) for name in FIELD_IDS if name != "attachment"}
-    return typed | {"stop_needed": sent.stop_needed == "yes"}
+    return typed | {"stop_needed": sent.stop_needed == "yes", "version": sent.version}
 
 
 def _stored(order: WorkOrder) -> dict[str, Any]:
@@ -216,6 +223,7 @@ def _stored(order: WorkOrder) -> dict[str, Any]:
         "crew": str(order.crew),
         "cost": format_decimal(order.cost),
         "stop_needed": order.stop_needed,
+        "version": order.version,
     }
 
 
@@ -232,6 +240,7 @@ def _blank(equipment: str) -> dict[str, Any]:
         "crew": "1",
         "cost": format_decimal(Decimal(0), HOUR_DECIMALS),
         "stop_needed": False,
+        "version": "",
     }
 
 
@@ -243,6 +252,7 @@ def _form(
     errors: dict[str, str],
     status: int = 200,
     file_sent: bool = False,
+    conflict: Sequence[tuple[str, str]] = (),
 ) -> Response:
     partial = fragment_requested(request) and request.method == "POST"
     store = _store(request)
@@ -253,6 +263,7 @@ def _form(
         request,
         "demo/work_orders/form.html" if partial else "demo/work_orders/page.html",
         status_code=200 if partial else status,
+        conflict=conflict,
         order=order,
         action=f"/work-orders/{order.id}" if order else "/work-orders",
         back=back,
@@ -286,14 +297,41 @@ def _attach(order: WorkOrder, sent: Sent, store: UploadStore, clean: dict[str, A
     return stored
 
 
-def _committed(session: Session, store: UploadStore, stored: str) -> None:
-    """A failed commit leaves no file behind: its row never was."""
+def _committed(session: Session, store: UploadStore, stored: str) -> bool:
+    """Whether it saved. A failed commit leaves no file behind: its row never was."""
     try:
-        session.commit()
+        done = saved(session)
     except Exception:
-        if stored:
-            store.remove(stored)
+        done = False
         raise
+    finally:
+        if stored and not done:
+            store.remove(stored)
+    return done
+
+
+def _shown_here() -> dict[str, tuple[str, Callable[[WorkOrder], str]]]:
+    """What a conflict can name, in the order of the page."""
+    return {
+        "title": (_("What has to be done"), lambda order: order.title),
+        "equipment_id": (_("Equipment code"), lambda order: order.equipment.code),
+        "description": (_("Description"), lambda order: order.description),
+        "fault": (_("Fault"), lambda order: _(FAULTS[order.fault]) if order.fault else _("Not known")),
+        "status": (_("State"), lambda order: _(ORDER_LABELS[order.status][0])),
+        "planned_on": (_("Planned for"), planned_text),
+        "hours": (_("Hours"), lambda order: format_decimal(order.hours, HOUR_DECIMALS)),
+        "crew": (_("People needed"), lambda order: str(order.crew)),
+        "cost": (_("Cost"), lambda order: format_decimal(order.cost)),
+        "priority": (_("Priority"), lambda order: _(PRIORITY_LABELS[order.priority])),
+        "stop_needed": (
+            _("The equipment must stop for this work"),
+            lambda order: _("Yes") if order.stop_needed else _("No"),
+        ),
+    }
+
+
+def _changes(order: WorkOrder, clean: dict[str, Any]) -> list[tuple[str, str]]:
+    return differences(order, clean | {"equipment_id": clean["equipment"].id}, _shown_here())
 
 
 def _has_file(sent: Sent) -> bool:
@@ -315,8 +353,8 @@ def _new_order() -> WorkOrder:
 def new_form(request: Request, session: DatabaseSession, _person: Admin) -> Response:
     if rows_state(session) != READY:
         return whole_page(request, "/planning")
-    wanted = request.query_params.get("equipment", "")
-    known = session.get(Equipment, int(wanted)) if wanted.isascii() and wanted.isdigit() and len(wanted) < 11 else None
+    wanted = record_number(request.query_params.get("equipment", ""))
+    known = session.get(Equipment, wanted) if wanted is not None else None
     return _form(request, None, way_back(request.query_params.get("back", "")), _blank(known.code if known else ""), {})
 
 
@@ -351,8 +389,18 @@ def update(request: Request, order_id: int, session: DatabaseSession, _person: A
     clean, errors = checked(sent, session, store)
     if errors:
         return _form(request, order, back, _typed(sent), errors, 422, _has_file(sent))
+
+    def conflict(row: WorkOrder, changes: list[tuple[str, str]]) -> Response:
+        typed = _typed(sent) | {"version": row.version}  # a second Save replaces their work, knowingly
+        return _form(request, row, back, typed, {}, 409, _has_file(sent), changes)
+
+    late = read_version(sent.version) != order.version
+    if late and (changes := _changes(order, clean)):
+        return conflict(order, changes)
     _apply(order, clean)
-    _committed(session, store, _attach(order, sent, store, clean))
+    if not _committed(session, store, _attach(order, sent, store, clean)):
+        order = _order_or_404(session, order_id)
+        return conflict(order, _changes(order, clean))
     return whole_page(request, _ending(back, "saved", order.id))
 
 
@@ -370,18 +418,19 @@ def _what_goes(order: WorkOrder) -> list[str]:
     ]
 
 
+def _asking(request: Request, order: WorkOrder, back: str, template: str, status: int = 200) -> Response:
+    return render(
+        request, template, status_code=status, order=order, lost=_what_goes(order), back=back, changed=status == 409
+    )
+
+
 def confirm_delete(request: Request, order_id: int, session: DatabaseSession, _person: Admin) -> Response:
     """The dialog's body for htmx, and a page of its own without JavaScript."""
     if rows_state(session) != READY:
         return whole_page(request, "/planning")
-    order = _order_or_404(session, order_id)
-    return render(
-        request,
-        "demo/work_orders/confirm.html" if fragment_requested(request) else "demo/work_orders/delete.html",
-        order=order,
-        lost=_what_goes(order),
-        back=way_back(request.query_params.get("back", "")),
-    )
+    template = "demo/work_orders/confirm.html" if fragment_requested(request) else "demo/work_orders/delete.html"
+    back = way_back(request.query_params.get("back", ""))
+    return _asking(request, _order_or_404(session, order_id), back, template)
 
 
 def delete(
@@ -390,13 +439,18 @@ def delete(
     session: DatabaseSession,
     _person: Admin,
     back: Annotated[str, Form()] = "",
+    version: Annotated[str, Form()] = "",
 ) -> Response:
+    """A confirmation named what would go. If that changed, it asks again with what is there now."""
     if rows_state(session) != READY:
         return whole_page(request, "/planning")
     order = _order_or_404(session, order_id)
+    if read_version(version) != order.version:
+        return _asking(request, order, way_back(back), "demo/work_orders/delete.html", 409)
     stored = [file.stored_name for file in order.files]
     session.delete(order)
-    session.commit()
+    if not saved(session):
+        return _asking(request, _order_or_404(session, order_id), way_back(back), "demo/work_orders/delete.html", 409)
     for name in stored:
         _store(request).remove(name)
     return whole_page(request, _ending(way_back(back), "deleted", order_id))

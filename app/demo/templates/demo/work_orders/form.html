@@ -1,7 +1,8 @@
 {#- The whole form, for the page and for htmx: a failed save comes back here, in the same place, with focus on its errors. -#}
-{% from "ui/macros.html" import card, checkbox_field, confirm_link, date_field, error_summary, file_field, form_actions, icon, input_field, message, number_field, radio_group, searchable_select, select_field, textarea_field %}
+{% from "ui/macros.html" import card, checkbox_field, conflict_notice, confirm_link, date_field, error_summary, file_field, form_actions, icon, input_field, message, number_field, radio_group, searchable_select, select_field, textarea_field %}
 <form class="space-y-6" method="post" action="{{ action }}" enctype="multipart/form-data" hx-post="{{ action }}" hx-target="#work-order" hx-disabled-elt="find button[type=submit]" hx-disinherit="*" novalidate>
   {% if errors %}{{ error_summary(_("Check what you entered"), summary) }}{% endif %}
+  {% if conflict %}{{ conflict_notice(_("Someone else changed this work order"), _("Nothing of yours is saved yet, and what you typed is still here. They saved what is listed below. Save again to replace it with what you typed, or cancel to keep theirs."), conflict) }}{% endif %}
   {% call card(_("The work"), "work-title") %}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">{{ input_field("title", _("What has to be done"), values.title, "field-title", error=errors.get("title", ""), hint=_("In a few words, as it will read in a list."), required=true, attributes={"maxlength": 80, "autocomplete": "off"}) }}</div>
@@ -40,6 +41,7 @@
   {{ file_field("attachment", _("Add a file") if files else _("Attachment"), "field-attachment", accepted, error=errors.get("attachment", ""), hint=file_hint, required=false) }}
   {% endcall %}
   <input type="hidden" name="back" value="{{ back }}">
+  {% if order %}<input type="hidden" name="version" value="{{ values.version }}">{% endif %}
   {% call form_actions(_("Save"), back, _("Cancel"), loading=_("Saving…")) %}
   {% if order %}{{ confirm_link(_("Delete"), "/work-orders/" ~ order.id ~ "/delete?back=" ~ back|urlencode, "confirm", "trash-2", _("Delete work order %(number)s", number=order.id)) }}{% endif %}
   {% endcall %}

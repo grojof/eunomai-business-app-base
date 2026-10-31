@@ -347,6 +347,18 @@
 </div>
 {% endmacro %}
 
+{#- Someone else saved first. Focus comes here, and what was typed stays in the form below. `changes`: (label, what is
+    saved now). -#}
+{% macro conflict_notice(title, advice, changes) %}
+<div class="alert alert-warning block" role="alert" tabindex="-1" data-focus>
+  <p class="font-semibold">{{ title }}</p>
+  <p class="text-sm">{{ advice }}</p>
+  <dl class="mt-1 text-sm">
+    {% for label, value in changes %}<div><dt class="inline font-semibold">{{ label }}:</dt> <dd class="inline">{{ value }}</dd></div>{% endfor %}
+  </dl>
+</div>
+{% endmacro %}
+
 {#- The main action first, the way out next, and what the caller adds, such as Delete, at the far end. -#}
 {% macro form_actions(submit, cancel="", cancel_label="", loading="") %}
 <div class="flex flex-wrap items-center gap-2">

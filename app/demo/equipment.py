@@ -41,13 +41,15 @@ def can_edit(request: Request) -> bool:
     return bool(person and "admin" in person.roles)
 
 
-def _order_number(number: str) -> int | None:
-    return int(number) if number.isascii() and number.isdigit() and int(number) <= LARGEST_ID else None
+def record_number(number: str) -> int | None:
+    """A number from an address, or nothing. The length comes first: Python refuses to read thousands of digits."""
+    readable = number.isascii() and number.isdigit() and len(number) <= len(str(LARGEST_ID))
+    return int(number) if readable and int(number) <= LARGEST_ID else None
 
 
 def saved_message(session: Session, number: str) -> str:
     """Without JavaScript the address says what was saved. A value that is no order says nothing."""
-    order = _order_number(number)
+    order = record_number(number)
     if order is None or session.get(WorkOrder, order) is None:
         return ""
     return _("Work order %(number)s saved.") % {"number": number}
@@ -55,7 +57,7 @@ def saved_message(session: Session, number: str) -> str:
 
 def outcome_message(session: Session, params: Mapping[str, str]) -> str:
     """What the last action did, from the address. A row said to be deleted must really be gone."""
-    deleted = _order_number(params.get("deleted", ""))
+    deleted = record_number(params.get("deleted", ""))
     if deleted is not None and session.get(WorkOrder, deleted) is None:
         return _("Work order %(number)s deleted.") % {"number": deleted}
     return saved_message(session, params.get("saved", ""))

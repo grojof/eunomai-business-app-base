@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 20:09+0100\n"
+"POT-Creation-Date: 2026-10-31 20:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -628,6 +628,9 @@ msgstr "Propera inspecció"
 msgid "Next inspections"
 msgstr "Properes inspeccions"
 
+msgid "No"
+msgstr "No"
+
 msgid "No component matches"
 msgstr "Cap component no coincideix"
 
@@ -663,6 +666,15 @@ msgstr "Sense determinar"
 
 msgid "Not planned yet"
 msgstr "Encara sense planificar"
+
+msgid ""
+"Nothing of yours is saved yet, and what you typed is still here. They "
+"saved what is listed below. Save again to replace it with what you typed,"
+" or cancel to keep theirs."
+msgstr ""
+"Encara no s'ha desat res teu, i el que has escrit continua aquí. Aquesta "
+"persona va desar el que apareix a sota. Desa una altra vegada per "
+"substituir-ho pel que has escrit, o cancel·la per conservar el seu."
 
 msgid "Nothing overdue"
 msgstr "Res vençut"
@@ -877,6 +889,9 @@ msgstr "Mida"
 msgid "Software fault"
 msgstr "Fallada de programari"
 
+msgid "Someone else changed this work order"
+msgstr "Una altra persona ha canviat aquesta ordre de treball"
+
 msgid ""
 "Sorting, filtering and paging happen in the database, and the state lives"
 " in the address. The equipment list uses it with 50,000 rows."
@@ -1015,6 +1030,13 @@ msgid ""
 msgstr ""
 "Aquesta pantalla llegeix 50.000 files generades. Executa aquesta ordre "
 "una vegada i recarrega la pàgina. La resta de la demo no ho necessita."
+
+msgid ""
+"This work order has changed since you opened it, so nothing is deleted "
+"yet. This is what is there now."
+msgstr ""
+"Aquesta ordre de treball ha canviat des que la vas obrir, així que encara"
+" no s'ha eliminat res. Això és el que hi ha ara."
 
 msgid "This year"
 msgstr "Aquest any"
@@ -1156,6 +1178,9 @@ msgstr "Taller"
 
 msgid "Worn gasket"
 msgstr "Junta desgastada"
+
+msgid "Yes"
+msgstr "Sí"
 
 msgid "Your changes are saved as you type."
 msgstr "Els canvis es desen mentre escrius."

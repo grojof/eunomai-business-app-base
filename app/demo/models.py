@@ -61,6 +61,9 @@ class WorkOrder(Base):
     priority: Mapped[str] = mapped_column(String(8), server_default="normal")
     crew: Mapped[int] = mapped_column(server_default="1")
     stop_needed: Mapped[bool] = mapped_column(server_default=false())
+    version: Mapped[int] = mapped_column(server_default="1")
+
+    __mapper_args__ = {"version_id_col": version}  # noqa: RUF012  # how SQLAlchemy asks for it
 
     equipment: Mapped[Equipment] = relationship(back_populates="work_orders")
     files: Mapped[list["WorkOrderFile"]] = relationship(

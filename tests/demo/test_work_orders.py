@@ -42,6 +42,7 @@ def valid(**changes):
         "cost": "120.50",
         "stop_needed": "yes",
         "back": "/planning",
+        "version": "1",
     } | changes
 
 
@@ -120,7 +121,7 @@ def test_a_new_order_from_the_equipment_knows_its_code(filled):
     assert 'value="EQ-000001"' in filled.get("/work-orders/new?equipment=1").text
 
 
-@pytest.mark.parametrize("value", ["x", "-1", "99999999999999999999", "999999"])
+@pytest.mark.parametrize("value", ["x", "-1", "99999999999999999999", "999999", "9" * 5000])
 def test_an_equipment_that_is_no_equipment_leaves_the_field_empty(filled, value):
     response = filled.get("/work-orders/new", params={"equipment": value})
     assert response.status_code == 200
@@ -364,7 +365,9 @@ def test_htmx_gets_it_for_the_dialog(filled):
 
 def test_deleting_removes_the_row_and_says_so(writable):
     client, url = writable
-    response = post(client, "/work-orders/1/delete", {"back": "/planning?sort=hours"}, follow_redirects=False)
+    response = post(
+        client, "/work-orders/1/delete", {"back": "/planning?sort=hours", "version": "1"}, follow_redirects=False
+    )
     assert response.status_code == 303
     assert response.headers["location"] == "/planning?sort=hours&deleted=1"
     assert read_order(url, 1) is None
@@ -378,8 +381,8 @@ def test_a_deleted_message_needs_a_row_that_really_went(filled, value):
 
 def test_deleting_what_has_gone_is_not_found(writable):
     client, _url = writable
-    post(client, "/work-orders/1/delete", {"back": "/planning"})
-    assert post(client, "/work-orders/1/delete", {"back": "/planning"}).status_code == 404
+    post(client, "/work-orders/1/delete", {"back": "/planning", "version": "1"})
+    assert post(client, "/work-orders/1/delete", {"back": "/planning", "version": "1"}).status_code == 404
 
 
 # What the tests cannot read in a page's text
@@ -788,7 +791,7 @@ def test_deleting_an_order_says_how_many_files_go_and_takes_them(uploads):
     attach(client, PNG, "photo.png")
     assert "2 attached files" in client.get("/work-orders/1/delete").text
     assert len(stored(folder)) == 2
-    client.post("/work-orders/1/delete", data={"back": "/planning"}, headers=SAME_SITE)
+    client.post("/work-orders/1/delete", data={"back": "/planning", "version": "2"}, headers=SAME_SITE)
     assert stored(folder) == []
     assert files_of(url, 1) == []
 

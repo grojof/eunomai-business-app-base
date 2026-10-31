@@ -32,6 +32,7 @@ THEME = N_(
 OWN_TITLES = (
     N_("Chart"),
     N_("Confirmation dialog"),
+    N_("Conflict notice"),
     N_("Date field"),
     N_("Description list"),
     N_("Error summary"),
@@ -125,6 +126,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("alert", APPROVED, macro="message"),
             Component("loading"),
             Component("progress", macro="progress"),
+            Component(
+                "conflict-notice",
+                note=N_("Says that someone else saved first, and what they saved, above what was typed."),
+                macro="conflict_notice",
+                icon="triangle-alert",
+            ),
             Component("radial-progress"),
             Component("skeleton"),
             Component("toast"),

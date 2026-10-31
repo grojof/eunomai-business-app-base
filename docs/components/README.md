@@ -68,6 +68,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`alert`](alert.md) | approved | Use an alert to give users information about an important event. |
 | [`loading`](loading.md) | available | Use the loading component to show an animation while a process runs. |
 | [`progress`](progress.md) | available | Use a progress bar to show task progress or the passage of time. |
+| [`conflict-notice`](conflict-notice.md) | available | Says that someone else saved first, and what they saved, above what was typed. |
 | [`radial-progress`](radial-progress.md) | available | Use the radial progress component to show task progress or the passage of time. |
 | [`skeleton`](skeleton.md) | available | Use a skeleton component to show a loading state. |
 | [`toast`](toast.md) | available | A toast is a wrapper that stacks elements in a corner of the page. |
