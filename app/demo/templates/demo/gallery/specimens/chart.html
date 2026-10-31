@@ -1,0 +1,9 @@
+{% from "ui/macros.html" import chart %}
+<pre class="example-code mb-6 rounded-box"><code>{% raw %}data = chart_data(months, [Series(_("Planned"), planned), Series(_("Worked"), worked)], _("Month"), unit=_("h"))
+
+{{ chart(_("Hours planned and worked"), _("Hours worked stayed within 6 % of the plan."), data, "bar", "chart-hours") }}{% endraw %}</code></pre>
+<div class="grid gap-6 xl:grid-cols-2" data-chart-examples>
+  {% for figure in chart_figures %}
+  {{ chart(figure.title, figure.summary, figure.data, figure.type, figure.identifier) }}
+  {% endfor %}
+</div>

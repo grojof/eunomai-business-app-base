@@ -190,6 +190,11 @@ def test_the_grouping_data_is_from_the_cldr_version_babel_uses():
     assert data["cldr"].split(".")[0] == str(get_cldr_version())
 
 
+@pytest.mark.parametrize("value", ["-0.001", "-0.004", "-0"])
+def test_an_amount_that_rounds_to_nothing_has_no_sign(value):
+    assert str(formatters.rounded(Decimal(value))) == "0.00"
+
+
 @pytest.mark.rule("LANG-08")
 @pytest.mark.parametrize("language", OFFERED)
 def test_no_length_of_decimal_is_cut(language):
@@ -288,3 +293,67 @@ def test_no_template_has_text_outside_translation_even_if_no_test_visits_it():
     for template in (ROOT / "app").rglob("*.html"):
         text = re.sub(r"\{#.*?#\}|\{%.*?%\}|\{\{.*?\}\}", "", template.read_text(encoding="utf-8"), flags=re.S)
         assert untranslated(text, ("AB", "example.org")) == [], template
+
+
+@pytest.mark.rule("LANG-07")
+@pytest.mark.parametrize(
+    "text",
+    [
+        "1e3",
+        "1E3",
+        "1e-2",
+        "0e400",
+        "1_0",
+        "1_000",
+        "\uff11\uff12",
+        "\u0661\u0662",
+        "0x10",
+        "1\u00a0000",
+        "1 000",
+        "1'000",
+    ],
+)
+@pytest.mark.parametrize("language", ["en", "es", "ca"])
+def test_what_no_language_writes_is_refused(language, text):
+    activate(language)
+    with pytest.raises(ValueError):
+        formatters.parse_decimal(text)
+
+
+@pytest.mark.rule("LANG-07")
+@pytest.mark.parametrize(
+    ("language", "text", "expected"),
+    [
+        ("en", "1,234.5", "1234.5"),
+        ("es", "1234,5", "1234.5"),
+        ("es", "12.345,5", "12345.5"),
+        ("ca", "1.234,5", "1234.5"),
+        ("en", " 7 ", "7"),
+        ("en", "-1", "-1"),
+    ],
+)
+def test_what_a_language_writes_is_read(language, text, expected):
+    activate(language)
+    assert formatters.parse_decimal(text) == Decimal(expected)
+
+
+@pytest.mark.parametrize("text", ["2027-03-15", "2028-02-29"])
+def test_a_date_in_its_one_form_is_read(text):
+    assert formatters.parse_date(text).isoformat() == text
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["20270315", "2027-W11-1", "2027-W11", "2027-074", "2027-03-15T10:00", "2027-3-5", " 2027-03-15", "2027-02-30", ""],
+)
+def test_any_other_date_is_refused(text):
+    with pytest.raises(ValueError):
+        formatters.parse_date(text)
+
+
+@pytest.mark.parametrize(
+    "text", ["\u0662\u0660\u0662\u0667-\u0660\u0663-\u0661\u0665", "\uff12\uff10\uff12\uff17-03-15"]
+)
+def test_a_date_in_other_digits_is_refused(text):
+    with pytest.raises(ValueError):
+        formatters.parse_date(text)

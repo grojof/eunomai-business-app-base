@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading, panel, filter_bar, dialog %}
+{% block title %}{{ _("Planning") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("Planning"), _("Open work, grouped on the server. Edit one work order at a time.")) }}
+{% if state == "ready" %}
+{% call panel(_("Planned work")) %}
+{{ filter_bar(view) }}
+<div id="planning-results" data-results>
+  {% include "demo/planning/results.html" %}
+</div>
+{% endcall %}
+{{ dialog("editor", _("Close")) }}
+{% else %}
+{% include "demo/rows_missing.html" %}
+{% endif %}
+{% endblock %}

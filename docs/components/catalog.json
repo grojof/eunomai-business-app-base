@@ -88,6 +88,14 @@
     "page": "docs/components/carousel.md"
   },
   {
+    "name": "chart",
+    "category": "data-display",
+    "status": "available",
+    "note": "A figure with its text summary and its data as a table, drawn with Chart.js.",
+    "use": "A figure with its text summary and its data as a table, drawn with Chart.js.",
+    "page": "docs/components/chart.md"
+  },
+  {
     "name": "chat",
     "category": "data-display",
     "status": "available",
@@ -110,6 +118,14 @@
     "note": "",
     "use": "A countdown gives a transition effect when a number changes from 0 through 999.",
     "page": "docs/components/countdown.md"
+  },
+  {
+    "name": "description-list",
+    "category": "data-display",
+    "status": "available",
+    "note": "A list of terms and their values, for one record's details.",
+    "use": "A list of terms and their values, for one record's details.",
+    "page": "docs/components/description-list.md"
   },
   {
     "name": "diff",
@@ -350,6 +366,14 @@
     "note": "",
     "use": "A filter is a group of radio buttons. When the user selects an option, the filter hides the other options. It also shows a reset button next to the selected option.",
     "page": "docs/components/filter.md"
+  },
+  {
+    "name": "filter-bar",
+    "category": "data-input",
+    "status": "available",
+    "note": "A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons.",
+    "use": "A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons.",
+    "page": "docs/components/filter-bar.md"
   },
   {
     "name": "input",

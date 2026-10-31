@@ -1,0 +1,11 @@
+{#- For a screen that reads the generated rows, while they are not there. It stays one command: see README.md. -#}
+{% from "ui/macros.html" import command as command_line, empty_state, message %}
+{% if state == "unreachable" %}
+{{ message("danger", _("The database does not answer. Check APP_DATABASE_URL, and that its server is running.")) }}
+{% else %}
+<section class="rounded-box border border-base-300 bg-base-100" aria-label="{{ _('Generated rows') }}">
+  {% call empty_state(_("The demo's rows are not here yet"), advice if advice is defined else _("This screen reads 50,000 generated rows. Run this command once, then reload the page. Nothing else in the demo needs it."), "database", 2) %}
+  {{ command_line(command, "generate-command") }}
+  {% endcall %}
+</section>
+{% endif %}

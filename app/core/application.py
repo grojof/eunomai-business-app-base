@@ -10,6 +10,7 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import StaleDataError
 from starlette.exceptions import HTTPException
 
 from app.core import identity
@@ -46,7 +47,12 @@ def _cross_site(request: Request) -> bool:
     if site is not None:
         return site not in ("same-origin", "none")
     origin = request.headers.get("origin")
-    return origin is not None and urlsplit(origin).netloc != request.headers.get("host")
+    if origin is None:
+        return False
+    try:
+        return urlsplit(origin).netloc != request.headers.get("host")
+    except ValueError:  # an origin no browser sends: refused, and not an error
+        return True
 
 
 def _is_public(path: str) -> bool:
@@ -92,6 +98,11 @@ def _error_page(request: Request, status: int) -> Response:
     }
     title, advice = titles.get(status, titles[500])
     return render(request, "error.html", status_code=status, title=title, advice=advice, status=status)
+
+
+async def _on_stale_row(request: Request, _error: Exception) -> Response:
+    """Someone removed the row between reading and saving it: the same answer as if it had gone a moment earlier."""
+    return _error_page(request, 404)
 
 
 async def _on_http_error(request: Request, error: Exception) -> Response:
@@ -215,6 +226,7 @@ def create_core(settings: Settings) -> FastAPI:
         register_search(application.state, _settings_item)
     application.add_api_route("/health", _health, include_in_schema=False)
     application.add_exception_handler(HTTPException, _on_http_error)
+    application.add_exception_handler(StaleDataError, _on_stale_row)
     application.middleware("http")(_context)
     return application
 

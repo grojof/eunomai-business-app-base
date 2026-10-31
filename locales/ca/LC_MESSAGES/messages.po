@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 23:36+0100\n"
+"POT-Creation-Date: 2026-10-31 18:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -19,6 +19,31 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid ""
+"%(count)s. Showing %(first)s to %(last)s, sorted by %(column)s, "
+"%(direction)s."
+msgstr ""
+"%(count)s. Es mostren del %(first)s al %(last)s, ordenats per %(column)s,"
+" %(direction)s."
+
+msgid ""
+"A figure with its text summary and its data as a table, drawn with "
+"Chart.js."
+msgstr ""
+"Una figura amb el seu resum en text i les seves dades en una taula, "
+"dibuixada amb Chart.js."
+
+msgid "A list of terms and their values, for one record's details."
+msgstr "Una llista de termes i els seus valors, per als detalls d'un registre."
+
+msgid ""
+"A plain form that filters a list on the server. daisyUI's filter is a set"
+" of radio buttons."
+msgstr ""
+"Un formulari senzill que filtra una llista al servidor. El filter de "
+"daisyUI és un grup de botons d'opció."
 
 msgid "Actions"
 msgstr "Accions"
@@ -41,6 +66,9 @@ msgstr "Disponible"
 msgid "Back to the start"
 msgstr "Torna a l'inici"
 
+msgid "Breadcrumbs"
+msgstr "Fil d'Ariadna"
+
 msgid "Centred"
 msgstr "Centrat"
 
@@ -51,14 +79,29 @@ msgstr ""
 "Canvia com es veu aquesta aplicació per a tu. Cada opció s'aplica de "
 "seguida i es recorda en aquest navegador."
 
+msgid "Chart"
+msgstr "Gràfic"
+
 msgid "Check the address, or go back to the start."
 msgstr "Comprova l'adreça o torna a l'inici."
+
+msgid "Clear all"
+msgstr "Treu-los tots"
 
 msgid "Close"
 msgstr "Tanca"
 
+msgid "Close this message"
+msgstr "Tanca aquest missatge"
+
 msgid "Compact"
 msgstr "Compacta"
+
+msgid "Copied"
+msgstr "Copiat"
+
+msgid "Copy"
+msgstr "Copia"
 
 msgid "Dark"
 msgstr "Fosc"
@@ -72,11 +115,17 @@ msgstr "Mostrar dades"
 msgid "Data input"
 msgstr "Entrada de dades"
 
+msgid "Data table"
+msgstr "Taula de dades"
+
 msgid "Decorative"
 msgstr "Decoratiu"
 
 msgid "Density"
 msgstr "Densitat"
+
+msgid "Description list"
+msgstr "Llista de descripcions"
 
 msgid "Done"
 msgstr "Fet"
@@ -92,6 +141,12 @@ msgstr "Error"
 
 msgid "Feedback"
 msgstr "Avisos"
+
+msgid "Filter bar"
+msgstr "Barra de filtres"
+
+msgid "Filters"
+msgstr "Filtres"
 
 msgid "Fixed header"
 msgstr "Capçalera fixa"
@@ -146,6 +201,14 @@ msgstr "Disposició, tema, idioma i com es veuen els seus controls."
 msgid "Light"
 msgstr "Clar"
 
+msgid "Links in the column headers sort the table inside each group."
+msgstr ""
+"Els enllaços de les capçaleres de columna ordenen la taula dins de cada "
+"grup."
+
+msgid "Links in the column headers sort the table."
+msgstr "Els enllaços de les capçaleres de columna ordenen la taula."
+
 msgid "Main"
 msgstr "Principal"
 
@@ -161,11 +224,17 @@ msgstr "Es mou sol i només un punter el pot aturar: WCAG 2.2.2."
 msgid "Navigation"
 msgstr "Navegació"
 
+msgid "Next page"
+msgstr "Pàgina següent"
+
 msgid "No"
 msgstr "No"
 
 msgid "No results"
 msgstr "Sense resultats"
+
+msgid "No results."
+msgstr "Sense resultats."
 
 msgid "Normal"
 msgstr "Normal"
@@ -185,6 +254,14 @@ msgstr ""
 msgid "Open menu"
 msgstr "Obre el menú"
 
+#, python-format
+msgid "Page %(page)s"
+msgstr "Pàgina %(page)s"
+
+#, python-format
+msgid "Page %(page)s of %(pages)s"
+msgstr "Pàgina %(page)s de %(pages)s"
+
 msgid "Page not found"
 msgstr "No s'ha trobat la pàgina"
 
@@ -194,8 +271,15 @@ msgstr "Pàgines"
 msgid "Preferences"
 msgstr "Preferències"
 
+msgid "Previous page"
+msgstr "Pàgina anterior"
+
 msgid "Radio"
 msgstr "Opció"
+
+#, python-format
+msgid "Remove filter %(name)s: %(value)s"
+msgstr "Treu el filtre %(name)s: %(value)s"
 
 msgid "Results"
 msgstr "Resultats"
@@ -203,6 +287,9 @@ msgstr "Resultats"
 #, python-format
 msgid "Results: %(count)s"
 msgstr "Resultats: %(count)s"
+
+msgid "Rows per page"
+msgstr "Files per pàgina"
 
 msgid "Search"
 msgstr "Cerca"
@@ -234,6 +321,14 @@ msgstr "Inici"
 msgid "Swap"
 msgstr "Intercanvi"
 
+msgid "That did not work. Try again in a moment."
+msgstr "No ha funcionat. Torna-ho a provar d'aquí a un moment."
+
+msgid "The server cannot be reached. Check your connection and try again."
+msgstr ""
+"No es pot contactar amb el servidor. Revisa la connexió i torna-ho a "
+"provar."
+
 msgid "Theme"
 msgstr "Tema"
 
@@ -244,6 +339,13 @@ msgid "This application is ready. Replace this page with your first screen."
 msgstr ""
 "Aquesta aplicació està a punt. Substitueix aquesta pàgina per la teva "
 "primera pantalla."
+
+msgid ""
+"This is no longer here: someone may have removed it. Reload the page to "
+"see what there is now."
+msgstr ""
+"Això ja no és aquí: potser algú ho ha tret. Recarrega la pàgina per veure"
+" què hi ha ara."
 
 msgid "Toggle"
 msgstr "Interruptor"
@@ -278,6 +380,15 @@ msgstr "Sí"
 
 msgid "You do not have permission"
 msgstr "No tens permís"
+
+msgid "You do not have permission to do this."
+msgstr "No tens permís per fer això."
+
+msgid "ascending"
+msgstr "ascendent"
+
+msgid "descending"
+msgstr "descendent"
 
 msgid "to close"
 msgstr "per tancar"

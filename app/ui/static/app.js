@@ -1,14 +1,62 @@
 // After htmx replaces content, keep keyboard and screen-reader users in the right place.
-// New content marks where focus goes with data-focus, and what to announce with data-announce.
+// New content marks where focus goes with data-focus, and what to announce with data-announce. htmx puts focus back on
+// an element that kept its id; if none did, as when the Next link is gone on the last page, data-focus-fallback takes it.
 document.addEventListener("htmx:afterSettle", (event) => {
   const content = event.detail.target;
   const announcement = content.querySelector("[data-announce]");
   if (announcement) {
     announce(announcement.dataset.announce);
   }
+  settleDialog(content);
   content.querySelector("[data-focus]")?.focus();
+  if (document.activeElement === document.body) {
+    content.querySelector("[data-focus-fallback]")?.focus();
+  }
   applyStyles(content);
 });
+
+// A dialog whose body arrives with htmx opens then. `data-close-dialog` in what arrives closes it, and names where focus
+// goes: the row that opened it was replaced, so the browser cannot return there by itself.
+function settleDialog(content) {
+  const dialog = content.closest("dialog");
+  if (!dialog) {
+    return;
+  }
+  const done = content.querySelector("[data-close-dialog]");
+  if (done) {
+    const row = document.getElementById(done.dataset.closeDialog);
+    dialog.close();
+    content.replaceChildren();
+    (row ?? document.querySelector("[data-focus-fallback]"))?.focus();
+  } else if (!dialog.open && content.children.length) {
+    dialog.showModal();
+  }
+}
+
+// A request that fails says so, in words, in one place for every screen. An open dialog is in the browser's top layer,
+// so the message goes inside it, or it would be behind it. role="alert" reads it out.
+const requestProblem = document.getElementById("request-problem");
+const PROBLEMS = { 403: "forbidden", 404: "gone", 409: "gone" };
+function showProblem(kind) {
+  (document.querySelector("dialog[open]") ?? document.body).append(requestProblem);
+  requestProblem.querySelector("[data-problem-text]").textContent = requestProblem.dataset[kind];
+  requestProblem.hidden = false;
+}
+function hideProblem() {
+  requestProblem.hidden = true;
+  document.body.append(requestProblem);
+}
+document.addEventListener("htmx:responseError", (event) => {
+  showProblem(PROBLEMS[event.detail.xhr.status] ?? "failed");
+});
+document.addEventListener("htmx:sendError", () => showProblem("unreachable"));
+document.addEventListener("htmx:beforeRequest", hideProblem);
+document.addEventListener("click", (event) => {
+  if (event.target.closest("[data-problem-close]")) {
+    hideProblem();
+  }
+});
+document.addEventListener("close", hideProblem, true);
 
 function announce(text) {
   document.getElementById("announcements").textContent = text;
@@ -35,6 +83,32 @@ document.addEventListener("click", (event) => {
   const closer = event.target.closest("[data-dialog-close]");
   if (closer) {
     document.getElementById(closer.dataset.dialogClose).close();
+  }
+});
+
+// Printing. Paper is white whatever the theme, and a browser leaves out backgrounds, so a dark theme's light text would
+// vanish: the page wears the light theme for as long as it prints. daisyUI's theme controller wins over data-theme while
+// it is checked, so for that time its inputs stop being controllers.
+document.addEventListener("click", (event) => {
+  if (event.target.closest("[data-print]")) {
+    print();
+  }
+});
+const page = document.documentElement;
+let themeOnScreen;
+let themeControllers = [];
+addEventListener("beforeprint", () => {
+  themeOnScreen = page.dataset.theme;
+  page.dataset.theme = "light";
+  themeControllers = [...document.querySelectorAll("input.theme-controller")];
+  themeControllers.forEach((input) => input.classList.remove("theme-controller"));
+});
+addEventListener("afterprint", () => {
+  themeControllers.forEach((input) => input.classList.add("theme-controller"));
+  if (themeOnScreen) {
+    page.dataset.theme = themeOnScreen;
+  } else {
+    delete page.dataset.theme;
   }
 });
 
@@ -122,9 +196,13 @@ document.addEventListener("click", async (event) => {
   }, 2000);
 });
 
-// A control that applies at once: its form goes to the server, which saves the choice.
+// A control that applies at once: its form goes to the server. `form` also finds a control placed outside the form with
+// the form attribute. A search box sends itself while typing, so leaving it must not send it again.
 document.addEventListener("change", (event) => {
-  event.target.closest("form[data-autosubmit]")?.requestSubmit();
+  const form = event.target.form ?? event.target.closest("form");
+  if (form?.matches("[data-autosubmit]") && event.target.type !== "search") {
+    form.requestSubmit();
+  }
 });
 
 // The page reloads after each preference, so focus comes back to the control that was used.

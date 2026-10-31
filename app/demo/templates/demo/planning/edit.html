@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import breadcrumbs, page_heading, button, link_button %}
+{% block title %}{{ _("Work order %(number)s", number=order.id) }}{% endblock %}
+{% block content %}
+{{ breadcrumbs([(_("Planning"), back), (_("Work order %(number)s", number=order.id), "")]) }}
+{{ page_heading(_("Work order %(number)s", number=order.id), order.equipment.name ~ " · " ~ order.title) }}
+<form class="grid max-w-md gap-4" method="post" action="/planning/{{ order.id }}" novalidate>
+  {% include "demo/planning/fields.html" %}
+  <div class="flex gap-2">
+    {{ button(_("Save"), "primary", "submit") }}
+    {{ link_button(_("Cancel"), back) }}
+  </div>
+</form>
+{% endblock %}

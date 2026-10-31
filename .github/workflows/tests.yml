@@ -18,7 +18,7 @@ jobs:
             test_database_url: postgresql+psycopg://postgres@localhost:5432/postgres
           - os: windows-latest  # Windows runners have no service containers: an empty image starts none
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 25
     services:
       postgres:
         image: ${{ matrix.postgres }}

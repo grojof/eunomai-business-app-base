@@ -14,18 +14,22 @@ ONLY_ON_DEMO = {"A11Y-09", "COMP-03", "DATA-07"}
 they become `By hand` until the application has a screen, and a test, of its own. A test keeps this set exact."""
 DEMO_ICONS = (
     "calendar",
-    "chevron-left",
-    "chevron-right",
+    "calendar-range",
     "clipboard-list",
     "clock",
     "component",
-    "copy",
+    "database",
+    "eye",
+    "file-spreadsheet",
     "gauge",
+    "history",
+    "printer",
     "shield",
     "wallet",
+    "wrench",
 )
 """Icons only the demo uses. The rest belong to the application's shell."""
-DEMO_MIGRATION = "0001_demo_equipment.py"
+DEMO_MIGRATIONS = "*_demo_*.py"
 
 
 def rewrite(path: Path, content: str) -> None:
@@ -39,8 +43,9 @@ def main() -> None:
     for icon in DEMO_ICONS:
         (ROOT / "app" / "ui" / "templates" / "ui" / "icons" / f"{icon}.svg").unlink(missing_ok=True)
 
-    # The first migration holds only the demo's tables. The tooling stays, and the application's own starts from zero.
-    (ROOT / "migrations" / "versions" / DEMO_MIGRATION).unlink(missing_ok=True)
+    # These migrations hold only the demo's tables. The tooling stays, and the application's own starts from zero.
+    for migration in (ROOT / "migrations" / "versions").glob(DEMO_MIGRATIONS):
+        migration.unlink()
 
     for source in (ROOT / "app" / "main.py", ROOT / "migrations" / "env.py"):
         lines = source.read_text(encoding="utf-8").splitlines(keepends=True)

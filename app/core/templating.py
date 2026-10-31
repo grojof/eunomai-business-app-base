@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, cast
+from zoneinfo import ZoneInfo
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
@@ -19,11 +20,14 @@ from app.core.settings import LAYOUTS
 UI = Path(__file__).resolve().parent.parent / "ui"
 ROOT = UI.parent.parent
 _loaders: list[FileSystemLoader] = [FileSystemLoader(UI / "templates")]
-_VENDOR_SCRIPTS = [
-    {"src": "/static/ui/vendor/" + Path(entry["target"]).name, "integrity": "sha384-" + entry["sha384"]}
-    for entry in json.loads((ROOT / "vendor.json").read_text(encoding="utf-8")).values()
-    if entry.get("script")
-]
+_VENDORED = json.loads((ROOT / "vendor.json").read_text(encoding="utf-8"))
+
+
+def _script(entry: dict[str, Any]) -> dict[str, str]:
+    return {"src": "/static/ui/vendor/" + Path(entry["target"]).name, "integrity": "sha384-" + entry["sha384"]}
+
+
+_VENDOR_SCRIPTS = [_script(entry) for entry in _VENDORED.values() if entry.get("script") and not entry.get("on_demand")]
 
 environment = Environment(
     loader=ChoiceLoader(_loaders),
@@ -34,6 +38,9 @@ environment = Environment(
 cast(Any, environment).install_gettext_callables(
     gettext=i18n._, ngettext=i18n.ngettext, newstyle=True, pgettext=i18n.pgettext, npgettext=i18n.npgettext
 )
+environment.globals["chart_library"] = _script(
+    _VENDORED["chart.js"]
+)  # charts.js loads it, only for a page with a chart
 environment.filters["decimal"] = formatters.format_decimal
 environment.filters["date"] = formatters.format_date
 environment.filters["percent"] = formatters.format_percent
@@ -119,6 +126,9 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
     def local_datetime(value: datetime) -> str:
         return formatters.format_datetime(value, state.settings.time_zone)
 
+    def local_date(value: datetime) -> str:
+        return formatters.format_date(value.astimezone(ZoneInfo(state.settings.time_zone)).date())
+
     html = environment.get_template(name).render(
         app_name=state.settings.name,
         version=__version__,
@@ -139,6 +149,7 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
         here=request.url.path + query,
         vendor_scripts=_VENDOR_SCRIPTS,
         local_datetime=local_datetime,
+        local_date=local_date,
         **context,
     )
     return HTMLResponse(html, status_code=status_code)

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 23:36+0100\n"
+"POT-Creation-Date: 2026-10-31 18:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -29,16 +29,52 @@ msgstr ""
 "%(version)s"
 
 #, python-format
-msgid "%(num)d inspection is due"
-msgid_plural "%(num)d inspections are due"
-msgstr[0] "%(num)d inspección pendiente"
-msgstr[1] "%(num)d inspecciones pendientes"
+msgid "%(count)s inspection is due in the next 30 days"
+msgid_plural "%(count)s inspections are due in the next 30 days"
+msgstr[0] "%(count)s inspección vence en los próximos 30 días"
+msgstr[1] "%(count)s inspecciones vencen en los próximos 30 días"
 
 #, python-format
-msgid "%(num)d open work order"
-msgid_plural "%(num)d open work orders"
-msgstr[0] "%(num)d orden de trabajo abierta"
-msgstr[1] "%(num)d órdenes de trabajo abiertas"
+msgid "%(count)s open work order"
+msgid_plural "%(count)s open work orders"
+msgstr[0] "%(count)s orden de trabajo abierta"
+msgstr[1] "%(count)s órdenes de trabajo abiertas"
+
+#, python-format
+msgid "%(count)s open work order planned before today"
+msgid_plural "%(count)s open work orders planned before today"
+msgstr[0] "%(count)s orden de trabajo abierta prevista antes de hoy"
+msgstr[1] "%(count)s órdenes de trabajo abiertas previstas antes de hoy"
+
+#, python-format
+msgid "%(count)s order, %(hours)s hours"
+msgid_plural "%(count)s orders, %(hours)s hours"
+msgstr[0] "%(count)s orden, %(hours)s horas"
+msgstr[1] "%(count)s órdenes, %(hours)s horas"
+
+#, python-format
+msgid "%(count)s piece of equipment"
+msgid_plural "%(count)s pieces of equipment"
+msgstr[0] "%(count)s equipo"
+msgstr[1] "%(count)s equipos"
+
+#, python-format
+msgid "%(count)s work order"
+msgid_plural "%(count)s work orders"
+msgstr[0] "%(count)s orden de trabajo"
+msgstr[1] "%(count)s órdenes de trabajo"
+
+#, python-format
+msgid "%(group)s, continued"
+msgstr "%(group)s, continuación"
+
+#, python-format
+msgid ""
+"%(total)s work orders opened this year. The busiest month was %(month)s, "
+"with %(count)s."
+msgstr ""
+"%(total)s órdenes de trabajo abiertas este año. El mes con más trabajo "
+"fue %(month)s, con %(count)s."
 
 msgid "A card with a title, ready for any content."
 msgstr "Una tarjeta con título, lista para cualquier contenido."
@@ -46,11 +82,38 @@ msgstr "Una tarjeta con título, lista para cualquier contenido."
 msgid "A fictional company that maintains its equipment."
 msgstr "Una empresa ficticia que mantiene sus equipos."
 
+msgid "A table on the server"
+msgstr "Una tabla en el servidor"
+
+msgid "Actions"
+msgstr "Acciones"
+
 msgid "Administration"
 msgstr "Administración"
 
+msgid "Age and cost of repair"
+msgstr "Antigüedad y coste de reparación"
+
+msgid "Age, in years"
+msgstr "Antigüedad, en años"
+
 msgid "Air compressor"
 msgstr "Compresor de aire"
+
+msgid "All locations"
+msgstr "Todas las ubicaciones"
+
+msgid "All states"
+msgstr "Todos los estados"
+
+msgid "Any date"
+msgstr "Cualquier fecha"
+
+msgid "Audit"
+msgstr "Auditoría"
+
+msgid "Audit by site"
+msgstr "Auditoría por planta"
 
 msgid ""
 "Available: official examples, shown as published and not audited here. "
@@ -61,17 +124,33 @@ msgstr ""
 "auditar aquí. No es una promesa de accesibilidad. Pide una macro antes de"
 " usarlo en una pantalla real."
 
+msgid "Backlog"
+msgstr "Pendientes"
+
 msgid "Behaviour"
 msgstr "Comportamiento"
 
-msgid "Breadcrumbs"
-msgstr "Ruta de navegación"
+msgid "Both sites score well on safety. The south site is weakest on records."
+msgstr "Las dos plantas puntúan bien en seguridad. La sur flojea en registros."
 
 msgid "Cancel"
 msgstr "Cancelar"
 
+msgid ""
+"Charts and live figures appear here once the demo's rows are generated. "
+"Run this command once, then reload the page."
+msgstr ""
+"Los gráficos y las cifras reales aparecen aquí cuando se generan las "
+"filas de la demo. Ejecuta este comando una vez y recarga la página."
+
+msgid "Check what you entered"
+msgstr "Revisa lo que has escrito"
+
 msgid "Checked"
 msgstr "Revisado"
+
+msgid "Choose a state from the list."
+msgstr "Elige un estado de la lista."
 
 msgid "Class name"
 msgstr "Clase"
@@ -79,11 +158,23 @@ msgstr "Clase"
 msgid "Class names"
 msgstr "Clases"
 
+msgid "Cleanliness"
+msgstr "Limpieza"
+
+msgid "Clear all"
+msgstr "Quitar todos"
+
+msgid "Close"
+msgstr "Cerrar"
+
 msgid "Closed"
-msgstr "Cerrado"
+msgstr "Cerrada"
 
 msgid "Code"
 msgstr "Código"
+
+msgid "Code or name"
+msgstr "Código o nombre"
 
 msgid "Colour"
 msgstr "Color"
@@ -110,6 +201,24 @@ msgstr "Copiado"
 msgid "Copy"
 msgstr "Copiar"
 
+msgid "Corrective"
+msgstr "Correctivo"
+
+msgid "Cost"
+msgstr "Coste"
+
+msgid "Cost of repair"
+msgstr "Coste de reparación"
+
+msgid "Cost of the work"
+msgstr "Coste del trabajo"
+
+msgid "Cost of the work by month"
+msgstr "Coste del trabajo por mes"
+
+msgid "Cost of the work, added up"
+msgstr "Coste del trabajo, acumulado"
+
 msgid "Cost to date"
 msgstr "Coste hasta la fecha"
 
@@ -131,11 +240,50 @@ msgstr "Dirección"
 msgid "Due soon"
 msgstr "Vence pronto"
 
+msgid "Edit"
+msgstr "Editar"
+
+#, python-format
+msgid "Edit work order %(number)s"
+msgstr "Editar la orden de trabajo %(number)s"
+
+msgid "Enter a date, or leave it empty if it is not planned yet."
+msgstr "Escribe una fecha, o déjala vacía si aún no está planificada."
+
+#, python-format
+msgid "Enter between 0 and %(most)s hours."
+msgstr "Escribe entre 0 y %(most)s horas."
+
+#, python-format
+msgid "Enter the hours as a number, such as %(example)s."
+msgstr "Escribe las horas como un número, por ejemplo %(example)s."
+
+msgid "Enter the hours with two decimals at most."
+msgstr "Escribe las horas con dos decimales como máximo."
+
 msgid "Equipment"
 msgstr "Equipos"
 
+msgid "Equipment and its state"
+msgstr "Equipos y su estado"
+
+msgid "Equipment by location"
+msgstr "Equipos por ubicación"
+
+msgid "Equipment by state"
+msgstr "Equipos por estado"
+
+msgid "Equipment list"
+msgstr "Lista de equipos"
+
+msgid "Equipment or work"
+msgstr "Equipo o trabajo"
+
 msgid "Equipment, where it is, its next inspection and its state"
 msgstr "Equipos, dónde están, su próxima inspección y su estado"
+
+msgid "Equipment, where it is, its state, its next inspection and its cost"
+msgstr "Equipos, dónde están, su estado, su próxima inspección y su coste"
 
 msgid ""
 "Every component on offer, with an honest status, and every official "
@@ -143,6 +291,13 @@ msgid ""
 msgstr ""
 "Todos los componentes disponibles, con un estado honesto, y todos los "
 "ejemplos oficiales de cada uno."
+
+msgid ""
+"Every machine the company maintains: where it is, its state and when it "
+"is next inspected."
+msgstr ""
+"Todas las máquinas que mantiene la empresa: dónde están, en qué estado y "
+"cuándo toca inspeccionarlas."
 
 #, python-format
 msgid "Exactly %(value)s"
@@ -157,17 +312,55 @@ msgstr ""
 "con licencia MIT. Disponible significa un ejemplo oficial, mostrado tal "
 "como se publicó y sin auditar aquí: no es una promesa de accesibilidad."
 
+msgid "Export to Excel"
+msgstr "Exportar a Excel"
+
 msgid "Filter components"
 msgstr "Filtrar componentes"
 
 msgid "Forklift"
 msgstr "Carretilla elevadora"
 
+msgid "Four in five pieces of equipment are in service."
+msgstr "Cuatro de cada cinco equipos están en servicio."
+
 msgid "Gallery"
 msgstr "Galería"
 
+msgid "Generated rows"
+msgstr "Filas generadas"
+
+msgid "Group by"
+msgstr "Agrupar por"
+
+msgid ""
+"Here it is a plain form, and it reloads the page. In a screen htmx "
+"replaces only the results."
+msgstr ""
+"Aquí es un formulario sencillo y recarga la página. En una pantalla, htmx"
+" sustituye solo los resultados."
+
+msgid "Hours"
+msgstr "Horas"
+
+msgid "Hours planned and worked"
+msgstr "Horas previstas y trabajadas"
+
 msgid "Hours worked"
 msgstr "Horas trabajadas"
+
+#, python-format
+msgid "Hours worked stayed within 6 % of the plan in every month."
+msgstr ""
+"Las horas trabajadas no se alejaron más de un 6 % de lo previsto en "
+"ningún mes."
+
+msgid ""
+"In groups, grouped_table does the same with one tbody per group and a "
+"header row that says what the group holds. Planning uses it."
+msgstr ""
+"En grupos, grouped_table hace lo mismo con un tbody por grupo y una fila "
+"de cabecera que dice qué contiene el grupo. Planificación lo usa."
 
 msgid "In progress"
 msgstr "En curso"
@@ -185,6 +378,9 @@ msgstr ""
 "Usa los colores propios de Tailwind, que esta base elimina, así que "
 "algunos colores difieren del ejemplo publicado."
 
+msgid "Leave it empty if it is not planned yet."
+msgstr "Déjala vacía si aún no está planificada."
+
 msgid "Link to this example"
 msgstr "Enlace a este ejemplo"
 
@@ -197,8 +393,29 @@ msgstr "Ubicación"
 msgid "Maintenance plan"
 msgstr "Plan de mantenimiento"
 
+msgid "Maintenance to date"
+msgstr "Mantenimiento hasta hoy"
+
 msgid "Modifier"
 msgstr "Modificador"
+
+msgid "Month"
+msgstr "Mes"
+
+msgid "Month planned"
+msgstr "Mes previsto"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid ""
+"Native, so the browser keeps the keyboard inside it, closes it with "
+"Escape and gives focus back. Its body arrives with htmx, and app.js opens"
+" it then. Planning uses it to edit a row."
+msgstr ""
+"Nativo, así que el navegador mantiene el teclado dentro, lo cierra con "
+"Escape y devuelve el foco. Su contenido llega con htmx, y app.js lo abre "
+"entonces. Planificación lo usa para editar una fila."
 
 msgid "Next"
 msgstr "Siguiente"
@@ -206,14 +423,53 @@ msgstr "Siguiente"
 msgid "Next inspection"
 msgstr "Próxima inspección"
 
+msgid "Next inspections"
+msgstr "Próximas inspecciones"
+
 msgid "No component matches"
 msgstr "Ningún componente coincide"
+
+msgid "No equipment matches"
+msgstr "Ningún equipo coincide"
+
+msgid "No work order matches"
+msgstr "Ninguna orden de trabajo coincide"
+
+msgid "No work orders yet"
+msgstr "Aún no hay órdenes de trabajo"
+
+msgid "North plant"
+msgstr "Planta norte"
+
+msgid "Not closed"
+msgstr "Sin cerrar"
+
+msgid "Not planned yet"
+msgstr "Aún sin planificar"
 
 msgid "Nothing overdue"
 msgstr "Nada vencido"
 
+msgid "Number"
+msgstr "Número"
+
+#, python-format
+msgid "Of %(total)s opened this year"
+msgstr "De %(total)s abiertas este año"
+
+#, python-format
+msgid "Of %(total)s pieces of equipment, %(share)s are in service."
+msgstr "De %(total)s equipos, el %(share)s está en servicio."
+
 msgid "Official examples"
 msgstr "Ejemplos oficiales"
+
+msgid ""
+"Older equipment costs more to repair, and the rise steepens after ten "
+"years."
+msgstr ""
+"Los equipos antiguos cuestan más de reparar, y la subida se acentúa a "
+"partir de diez años."
 
 msgid "On this page"
 msgstr "En esta página"
@@ -224,6 +480,17 @@ msgstr "Solo pueden abrir esta página las personas con el rol de administrador.
 msgid "Open work orders"
 msgstr "Órdenes de trabajo abiertas"
 
+msgid "Open work, grouped on the server. Edit one work order at a time."
+msgstr ""
+"Trabajo abierto, agrupado en el servidor. Edita una orden de trabajo cada"
+" vez."
+
+msgid "Opened"
+msgstr "Abierta"
+
+msgid "Orders"
+msgstr "Órdenes"
+
 msgid "Other components"
 msgstr "Otros componentes"
 
@@ -232,6 +499,9 @@ msgstr "Nuestra macro"
 
 msgid "Overdue"
 msgstr "Vencidos"
+
+msgid "Overview"
+msgstr "Resumen"
 
 msgid "Packing"
 msgstr "Embalaje"
@@ -243,19 +513,37 @@ msgid "Placement"
 msgstr "Posición"
 
 msgid "Planned"
-msgstr "Planificado"
+msgstr "Prevista"
+
+msgid "Planned for"
+msgstr "Prevista para"
+
+msgid "Planned work"
+msgstr "Trabajo planificado"
+
+msgid "Planning"
+msgstr "Planificación"
 
 msgid "Plant room"
 msgstr "Sala de máquinas"
 
+msgid "Preventive"
+msgstr "Preventivo"
+
 msgid "Preventive plan"
 msgstr "Plan preventivo"
+
+msgid "Preventive work is about two thirds of all orders each month."
+msgstr "El trabajo preventivo es cerca de dos tercios de las órdenes de cada mes."
 
 msgid "Preview"
 msgstr "Vista previa"
 
 msgid "Previous"
 msgstr "Anterior"
+
+msgid "Print"
+msgstr "Imprimir"
 
 msgid ""
 "Published by daisyUI, in English. Their text is left as it is. Pictures "
@@ -264,11 +552,17 @@ msgstr ""
 "Publicados por daisyUI, en inglés. Su texto se deja tal cual. Las "
 "imágenes se sustituyen por una imagen neutra."
 
+msgid "Records"
+msgstr "Registros"
+
 msgid "Reported"
 msgstr "Comunicado"
 
 msgid "Roof"
 msgstr "Cubierta"
+
+msgid "Safety"
+msgstr "Seguridad"
 
 msgid "Safety checks"
 msgstr "Controles de seguridad"
@@ -290,6 +584,12 @@ msgstr ""
 "Las pantallas llaman a esta macro. Tiene pruebas, y falta la revisión de "
 "una persona."
 
+msgid "Sections of this page"
+msgstr "Secciones de esta página"
+
+msgid "See them in Planning"
+msgstr "Verlas en Planificación"
+
 msgid "Settings"
 msgstr "Ajustes"
 
@@ -306,6 +606,19 @@ msgstr ""
 msgid "Size"
 msgstr "Tamaño"
 
+msgid ""
+"Sorting, filtering and paging happen in the database, and the state lives"
+" in the address. The equipment list uses it with 50,000 rows."
+msgstr ""
+"Ordenar, filtrar y paginar ocurren en la base de datos, y el estado vive "
+"en la dirección. La lista de equipos lo usa con 50.000 filas."
+
+msgid "South plant"
+msgstr "Planta sur"
+
+msgid "Spare parts"
+msgstr "Repuestos"
+
 msgid "Spare parts in stock"
 msgstr "Repuestos en existencias"
 
@@ -318,6 +631,17 @@ msgstr "Estado"
 msgid "Statuses"
 msgstr "Estados"
 
+msgid "Still open"
+msgstr "Aún abiertas"
+
+msgid "Stoppages by plant"
+msgstr "Paradas por planta"
+
+msgid "Stoppages fell in the north plant from March and held steady in the south."
+msgstr ""
+"Las paradas bajaron en la planta norte desde marzo y se mantuvieron en la"
+" sur."
+
 msgid "Stopped"
 msgstr "Parado"
 
@@ -327,11 +651,50 @@ msgstr "Estilo"
 msgid "Summary"
 msgstr "Resumen"
 
+msgid "The backlog grew until April, then fell as more orders closed than opened."
+msgstr ""
+"Las pendientes crecieron hasta abril y luego bajaron al cerrarse más "
+"órdenes de las que se abrían."
+
+msgid ""
+"The database does not answer. Check APP_DATABASE_URL, and that its server"
+" is running."
+msgstr ""
+"La base de datos no responde. Revisa APP_DATABASE_URL y que su servidor "
+"esté en marcha."
+
+msgid "The demo's rows are not here yet"
+msgstr "Las filas de la demo aún no están aquí"
+
+msgid "The dot is decoration: its colour never says anything the word does not."
+msgstr "El punto es decoración: su color nunca dice nada que no diga la palabra."
+
+msgid ""
+"The warehouse takes the most hours, the roof the most money for each "
+"order."
+msgstr "El almacén se lleva más horas, y la cubierta, más dinero por orden."
+
 msgid "The work order could not be saved. Try again."
 msgstr "La orden de trabajo no se ha podido guardar. Vuelve a intentarlo."
 
 msgid "The work order was saved."
 msgstr "La orden de trabajo se ha guardado."
+
+msgid "The workshop and the warehouse hold more than half of the equipment."
+msgstr "El taller y el almacén tienen más de la mitad de los equipos."
+
+msgid "The year's cost reached 112,000 by June."
+msgstr "El coste del año llegó a 112.000 en junio."
+
+msgid ""
+"These tabs are links, one address each: they work without JavaScript and "
+"with the back button. On a page whose panels are all there already, use "
+"the tab pattern the gallery's Preview and Code switch shows."
+msgstr ""
+"Estas pestañas son enlaces, con una dirección cada una: funcionan sin "
+"JavaScript y con el botón de volver. En una página con todos los paneles "
+"ya presentes, usa el patrón de pestañas del selector Vista previa y "
+"Código de la galería."
 
 msgid "This equipment is due for inspection."
 msgstr "A este equipo le toca inspección."
@@ -339,15 +702,44 @@ msgstr "A este equipo le toca inspección."
 msgid "This month"
 msgstr "Este mes"
 
+msgid ""
+"This screen reads 50,000 generated rows. Run this command once, then "
+"reload the page. Nothing else in the demo needs it."
+msgstr ""
+"Esta pantalla lee 50.000 filas generadas. Ejecuta este comando una vez y "
+"recarga la página. El resto de la demo no lo necesita."
+
+msgid "This year"
+msgstr "Este año"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Training"
+msgstr "Formación"
+
 msgid "Try another word, or look through the categories."
 msgstr "Prueba con otra palabra, o mira las categorías."
+
+msgid "Try fewer filters, or another word."
+msgstr "Prueba con menos filtros o con otra palabra."
 
 msgid "Type"
 msgstr "Tipo"
 
+msgid "Updated"
+msgstr "Actualizado"
+
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualizado: %(moment)s"
+
+msgid "View"
+msgstr "Ver"
+
+#, python-format
+msgid "View %(code)s"
+msgstr "Ver %(code)s"
 
 msgid "Warehouse"
 msgstr "Almacén"
@@ -355,15 +747,74 @@ msgstr "Almacén"
 msgid "What it does"
 msgstr "Qué hace"
 
+msgid "Work"
+msgstr "Trabajo"
+
+msgid "Work by location"
+msgstr "Trabajo por ubicación"
+
+#, python-format
+msgid ""
+"Work cost %(total)s this year. The dearest month was %(month)s, at "
+"%(cost)s."
+msgstr ""
+"El trabajo costó %(total)s este año. El mes más caro fue %(month)s, con "
+"%(cost)s."
+
+msgid "Work done on this equipment will appear here."
+msgstr "El trabajo hecho en este equipo aparecerá aquí."
+
+#, python-format
+msgid "Work order %(number)s"
+msgstr "Orden de trabajo %(number)s"
+
+#, python-format
+msgid "Work order %(number)s saved."
+msgstr "Orden de trabajo %(number)s guardada."
+
 msgid "Work order for the cooling tower"
 msgstr "Orden de trabajo de la torre de refrigeración"
 
+msgid "Work orders"
+msgstr "Órdenes de trabajo"
+
+#, python-format
+msgid "Work orders (%(count)s)"
+msgstr "Órdenes de trabajo (%(count)s)"
+
 msgid "Work orders appear here when their date passes."
 msgstr "Las órdenes de trabajo aparecen aquí cuando pasa su fecha."
+
+msgid "Work orders by group, with their equipment, state, planned date and hours"
+msgstr ""
+"Órdenes de trabajo por grupo, con su equipo, estado, fecha prevista y "
+"horas"
+
+msgid "Work orders by kind"
+msgstr "Órdenes de trabajo por tipo"
+
+msgid "Work orders by month"
+msgstr "Órdenes de trabajo por mes"
+
+#, python-format
+msgid "Work orders of %(code)s"
+msgstr "Órdenes de trabajo de %(code)s"
+
+msgid "Work orders of this equipment, newest first"
+msgstr "Órdenes de trabajo de este equipo, las más recientes primero"
+
+msgid "Work orders opened and backlog"
+msgstr "Órdenes abiertas y pendientes"
+
+msgid "Worked"
+msgstr "Trabajadas"
 
 msgid "Workshop"
 msgstr "Taller"
 
 msgid "Your changes are saved as you type."
 msgstr "Tus cambios se guardan mientras escribes."
+
+msgid "h"
+msgstr "h"
 

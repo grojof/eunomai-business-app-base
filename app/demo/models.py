@@ -1,15 +1,22 @@
 """The demo's tables: the equipment a fictional company maintains, and the work done on it."""
 
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from decimal import Decimal
 
-from sqlalchemy import CheckConstraint, ForeignKey, String
+from sqlalchemy import CheckConstraint, ColumnElement, ForeignKey, String, and_
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 
 EQUIPMENT_STATUSES = ("in_service", "due_soon", "stopped")
 WORK_ORDER_STATUSES = ("reported", "planned", "in_progress", "checked", "closed")
+OPEN_STATES = ("reported", "planned", "in_progress", "checked")
+LOCATIONS = ("Workshop", "Packing", "Plant room", "Roof", "Warehouse")
+LAST_DAY = date(2026, 10, 31)
+"""The demo's today: its data ends here, and what is overdue is overdue on this day, whenever it is read."""
+FIRST_MOMENT = datetime(2026, 1, 1, 12, tzinfo=UTC)
+LAST_MOMENT = datetime(2026, 10, 31, 12, tzinfo=UTC)
+"""At noon, so that no time zone moves the first or the last moment to another day, or another month."""
 
 
 def _one_of(values: tuple[str, ...]) -> str:
@@ -22,11 +29,11 @@ class Equipment(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     code: Mapped[str] = mapped_column(String(16), unique=True)
-    name: Mapped[str] = mapped_column(String(80))
+    name: Mapped[str] = mapped_column(String(80), index=True)
     location: Mapped[str] = mapped_column(String(40), index=True)
     status: Mapped[str] = mapped_column(String(16), index=True)
     next_inspection: Mapped[date] = mapped_column(index=True)
-    cost: Mapped[Decimal]
+    cost: Mapped[Decimal] = mapped_column(index=True)
     updated_at: Mapped[datetime]
 
     work_orders: Mapped[list["WorkOrder"]] = relationship(back_populates="equipment", passive_deletes=True)
@@ -44,5 +51,11 @@ class WorkOrder(Base):
     cost: Mapped[Decimal]
     opened_at: Mapped[datetime]
     closed_at: Mapped[datetime | None]
+    planned_on: Mapped[date | None] = mapped_column(index=True)
 
     equipment: Mapped[Equipment] = relationship(back_populates="work_orders")
+
+
+def overdue() -> ColumnElement[bool]:
+    """Open work planned before the demo's today, the same question wherever it is asked."""
+    return and_(WorkOrder.status.in_(OPEN_STATES), WorkOrder.planned_on < LAST_DAY)

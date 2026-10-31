@@ -1,0 +1,5 @@
+{#- After a save: the dialog closes, and the list comes back in the order and on the page it was. -#}
+<div data-close-dialog="edit-{{ order.id }}" data-announce="{{ saved }}"></div>
+<div id="planning-results" hx-swap-oob="innerHTML">
+  {% include "demo/planning/results.html" %}
+</div>

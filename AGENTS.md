@@ -7,7 +7,7 @@ person or real system: it stays neutral so anyone can clone it.
 
 | Folder | Contents | Rule |
 |---|---|---|
-| `app/core/` | Identity, roles, settings, the database and its column types, languages, formatters, errors, health | Never imports from `app/demo/` |
+| `app/core/` | Identity, roles, settings, the database and its column types, lists on the server, languages, formatters, errors, health | Never imports from `app/demo/` |
 | `app/ui/` | Components as macros, the settings menu, the command palette, the stylesheet's source, the few JavaScript files | Screens call macros; daisyUI classes stay here where possible |
 | `app/brand/` | The theme, logos | The only folder an organization must change |
 | `app/demo/` | Demo screens, models, generated data, the gallery and their translations | Deleting it leaves a working application |
@@ -40,6 +40,9 @@ Add your own components as [the specification](docs/specification.md#adapting-it
 - Money and quantities are `Mapped[Decimal]`, moments `Mapped[datetime]` with their time zone. Never a float. On SQLite,
   a sum in SQL raises `InexactQuery`: use `total()`. [Data](docs/specification.md#data) says how the two databases differ.
 - A route that uses the database takes `DatabaseSession`, is declared with `def`, and commits itself.
+- A long list uses `ListView` from `app/core/tables.py`, whose values are checked against lists, never text from the
+  address in SQL: read [Lists on the server](docs/specification.md#lists-on-the-server). Charts come from
+  `app/core/charts.py` and the `chart` macro, always with a summary. Excel comes from `app/core/excel.py`.
 - Add a dependency only if the [stack](docs/specification.md#stack) needs it. Pin it and check it for known
   vulnerabilities.
 - No secrets in the repository, and no real people or companies in demo data.

@@ -1,0 +1,6 @@
+{% from "ui/macros.html" import description_list, status_label %}
+{{ description_list([
+  (_("Location"), _("Workshop")),
+  (_("State"), status_label(_("In service"), "success")),
+]) }}
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ description_list([(_("Location"), _(item.location)), (_("State"), status_label(label, kind))]) }}{% endraw %}</code></pre>

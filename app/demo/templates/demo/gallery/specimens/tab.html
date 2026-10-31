@@ -1,0 +1,4 @@
+{% from "ui/macros.html" import tabs %}
+{{ tabs(_("Sections of this page"), [("overview", _("Overview"), "/gallery/tab"), ("orders", _("Work orders"), "/gallery/tab#tabs-example")], "overview") }}
+<pre id="tabs-example" class="example-code mt-4 rounded-box"><code>{% raw %}{{ tabs(_("Sections of this page"), [("overview", _("Overview"), page), ("orders", _("Work orders"), page ~ "?tab=orders")], tab, "#equipment-tabs") }}{% endraw %}</code></pre>
+<p class="mt-3 text-sm">{{ _("These tabs are links, one address each: they work without JavaScript and with the back button. On a page whose panels are all there already, use the tab pattern the gallery's Preview and Code switch shows.") }}</p>

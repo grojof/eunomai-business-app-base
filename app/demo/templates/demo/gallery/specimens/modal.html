@@ -1,0 +1,3 @@
+<p class="text-sm">{{ _("Native, so the browser keeps the keyboard inside it, closes it with Escape and gives focus back. Its body arrives with htmx, and app.js opens it then. Planning uses it to edit a row.") }}</p>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ dialog("editor", _("Close")) }}
+{{ dialog_action(_("Edit"), _("Edit work order %(number)s", number=row.id), address, "edit-" ~ row.id, "editor") }}{% endraw %}</code></pre>

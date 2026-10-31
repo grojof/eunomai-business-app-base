@@ -11,7 +11,7 @@ Each row comes from a SHA-512 of the seed and its position, not from `random`: a
 import argparse
 import hashlib
 import time
-from datetime import UTC, date, datetime, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from typing import Any
 
@@ -20,19 +20,43 @@ from sqlalchemy.orm import Session
 
 from app.core.database import create_database_engine, migrate
 from app.core.settings import get_settings
-from app.demo.models import EQUIPMENT_STATUSES, WORK_ORDER_STATUSES, Equipment, WorkOrder
+from app.demo.models import (
+    EQUIPMENT_STATUSES,
+    FIRST_MOMENT,
+    LAST_MOMENT,
+    LOCATIONS,
+    OPEN_STATES,
+    WORK_ORDER_STATUSES,
+    Equipment,
+    WorkOrder,
+)
 
 EQUIPMENT_ROWS = 50_000
 WORK_ORDER_EVERY = 5
-"""One piece of equipment in this many has a work order."""
+"""One work order for this many pieces of equipment."""
+ORDER_SPREAD = (0, 0, 0, 5, 5, 10)
+"""Each six work orders fall on thirty pieces of equipment like this: one has a history of three, one of two, one of
+one, and the rest have none yet, so a detail page shows each of those cases."""
 SEED = 2027
 KINDS = ("Air compressor", "Conveyor belt", "Standby generator", "Cooling tower", "Forklift")
-LOCATIONS = ("Workshop", "Packing", "Plant room", "Roof", "Warehouse")
-TITLES = ("Preventive plan", "Safety checks")
+TITLES = (
+    "Preventive plan",
+    "Safety checks",
+    "Oil change",
+    "Filter replacement",
+    "Belt replacement",
+    "Calibration",
+    "Leak repair",
+    "Electrical inspection",
+)
 FIRST_INSPECTION = date(2026, 11, 1)
 INSPECTION_DAYS = 730
-START = datetime(2026, 1, 1, tzinfo=UTC)
-YEAR_SECONDS = 365 * 24 * 60 * 60
+PLANNING_DAYS = 60
+SPAN_SECONDS = int((LAST_MOMENT - FIRST_MOMENT).total_seconds())
+OLD_ORDER_DAYS = 60
+"""Older than this, work is done: nearly all of it is closed, and what is left open is really late."""
+OLD_ORDERS_CLOSED = 96
+"""Out of a hundred."""
 
 
 def _numbers(seed: int, table: str, position: int) -> list[int]:
@@ -63,23 +87,37 @@ def equipment_row(position: int, seed: int = SEED) -> dict[str, Any]:
         "status": _status(numbers[2]),
         "next_inspection": FIRST_INSPECTION + timedelta(days=numbers[3] % INSPECTION_DAYS),
         "cost": _amount(1_000 + numbers[4] % 499_000, numbers[5]),
-        "updated_at": START + timedelta(seconds=numbers[6] % YEAR_SECONDS),
+        "updated_at": FIRST_MOMENT + timedelta(seconds=numbers[6] % SPAN_SECONDS),
     }
+
+
+def _order_status(number: int, opened: datetime) -> str:
+    """Old work is done, and newer work is at any step."""
+    if (LAST_MOMENT - opened).days <= OLD_ORDER_DAYS:
+        return WORK_ORDER_STATUSES[number % len(WORK_ORDER_STATUSES)]
+    if number % 100 < OLD_ORDERS_CLOSED:
+        return "closed"
+    return OPEN_STATES[number // 100 % len(OPEN_STATES)]
 
 
 def work_order_row(position: int, seed: int = SEED) -> dict[str, Any]:
     numbers = _numbers(seed, "work_order", position)
-    status = WORK_ORDER_STATUSES[numbers[0] % len(WORK_ORDER_STATUSES)]
-    opened = START + timedelta(seconds=numbers[1] % YEAR_SECONDS)
+    opened = FIRST_MOMENT + timedelta(seconds=numbers[1] % SPAN_SECONDS)
+    status = _order_status(numbers[0], opened)
+    closed = min(opened + timedelta(hours=numbers[6] % 200), LAST_MOMENT) if status == "closed" else None
+    planned = None if status == "reported" else opened.date() + timedelta(days=numbers[7] % PLANNING_DAYS)
+    if closed and planned:
+        planned = min(planned, closed.date())
     return {
         "id": position + 1,
-        "equipment_id": position * WORK_ORDER_EVERY + 1,
+        "equipment_id": (position // len(ORDER_SPREAD)) * 30 + ORDER_SPREAD[position % len(ORDER_SPREAD)] + 1,
         "title": TITLES[numbers[2] % len(TITLES)],
         "status": status,
         "hours": Decimal(numbers[3] % 400) / 4,
         "cost": _amount(50 + numbers[4] % 9_950, numbers[5]),
         "opened_at": opened,
-        "closed_at": opened + timedelta(hours=numbers[6] % 200) if status == "closed" else None,
+        "closed_at": closed,
+        "planned_on": planned,
     }
 
 

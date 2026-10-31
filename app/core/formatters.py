@@ -1,15 +1,19 @@
 """Numbers, dates and times as the person's language writes them. Values stay exact: only their look changes."""
 
 import json
+import re
 from datetime import date, datetime
-from decimal import Decimal, localcontext
+from decimal import ROUND_HALF_UP, Decimal, localcontext
 from pathlib import Path
+from string import digits as ascii_digits
 from zoneinfo import ZoneInfo
 
 from babel.dates import format_date as babel_date
 from babel.dates import format_datetime as babel_datetime
+from babel.dates import format_skeleton
 from babel.numbers import format_decimal as babel_decimal
 from babel.numbers import format_percent as babel_percent
+from babel.numbers import get_decimal_symbol, get_group_symbol, get_minus_sign_symbol
 from babel.numbers import parse_decimal as babel_parse
 
 from app.core.i18n import current_language
@@ -21,6 +25,7 @@ _GROUPING: dict[str, int] = json.loads(Path(__file__).with_name("cldr_grouping.j
 
 
 _MARGIN = 8
+_ISO_DATE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
 
 
 def _minimum_grouping(locale: str) -> int:
@@ -36,25 +41,54 @@ def _groups(value: Decimal, language: str) -> bool:
     return len(str(abs(int(value)))) >= 3 + _minimum_grouping(language.replace("_", "-"))
 
 
-def format_decimal(value: Decimal | int) -> str:
-    language = current_language()
+def rounded(value: Decimal | int, places: int = 2) -> Decimal:
+    """The application's rule for a figure shown to fewer decimals than it has: half up, as a person expects."""
     exact = Decimal(value)
+    with localcontext(prec=len(format(exact, "f")) + places + _MARGIN):
+        result = exact.quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
+    return result if result else abs(result)  # nothing is left, so no sign is: never -0.00
+
+
+def format_decimal(value: Decimal | int, places: int | None = None) -> str:
+    """Every decimal the value has, or exactly `places` of them, as a column of money needs."""
+    language = current_language()
+    exact = Decimal(value) if places is None else rounded(value, places)
     # Sized to the value: Python's default of 28 digits, or any fixed limit, cuts longer ones without an error.
     # The margin covers the decimals Babel reserves even for a whole number.
     with localcontext(prec=len(format(exact, "f")) + _MARGIN):
         return babel_decimal(
-            exact, locale=language, decimal_quantization=False, group_separator=_groups(exact, language)
+            exact,
+            format=None if places is None else "#,##0." + "0" * places,
+            locale=language,
+            decimal_quantization=False,
+            group_separator=_groups(exact, language),
         )
 
 
 def parse_decimal(text: str) -> Decimal:
-    """Reads a number as the person's language writes it. Raises ValueError if it is not one."""
+    """Reads a number as the person's language writes it. Raises ValueError if it is not one.
+
+    Only the digits 0 to 9 and the language's own signs pass: Python's Decimal, underneath Babel, also reads 1e3, 1_000
+    and digits from other scripts, which nobody here writes, and 0e400, whose value cannot be stored.
+    """
+    language = current_language()
     cleaned = text.strip()
+    signs = {get_decimal_symbol(language), get_group_symbol(language), get_minus_sign_symbol(language)}
+    if not set(cleaned) <= set(ascii_digits) | signs:
+        raise ValueError(text)
     with localcontext(prec=len(cleaned) + 2):
-        value = babel_parse(cleaned, locale=current_language(), strict=True)
+        value = babel_parse(cleaned, locale=language, strict=True)
     if not value.is_finite():
         raise ValueError(text)
     return value
+
+
+def parse_date(text: str) -> date:
+    """Reads a date in its one form, YYYY-MM-DD, which is what a date field sends. Raises ValueError for anything else:
+    `date.fromisoformat` also reads 20270315 and 2027-W11-1."""
+    if not _ISO_DATE.fullmatch(text):
+        raise ValueError(text)
+    return date.fromisoformat(text)
 
 
 def format_percent(value: int | Decimal) -> str:
@@ -64,6 +98,15 @@ def format_percent(value: int | Decimal) -> str:
 
 def format_date(value: date) -> str:
     return babel_date(value, format="medium", locale=current_language())
+
+
+def format_month(value: date) -> str:
+    """A short month, as a chart's axis needs it."""
+    return format_skeleton("MMM", value, locale=current_language())
+
+
+def format_month_and_year(value: date) -> str:
+    return format_skeleton("yMMMM", value, locale=current_language())
 
 
 def format_datetime(value: datetime, time_zone: str) -> str:

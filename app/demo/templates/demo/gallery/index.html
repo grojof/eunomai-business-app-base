@@ -29,7 +29,7 @@
                data-search="{{ item.name }} {{ item.title.text }} {{ item.description.text }}">
         <!--official-->
         <div class="gallery-thumb" inert aria-hidden="true" lang="en">
-          {% if item.thumbnail %}<div class="gallery-thumb-content">{{ item.thumbnail }}</div>{% else %}{{ icon("calendar", "size-12") }}{% endif %}
+          {% if item.thumbnail %}<div class="gallery-thumb-content">{{ item.thumbnail }}</div>{% else %}{{ icon(item.icon, "size-12") }}{% endif %}
         </div>
         <!--/official-->
         <div class="flex items-center justify-between gap-2 border-t border-base-300 px-4 py-3">

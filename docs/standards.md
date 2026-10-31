@@ -62,7 +62,7 @@ passes by hand: keyboard only, then a screen reader (NVDA with a Chromium browse
 | A11Y-07 | A status is never shown by colour alone | [WCAG 1.4.1](https://www.w3.org/TR/WCAG22/#use-of-color) | By hand |
 | A11Y-08 | Every field has a label; errors are listed in a summary, linked to the field, and say how to fix them | [WCAG 3.3.1](https://www.w3.org/TR/WCAG22/#error-identification), [3.3.2](https://www.w3.org/TR/WCAG22/#labels-or-instructions), [3.3.3](https://www.w3.org/TR/WCAG22/#error-suggestion), [GOV.UK error summary](https://design-system.service.gov.uk/components/error-summary/) | Milestone 3 |
 | A11Y-09 | When content is replaced, focus stays somewhere sensible and the change is announced | [WCAG 4.1.3](https://www.w3.org/TR/WCAG22/#status-messages), [2.4.3](https://www.w3.org/TR/WCAG22/#focus-order) | Automatic |
-| A11Y-10 | A chart always has a text summary and its data as a table | [WCAG 1.1.1](https://www.w3.org/TR/WCAG22/#non-text-content) | Milestone 2 |
+| A11Y-10 | A chart always has a text summary and its data as a table, and they remain without JavaScript or when the library fails to load | [WCAG 1.1.1](https://www.w3.org/TR/WCAG22/#non-text-content) | Automatic |
 | A11Y-11 | Nothing moves or flashes on its own; animation respects `prefers-reduced-motion` | [WCAG 2.2.2](https://www.w3.org/TR/WCAG22/#pause-stop-hide), [2.3.3](https://www.w3.org/TR/WCAG22/#animation-from-interactions) | By hand |
 | A11Y-12 | Usable at 320 pixels wide, without sideways scrolling | [WCAG 1.4.10](https://www.w3.org/TR/WCAG22/#reflow) | Automatic |
 | A11Y-13 | A skip link is the first thing the keyboard reaches | [WCAG 2.4.1](https://www.w3.org/TR/WCAG22/#bypass-blocks), [GOV.UK skip link](https://design-system.service.gov.uk/components/skip-link/) | Automatic |
@@ -75,8 +75,8 @@ passes by hand: keyboard only, then a screen reader (NVDA with a Chromium browse
 
 daisyUI's examples in the gallery are reference material, not our screens. The scan is no gate on them and never decides
 what is shown: a person who asks to see what daisyUI offers sees all of it. It stays a gate on real screens: the shell,
-the dashboard, the settings menu with every look of its controls, the gallery's index, the frame of component pages,
-error pages and the palette.
+the dashboard, the equipment list and detail, planning, the settings menu with every look of its controls, the gallery's
+index, the frame of component pages, error pages and the palette.
 
 So **Available is not a promise of accessibility.** It means an official example, shown as published, not audited by us.
 **Approved** means our macro, tests and a review. **Decorative** and **Not recommended** stay, with their notes. Before an
@@ -93,7 +93,7 @@ regions, marked in the page, and not our frame around them.
 | USE-02 | Messages say what happened and what to do, in plain language | [Nielsen 9: recover from errors](https://www.nngroup.com/articles/ten-usability-heuristics/), [GOV.UK error message](https://design-system.service.gov.uk/components/error-message/) | By hand |
 | USE-03 | A failed submission keeps what was typed | [GOV.UK validation](https://design-system.service.gov.uk/patterns/validation/) | Milestone 3 |
 | USE-04 | Actions can be undone where possible; a confirmation names what will be lost | [Nielsen 3 and 5: user control, error prevention](https://www.nngroup.com/articles/ten-usability-heuristics/) | Milestone 3 |
-| USE-05 | Filters, sort and page live in the URL, and survive a reload | Project decision | Milestone 2 |
+| USE-05 | Filters, sort and page live in the URL, survive a reload and work with the back button | Project decision | Automatic |
 | USE-06 | Any action responds at once; a long task shows progress and can be left running | [Nielsen 1: visibility of system status](https://www.nngroup.com/articles/ten-usability-heuristics/) | Milestone 4 |
 | USE-07 | One primary action per screen | Project decision | By hand |
 | USE-08 | The same thing looks and behaves the same, in the same place | [WCAG 3.2.3](https://www.w3.org/TR/WCAG22/#consistent-navigation), [3.2.4](https://www.w3.org/TR/WCAG22/#consistent-identification), [Nielsen 4: consistency](https://www.nngroup.com/articles/ten-usability-heuristics/) | By hand |
@@ -114,7 +114,7 @@ applies anyway.
 | LANG-04 | Plurals follow each language's rules | [CLDR plural rules](https://cldr.unicode.org/index/cldr-spec/plural-rules) | Automatic |
 | LANG-05 | A context wherever one word has two meanings | [gettext manual](https://www.gnu.org/software/gettext/manual/gettext.html) | By hand |
 | LANG-06 | The formatters write numbers, dates and times as the locale does | [Unicode CLDR](https://cldr.unicode.org/) | Automatic |
-| LANG-07 | A number is read as the person's language writes it; a wrong format is refused, never guessed | [Unicode CLDR](https://cldr.unicode.org/) | Automatic |
+| LANG-07 | A number is read as the person's language writes it, with the digits 0 to 9 and its own signs; a wrong format is refused, never guessed. A date is read only as YYYY-MM-DD, the form a date field sends | [Unicode CLDR](https://cldr.unicode.org/) | Automatic |
 | LANG-08 | Exact values stay exact: the locale changes how a `Decimal` looks, never its value | Project decision | Automatic |
 | LANG-09 | Moments are shown in the application's time zone | [W3C Working with Time Zones](https://www.w3.org/TR/timezone/) | Automatic |
 | LANG-10 | `lang` on every page, and on any passage in another language | [WCAG 3.1.1](https://www.w3.org/TR/WCAG22/#language-of-page), [3.1.2](https://www.w3.org/TR/WCAG22/#language-of-parts), [BCP 47](https://www.rfc-editor.org/info/bcp47), [W3C](https://www.w3.org/International/questions/qa-html-language-declarations) | Automatic |
@@ -183,7 +183,7 @@ in the Ubuntu job.
 | SEC-02 | Permissions are checked on the server, per action; hiding a button is not a control | [ASVS V8](https://asvs.owasp.org/), [Top 10 A01](https://top10.owasp.org/2025/) | Automatic |
 | SEC-03 | Input is validated at the edge | [ASVS V2](https://asvs.owasp.org/), [Top 10 A05](https://top10.owasp.org/2025/) | Milestone 3 |
 | SEC-04 | Escaping is always on; user data is never marked as safe | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Automatic |
-| SEC-05 | Queries are parameterised; no text built from input | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Milestone 2 |
+| SEC-05 | Queries are parameterised; no text built from input | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Automatic |
 | SEC-06 | A Content Security Policy without inline scripts or styles, on every page, official examples included: none reaches a page with `style=`, `on*=` or an address on another server, and a browser opening each page finds no violation | [CSP 3](https://www.w3.org/TR/CSP3/), [OWASP CSP](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html) | Automatic |
 | SEC-07 | Changes from another site are refused | [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html), [Fetch Metadata](https://www.w3.org/TR/fetch-metadata/) | Automatic |
 | SEC-08 | Only the personal data needed; none in logs or URLs | [ASVS V14](https://asvs.owasp.org/), [OWASP Logging](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) | By hand |
@@ -192,4 +192,5 @@ in the Ubuntu job.
 | SEC-11 | An error reveals nothing to the person, and its detail reaches the log | [ASVS V16](https://asvs.owasp.org/), [Top 10 A10](https://top10.owasp.org/2025/) | Automatic |
 | SEC-12 | Uploads are checked by size and real type | [ASVS V5](https://asvs.owasp.org/), [OWASP File Upload](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html) | Milestone 3 |
 | SEC-14 | Text is never run as code: no `eval`, `new Function` or `exec`, and the browser refuses them | [CWE-95](https://cwe.mitre.org/data/definitions/95.html), [CSP 3](https://www.w3.org/TR/CSP3/), [htmx security](https://htmx.org/essays/web-security-basics-with-htmx/) | Automatic |
+| SEC-15 | A spreadsheet never runs what it exports: text that could start a formula is neutralised, and no cell holds one | [OWASP CSV Injection](https://owasp.org/www-community/attacks/CSV_Injection) | Automatic |
 | SEC-13 | Cookies are `HttpOnly` and `SameSite`, and `Secure` in production; a redirect never leaves the application | [ASVS V3](https://asvs.owasp.org/), [Top 10 A01](https://top10.owasp.org/2025/) | Automatic |

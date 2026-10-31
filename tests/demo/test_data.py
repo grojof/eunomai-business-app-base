@@ -8,6 +8,7 @@ from io import StringIO
 import pytest
 from alembic import command
 from alembic.config import Config
+from alembic.script import ScriptDirectory
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
@@ -21,7 +22,7 @@ from app.main import create_app
 from tests.conftest import build_settings
 from tests.helpers import ROOT
 
-FROZEN = "47f7f950bbb70474cafc6c0669d0533791010ec0837b7214f406223acfd52c11"
+FROZEN = "1fcccdc4888d3a7a6eea92e344293886dbe117e79b177ae333c2fda8739bda68"
 """The hash of the first thousand rows. If it changes, the demo's data changed on everyone's computer."""
 
 
@@ -88,7 +89,7 @@ def test_fifty_thousand_rows_arrive_whole(session):
     assert session.get(Equipment, 1).cost == equipment_row(0)["cost"]
     last = session.get(Equipment, 50_000)
     assert (last.code, last.next_inspection) == ("EQ-050000", equipment_row(49_999)["next_inspection"])
-    assert session.get(WorkOrder, 10_000).equipment.id == 49_996
+    assert session.get(WorkOrder, 10_000).equipment.id == 49_986
     assert total(session, Equipment.cost) == exact_sum(equipment_row(n)["cost"] for n in range(50_000))
 
 
@@ -153,6 +154,8 @@ def test_the_first_migration_gives_postgresql_its_exact_types():
     assert "cost NUMERIC(38, 20) NOT NULL" in sql
     assert "updated_at TIMESTAMP WITH TIME ZONE NOT NULL" in sql
     assert "FLOAT" not in sql
+    assert "ADD COLUMN planned_on DATE" in sql
+    assert "CREATE INDEX ix_equipment_cost ON equipment (cost)" in sql
 
 
 @pytest.mark.parametrize("path", ["/", "/inspections", "/administration", "/settings", "/gallery", "/gallery/button"])
@@ -163,3 +166,26 @@ def test_the_demo_works_with_no_database_set_up(tmp_path, person, path):
     assert client.get(path, headers=person).status_code == 200
     assert client.get("/health").status_code == 200
     assert not folder.exists(), "showing a page must not create a database"
+
+
+@pytest.mark.rule("DATA-03")
+def test_a_migration_down_and_up_keeps_exact_columns_numeric(database_url):
+    """Rows survive every step but the first migration, which holds the tables."""
+    migrate(database_url)
+    engine = create_database_engine(database_url)
+    with Session(engine) as session:
+        replace_rows(session, rows=100)
+        session.commit()
+    config = Config(toml_file=str(ROOT / "pyproject.toml"))
+    config.attributes["database_url"] = database_url
+    for revision in ScriptDirectory.from_config(config).walk_revisions():
+        if revision.down_revision is None:
+            continue
+        command.downgrade(config, str(revision.down_revision))
+        command.upgrade(config, "head")
+        with Session(engine) as session:
+            hours = session.scalars(select(WorkOrder.hours).order_by(WorkOrder.hours)).all()
+            costs = session.scalars(select(Equipment.cost).order_by(Equipment.cost)).all()
+        assert hours == sorted(hours), revision.revision
+        assert costs == sorted(costs), revision.revision
+    engine.dispose()

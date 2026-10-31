@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 23:36+0100\n"
+"POT-Creation-Date: 2026-10-31 18:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -19,6 +19,31 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid ""
+"%(count)s. Showing %(first)s to %(last)s, sorted by %(column)s, "
+"%(direction)s."
+msgstr ""
+"%(count)s. Se muestran del %(first)s al %(last)s, ordenados por "
+"%(column)s, %(direction)s."
+
+msgid ""
+"A figure with its text summary and its data as a table, drawn with "
+"Chart.js."
+msgstr ""
+"Una figura con su resumen en texto y sus datos en una tabla, dibujada con"
+" Chart.js."
+
+msgid "A list of terms and their values, for one record's details."
+msgstr "Una lista de términos y sus valores, para los detalles de un registro."
+
+msgid ""
+"A plain form that filters a list on the server. daisyUI's filter is a set"
+" of radio buttons."
+msgstr ""
+"Un formulario sencillo que filtra una lista en el servidor. El filter de "
+"daisyUI es un grupo de botones de opción."
 
 msgid "Actions"
 msgstr "Acciones"
@@ -41,6 +66,9 @@ msgstr "Disponible"
 msgid "Back to the start"
 msgstr "Volver al inicio"
 
+msgid "Breadcrumbs"
+msgstr "Migas de pan"
+
 msgid "Centred"
 msgstr "Centrado"
 
@@ -51,14 +79,29 @@ msgstr ""
 "Cambia cómo se ve esta aplicación para ti. Cada opción se aplica al "
 "momento y se recuerda en este navegador."
 
+msgid "Chart"
+msgstr "Gráfico"
+
 msgid "Check the address, or go back to the start."
 msgstr "Comprueba la dirección o vuelve al inicio."
+
+msgid "Clear all"
+msgstr "Quitar todos"
 
 msgid "Close"
 msgstr "Cerrar"
 
+msgid "Close this message"
+msgstr "Cerrar este mensaje"
+
 msgid "Compact"
 msgstr "Compacta"
+
+msgid "Copied"
+msgstr "Copiado"
+
+msgid "Copy"
+msgstr "Copiar"
 
 msgid "Dark"
 msgstr "Oscuro"
@@ -72,11 +115,17 @@ msgstr "Mostrar datos"
 msgid "Data input"
 msgstr "Entrada de datos"
 
+msgid "Data table"
+msgstr "Tabla de datos"
+
 msgid "Decorative"
 msgstr "Decorativo"
 
 msgid "Density"
 msgstr "Densidad"
+
+msgid "Description list"
+msgstr "Lista de descripciones"
 
 msgid "Done"
 msgstr "Hecho"
@@ -92,6 +141,12 @@ msgstr "Error"
 
 msgid "Feedback"
 msgstr "Avisos"
+
+msgid "Filter bar"
+msgstr "Barra de filtros"
+
+msgid "Filters"
+msgstr "Filtros"
 
 msgid "Fixed header"
 msgstr "Cabecera fija"
@@ -146,6 +201,14 @@ msgstr "Disposición, tema, idioma y cómo se ven sus controles."
 msgid "Light"
 msgstr "Claro"
 
+msgid "Links in the column headers sort the table inside each group."
+msgstr ""
+"Los enlaces de las cabeceras de columna ordenan la tabla dentro de cada "
+"grupo."
+
+msgid "Links in the column headers sort the table."
+msgstr "Los enlaces de las cabeceras de columna ordenan la tabla."
+
 msgid "Main"
 msgstr "Principal"
 
@@ -161,11 +224,17 @@ msgstr "Se mueve solo y solo un puntero puede pausarlo: WCAG 2.2.2."
 msgid "Navigation"
 msgstr "Navegación"
 
+msgid "Next page"
+msgstr "Página siguiente"
+
 msgid "No"
 msgstr "No"
 
 msgid "No results"
 msgstr "Sin resultados"
+
+msgid "No results."
+msgstr "Sin resultados."
 
 msgid "Normal"
 msgstr "Normal"
@@ -185,6 +254,14 @@ msgstr ""
 msgid "Open menu"
 msgstr "Abrir el menú"
 
+#, python-format
+msgid "Page %(page)s"
+msgstr "Página %(page)s"
+
+#, python-format
+msgid "Page %(page)s of %(pages)s"
+msgstr "Página %(page)s de %(pages)s"
+
 msgid "Page not found"
 msgstr "Página no encontrada"
 
@@ -194,8 +271,15 @@ msgstr "Páginas"
 msgid "Preferences"
 msgstr "Preferencias"
 
+msgid "Previous page"
+msgstr "Página anterior"
+
 msgid "Radio"
 msgstr "Opción"
+
+#, python-format
+msgid "Remove filter %(name)s: %(value)s"
+msgstr "Quitar el filtro %(name)s: %(value)s"
 
 msgid "Results"
 msgstr "Resultados"
@@ -203,6 +287,9 @@ msgstr "Resultados"
 #, python-format
 msgid "Results: %(count)s"
 msgstr "Resultados: %(count)s"
+
+msgid "Rows per page"
+msgstr "Filas por página"
 
 msgid "Search"
 msgstr "Buscar"
@@ -234,6 +321,14 @@ msgstr "Inicio"
 msgid "Swap"
 msgstr "Intercambio"
 
+msgid "That did not work. Try again in a moment."
+msgstr "No ha funcionado. Vuelve a intentarlo en un momento."
+
+msgid "The server cannot be reached. Check your connection and try again."
+msgstr ""
+"No se puede contactar con el servidor. Revisa tu conexión y vuelve a "
+"intentarlo."
+
 msgid "Theme"
 msgstr "Tema"
 
@@ -242,6 +337,13 @@ msgstr "Tema e idioma"
 
 msgid "This application is ready. Replace this page with your first screen."
 msgstr "Esta aplicación está lista. Sustituye esta página por tu primera pantalla."
+
+msgid ""
+"This is no longer here: someone may have removed it. Reload the page to "
+"see what there is now."
+msgstr ""
+"Esto ya no está aquí: quizá alguien lo ha quitado. Recarga la página para"
+" ver lo que hay ahora."
 
 msgid "Toggle"
 msgstr "Interruptor"
@@ -276,6 +378,15 @@ msgstr "Sí"
 
 msgid "You do not have permission"
 msgstr "No tienes permiso"
+
+msgid "You do not have permission to do this."
+msgstr "No tienes permiso para hacer esto."
+
+msgid "ascending"
+msgstr "ascendente"
+
+msgid "descending"
+msgstr "descendente"
 
 msgid "to close"
 msgstr "para cerrar"

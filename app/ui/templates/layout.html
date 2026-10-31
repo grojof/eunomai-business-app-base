@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="htmx-config" content='{"includeIndicatorStyles":false,"allowEval":false}'>
+  <meta name="htmx-config" content='{"includeIndicatorStyles":false,"allowEval":false,"historyCacheSize":0,"refreshOnHistoryMiss":true,"attributesToSettle":["class","width","height"]}'>
   <title>{% block title %}{% endblock %} · {{ app_name }}</title>
   <link rel="icon" href="/static/brand/logo.svg">
   <link rel="stylesheet" href="/static/ui/app.css">
@@ -12,17 +12,18 @@
   {% endfor %}
   <script src="/static/ui/app.js" defer></script>
   <script src="/static/ui/palette.js" defer></script>
+  <script src="/static/ui/charts.js" defer></script>
   {% block scripts %}{% endblock %}
 </head>
-<body class="min-h-dvh bg-base-200 text-base-content">
+<body class="min-h-dvh bg-base-200 text-base-content print:bg-transparent">
   {% from "ui/macros.html" import icon %}
   {% set side = navigation and layout.navigation in ("side", "compact") %}
   {% set menu_button = "" if layout.navigation == "hidden" else "lg:hidden" %}
-  <a class="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:start-2 focus:top-2 focus:z-50" href="#main">{{ _("Skip to content") }}</a>
+  <a class="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:start-2 focus:top-2 focus:z-50 print:hidden" href="#main">{{ _("Skip to content") }}</a>
   <div class="flex min-h-dvh">
-    {% if side %}<div class="contents lg:block lg:shrink-0 lg:border-e lg:border-base-300 lg:bg-base-100">{% include "ui/navigation.html" %}</div>{% endif %}
+    {% if side %}<div class="contents lg:block lg:shrink-0 lg:border-e lg:border-base-300 lg:bg-base-100 print:hidden">{% include "ui/navigation.html" %}</div>{% endif %}
     <div class="flex min-w-0 flex-1 flex-col">
-      <header class="navbar z-20 min-h-0 flex-wrap gap-2 border-b border-base-300 bg-base-100 px-4 py-2{{ ' sticky top-0' if layout.sticky_header else '' }}">
+      <header class="navbar z-20 min-h-0 flex-wrap gap-2 border-b border-base-300 bg-base-100 px-4 py-2 print:hidden{{ ' sticky top-0' if layout.sticky_header else '' }}">
         {% if navigation %}
         <button class="btn btn-ghost btn-square {{ menu_button }}" type="button" popovertarget="navigation" aria-label="{{ _('Open menu') }}">{{ icon("menu") }}</button>
         {% endif %}
@@ -46,12 +47,22 @@
         </div>
         {% endif %}
       </header>
-      <main id="main" tabindex="-1" class="w-full grow space-y-6 p-4 lg:p-8{{ ' mx-auto max-w-7xl' if layout.width == 'centered' else '' }}">
+      <main id="main" tabindex="-1" class="w-full grow space-y-6 p-4 lg:p-8 print:p-0{{ ' mx-auto max-w-7xl' if layout.width == 'centered' else '' }}">
         {% block content %}{% endblock %}
       </main>
     </div>
   </div>
   {% if person %}{% include "ui/palette.html" %}{% endif %}
   <div id="announcements" class="sr-only" role="status" aria-live="polite"></div>
+  <div id="request-problem" class="toast toast-end z-50 print:hidden" role="alert" hidden
+       data-gone="{{ _('This is no longer here: someone may have removed it. Reload the page to see what there is now.') }}"
+       data-forbidden="{{ _('You do not have permission to do this.') }}"
+       data-failed="{{ _('That did not work. Try again in a moment.') }}"
+       data-unreachable="{{ _('The server cannot be reached. Check your connection and try again.') }}">
+    <div class="alert alert-error max-w-sm whitespace-normal">
+      <p data-problem-text></p>
+      <button class="btn btn-ghost btn-square btn-xs" type="button" data-problem-close aria-label="{{ _('Close this message') }}">{{ icon("x", "size-4") }}</button>
+    </div>
+  </div>
 </body>
 </html>
