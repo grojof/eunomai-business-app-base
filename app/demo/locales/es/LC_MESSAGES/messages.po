@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 19:26+0100\n"
+"POT-Creation-Date: 2026-10-31 19:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -75,6 +75,12 @@ msgid ""
 msgstr ""
 "%(total)s órdenes de trabajo abiertas este año. El mes con más trabajo "
 "fue %(month)s, con %(count)s."
+
+msgid "2 attached files"
+msgstr "2 archivos adjuntos"
+
+msgid "7.50 hours of work"
+msgstr "7,50 horas de trabajo"
 
 msgid "A PDF, PNG or JPEG file of up to 10 MB."
 msgstr "Un archivo PDF, PNG o JPEG de hasta 10 MB."
@@ -255,6 +261,15 @@ msgstr "Decorativo: no pensado para aplicaciones de gestión."
 msgid "Delete"
 msgstr "Eliminar"
 
+msgid "Delete it"
+msgstr "Eliminarla"
+
+msgid "Delete this work order"
+msgstr "Eliminar esta orden de trabajo"
+
+msgid "Delete this work order?"
+msgstr "¿Eliminar esta orden de trabajo?"
+
 msgid "Description"
 msgstr "Descripción"
 
@@ -383,6 +398,16 @@ msgstr ""
 "Aquí es un formulario sencillo y recarga la página. En una pantalla, htmx"
 " sustituye solo los resultados."
 
+msgid ""
+"Here nothing is deleted. Focus starts on the way out, and comes back to "
+"the button when it closes. Without JavaScript the same address is a page "
+"of its own, with the same words: the work order form shows both."
+msgstr ""
+"Aquí no se elimina nada. El foco empieza en la salida y vuelve al botón "
+"al cerrarse. Sin JavaScript la misma dirección es una página propia, con "
+"las mismas palabras: el formulario de orden de trabajo muestra ambas "
+"cosas."
+
 msgid "High"
 msgstr "Alta"
 
@@ -436,6 +461,9 @@ msgid ""
 msgstr ""
 "Usa los colores propios de Tailwind, que esta base elimina, así que "
 "algunos colores difieren del ejemplo publicado."
+
+msgid "Keep it"
+msgstr "Conservarla"
 
 msgid "Leave it empty if it is not planned yet."
 msgstr "Déjala vacía si aún no está planificada."
@@ -531,6 +559,9 @@ msgstr "De %(total)s equipos, el %(share)s está en servicio."
 
 msgid "Official examples"
 msgstr "Ejemplos oficiales"
+
+msgid "Oil change on the air compressor"
+msgstr "Cambio de aceite del compresor de aire"
 
 msgid ""
 "Older equipment costs more to repair, and the rise steepens after ten "
@@ -795,6 +826,9 @@ msgstr ""
 "JavaScript y con el botón de volver. En una página con todos los paneles "
 "ya presentes, usa el patrón de pestañas del selector Vista previa y "
 "Código de la galería."
+
+msgid "This cannot be undone. These go with it:"
+msgstr "No se puede deshacer. Esto se va con ella:"
 
 msgid "This equipment is due for inspection."
 msgstr "A este equipo le toca inspección."

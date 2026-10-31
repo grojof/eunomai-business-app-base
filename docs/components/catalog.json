@@ -8,6 +8,14 @@
     "page": "docs/components/button.md"
   },
   {
+    "name": "confirmation-dialog",
+    "category": "actions",
+    "status": "available",
+    "note": "Asks before an action that cannot be undone, and names what will be lost.",
+    "use": "Asks before an action that cannot be undone, and names what will be lost.",
+    "page": "docs/components/confirmation-dialog.md"
+  },
+  {
     "name": "dropdown",
     "category": "actions",
     "status": "available",

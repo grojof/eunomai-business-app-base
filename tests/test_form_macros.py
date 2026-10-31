@@ -189,3 +189,59 @@ def test_form_actions_put_the_way_out_after_the_main_action():
 
 def test_a_danger_link_has_daisyuis_colour():
     assert "btn-error" in str(MACROS.link_button("Delete", "/delete", "danger"))
+
+
+def asking(**given) -> str:
+    what = {"lost": ["Two attached files", "7.50 hours"], "action": "/delete", "fields": [("version", 3)]} | given
+    return str(
+        MACROS.confirmation(
+            "ask", "Delete work order 5?", "This cannot be undone.", confirm="Delete", cancel="Keep", **what
+        )
+    )
+
+
+@pytest.mark.rule("USE-04")
+def test_a_confirmation_names_what_will_be_lost():
+    html = asking()
+    assert "This cannot be undone." in html
+    assert "<li>Two attached files</li>" in html
+    assert "<li>7.50 hours</li>" in html
+
+
+def test_a_confirmation_asks_with_a_post_and_its_own_fields():
+    html = asking()
+    assert 'method="post" action="/delete"' in html
+    assert '<input type="hidden" name="version" value="3">' in html
+    assert re.search(r'<button class="btn btn-error"[^>]*type="submit"', html)
+
+
+def test_in_a_dialog_focus_starts_on_the_way_out():
+    html = asking()
+    assert re.search(r'<button[^>]*data-dialog-close="ask"[^>]*autofocus', html) or re.search(
+        r'<button[^>]*autofocus[^>]*data-dialog-close="ask"', html
+    )
+    assert 'id="ask-title"' in html
+    assert 'id="ask-lost"' in html
+
+
+def test_as_a_page_it_has_a_heading_of_its_own_and_a_link_back():
+    html = asking(back="/list", level=1)
+    assert '<h1 id="ask-title"' in html
+    assert re.search(r'<a class="btn " href="/list"[^>]*>s*Keep</a>', html)
+    assert "data-dialog-close" not in html
+
+
+def test_a_dialog_that_asks_is_an_alert_tied_to_what_is_lost():
+    html = str(MACROS.dialog("ask", "Close", alert=True))
+    assert 'role="alertdialog"' in html
+    assert 'aria-labelledby="ask-title"' in html
+    assert 'aria-describedby="ask-lost"' in html
+    assert "alertdialog" not in str(MACROS.dialog("edit", "Close"))
+
+
+def test_a_link_that_asks_is_a_page_without_javascript_and_a_dialog_with_it():
+    html = str(MACROS.confirm_link("Delete", "/orders/5/delete", "ask"))
+    assert 'href="/orders/5/delete"' in html
+    assert 'hx-get="/orders/5/delete"' in html
+    assert 'hx-target="#ask-body"' in html
+    assert 'aria-haspopup="dialog"' in html

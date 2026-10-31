@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 19:26+0100\n"
+"POT-Creation-Date: 2026-10-31 19:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -75,6 +75,12 @@ msgid ""
 msgstr ""
 "%(total)s ordres de treball obertes aquest any. El mes amb més feina va "
 "ser %(month)s, amb %(count)s."
+
+msgid "2 attached files"
+msgstr "2 fitxers adjunts"
+
+msgid "7.50 hours of work"
+msgstr "7,50 hores de feina"
 
 msgid "A PDF, PNG or JPEG file of up to 10 MB."
 msgstr "Un fitxer PDF, PNG o JPEG de fins a 10 MB."
@@ -255,6 +261,15 @@ msgstr "Decoratiu: no pensat per a aplicacions de gestió."
 msgid "Delete"
 msgstr "Suprimeix"
 
+msgid "Delete it"
+msgstr "Elimina-la"
+
+msgid "Delete this work order"
+msgstr "Elimina aquesta ordre de treball"
+
+msgid "Delete this work order?"
+msgstr "Vols eliminar aquesta ordre de treball?"
+
 msgid "Description"
 msgstr "Descripció"
 
@@ -384,6 +399,16 @@ msgstr ""
 "Aquí és un formulari senzill i recarrega la pàgina. En una pantalla, htmx"
 " substitueix només els resultats."
 
+msgid ""
+"Here nothing is deleted. Focus starts on the way out, and comes back to "
+"the button when it closes. Without JavaScript the same address is a page "
+"of its own, with the same words: the work order form shows both."
+msgstr ""
+"Aquí no s'elimina res. El focus comença a la sortida i torna al botó en "
+"tancar-se. Sense JavaScript la mateixa adreça és una pàgina pròpia, amb "
+"les mateixes paraules: el formulari d'ordre de treball mostra totes dues "
+"coses."
+
 msgid "High"
 msgstr "Alta"
 
@@ -437,6 +462,9 @@ msgid ""
 msgstr ""
 "Fa servir els colors propis de Tailwind, que aquesta base elimina, de "
 "manera que alguns colors difereixen de l'exemple publicat."
+
+msgid "Keep it"
+msgstr "Conserva-la"
 
 msgid "Leave it empty if it is not planned yet."
 msgstr "Deixa-la buida si encara no està planificada."
@@ -532,6 +560,9 @@ msgstr "De %(total)s equips, el %(share)s és en servei."
 
 msgid "Official examples"
 msgstr "Exemples oficials"
+
+msgid "Oil change on the air compressor"
+msgstr "Canvi d'oli del compressor d'aire"
 
 msgid ""
 "Older equipment costs more to repair, and the rise steepens after ten "
@@ -798,6 +829,9 @@ msgstr ""
 "sense JavaScript i amb el botó d'enrere. En una pàgina amb tots els "
 "panells ja presents, fes servir el patró de pestanyes del selector "
 "Previsualització i Codi de la galeria."
+
+msgid "This cannot be undone. These go with it:"
+msgstr "No es pot desfer. Això se'n va amb ella:"
 
 msgid "This equipment is due for inspection."
 msgstr "Aquest equip ha de passar la inspecció."

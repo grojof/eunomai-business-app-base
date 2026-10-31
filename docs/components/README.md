@@ -16,6 +16,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | Component | Status | Use |
 |---|---|---|
 | [`button`](button.md) | approved | Use buttons to start actions. |
+| [`confirmation-dialog`](confirmation-dialog.md) | available | Asks before an action that cannot be undone, and names what will be lost. |
 | [`dropdown`](dropdown.md) | available | A dropdown can open a menu or another element when the user clicks the button. |
 | [`fab`](fab.md) | available | A FAB is a floating action button that stays in a bottom corner of the screen. It contains a focusable, accessible element with a button role. When the user clicks or focuses it, more speed-dial buttons appear. These buttons have a vertical or quarter-circle arrangement. |
 | [`modal`](modal.md) | available | A modal shows a dialog or box when the user clicks a button. |

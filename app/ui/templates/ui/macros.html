@@ -360,11 +360,42 @@
 
 {#- A native dialog: the browser keeps the keyboard inside it, closes it with Escape and gives focus back. Its body arrives
     with htmx, and app.js opens it then. The backdrop's button is what daisyUI asks for: a click outside closes it too. -#}
-{% macro dialog(identifier, label) %}
-<dialog id="{{ identifier }}" class="modal" aria-labelledby="{{ identifier }}-title">
-  <div class="modal-box" id="{{ identifier }}-body"></div>
+{% macro dialog(identifier, label, alert=false) %}
+<dialog id="{{ identifier }}" class="modal" aria-labelledby="{{ identifier }}-title"{% if alert %} role="alertdialog" aria-describedby="{{ identifier }}-lost"{% endif %}>
+  <div class="modal-box" id="{{ identifier }}-body">{% if caller is defined %}{{ caller() }}{% endif %}</div>
   <form method="dialog" class="modal-backdrop"><button>{{ label }}</button></form>
 </dialog>
+{% endmacro %}
+
+{#- Asks before what cannot be undone, and names what goes: a dialog with htmx, and the same address is a page of its own
+    without JavaScript, with `back` and `level=1`. Focus starts on the way out. In a dialog, the browser gives it back to
+    the link that opened it. `lost` is a list of sentences; `fields`, what the form sends with it. Without `action` the
+    form only closes its dialog, as a specimen needs. -#}
+{% macro confirmation(identifier, title, consequence, lost, confirm, cancel, action="", fields=[], back="", level=2) %}
+<h{{ level }} id="{{ identifier }}-title">{{ title }}</h{{ level }}>
+<div id="{{ identifier }}-lost" class="mt-2 space-y-2">
+  <p>{{ consequence }}</p>
+  {% if lost %}<ul class="list-disc ps-5">{% for item in lost %}<li>{{ item }}</li>{% endfor %}</ul>{% endif %}
+</div>
+<form {% if action %}method="post" action="{{ action }}"{% else %}method="dialog"{% endif %}>
+  {% for name, value in fields %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+  {% if back %}
+  <div class="mt-4 flex flex-wrap gap-2">
+    {{ link_button(cancel, back) }}
+    {{ button(confirm, "danger", "submit") }}
+  </div>
+  {% else %}
+  <div class="modal-action">
+    {{ button(cancel, attributes={"data-dialog-close": identifier, "autofocus": ""}) }}
+    {{ button(confirm, "danger", "submit") }}
+  </div>
+  {% endif %}
+</form>
+{% endmacro %}
+
+{#- Leads to a confirmation: `target` is its dialog. -#}
+{% macro confirm_link(text, href, target, name="", label="", kind="danger", small=false) %}
+{{ link_button(text, href, kind, small, name, {"aria-label": label or none, "aria-haspopup": "dialog", "hx-get": href, "hx-target": "#" ~ target ~ "-body"}) }}
 {% endmacro %}
 
 {#- A plain GET form: daisyUI's `filter` is a set of radio buttons, not this. With JavaScript, htmx sends it as it changes;

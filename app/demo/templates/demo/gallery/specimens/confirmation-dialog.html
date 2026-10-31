@@ -1,0 +1,11 @@
+{% from "ui/macros.html" import button, confirmation, dialog %}
+{{ button(_("Delete this work order"), "danger", attributes={"data-dialog": "sample-confirm", "aria-haspopup": "dialog"}, extra="noscript:hidden") }}
+{% call dialog("sample-confirm", _("Close"), alert=true) %}
+{{ confirmation("sample-confirm", _("Delete this work order?"), _("This cannot be undone. These go with it:"), [_("Oil change on the air compressor"), _("7.50 hours of work"), _("2 attached files")], _("Delete it"), _("Keep it")) }}
+{% endcall %}
+<p class="mt-3 text-sm">{{ _("Here nothing is deleted. Focus starts on the way out, and comes back to the button when it closes. Without JavaScript the same address is a page of its own, with the same words: the work order form shows both.") }}</p>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ confirm_link(_("Delete"), address, "confirm") }}
+{{ dialog("confirm", _("Close"), alert=true) }}
+
+{# What the address gives, in the dialog: #}
+{{ confirmation("confirm", _("Delete this work order?"), _("This cannot be undone."), lost, _("Delete it"), _("Keep it"), action) }}{% endraw %}</code></pre>

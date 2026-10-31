@@ -31,6 +31,7 @@ THEME = N_(
 
 OWN_TITLES = (
     N_("Chart"),
+    N_("Confirmation dialog"),
     N_("Date field"),
     N_("Description list"),
     N_("Error summary"),
@@ -57,6 +58,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
         N_("Actions"),
         (
             Component("button", APPROVED, macro="button"),
+            Component(
+                "confirmation-dialog",
+                note=N_("Asks before an action that cannot be undone, and names what will be lost."),
+                macro="confirmation",
+                icon="triangle-alert",
+            ),
             Component("dropdown"),
             Component("fab"),
             Component("modal", macro="dialog"),

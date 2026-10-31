@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 19:26+0100\n"
+"POT-Creation-Date: 2026-10-31 19:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -68,6 +68,11 @@ msgstr "Como el sistema"
 msgid "Ask whoever manages this application if you need access."
 msgstr "Si necesitas acceso, pídelo a quien gestiona esta aplicación."
 
+msgid "Asks before an action that cannot be undone, and names what will be lost."
+msgstr ""
+"Pregunta antes de una acción que no se puede deshacer y dice qué se "
+"perderá."
+
 msgid "Available"
 msgstr "Disponible"
 
@@ -104,6 +109,9 @@ msgstr "Cerrar este mensaje"
 
 msgid "Compact"
 msgstr "Compacta"
+
+msgid "Confirmation dialog"
+msgstr "Diálogo de confirmación"
 
 msgid "Copied"
 msgstr "Copiado"

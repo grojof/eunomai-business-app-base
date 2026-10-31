@@ -18,6 +18,7 @@ SPECIMENS = (
     "error-summary",
     "field-error",
     "form-actions",
+    "confirmation-dialog",
 )
 OWN_PAGES = ("date-field", "number-field", "searchable-select", "error-summary", "field-error", "form-actions")
 """Pages with no official examples, so a scan reads only what is ours. The others have the frame's exclusions."""
@@ -232,3 +233,43 @@ def test_it_works_under_the_security_policy(open_page):
     page.locator(BOX).press("ArrowDown")
     page.keyboard.press("Enter")
     assert problems == []
+
+
+CONFIRMATION = "/gallery/confirmation-dialog"
+
+
+def open_confirmation(page):
+    opener = page.get_by_role("button", name="Delete this work order")
+    opener.focus()
+    page.keyboard.press("Enter")
+    page.wait_for_selector("dialog#sample-confirm[open]")
+    return opener
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-01")
+@pytest.mark.rule("A11Y-05")
+@pytest.mark.parametrize("theme", ["light", "dark"])
+@pytest.mark.parametrize("width", [1280, 390])
+def test_the_open_confirmation_passes_the_scan(open_page, theme, width):
+    page = open_page(CONFIRMATION, theme=theme, width=width, bypass_csp=True)
+    open_confirmation(page)
+    assert run_axe(page, exclude=FRAME_EXCLUDES) == []
+
+
+@pytest.mark.browser
+def test_focus_starts_on_the_way_out_and_stays_inside(open_page):
+    page = open_page(CONFIRMATION)
+    open_confirmation(page)
+    assert page.evaluate("document.activeElement.textContent.trim()") == "Keep it"
+    assert page.evaluate("document.querySelector('dialog#sample-confirm').matches(':modal')")
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize("key", ["Escape", "Enter"])
+def test_closing_it_returns_focus_to_what_opened_it(open_page, key):
+    page = open_page(CONFIRMATION)
+    open_confirmation(page)
+    page.keyboard.press(key)
+    until(page, "!document.querySelector('dialog#sample-confirm').open")
+    assert page.evaluate("document.activeElement.textContent.trim()") == "Delete this work order"

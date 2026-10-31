@@ -8,7 +8,7 @@ document.addEventListener("htmx:afterSettle", (event) => {
     announce(announcement.dataset.announce);
   }
   upgradeComboboxes(content);
-  settleDialog(content);
+  settleDialog(content, event.detail.requestConfig?.elt);
   content.querySelector("[data-focus]")?.focus();
   if (document.activeElement === document.body) {
     content.querySelector("[data-focus-fallback]")?.focus();
@@ -18,7 +18,7 @@ document.addEventListener("htmx:afterSettle", (event) => {
 
 // A dialog whose body arrives with htmx opens then. `data-close-dialog` in what arrives closes it, and names where focus
 // goes: the row that opened it was replaced, so the browser cannot return there by itself.
-function settleDialog(content) {
+function settleDialog(content, opener) {
   const dialog = content.closest("dialog");
   if (!dialog) {
     return;
@@ -30,6 +30,7 @@ function settleDialog(content) {
     content.replaceChildren();
     (row ?? document.querySelector("[data-focus-fallback]"))?.focus();
   } else if (!dialog.open && content.children.length) {
+    opener?.focus(); // what has focus now is where the browser returns it, and not every browser focuses a clicked link
     dialog.showModal();
   }
 }
