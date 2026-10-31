@@ -52,7 +52,7 @@ def test_text_has_a_length_on_both_databases():
 @pytest.mark.rule("SEC-03")
 @pytest.mark.parametrize(
     "value",
-    ["a\x00b", "a\nb", "a\tb", "a\x7fb", "a\x1bb", "a\x85b", "a\u2028b", "a\u2029b", "a\u202eb", "\ufeffa", "a\u200db"],
+    ["a\x00b", "a\nb", "a\tb", "a\x7fb", "a\x1bb", "a\x85b", "a\u2028b", "a\u2029b", "a\u202eb", "a\u2066b"],
 )
 def test_a_line_of_text_refuses_control_characters(value):
     """PostgreSQL refuses a NUL inside text: left alone it would be an error page there, and stored on SQLite."""
@@ -68,10 +68,27 @@ def test_several_lines_keep_their_line_breaks_in_one_form_and_nothing_else():
 
 
 @pytest.mark.rule("SEC-03")
-@pytest.mark.parametrize("value", ["a\x85b", "a\u2028b", "a\u2029b", "a\u202eb", "\ufeffa", "a\u00adb"])
+@pytest.mark.parametrize("value", ["a\x85b", "a\u202eb", "a\u2066b", "a\u200fb"])
 def test_several_lines_refuse_by_category_too(value):
     with pytest.raises(Refused):
         read_text(value, longest=80, lines=True)
+
+
+@pytest.mark.parametrize(
+    ("pasted", "kept"), [("\ufeffPump", "Pump"), ("in\u00adspection", "inspection"), ("a\u200bb", "ab")]
+)
+def test_marks_that_word_processors_leave_in_pasted_text_go_quietly(pasted, kept):
+    """A person cannot see these, so a refusal would give them nothing to remove."""
+    assert read_text(pasted, longest=80) == kept
+
+
+@pytest.mark.parametrize("emoji", ["\U0001f469\u200d\U0001f527", "\u0dc1\u0dca\u200d\u0dbb\u0dd3"])
+def test_a_joiner_is_part_of_what_a_person_wrote(emoji):
+    assert read_text(emoji, longest=80) == emoji
+
+
+def test_a_separator_from_a_pdf_is_a_line_break_where_lines_are_allowed():
+    assert read_text("one\u2028two\u2029three", longest=80, lines=True) == "one\ntwo\nthree"
 
 
 def test_a_lone_carriage_return_is_a_line_break():

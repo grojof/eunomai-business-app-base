@@ -4,6 +4,7 @@ A reader takes what was sent, as text, and gives back the value to save, or rais
 read. `read_fields` runs them all and keeps each problem with its field, so a person sees every problem at once.
 """
 
+import re
 import unicodedata
 from collections.abc import Callable, Collection, Mapping
 from datetime import date
@@ -18,6 +19,10 @@ LONGEST_NUMBER = 64
 _HIDDEN_CATEGORIES = {"Cc", "Cf", "Cs", "Zl", "Zp"}
 """Control and format characters, surrogates, and line and paragraph separators. PostgreSQL refuses a NUL inside text,
 and the others hide on screen, as the one that shows `gnp.exe` backwards does."""
+_LEFT_BY_PASTING = str.maketrans("", "", "\u00ad\u200b\ufeff")
+"""A soft hyphen, a zero width space and a byte order mark: invisible, so refusing one leaves nothing to remove."""
+_JOINERS = "\u200c\u200d"
+"""Part of what a person wrote: they join the signs of an emoji, and the letters of some scripts."""
 
 
 class Refused(ValueError):
@@ -43,10 +48,11 @@ def read_fields(fields: Mapping[str, Callable[[], Any]]) -> tuple[dict[str, Any]
 def read_text(text: str, *, longest: int, missing: str = "", lines: bool = False) -> str:
     """Text without its outer spaces, and with one form of line break. `missing` says it is needed, and what to do. The
     length is checked here because SQLite does not."""
-    value = text.replace("\r\n", "\n").replace("\r", "\n").strip()
+    breaks = re.sub("\r\n|[\r\u2028\u2029]", "\n", text)
+    value = breaks.translate(_LEFT_BY_PASTING).strip()
     if not value and missing:
         raise Refused(missing)
-    if has_hidden_characters(value, "\t\n" if lines else ""):
+    if has_hidden_characters(value, _JOINERS + ("\t\n" if lines else "")):
         raise Refused(_("Remove the special characters, such as tabs, from this text."))
     if len(value) > longest:
         raise Refused(_("Use %(most)s characters at most.") % {"most": format_decimal(longest)})
