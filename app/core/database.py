@@ -1,5 +1,6 @@
 """The database: its connection, a session per request, and what keeps SQLite honest. See docs/specification.md#data"""
 
+import re
 import sqlite3
 from collections.abc import Iterable, Iterator
 from datetime import datetime
@@ -19,13 +20,17 @@ from sqlalchemy import (
     FunctionElement,
     MetaData,
     Select,
+    Table,
+    Text,
     TypeCoerce,
     UnaryExpression,
     create_engine,
     event,
     func,
     select,
+    text,
 )
+from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import DeclarativeBase, InstrumentedAttribute, Session
 from sqlalchemy.sql import operators, visitors
 
@@ -93,6 +98,30 @@ def _refuse_inexact(_connection: Any, statement: Any, *_rest: Any) -> None:
 def _compare_decimals(first: str, second: str) -> int:
     a, b = Decimal(first), Decimal(second)
     return (a > b) - (a < b)
+
+
+def _keep_collation(inspector: Inspector, table: Table, column: dict[str, Any]) -> None:
+    """Keeps an exact column exact when a table is read back from SQLite.
+
+    A batch migration on SQLite copies a table from what it reads, and SQLite reports no collation, so the copy would
+    order 100 before 9 with no error, where `alembic check` cannot see it. Listening on every Table covers any migration
+    of any application. The table's own SQL is what says so, because at that point in history the model may differ.
+    """
+    if inspector.dialect.name != "sqlite":
+        return
+    statement = text("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = :name")
+    bind = inspector.bind
+    if isinstance(bind, Engine):
+        with bind.connect() as connection:
+            sql = connection.scalar(statement, {"name": table.name})
+    else:
+        sql = bind.scalar(statement, {"name": table.name})
+    declared = rf'"?{re.escape(column["name"])}"?\s+TEXT\s+COLLATE\s+"?{COLLATION}\b'
+    if sql and re.search(declared, sql):
+        column["type"] = Text(collation=COLLATION)
+
+
+event.listen(Table, "column_reflect", _keep_collation)
 
 
 def _prepare_sqlite(connection: sqlite3.Connection, _record: Any) -> None:

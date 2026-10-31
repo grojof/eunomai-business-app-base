@@ -8,6 +8,7 @@ from io import StringIO
 import pytest
 from alembic import command
 from alembic.config import Config
+from alembic.script import ScriptDirectory
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
@@ -165,3 +166,26 @@ def test_the_demo_works_with_no_database_set_up(tmp_path, person, path):
     assert client.get(path, headers=person).status_code == 200
     assert client.get("/health").status_code == 200
     assert not folder.exists(), "showing a page must not create a database"
+
+
+@pytest.mark.rule("DATA-03")
+def test_a_migration_down_and_up_keeps_exact_columns_numeric(database_url):
+    """Rows survive every step but the first migration, which holds the tables."""
+    migrate(database_url)
+    engine = create_database_engine(database_url)
+    with Session(engine) as session:
+        replace_rows(session, rows=100)
+        session.commit()
+    config = Config(toml_file=str(ROOT / "pyproject.toml"))
+    config.attributes["database_url"] = database_url
+    for revision in ScriptDirectory.from_config(config).walk_revisions():
+        if revision.down_revision is None:
+            continue
+        command.downgrade(config, str(revision.down_revision))
+        command.upgrade(config, "head")
+        with Session(engine) as session:
+            hours = session.scalars(select(WorkOrder.hours).order_by(WorkOrder.hours)).all()
+            costs = session.scalars(select(Equipment.cost).order_by(Equipment.cost)).all()
+        assert hours == sorted(hours), revision.revision
+        assert costs == sorted(costs), revision.revision
+    engine.dispose()
