@@ -14,6 +14,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import Response
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.database import DatabaseSession, saved
@@ -307,8 +308,13 @@ def _saved_with_file(session: Session, store: UploadStore, order: WorkOrder, sen
         _attach(order, sent, store, clean, kept)
 
     done = False
+    number = order.id
     try:
         done = saved(session, change)
+    except IntegrityError:
+        session.rollback()  # a file alone changes no version: it is the foreign key that says the row went
+        if number is None or session.get(WorkOrder, number) is not None:
+            raise
     finally:
         if not done:
             for stored in kept:

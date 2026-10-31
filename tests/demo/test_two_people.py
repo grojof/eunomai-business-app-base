@@ -278,6 +278,25 @@ def test_a_row_deleted_in_between_takes_the_file_sent_with_it(writable, monkeypa
     assert stored_in(folder) == []
 
 
+def test_a_file_alone_for_a_row_deleted_in_between_is_a_gone_row(writable, monkeypatch):
+    """Nothing of the row changed, so no version is checked, and the database's foreign key is what refuses it."""
+    client, url, folder = writable
+    row = read_order(url)
+    same = whole(
+        title=row.title,
+        description=row.description,
+        equipment=f"EQ-{row.equipment_id:06d}",
+        status=row.status,
+        planned_on=row.planned_on.isoformat() if row.planned_on else "",
+        hours=str(row.hours),
+        crew=str(row.crew),
+        cost=str(row.cost),
+    )
+    between_reading_and_writing(monkeypatch, lambda: delete_the_row(url))
+    assert send_with_file(client, same).status_code == 404
+    assert stored_in(folder) == []
+
+
 def test_two_people_can_each_add_a_file(writable):
     client, url, _files = writable
     files = {"attachment": ("report.pdf", PDF, "application/pdf")}
