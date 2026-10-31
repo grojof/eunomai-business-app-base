@@ -197,6 +197,26 @@ def test_clearing_takes_stored_files_and_nothing_else(store):
     assert [path.name for path in store.folder.iterdir()] == ["notes.txt"]
 
 
+def test_a_write_that_fails_leaves_nothing_behind(store):
+    class Failing(io.BytesIO):
+        def read(self, *_arguments):
+            if self.tell():
+                raise OSError("no space left")
+            self.seek(4)
+            return PDF
+
+    with pytest.raises(OSError, match="no space"):
+        store.save(Failing(PDF))
+    assert list(store.folder.iterdir()) == []
+
+
+def test_clearing_takes_what_a_crash_left_half_written(store):
+    store.save(io.BytesIO(PDF))
+    (store.folder / ("a" * 32 + ".part")).write_bytes(PDF)
+    store.clear()
+    assert list(store.folder.iterdir()) == []
+
+
 def test_clearing_a_folder_that_never_was_is_no_error(store):
     store.clear()
 

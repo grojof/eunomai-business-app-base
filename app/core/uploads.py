@@ -29,6 +29,7 @@ from app.core.i18n import _
 logger = logging.getLogger(__name__)
 LONGEST_NAME = 200
 _STORED_NAME = re.compile(r"[0-9a-f]{32}")
+PARTIAL = ".part"
 _NOT_IN_A_NAME = set('/\\:*?"<>|')
 BODY_TOO_LARGE = "body_too_large"
 """What `RequestLimit` leaves in the request's scope when a body with no declared length goes past the limit."""
@@ -118,13 +119,17 @@ class UploadStore:
         self.folder.mkdir(parents=True, exist_ok=True)
         stored = uuid4().hex
         target = self.path_of(stored)
-        partial = target.with_suffix(".part")
+        partial = target.with_suffix(PARTIAL)
         file.seek(0)
         descriptor = os.open(partial, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0), 0o600)
-        with os.fdopen(descriptor, "wb") as written:
-            while block := file.read(64 * 1024):
-                written.write(block)
-        partial.replace(target)
+        try:
+            with os.fdopen(descriptor, "wb") as written:
+                while block := file.read(64 * 1024):
+                    written.write(block)
+            partial.replace(target)
+        except BaseException:
+            partial.unlink(missing_ok=True)
+            raise
         return stored
 
     def remove(self, stored: str) -> None:
@@ -139,7 +144,7 @@ class UploadStore:
         """Every stored file, and nothing else that may be in the folder."""
         if self.folder.exists():
             for path in self.folder.iterdir():
-                if _STORED_NAME.fullmatch(path.name):
+                if _STORED_NAME.fullmatch(path.name.removesuffix(PARTIAL)):
                     path.unlink()
 
     def response(self, stored: str, name: str, media_type: str) -> FileResponse:
