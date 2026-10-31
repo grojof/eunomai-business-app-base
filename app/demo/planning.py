@@ -15,7 +15,7 @@ from fastapi.responses import RedirectResponse, Response
 from sqlalchemy import ColumnElement, String, func, literal_column, select
 from sqlalchemy.orm import Session, contains_eager
 
-from app.core.database import DatabaseSession, totals_by
+from app.core.database import DatabaseSession, exact_sum, totals_by
 from app.core.formatters import format_decimal, format_month_and_year, parse_date, parse_decimal
 from app.core.i18n import N_, _, ngettext
 from app.core.identity import Person, require_role
@@ -154,12 +154,15 @@ def load_sections(view: ListView, session: Session) -> list[Section]:
         following = view.rows[number + 1] if number + 1 < len(view.rows) else None
         current.append(row)
         if following is None or _key_of(following, grouping) != group:
-            count, hours = totals[group]
+            # Rows and totals are two queries, and a save can fall between them. What this page holds is then the best
+            # count there is: a heading a little out of date beats an error.
+            count, hours = totals.get(group, (len(current), exact_sum(row.hours for row in current)))
             title = _group_label(grouping, group)
             first_on_page = (view.page - 1) * view.size + number + 1 - len(current)
+            starts_here = first_on_page == starts.get(group, first_on_page)
             sections.append(
                 Section(
-                    title if first_on_page == starts[group] else _("%(group)s, continued") % {"group": title},
+                    title if starts_here else _("%(group)s, continued") % {"group": title},
                     ngettext("%(count)s order, %(hours)s hours", "%(count)s orders, %(hours)s hours", count)
                     % {"count": format_decimal(count), "hours": format_decimal(hours, HOUR_DECIMALS)},
                     current,

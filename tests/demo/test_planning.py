@@ -590,3 +590,12 @@ def test_focus_lands_on_the_empty_state_when_the_last_row_leaves_the_list(browse
         until(page, "!document.querySelector('dialog').open")
         until(page, "document.activeElement.matches('[data-focus-fallback]')")
         assert "No work order matches" in page.evaluate("document.activeElement.textContent")
+
+
+@pytest.mark.parametrize("grouping", ["location", "status", "month"])
+def test_a_group_missing_from_the_totals_is_no_error(filled, monkeypatch, grouping):
+    """Rows and totals are two queries, and a save can fall between them."""
+    monkeypatch.setattr(planning, "totals_by", lambda *_arguments: {})
+    response = filled.get(f"/planning?status=&group={grouping}")
+    assert response.status_code == 200
+    assert GROUP.findall(response.text)
