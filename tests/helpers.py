@@ -135,6 +135,7 @@ def run_in(folder: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
         capture_output=True,
         text=True,
         encoding="utf-8",
+        errors="replace",  # a child's traceback can be in the system's encoding, and it must still be read
     )
 
 

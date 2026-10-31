@@ -8,6 +8,7 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 import zipfile
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
@@ -328,6 +329,12 @@ async def disconnected() -> dict[str, str]:
     return {"type": "http.disconnect"}
 
 
+def run_apart(function, *arguments):
+    """In a thread of its own: once a browser test has run, Playwright keeps an event loop running in the main one."""
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        return pool.submit(anyio.run, function, *arguments).result()
+
+
 def test_a_send_that_fails_leaves_no_file_behind(temporary):
     """ASGI lets a server raise OSError on a client that has gone, and then a response's background task never runs.
     Today's Uvicorn, under `_context`, sends on to nowhere, which is why the test above cannot tell the two apart."""
@@ -338,7 +345,7 @@ def test_a_send_that_fails_leaves_no_file_behind(temporary):
 
     response = excel_response("List", COLUMNS, [("A", None, None, None)], "UTC")
     with pytest.raises((OSError, ClientDisconnect)):
-        anyio.run(response, SCOPE, disconnected, send)
+        run_apart(response, SCOPE, disconnected, send)
     until_gone(*temporary)
 
 
@@ -353,5 +360,5 @@ def test_a_download_cancelled_halfway_leaves_no_file_behind(temporary):
         with anyio.move_on_after(0.05):
             await response(SCOPE, disconnected, send)
 
-    anyio.run(cancelled, excel_response("List", COLUMNS, [("A", None, None, None)], "UTC"))
+    run_apart(cancelled, excel_response("List", COLUMNS, [("A", None, None, None)], "UTC"))
     until_gone(*temporary)
