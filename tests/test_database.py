@@ -33,7 +33,7 @@ from app.core.database import (
 )
 from app.core.settings import Settings
 from app.main import create_app
-from tests.conftest import build_settings
+from tests.conftest import build_settings, postgresql_is_missing
 from tests.helpers import ROOT
 
 SAMPLE = "12500.1234567890123456789"
@@ -471,3 +471,30 @@ def test_the_check_for_routes_finds_one():
 
     application.add_api_route("/blocks", blocks)
     assert async_routes_with_a_session(application) == ["/blocks"]
+
+
+CI_ON_LINUX = {"GITHUB_ACTIONS": "true", "RUNNER_OS": "Linux"}
+
+
+@pytest.mark.parametrize(
+    ("environment", "refused"),
+    [
+        (CI_ON_LINUX, True),
+        (CI_ON_LINUX | {"TEST_DATABASE_URL": ""}, True),
+        (CI_ON_LINUX | {"TEST_DATABASE_URL": "postgresql+psycopg://postgres@localhost/postgres"}, False),
+        (CI_ON_LINUX | {"TESTS_ON_SQLITE_ALONE": "true"}, False),
+        ({"GITHUB_ACTIONS": "true", "RUNNER_OS": "Windows"}, False),
+        ({}, False),
+    ],
+)
+def test_a_linux_job_cannot_pass_without_postgresql_by_accident(environment, refused):
+    assert postgresql_is_missing(environment) is refused
+
+
+def test_the_run_fails_when_it_is_missing():
+    environment = {name: value for name, value in os.environ.items() if name != "TEST_DATABASE_URL"}
+    environment |= CI_ON_LINUX
+    arguments = [sys.executable, "-m", "pytest", "--collect-only", "-q", "tests/test_brand.py"]
+    done = subprocess.run(arguments, cwd=ROOT, env=environment, capture_output=True, text=True, errors="replace")
+    assert done.returncode != 0
+    assert "TEST_DATABASE_URL" in done.stdout + done.stderr

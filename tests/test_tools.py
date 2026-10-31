@@ -497,6 +497,15 @@ def test_the_database_tests_run_on_a_postgresql_pinned_by_digest():
     assert re.search(r"postgres: postgres:[\d.]+@sha256:[0-9a-f]{64}\n", tests)
     assert "image: ${{ matrix.postgres }}" in tests
     assert "TEST_DATABASE_URL: ${{ matrix.test_database_url }}" in tests
+    ubuntu = re.search(r"- os: (\S+)\n\s+postgres: \S+\n\s+test_database_url: postgresql\S+", tests)
+    assert ubuntu, "the Ubuntu run must get its database from `include`"
+    assert ubuntu[1] in systems_for("pull_request"), "`include` adds to a run only if its name is the same"
+
+
+def test_the_one_linux_job_without_a_database_says_so():
+    """Tests with no `TEST_DATABASE_URL` fail a Linux job, so that one cannot pass on SQLite by mistake."""
+    update = job("update")[: WORKFLOW.index("\n  propose:\n")]
+    assert "TESTS_ON_SQLITE_ALONE:" in update
 
 
 def test_the_update_job_uses_no_cache():
