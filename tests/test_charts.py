@@ -157,6 +157,12 @@ def test_a_negative_value_in_a_round_chart_is_refused(kind):
         data.config_for(kind)
 
 
+@pytest.mark.parametrize("value", ["NaN", "Infinity", "-Infinity", "sNaN"])
+def test_a_value_that_is_not_a_number_is_refused(value):
+    with pytest.raises(ValueError, match="finite"):
+        chart_data(["A"], [Series("S", [Decimal(value)])], "L")
+
+
 def test_a_negative_value_is_fine_on_bars():
     data = chart_data(["A", "B"], [Series("S", [Decimal(-5), Decimal(5)])], "L")
     assert data.config_for("bar")["series"][0]["values"] == ["-5", "5"]

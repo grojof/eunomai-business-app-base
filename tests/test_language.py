@@ -190,6 +190,11 @@ def test_the_grouping_data_is_from_the_cldr_version_babel_uses():
     assert data["cldr"].split(".")[0] == str(get_cldr_version())
 
 
+@pytest.mark.parametrize("value", ["-0.001", "-0.004", "-0"])
+def test_an_amount_that_rounds_to_nothing_has_no_sign(value):
+    assert str(formatters.rounded(Decimal(value))) == "0.00"
+
+
 @pytest.mark.rule("LANG-08")
 @pytest.mark.parametrize("language", OFFERED)
 def test_no_length_of_decimal_is_cut(language):

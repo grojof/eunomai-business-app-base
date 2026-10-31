@@ -45,7 +45,12 @@ class Point:
 
 
 def _text(value: Number | None) -> str | None:
-    return None if value is None else format(Decimal(value), "f")
+    if value is None:
+        return None
+    exact = Decimal(value)
+    if not exact.is_finite():
+        raise ValueError("A chart draws finite numbers: an empty value is None")
+    return format(exact, "f")
 
 
 def _cell(value: Number | None, places: int | None) -> str:

@@ -45,7 +45,8 @@ def rounded(value: Decimal | int, places: int = 2) -> Decimal:
     """The application's rule for a figure shown to fewer decimals than it has: half up, as a person expects."""
     exact = Decimal(value)
     with localcontext(prec=len(format(exact, "f")) + places + _MARGIN):
-        return exact.quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
+        result = exact.quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
+    return result if result else abs(result)  # nothing is left, so no sign is: never -0.00
 
 
 def format_decimal(value: Decimal | int, places: int | None = None) -> str:

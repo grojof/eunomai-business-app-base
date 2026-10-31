@@ -19,15 +19,15 @@
 {% call card(_("Next inspections"), "equipment-title") %}
 {% call table(_("Equipment, where it is, its next inspection and its state"), "equipment-caption") %}
 <thead>
-  <tr><th scope="col">{{ _("Equipment") }}</th><th scope="col" class="hidden md:table-cell">{{ _("Location") }}</th><th scope="col">{{ _("Next inspection") }}</th><th scope="col">{{ _("State") }}</th></tr>
+  <tr><th scope="col">{{ _("Equipment") }}</th><th scope="col" class="hidden md:table-cell">{{ _("Location") }}</th><th scope="col">{{ _("Next inspection") }}</th><th scope="col" class="hidden md:table-cell">{{ _("State") }}</th></tr>
 </thead>
 <tbody>
   {% for name, place, due, (state_label, kind) in equipment %}
   <tr>
-    <th scope="row" class="font-medium">{{ _(name) }}</th>
+    <th scope="row" class="font-medium">{{ _(name) }}<span class="block md:hidden">{{ badge(_(state_label), kind) }}</span></th>
     <td class="hidden md:table-cell">{{ _(place) }}</td>
     <td class="whitespace-nowrap">{{ due|date }}</td>
-    <td>{{ badge(_(state_label), kind) }}</td>
+    <td class="hidden md:table-cell">{{ badge(_(state_label), kind) }}</td>
   </tr>
   {% endfor %}
 </tbody>

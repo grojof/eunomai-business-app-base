@@ -344,6 +344,14 @@ def test_a_chart_is_redrawn_by_a_screen_size_change(open_page):
     assert not overflows_sideways(page)
 
 
+@pytest.mark.browser
+def test_the_next_inspections_show_their_state_whole_on_a_phone(open_filled):
+    page = open_filled("/", width=390)
+    box = page.locator("section:has(#equipment-title) [role=region], [aria-labelledby=equipment-caption]").first
+    assert box.evaluate("element => element.scrollWidth <= element.clientWidth")
+    assert box.locator("tbody .badge:visible").count() == 5
+
+
 def spoiled(route, old, new):
     response = route.fetch()
     route.fulfill(response=response, body=response.text().replace(old, new, 1))
