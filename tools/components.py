@@ -1,7 +1,7 @@
 """The components' documentation, split from daisyUI's official file so an assistant reads only what it needs.
 
-    uv run python tools/components.py         write docs/components/
-    uv run python tools/components.py check   fail if it is out of date
+    uv run --frozen python tools/components.py         write docs/components/
+    uv run --frozen python tools/components.py check   fail if it is out of date
 
 Each component becomes one small page with OKF-style frontmatter; its category and status come from app/ui/catalog.py.
 Nothing here is interpreted: the official file is cut at its headings. Pages of an organization's own components live

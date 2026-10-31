@@ -1,7 +1,7 @@
 """The stylesheet: generated from the templates by Tailwind's standalone executable, with no Node.
 
-    uv run python tools/css.py         write app/ui/static/app.css
-    uv run python tools/css.py check   fail if it is out of date
+    uv run --frozen python tools/css.py         write app/ui/static/app.css
+    uv run --frozen python tools/css.py check   fail if it is out of date
 
 The executable is downloaded once for this computer and kept in .cache/. It runs only if it matches the hash in
 vendor.json, checked every time: one that does not is downloaded again. Servers need none of this: they receive the

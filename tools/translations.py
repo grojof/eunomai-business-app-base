@@ -1,7 +1,7 @@
 """Translation catalogues: the texts in the code, compared with what each language has.
 
-uv run python tools/translations.py update   add new texts to every catalogue, and mark the removed ones
-uv run python tools/translations.py check    report anything missing, unfinished or inconsistent
+uv run --frozen python tools/translations.py update   add new texts to every catalogue, and mark the removed ones
+uv run --frozen python tools/translations.py check    report anything missing, unfinished or inconsistent
 """
 
 import re

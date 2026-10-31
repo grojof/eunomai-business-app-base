@@ -1,6 +1,6 @@
 """Turns a clone into a clean application: deletes the demo and what only the demo needs. Then run tools/css.py.
 
-uv run python tools/remove_demo.py
+uv run --frozen python tools/remove_demo.py
 """
 
 import json
