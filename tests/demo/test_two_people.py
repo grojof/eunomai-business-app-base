@@ -231,6 +231,53 @@ def test_a_file_sent_with_a_conflict_is_not_kept_and_the_form_says_to_choose_it_
     assert not folder.exists() or not list(folder.iterdir())
 
 
+def between_reading_and_writing(monkeypatch, happening):
+    real = work_orders.checked
+
+    def meanwhile(*arguments):
+        result = real(*arguments)
+        happening()
+        return result
+
+    monkeypatch.setattr(work_orders, "checked", meanwhile)
+
+
+def delete_the_row(url):
+    engine = create_database_engine(url)
+    with engine.begin() as connection:
+        connection.execute(WorkOrder.__table__.delete().where(WorkOrder.id == 1))
+    engine.dispose()
+
+
+def stored_in(folder):
+    return list(folder.iterdir()) if folder.exists() else []
+
+
+def send_with_file(client, form):
+    files = {"attachment": ("report.pdf", PDF, "application/pdf")}
+    return client.post(FORM, data=form, files=files, headers=SAME_SITE, follow_redirects=False)
+
+
+def test_a_save_with_a_file_that_gets_in_between_is_a_conflict_that_keeps_the_typing(writable, monkeypatch):
+    """Adding the file loads the list, and that flushes the row: the check fired before `saved` was asked."""
+    client, url, folder = writable
+    between_reading_and_writing(monkeypatch, lambda: someone_else_saves(url, title="Theirs"))
+    response = send_with_file(client, whole(title="Mine"))
+    assert response.status_code == 409
+    assert "Someone else changed" in response.text
+    assert 'value="Mine"' in response.text
+    assert "Choose the file again" in response.text
+    assert stored_in(folder) == []
+    assert read_order(url).title == "Theirs"
+
+
+def test_a_row_deleted_in_between_takes_the_file_sent_with_it(writable, monkeypatch):
+    client, url, folder = writable
+    between_reading_and_writing(monkeypatch, lambda: delete_the_row(url))
+    assert send_with_file(client, whole(title="Mine")).status_code == 404
+    assert stored_in(folder) == []
+
+
 def test_two_people_can_each_add_a_file(writable):
     client, url, _files = writable
     files = {"attachment": ("report.pdf", PDF, "application/pdf")}

@@ -283,30 +283,36 @@ def _form(
     )
 
 
-def _attach(order: WorkOrder, sent: Sent, store: UploadStore, clean: dict[str, Any]) -> str:
-    """Stores a file that passed, and gives its stored name, or nothing. Called last: nothing else can refuse it."""
+def _attach(order: WorkOrder, sent: Sent, store: UploadStore, clean: dict[str, Any], kept: list[str]) -> None:
+    """Stores a file that passed, and notes its name at once, so that whatever goes wrong next can take it away."""
     kind = clean["attachment"]
     if kind is None or sent.attachment is None or sent.attachment.filename is None:
-        return ""
+        return
     stored = store.save(sent.attachment.file)
+    kept.append(stored)
     size = store.path_of(stored).stat().st_size
     name = sent.attachment.filename
     order.files.append(
         WorkOrderFile(name=name, stored_name=stored, media_type=kind.media_type, size=size, added_at=LAST_MOMENT)
     )
-    return stored
 
 
-def _committed(session: Session, store: UploadStore, stored: str) -> bool:
-    """Whether it saved. A failed commit leaves no file behind: its row never was."""
+def _saved_with_file(session: Session, store: UploadStore, order: WorkOrder, sent: Sent, clean: dict[str, Any]) -> bool:
+    """Whether it saved. A file stored for a save that did not happen goes, on every way out: its row never was."""
+    kept: list[str] = []
+
+    def change() -> None:
+        _apply(order, clean)
+        session.add(order)
+        _attach(order, sent, store, clean, kept)
+
+    done = False
     try:
-        done = saved(session)
-    except Exception:
-        done = False
-        raise
+        done = saved(session, change)
     finally:
-        if stored and not done:
-            store.remove(stored)
+        if not done:
+            for stored in kept:
+                store.remove(stored)
     return done
 
 
@@ -367,9 +373,7 @@ def create(request: Request, session: DatabaseSession, _person: Admin, sent: Pos
     if errors:
         return _form(request, None, back, _typed(sent), errors, 422, _has_file(sent))
     order = _new_order()
-    _apply(order, clean)
-    session.add(order)
-    _committed(session, store, _attach(order, sent, store, clean))
+    _saved_with_file(session, store, order, sent, clean)
     return whole_page(request, _ending(back, "saved", order.id))
 
 
@@ -397,8 +401,7 @@ def update(request: Request, order_id: int, session: DatabaseSession, _person: A
     late = read_version(sent.version) != order.version
     if late and (changes := _changes(order, clean)):
         return conflict(order, changes)
-    _apply(order, clean)
-    if not _committed(session, store, _attach(order, sent, store, clean)):
+    if not _saved_with_file(session, store, order, sent, clean):
         order = _order_or_404(session, order_id)
         return conflict(order, _changes(order, clean))
     return whole_page(request, _ending(back, "saved", order.id))
