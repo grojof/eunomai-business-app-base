@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 20:18+0100\n"
+"POT-Creation-Date: 2026-10-31 21:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -27,12 +27,6 @@ msgid ""
 msgstr ""
 "%(components)s componentes, %(examples)s ejemplos oficiales, daisyUI "
 "%(version)s"
-
-#, python-format
-msgid "%(count)s attached file"
-msgid_plural "%(count)s attached files"
-msgstr[0] "%(count)s archivo adjunto"
-msgstr[1] "%(count)s archivos adjuntos"
 
 #, python-format
 msgid "%(count)s inspection is due in the next 30 days"
@@ -146,6 +140,10 @@ msgstr ""
 "Las flechas recorren la lista, Intro elige y Escape la cierra. Sin "
 "JavaScript es un select normal, y por eso la lista debe caber en una "
 "página."
+
+#, python-format
+msgid "Attached file: %(name)s"
+msgstr "Archivo adjunto: %(name)s"
 
 msgid "Attachment"
 msgstr "Archivo adjunto"

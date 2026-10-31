@@ -283,7 +283,7 @@ class WorkOrder(Base):
 | Telling | The form comes back with what was typed and a [conflict notice](components/conflict-notice.md) that lists what is saved now, with focus on it. A 409 page without JavaScript, the same dialog or form with htmx. Saving again replaces their work, knowingly: the form now carries the newest version |
 | Saying the same | A late save that matches the row is no conflict, so a double click or two people who agree meet no message |
 | Wrong values first | A form with errors shows those, and keeps its old version, so the conflict comes on the next save |
-| Deleting | A confirmation names what will go, so if the row changed it asks again with what is there now |
+| Deleting | A confirmation names what will go, each file by name, and carries what it named, so if the row or its files changed it asks again with what is there now |
 | Files | Adding or removing a file changes no version: two people can each add one and neither loses anything. A file sent with a conflict, or for a row that has gone, is taken away again on every way out, and the form says to choose it again |
 | A row removed meanwhile | The same 404 as ever. A failed `WHERE version` is read again to tell the two apart |
 | Limits | Only saves through these forms are compared. A script that writes with `update()` moves no version unless it says so |
@@ -324,7 +324,7 @@ only if its name is safe and its first bytes say what its extension says.
 | Sent back | Reached only by the numbers of the order and the file, for the `admin` role, as an attachment, with `nosniff` and never cached. No path is built from anything a person sent: the stored name comes from the database and is checked again |
 | Limits | `APP_UPLOAD_MAX_BYTES`, 10 MB, for a file, and `APP_REQUEST_MAX_BYTES`, 32 MB, for any request, on every route, because the framework reads a form to disk before any route runs. A declared length refuses a body early, and every body is counted as it arrives, whatever its headers say. A request with both `Content-Length` and `Transfer-Encoding` is a 400, unread. Between the two, a person gets an error on the field and keeps what was typed. Past the second, a 413: a message with htmx, with the form intact, and a page without JavaScript |
 | A failed save | A browser cannot keep a chosen file when a form comes back, so the field says to choose it again. Nothing is stored until the whole form passes |
-| Removing | With a confirmation that names it. Deleting an order says how many files go with it. A file leaves the disk after its row, so a failure leaves an untidy file, never a row without one, and the log says so. `app.demo.generate` empties the folder of stored files, because their rows have gone |
+| Removing | With a confirmation that names it. Deleting an order names the files that go with it. A file leaves the disk after its row, so a failure leaves an untidy file, never a row without one, and the log says so. `app.demo.generate` empties the folder of stored files, because their rows have gone |
 
 **What a clone must add for production.** This is a floor. Each of these depends on where the application lives, so none
 is in the base:

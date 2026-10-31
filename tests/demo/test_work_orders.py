@@ -809,13 +809,17 @@ def test_removing_a_file_takes_it_from_the_disk_and_comes_back_to_the_form(uploa
     assert "The file was removed." in client.get(response.headers["location"]).text
 
 
-def test_deleting_an_order_says_how_many_files_go_and_takes_them(uploads):
+def test_deleting_an_order_names_its_files_and_takes_them(uploads):
     client, url, folder = uploads
     attach(client)
     attach(client, PNG, "photo.png")
-    assert "2 attached files" in client.get("/work-orders/1/delete").text
+    html = client.get("/work-orders/1/delete").text
+    assert "<li>Attached file: report.pdf</li>" in html
+    assert "<li>Attached file: photo.png</li>" in html
     assert len(stored(folder)) == 2
-    client.post("/work-orders/1/delete", data={"back": "/planning", "version": "2"}, headers=SAME_SITE)
+    named = re.search(r'name="files" value="([^"]*)"', html)[1]
+    form = {"back": "/planning", "version": "2", "files": named}
+    client.post("/work-orders/1/delete", data=form, headers=SAME_SITE)
     assert stored(folder) == []
     assert files_of(url, 1) == []
 

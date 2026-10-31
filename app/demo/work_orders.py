@@ -20,7 +20,7 @@ from sqlalchemy.orm import Session
 from app.core.database import DatabaseSession, saved
 from app.core.formatters import format_decimal, format_file_size
 from app.core.forms import Refused, read_choice, read_date, read_decimal, read_fields, read_flag, read_text, read_whole
-from app.core.i18n import N_, _, ngettext
+from app.core.i18n import N_, _
 from app.core.identity import Person, require_role
 from app.core.tables import fragment_requested, list_query, whole_page
 from app.core.templating import render
@@ -419,17 +419,25 @@ def _what_goes(order: WorkOrder) -> list[str]:
     return [
         _("%(work)s, on %(equipment)s") % {"work": order.title, "equipment": order.equipment.name},
         _("Hours recorded: %(hours)s") % {"hours": hours},
-        *(
-            [ngettext("%(count)s attached file", "%(count)s attached files", files) % {"count": files}]
-            if (files := len(order.files))
-            else []
-        ),
+        *(_("Attached file: %(name)s") % {"name": file.name} for file in order.files),
     ]
+
+
+def _files_named(order: WorkOrder) -> str:
+    """What a confirmation goes on to promise. Adding a file moves no version, so the version alone cannot say."""
+    return ",".join(str(file.id) for file in order.files)
 
 
 def _asking(request: Request, order: WorkOrder, back: str, template: str, status: int = 200) -> Response:
     return render(
-        request, template, status_code=status, order=order, lost=_what_goes(order), back=back, changed=status == 409
+        request,
+        template,
+        status_code=status,
+        order=order,
+        lost=_what_goes(order),
+        files_named=_files_named(order),
+        back=back,
+        changed=status == 409,
     )
 
 
@@ -449,12 +457,13 @@ def delete(
     _person: Admin,
     back: Annotated[str, Form()] = "",
     version: Annotated[str, Form()] = "",
+    files: Annotated[str, Form()] = "",
 ) -> Response:
     """A confirmation named what would go. If that changed, it asks again with what is there now."""
     if rows_state(session) != READY:
         return whole_page(request, "/planning")
     order = _order_or_404(session, order_id)
-    if read_version(version) != order.version:
+    if read_version(version) != order.version or files != _files_named(order):
         return _asking(request, order, way_back(back), "demo/work_orders/delete.html", 409)
     stored = [file.stored_name for file in order.files]
     session.delete(order)

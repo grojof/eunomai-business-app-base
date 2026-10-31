@@ -310,6 +310,36 @@ def test_two_people_can_each_add_a_file(writable):
     engine.dispose()
 
 
+def asked(client):
+    """The hidden fields of a confirmation, as a form would send them."""
+    html = client.get("/work-orders/1/delete", headers=HTMX).text
+    return dict(re.findall(r'<input type="hidden" name="(\w+)" value="([^"]*)">', html)), html
+
+
+def test_a_confirmation_names_each_file(writable):
+    client, url, _files = writable
+    send_with_file(client, whole(title=read_order(url).title))
+    assert "<li>Attached file: report.pdf</li>" in asked(client)[1]
+
+
+def test_a_delete_does_not_destroy_a_file_its_confirmation_never_named(writable):
+    """Adding a file moves no version, so the confirmation has to carry what it named."""
+    client, url, folder = writable
+    named, html = asked(client)
+    assert "report.pdf" not in html
+    send_with_file(client, whole(title=read_order(url).title, version=named["version"]))
+    response = save(client, "/work-orders/1/delete", named)
+    assert response.status_code == 409
+    assert "<li>Attached file: report.pdf</li>" in response.text
+    assert read_order(url) is not None
+    assert len(stored_in(folder)) == 1
+
+    again = dict(re.findall(r'<input type="hidden" name="(\w+)" value="([^"]*)">', response.text))
+    assert save(client, "/work-orders/1/delete", again, follow_redirects=False).status_code == 303
+    assert read_order(url) is None
+    assert stored_in(folder) == []
+
+
 def test_a_delete_that_comes_late_shows_what_is_there_now(writable):
     client, url, _files = writable
     someone_else_saves(url, title="Theirs")
