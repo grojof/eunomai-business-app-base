@@ -233,6 +233,58 @@ def test_a_click_opens_the_list_and_chooses_keeping_focus_in_the_box(open_page):
     assert source_value(page) == "d"
 
 
+def open_in_a_dialog(page):
+    page.get_by_role("button", name="Try it in a dialog").click()
+    page.wait_for_selector("dialog#sample-list-dialog[open]")
+    page.locator("#sample-in-dialog").focus()
+    page.keyboard.press("ArrowDown")
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize("width", [1280, 390])
+def test_inside_a_dialog_the_whole_list_can_be_reached(open_page, width):
+    """A dialog's box scrolls, so what hangs out of it is cut. There the list takes its place in the box."""
+    page = open_page(SEARCHABLE, width=width)
+    open_in_a_dialog(page)
+    popup = page.locator("dialog[open] [data-combobox-popup]")
+    assert popup.is_visible()
+    assert popup.evaluate("element => getComputedStyle(element).position") == "static"
+    page.keyboard.press("ArrowUp")
+    last = page.locator("dialog[open] [aria-selected=true]")
+    assert last.inner_text() == "Standby generator"
+    assert last.evaluate(
+        """element => {
+            const box = element.closest('.modal-box').getBoundingClientRect();
+            const place = element.getBoundingClientRect();
+            return place.top >= box.top && place.bottom <= box.bottom;
+        }"""
+    )
+
+
+@pytest.mark.browser
+def test_inside_a_dialog_escape_closes_the_list_first_and_enter_chooses(open_page):
+    page = open_page(SEARCHABLE)
+    open_in_a_dialog(page)
+    page.keyboard.press("Escape")
+    assert page.locator("dialog#sample-list-dialog[open]").count() == 1
+    assert page.locator("#sample-in-dialog").get_attribute("aria-expanded") == "false"
+    page.keyboard.press("ArrowDown")
+    page.keyboard.press("ArrowDown")
+    page.keyboard.press("Enter")
+    assert page.locator("#sample-in-dialog").input_value() != ""
+    assert page.locator("dialog#sample-list-dialog[open]").count() == 1
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-01")
+@pytest.mark.rule("A11Y-05")
+@pytest.mark.parametrize("theme", ["light", "dark"])
+def test_the_list_in_a_dialog_passes_the_scan(open_page, theme):
+    page = open_page(SEARCHABLE, theme=theme, bypass_csp=True)
+    open_in_a_dialog(page)
+    assert run_axe(page, exclude=FRAME_EXCLUDES) == []
+
+
 @pytest.mark.browser
 def test_the_error_summary_can_land_on_a_searchable_select(open_page):
     page = open_page(SEARCHABLE)

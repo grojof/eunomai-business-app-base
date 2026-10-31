@@ -29,5 +29,6 @@ underneath, hidden, and it is what the form sends, so the server sees the same f
 The select follows the box at every keystroke, so a form sends what the box shows. Leaving the box settles it: an
 option's own text if it is one, empty means nothing is chosen, and anything else stays, with an error at the field. If
 the form is sent like that, the text goes as it is and the server refuses it, which is the check that counts.
+Inside a dialog, whose box scrolls and would cut a list that hangs over it, the list takes its place in the box.
 All options are in the page, so a list must fit there, up to some hundreds. A list of 50,000 needs another answer: the
 demo's work order asks for the equipment's code instead.
