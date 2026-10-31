@@ -1,0 +1,6 @@
+{% from "ui/macros.html" import form_actions, link_button %}
+{% call form_actions(_("Save"), "/gallery", _("Cancel")) %}{{ link_button(_("Delete"), "/gallery", "danger") }}{% endcall %}
+<p class="mt-3 text-sm">{{ _("One primary action, the way out beside it, and what is dangerous out of the way.") }}</p>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{% call form_actions(_("Save"), back, _("Cancel"), loading=_("Saving…")) %}
+{{ link_button(_("Delete"), delete_address, "danger") }}
+{% endcall %}{% endraw %}</code></pre>

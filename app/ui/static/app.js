@@ -7,6 +7,7 @@ document.addEventListener("htmx:afterSettle", (event) => {
   if (announcement) {
     announce(announcement.dataset.announce);
   }
+  upgradeComboboxes(content);
   settleDialog(content);
   content.querySelector("[data-focus]")?.focus();
   if (document.activeElement === document.body) {
@@ -258,6 +259,178 @@ document.querySelectorAll("input[data-follows-system]").forEach((input) => {
   if (!document.documentElement.dataset.theme) {
     input.checked = matchMedia("(prefers-color-scheme: dark)").matches;
   }
+});
+
+// A searchable select: ARIA's editable combobox with a list. The select stays, hidden, and it is what the form sends; the
+// input takes its id, so its label and the error summary's link land there. What arrives in the template is what the
+// macro wrote, so no class lives here. See `searchable_select` in ui/macros.html.
+const plainText = (text) =>
+  text
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+
+function upgradeCombobox(box) {
+  const select = box.querySelector("select");
+  const parts = box.querySelector("template").content.cloneNode(true);
+  const input = parts.querySelector("[role=combobox]");
+  const list = parts.querySelector("[role=listbox]");
+  const popup = parts.querySelector("[data-combobox-popup]");
+  const nothing = parts.querySelector("[data-combobox-none]");
+  const toggle = parts.querySelector("[data-combobox-toggle]");
+  const identifier = select.id;
+  const options = [...select.options].map((option, position) => {
+    const item = document.createElement("li");
+    const label = document.createElement("span");
+    item.id = `${identifier}-option-${position}`;
+    item.setAttribute("role", "option");
+    item.setAttribute("aria-selected", "false");
+    label.textContent = option.text;
+    item.append(label);
+    return { item, option, text: plainText(option.text) };
+  });
+  list.id = `${identifier}-options`;
+  list.append(...options.map(({ item }) => item));
+  input.setAttribute("aria-controls", list.id);
+  for (const name of ["aria-describedby", "aria-invalid", "required"]) {
+    if (select.hasAttribute(name)) {
+      input.setAttribute(name, select.getAttribute(name));
+    }
+  }
+  select.removeAttribute("id");
+  select.tabIndex = -1;
+  select.hidden = true;
+  input.id = identifier;
+
+  let shown = options;
+  let active = -1;
+
+  const chosen = () => (select.value ? select.selectedOptions[0].text : "");
+  input.value = chosen();
+
+  function show(position) {
+    shown[active]?.item.setAttribute("aria-selected", "false");
+    active = position;
+    const entry = shown[active];
+    if (entry) {
+      entry.item.setAttribute("aria-selected", "true");
+      entry.item.scrollIntoView({ block: "nearest" });
+      input.setAttribute("aria-activedescendant", entry.item.id);
+    } else {
+      input.removeAttribute("aria-activedescendant");
+    }
+  }
+  function filter(words) {
+    show(-1);
+    shown = options.filter(({ item, text }) => {
+      const matches = words.every((word) => text.includes(word));
+      item.hidden = !matches;
+      return matches;
+    });
+    list.hidden = shown.length === 0;
+    nothing.hidden = shown.length > 0;
+    announce(box.dataset.count.replace("{count}", shown.length));
+  }
+  const words = () => plainText(input.value).split(/\s+/).filter(Boolean);
+  function open(everything = false) {
+    filter(everything ? [] : words());
+    popup.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+  }
+  function close() {
+    show(-1);
+    popup.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+  }
+  function choose(entry) {
+    const changed = select.value !== entry.option.value;
+    select.value = entry.option.value;
+    input.value = chosen();
+    close();
+    if (changed) {
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+  // Leaving the field settles it: an empty box means nothing is chosen, and what matches no option goes back to what was.
+  function settle() {
+    if (active >= 0) {
+      choose(shown[active]);
+      return;
+    }
+    const text = plainText(input.value.trim());
+    const match = options.find((entry) => entry.text === text) ?? options.find((entry) => !text && !entry.option.value);
+    if (match) {
+      choose(match);
+    } else {
+      input.value = chosen();
+      close();
+    }
+  }
+
+  input.addEventListener("input", () => open());
+  input.addEventListener("blur", settle);
+  input.addEventListener("keydown", (event) => {
+    const isOpen = !popup.hidden;
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      if (event.altKey) {
+        (event.key === "ArrowDown" ? open : close)(true);
+      } else {
+        if (!isOpen) {
+          open(input.value === chosen());
+        }
+        const step = event.key === "ArrowDown" ? 1 : -1;
+        const from = active < 0 && step < 0 ? 0 : active;
+        if (shown.length) {
+          show((from + step + shown.length) % shown.length);
+        }
+      }
+    } else if (event.key === "Enter" && isOpen) {
+      event.preventDefault();
+      settle();
+    } else if (event.key === "Escape") {
+      if (isOpen) {
+        event.preventDefault(); // otherwise a dialog around it would close too
+        close();
+      } else if (input.value) {
+        event.preventDefault();
+        input.value = "";
+      }
+    }
+  });
+  toggle.addEventListener("click", () => {
+    if (popup.hidden) {
+      open(true);
+    } else {
+      close();
+    }
+    input.focus();
+  });
+  // Keeps focus in the box, so a click chooses before the box is settled. The list's scroll bar counts as the list.
+  popup.addEventListener("mousedown", (event) => event.preventDefault());
+  toggle.addEventListener("mousedown", (event) => event.preventDefault());
+  list.addEventListener("click", (event) => {
+    const item = event.target.closest("[role=option]");
+    if (item) {
+      choose(options.find((entry) => entry.item === item));
+    }
+  });
+  select.after(parts);
+  box.dataset.ready = "";
+}
+function upgradeComboboxes(root) {
+  root.querySelectorAll("[data-combobox]:not([data-ready])").forEach(upgradeCombobox);
+}
+upgradeComboboxes(document);
+
+// A date typed halfway reaches the form as nothing, and an optional date would then be cleared in silence. Its text cannot
+// be read, so the server is told something it will refuse, and it asks for the date as for any other wrong value.
+document.addEventListener("formdata", (event) => {
+  event.target.querySelectorAll("input[type=date]").forEach((input) => {
+    if (input.validity.badInput) {
+      event.formData.set(input.name, "incomplete");
+    }
+  });
 });
 
 // A long navigation opens with the current page in sight.

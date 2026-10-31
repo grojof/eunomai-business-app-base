@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 18:54+0100\n"
+"POT-Creation-Date: 2026-10-31 19:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -28,6 +28,9 @@ msgstr ""
 "%(count)s. Se muestran del %(first)s al %(last)s, ordenados por "
 "%(column)s, %(direction)s."
 
+msgid "(optional)"
+msgstr "(opcional)"
+
 msgid ""
 "A figure with its text summary and its data as a table, drawn with "
 "Chart.js."
@@ -37,6 +40,11 @@ msgstr ""
 
 msgid "A list of terms and their values, for one record's details."
 msgstr "Una lista de términos y sus valores, para los detalles de un registro."
+
+msgid "A list to type in, by keyboard, that is a plain select without JavaScript."
+msgstr ""
+"Una lista en la que se puede escribir, con el teclado, que sin JavaScript"
+" es un select normal."
 
 msgid ""
 "A plain form that filters a list on the server. daisyUI's filter is a set"
@@ -118,6 +126,9 @@ msgstr "Entrada de datos"
 msgid "Data table"
 msgstr "Tabla de datos"
 
+msgid "Date field"
+msgstr "Campo de fecha"
+
 msgid "Decorative"
 msgstr "Decorativo"
 
@@ -139,8 +150,19 @@ msgstr "Cada uno es real: pruébalo aquí y elige el que debe mostrar la cabecer
 msgid "Error"
 msgstr "Error"
 
+msgid "Error summary"
+msgstr "Resumen de errores"
+
+msgid "Every problem of a form in one place, each a link to its field."
+msgstr ""
+"Todos los problemas de un formulario en un solo lugar, cada uno con un "
+"enlace a su campo."
+
 msgid "Feedback"
 msgstr "Avisos"
+
+msgid "Field error"
+msgstr "Error de campo"
 
 msgid "Filter bar"
 msgstr "Barra de filtros"
@@ -150,6 +172,9 @@ msgstr "Filtros"
 
 msgid "Fixed header"
 msgstr "Cabecera fija"
+
+msgid "Form actions"
+msgstr "Acciones del formulario"
 
 msgid "Full"
 msgstr "Completa"
@@ -242,6 +267,12 @@ msgstr "Normal"
 msgid "Not recommended"
 msgstr "No recomendado"
 
+msgid "Nothing matches. Try another word."
+msgstr "Nada coincide. Prueba con otra palabra."
+
+msgid "Number field"
+msgstr "Campo numérico"
+
 msgid ""
 "On its own it changes the theme without saving it, and it cannot say that"
 " the theme should follow the system. The shell uses its class inside a "
@@ -253,6 +284,10 @@ msgstr ""
 
 msgid "Open menu"
 msgstr "Abrir el menú"
+
+#, python-format
+msgid "Options: %(count)s"
+msgstr "Opciones: %(count)s"
 
 #, python-format
 msgid "Page %(page)s"
@@ -297,11 +332,17 @@ msgstr "Buscar"
 msgid "Search is not available right now. Try again in a moment."
 msgstr "La búsqueda no está disponible ahora. Inténtalo de nuevo en un momento."
 
+msgid "Searchable select"
+msgstr "Lista con búsqueda"
+
 msgid "Select"
 msgstr "Lista"
 
 msgid "Settings"
 msgstr "Ajustes"
+
+msgid "Show the options"
+msgstr "Mostrar las opciones"
 
 msgid "Side"
 msgstr "Lateral"
@@ -321,8 +362,23 @@ msgstr "Inicio"
 msgid "Swap"
 msgstr "Intercambio"
 
+msgid "Text a person types as their language writes numbers. Never a float."
+msgstr ""
+"Texto que cada persona escribe como su idioma escribe los números. Nunca "
+"un float."
+
 msgid "That did not work. Try again in a moment."
 msgstr "No ha funcionado. Vuelve a intentarlo en un momento."
+
+msgid "The browser's own date field, read by the server in one strict form."
+msgstr ""
+"El campo de fecha del propio navegador, que el servidor lee en una única "
+"forma estricta."
+
+msgid "The main action of a form, the way out, and anything else at the far end."
+msgstr ""
+"La acción principal de un formulario, la salida, y cualquier otra cosa al"
+" otro extremo."
 
 msgid "The server cannot be reached. Check your connection and try again."
 msgstr ""
@@ -369,6 +425,9 @@ msgstr "Aviso"
 
 msgid "We could not tell who you are. Open the application from your portal."
 msgstr "No hemos podido saber quién eres. Abre la aplicación desde tu portal."
+
+msgid "What is wrong with one field, and how to fix it, tied to that field."
+msgstr "Qué falla en un campo y cómo arreglarlo, vinculado a ese campo."
 
 msgid "Width"
 msgstr "Anchura"

@@ -1,0 +1,4 @@
+{% from "ui/macros.html" import error_summary %}
+{{ error_summary(_("Check what you entered"), [("sample-link", _("Enter what has to be done.")), ("sample-link", _("Enter the hours as a number, such as 7.50."))]) }}
+<p id="sample-link" class="mt-3 text-sm" tabindex="-1">{{ _("Each line is a link to its field. Focus comes to the summary when a form returns with errors, and a screen reader reads it.") }}</p>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{% if errors %}{{ error_summary(_("Check what you entered"), [("field-title", errors.title)]) }}{% endif %}{% endraw %}</code></pre>

@@ -1,0 +1,7 @@
+{% from "ui/macros.html" import input_field %}
+<div class="grid max-w-md gap-4">
+  {{ input_field("sample-title", _("Title"), "", "sample-title", hint=_("What has to be done, in a few words."), required=true) }}
+  {{ input_field("sample-note", _("Reference"), "", "sample-note", required=false) }}
+  {{ input_field("sample-code", _("Code"), "A B", "sample-code", error=_("Use letters and numbers, with no spaces."), required=true) }}
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ input_field("title", _("Title"), values.title, "field-title", hint=_("In a few words."), error=errors.get("title", ""), required=true) }}{% endraw %}</code></pre>

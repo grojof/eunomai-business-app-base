@@ -204,6 +204,12 @@
     }
   }
 
+  /* A searchable select's options: the one the arrow keys are on, as in the palette */
+  [data-combobox] [role="option"][aria-selected="true"] > span {
+    background-color: var(--color-neutral);
+    color: var(--color-neutral-content);
+  }
+
   #palette-results [role="option"][aria-selected="true"] {
     background-color: var(--color-neutral);
     color: var(--color-neutral-content);

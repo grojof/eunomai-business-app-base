@@ -1,0 +1,8 @@
+{% from "ui/macros.html" import select_field %}
+{% with choices = [("a", _("In service")), ("b", _("Due soon")), ("c", _("Stopped"))] %}
+<div class="grid max-w-md gap-4">
+  {{ select_field("sample-state", _("State"), choices, "b", "sample-state", hint=_("Where the equipment stands today."), required=true) }}
+  {{ select_field("sample-wrong", _("State"), choices, "", "sample-wrong", every=_("Choose one"), error=_("Choose a state from the list.")) }}
+</div>
+{% endwith %}
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ select_field("status", _("State"), options, values.status, "field-status", error=errors.get("status", ""), required=true) }}{% endraw %}</code></pre>

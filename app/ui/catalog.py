@@ -29,7 +29,17 @@ THEME = N_(
 )
 
 
-OWN_TITLES = (N_("Chart"), N_("Description list"), N_("Filter bar"))
+OWN_TITLES = (
+    N_("Chart"),
+    N_("Date field"),
+    N_("Description list"),
+    N_("Error summary"),
+    N_("Field error"),
+    N_("Filter bar"),
+    N_("Form actions"),
+    N_("Number field"),
+    N_("Searchable select"),
+)
 """Components of this base with no page in daisyUI: the gallery names them from their catalogue name."""
 
 
@@ -118,9 +128,27 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
         N_("Data input"),
         (
             Component("calendar", PROBLEMS, LIBRARY),
-            Component("checkbox"),
+            Component("checkbox", macro="checkbox_field"),
+            Component(
+                "date-field",
+                note=N_("The browser's own date field, read by the server in one strict form."),
+                macro="date_field",
+                icon="calendar",
+            ),
+            Component(
+                "error-summary",
+                note=N_("Every problem of a form in one place, each a link to its field."),
+                macro="error_summary",
+                icon="triangle-alert",
+            ),
+            Component(
+                "field-error",
+                note=N_("What is wrong with one field, and how to fix it, tied to that field."),
+                macro="field_error",
+                icon="triangle-alert",
+            ),
             Component("fieldset"),
-            Component("file-input"),
+            Component("file-input", macro="file_field"),
             Component("filter"),
             Component(
                 "filter-bar",
@@ -128,14 +156,32 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
                 macro="filter_bar",
                 icon="search",
             ),
-            Component("input"),
+            Component(
+                "form-actions",
+                note=N_("The main action of a form, the way out, and anything else at the far end."),
+                macro="form_actions",
+                icon="pencil",
+            ),
+            Component("input", macro="input_field"),
             Component("label"),
+            Component(
+                "number-field",
+                note=N_("Text a person types as their language writes numbers. Never a float."),
+                macro="number_field",
+                icon="hash",
+            ),
             Component("otp"),
-            Component("radio"),
+            Component("radio", macro="radio_group"),
             Component("range"),
             Component("rating"),
-            Component("select"),
-            Component("textarea"),
+            Component(
+                "searchable-select",
+                note=N_("A list to type in, by keyboard, that is a plain select without JavaScript."),
+                macro="searchable_select",
+                icon="search",
+            ),
+            Component("select", macro="select_field"),
+            Component("textarea", macro="textarea_field"),
             Component("toggle"),
             Component("validator"),
         ),

@@ -25,7 +25,7 @@
 {% endmacro %}
 
 {% macro link_button(text, href, kind="default", small=false, name="", attributes={}) %}
-{% set classes = {"default": "", "primary": "btn-primary", "ghost": "btn-ghost"} %}
+{% set classes = {"default": "", "primary": "btn-primary", "ghost": "btn-ghost", "danger": "btn-error"} %}
 <a class="btn {{ classes[kind] }}{{ ' btn-sm' if small else '' }}" href="{{ href }}"{{ attributes|xmlattr }}>
   {%- if name %}{{ icon(name, "size-4") }}{% endif %}{{ text -}}
 </a>
@@ -206,29 +206,136 @@
 </section>
 {% endmacro %}
 
+{#- Forms. Every field has a visible label. A hint says how to fill it and an error what is wrong, in that order above the
+    control, and `aria-describedby` reads both with it. `required`: true tells assistive technology, false adds
+    "(optional)" to the label, and leaving it out says neither, as a filter needs. Forms are `novalidate`, because
+    what is valid is the server's to say, as SEC-03 asks, and its errors have one look. -#}
+
+{% macro _label(text, identifier, required=none) %}
+<label class="fieldset-legend mb-0 py-0" for="{{ identifier }}"><span>{{ text }}{% if required is false %} <span class="font-normal">{{ _("(optional)") }}</span>{% endif %}</span></label>
+{% endmacro %}
+
+{% macro _hint(identifier, hint) %}
+{% if hint %}<p id="{{ identifier }}-hint">{{ hint }}</p>{% endif %}
+{% endmacro %}
+
+{% macro _state(identifier, error, hint, required=none) %}
+{%- if required %} required{% endif -%}
+{%- if error %} aria-invalid="true"{% endif -%}
+{%- if error or hint %} aria-describedby="{{ identifier ~ '-hint' if hint else '' }}{{ ' ' if hint and error else '' }}{{ identifier ~ '-error' if error else '' }}"{% endif -%}
+{% endmacro %}
+
 {% macro field_error(identifier, error) %}
 {% if error %}<p id="{{ identifier }}-error" class="text-sm font-medium">{{ icon("triangle-alert", "size-4 me-1 inline-block") }}{{ error }}</p>{% endif %}
 {% endmacro %}
 
-{% macro select_field(name, label, options, value, identifier, every="", error="", attributes={}) %}
-<div class="grid gap-1">
-  <label class="text-sm font-medium" for="{{ identifier }}">{{ label }}</label>
-  <select class="select select-sm w-full{{ ' select-error' if error else '' }}" id="{{ identifier }}" name="{{ name }}"{% if error %} aria-invalid="true" aria-describedby="{{ identifier }}-error"{% endif %}{{ attributes|xmlattr }}>
+{% macro select_field(name, label, options, value, identifier, every="", error="", attributes={}, hint="", required=none, small=false) %}
+<div class="fieldset p-0 text-sm">
+  {{ _label(label, identifier, required) }}
+  {{ _hint(identifier, hint) }}
+  {{ field_error(identifier, error) }}
+  <select class="select w-full{{ ' select-sm' if small else '' }}{{ ' select-error' if error else '' }}" id="{{ identifier }}" name="{{ name }}"{{ _state(identifier, error, hint, required) }}{{ attributes|xmlattr }}>
     {% if every %}<option value=""{% if value == "" %} selected{% endif %}>{{ every }}</option>{% endif %}
     {% for option, text in options %}
     <option value="{{ option }}"{% if option == value %} selected{% endif %}>{{ text }}</option>
     {% endfor %}
   </select>
-  {{ field_error(identifier, error) }}
 </div>
 {% endmacro %}
 
-{% macro input_field(name, label, value, identifier, type="text", error="", hint="", attributes={}) %}
-<div class="grid gap-1">
-  <label class="text-sm font-medium" for="{{ identifier }}">{{ label }}</label>
-  {% if hint %}<p id="{{ identifier }}-hint" class="text-sm">{{ hint }}</p>{% endif %}
-  <input class="input input-sm w-full{{ ' input-error' if error else '' }}" id="{{ identifier }}" name="{{ name }}" type="{{ type }}" value="{{ value }}"{% if error %} aria-invalid="true" aria-describedby="{{ identifier }}-error"{% elif hint %} aria-describedby="{{ identifier }}-hint"{% endif %}{{ attributes|xmlattr }}>
+{% macro input_field(name, label, value, identifier, type="text", error="", hint="", attributes={}, required=none) %}
+<div class="fieldset p-0 text-sm">
+  {{ _label(label, identifier, required) }}
+  {{ _hint(identifier, hint) }}
   {{ field_error(identifier, error) }}
+  <input class="input w-full{{ ' input-error' if error else '' }}" id="{{ identifier }}" name="{{ name }}" type="{{ type }}" value="{{ value }}"{{ _state(identifier, error, hint, required) }}{{ attributes|xmlattr }}>
+</div>
+{% endmacro %}
+
+{% macro textarea_field(name, label, value, identifier, error="", hint="", attributes={}, required=none, rows=4) %}
+<div class="fieldset p-0 text-sm">
+  {{ _label(label, identifier, required) }}
+  {{ _hint(identifier, hint) }}
+  {{ field_error(identifier, error) }}
+  <textarea class="textarea w-full{{ ' textarea-error' if error else '' }}" id="{{ identifier }}" name="{{ name }}" rows="{{ rows }}"{{ _state(identifier, error, hint, required) }}{{ attributes|xmlattr }}>{{ value }}</textarea>
+</div>
+{% endmacro %}
+
+{#- The browser's own date field: it sends YYYY-MM-DD whatever it shows, the one form `parse_date` reads. -#}
+{% macro date_field(name, label, value, identifier, error="", hint="", attributes={}, required=none, earliest="", latest="") %}
+{{ input_field(name, label, value, identifier, "date", error, hint, dict(attributes, min=earliest or none, max=latest or none), required) }}
+{% endmacro %}
+
+{#- Text a person types as their language writes it, read by `parse_decimal`. Never `type="number"`: it refuses a decimal
+    comma in some browsers, sends the browser's own form, and the mouse wheel changes it in passing. -#}
+{% macro number_field(name, label, value, identifier, decimals=2, error="", hint="", attributes={}, required=none) %}
+{{ input_field(name, label, value, identifier, "text", error, hint, dict(attributes, inputmode="decimal" if decimals else "numeric", autocomplete="off"), required) }}
+{% endmacro %}
+
+{% macro checkbox_field(name, label, checked, identifier, error="", hint="", attributes={}, value="yes") %}
+<div class="fieldset p-0 text-sm">
+  {{ field_error(identifier, error) }}
+  <label class="fieldset-legend mb-0 justify-start gap-2 py-0 font-normal" for="{{ identifier }}">
+    <input class="checkbox{{ ' checkbox-error' if error else '' }}" id="{{ identifier }}" name="{{ name }}" type="checkbox" value="{{ value }}"{% if checked %} checked{% endif %}{{ _state(identifier, error, hint) }}{{ attributes|xmlattr }}>
+    <span>{{ label }}</span>
+  </label>
+  {% if hint %}<p id="{{ identifier }}-hint" class="ms-8">{{ hint }}</p>{% endif %}
+</div>
+{% endmacro %}
+
+{#- The first radio takes the group's identifier, so a link from the error summary lands on it. -#}
+{% macro radio_group(name, legend, options, value, identifier, error="", hint="", required=none) %}
+<fieldset class="fieldset p-0 text-sm"{% if hint or error %} role="radiogroup"{% endif %}{{ _state(identifier, error, hint) }}>
+  <legend class="fieldset-legend mb-0 py-0"><span>{{ legend }}{% if required is false %} <span class="font-normal">{{ _("(optional)") }}</span>{% endif %}</span></legend>
+  {{ _hint(identifier, hint) }}
+  {{ field_error(identifier, error) }}
+  <div class="flex flex-wrap gap-x-6 gap-y-2">
+    {% for option, text in options %}
+    <label class="inline-flex items-center gap-2">
+      <input class="radio{{ ' radio-error' if error else '' }}" id="{{ identifier if loop.first else identifier ~ '-' ~ loop.index }}" name="{{ name }}" type="radio" value="{{ option }}"{% if option == value %} checked{% endif %}{% if required %} required{% endif %}>
+      <span>{{ text }}</span>
+    </label>
+    {% endfor %}
+  </div>
+</fieldset>
+{% endmacro %}
+
+{#- A plain select, which is all there is without JavaScript. app.js puts ARIA's editable combobox in its place from the
+    template, and the select stays underneath, hidden, holding the value the form sends. For a list that fits in a page,
+    up to some hundreds: without JavaScript a plain select must hold all of it. -#}
+{% macro searchable_select(name, label, options, value, identifier, every="", error="", hint="", attributes={}, required=none) %}
+<div class="fieldset p-0 text-sm" data-combobox data-count="{{ _('Options: %(count)s', count='{count}') }}">
+  {{ _label(label, identifier, required) }}
+  {{ _hint(identifier, hint) }}
+  {{ field_error(identifier, error) }}
+  <select class="select w-full{{ ' select-error' if error else '' }}" id="{{ identifier }}" name="{{ name }}"{{ _state(identifier, error, hint, required) }}{{ attributes|xmlattr }}>
+    {% if every %}<option value=""{% if value == "" %} selected{% endif %}>{{ every }}</option>{% endif %}
+    {% for option, text in options %}
+    <option value="{{ option }}"{% if option == value %} selected{% endif %}>{{ text }}</option>
+    {% endfor %}
+  </select>
+  <template>
+    <div class="relative">
+      <div class="input w-full{{ ' input-error' if error else '' }}">
+        <input class="grow" type="text" role="combobox" autocomplete="off" spellcheck="false" aria-autocomplete="list" aria-expanded="false"{% if every %} placeholder="{{ every }}"{% endif %}>
+        <button class="btn btn-ghost btn-square btn-xs" type="button" tabindex="-1" aria-label="{{ _('Show the options') }}" data-combobox-toggle>{{ icon("chevrons-up-down", "size-4") }}</button>
+      </div>
+      <div class="absolute z-30 mt-1 w-full rounded-box border border-base-300 bg-base-100 shadow-md" data-combobox-popup hidden>
+        <ul class="menu max-h-64 w-full flex-nowrap overflow-y-auto" role="listbox" aria-label="{{ label }}"></ul>
+        <p class="p-3" data-combobox-none hidden>{{ _("Nothing matches. Try another word.") }}</p>
+      </div>
+    </div>
+  </template>
+</div>
+{% endmacro %}
+
+{#- `accept` helps a person choose and decides nothing: the server reads the file. -#}
+{% macro file_field(name, label, identifier, accept="", error="", hint="", attributes={}, required=none) %}
+<div class="fieldset p-0 text-sm">
+  {{ _label(label, identifier, required) }}
+  {{ _hint(identifier, hint) }}
+  {{ field_error(identifier, error) }}
+  <input class="file-input w-full{{ ' file-input-error' if error else '' }}" id="{{ identifier }}" name="{{ name }}" type="file"{% if accept %} accept="{{ accept }}"{% endif %}{{ _state(identifier, error, hint, required) }}{{ attributes|xmlattr }}>
 </div>
 {% endmacro %}
 
@@ -239,6 +346,15 @@
   <ul class="mt-1 text-sm">
     {% for identifier, error in errors %}<li><a class="underline" href="#{{ identifier }}">{{ error }}</a></li>{% endfor %}
   </ul>
+</div>
+{% endmacro %}
+
+{#- The main action first, the way out next, and what the caller adds, such as Delete, at the far end. -#}
+{% macro form_actions(submit, cancel="", cancel_label="", loading="") %}
+<div class="flex flex-wrap items-center gap-2">
+  {{ button(submit, "primary", "submit", loading=loading) }}
+  {% if cancel %}{{ link_button(cancel_label, cancel) }}{% endif %}
+  {% if caller is defined %}<div class="ms-auto">{{ caller() }}</div>{% endif %}
 </div>
 {% endmacro %}
 
@@ -267,7 +383,7 @@
   </div>
   {% for choice in view.filters %}
   <div class="min-w-0 lg:w-48">
-    {{ select_field(choice.key, choice.label, choice.options, view.chosen[choice.key], view.name ~ "-" ~ choice.key, choice.every) }}
+    {{ select_field(choice.key, choice.label, choice.options, view.chosen[choice.key], view.name ~ "-" ~ choice.key, choice.every, small=true) }}
   </div>
   {% endfor %}
   {% for name, value in view.hidden_fields %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}

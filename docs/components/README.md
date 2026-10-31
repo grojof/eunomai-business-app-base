@@ -78,16 +78,22 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 |---|---|---|
 | [`calendar`](calendar.md) | problems | The calendar component includes styles for different calendar libraries. |
 | [`checkbox`](checkbox.md) | available | Use a checkbox to select or deselect a value. |
+| [`date-field`](date-field.md) | available | The browser's own date field, read by the server in one strict form. |
+| [`error-summary`](error-summary.md) | available | Every problem of a form in one place, each a link to its field. |
+| [`field-error`](field-error.md) | available | What is wrong with one field, and how to fix it, tied to that field. |
 | [`fieldset`](fieldset.md) | available | Use a fieldset as a container for related form elements. Use `fieldset-legend` as the title. Use `label` as the description. |
 | [`file-input`](file-input.md) | available | Use a file input to upload files. |
 | [`filter`](filter.md) | available | A filter is a group of radio buttons. When the user selects an option, the filter hides the other options. It also shows a reset button next to the selected option. |
 | [`filter-bar`](filter-bar.md) | available | A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons. |
+| [`form-actions`](form-actions.md) | available | The main action of a form, the way out, and anything else at the far end. |
 | [`input`](input.md) | available | Use a text input as a simple input field. |
 | [`label`](label.md) | available | Use a label to give a name or title to an input field. Put the label before or after the field. |
+| [`number-field`](number-field.md) | available | Text a person types as their language writes numbers. Never a float. |
 | [`otp`](otp.md) | available | An OTP is a one-time password component that lets a user enter a verification code. The code usually contains four to six digits. Use it for two-factor authentication (2FA) or passwordless login. |
 | [`radio`](radio.md) | available | Use radio buttons to let the user select one option. |
 | [`range`](range.md) | available | Move a range-slider handle to select a value. |
 | [`rating`](rating.md) | available | A rating is a set of radio buttons that lets the user give a rating. |
+| [`searchable-select`](searchable-select.md) | available | A list to type in, by keyboard, that is a plain select without JavaScript. |
 | [`select`](select.md) | available | Use a select component to select a value from a list of options. |
 | [`textarea`](textarea.md) | available | A textarea lets users enter text on more than one line. |
 | [`toggle`](toggle.md) | available | A toggle is a checkbox with the style of a switch button. |

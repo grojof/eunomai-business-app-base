@@ -1,0 +1,8 @@
+{% from "ui/macros.html" import radio_group %}
+{% with choices = [("low", _("Low")), ("normal", _("Normal")), ("high", _("High"))] %}
+<div class="grid max-w-md gap-4">
+  {{ radio_group("sample-priority", _("Priority"), choices, "normal", "sample-priority", hint=_("High goes first in the plan."), required=true) }}
+  {{ radio_group("sample-wrong", _("Priority"), choices, "", "sample-wrong", error=_("Choose a priority.")) }}
+</div>
+{% endwith %}
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ radio_group("priority", _("Priority"), options, values.priority, "field-priority", error=errors.get("priority", ""), required=true) }}{% endraw %}</code></pre>

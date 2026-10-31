@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 18:54+0100\n"
+"POT-Creation-Date: 2026-10-31 19:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -76,6 +76,9 @@ msgstr ""
 "%(total)s órdenes de trabajo abiertas este año. El mes con más trabajo "
 "fue %(month)s, con %(count)s."
 
+msgid "A PDF, PNG or JPEG file of up to 10 MB."
+msgstr "Un archivo PDF, PNG o JPEG de hasta 10 MB."
+
 msgid "A card with a title, ready for any content."
 msgstr "Una tarjeta con título, lista para cualquier contenido."
 
@@ -108,6 +111,18 @@ msgstr "Todos los estados"
 
 msgid "Any date"
 msgstr "Cualquier fecha"
+
+msgid ""
+"Arrow keys move through the list, Enter chooses, Escape closes it. "
+"Without JavaScript it is a plain select, which is why a list must fit in "
+"a page."
+msgstr ""
+"Las flechas recorren la lista, Intro elige y Escape la cierra. Sin "
+"JavaScript es un select normal, y por eso la lista debe caber en una "
+"página."
+
+msgid "Attachment"
+msgstr "Archivo adjunto"
 
 msgid "Audit"
 msgstr "Auditoría"
@@ -149,8 +164,17 @@ msgstr "Revisa lo que has escrito"
 msgid "Checked"
 msgstr "Revisado"
 
+msgid "Choose a priority."
+msgstr "Elige una prioridad."
+
 msgid "Choose a state from the list."
 msgstr "Elige un estado de la lista."
+
+msgid "Choose one"
+msgstr "Elige uno"
+
+msgid "Choose one from the list."
+msgstr "Elige uno de la lista."
 
 msgid "Class name"
 msgstr "Clase"
@@ -231,6 +255,9 @@ msgstr "Decorativo: no pensado para aplicaciones de gestión."
 msgid "Delete"
 msgstr "Eliminar"
 
+msgid "Description"
+msgstr "Descripción"
+
 msgid "Details"
 msgstr "Detalles"
 
@@ -239,6 +266,13 @@ msgstr "Dirección"
 
 msgid "Due soon"
 msgstr "Vence pronto"
+
+msgid ""
+"Each line is a link to its field. Focus comes to the summary when a form "
+"returns with errors, and a screen reader reads it."
+msgstr ""
+"Cada línea es un enlace a su campo. El foco va al resumen cuando un "
+"formulario vuelve con errores, y un lector de pantalla lo lee."
 
 msgid "Edit"
 msgstr "Editar"
@@ -258,8 +292,14 @@ msgstr "Escribe entre 0 y %(most)s horas."
 msgid "Enter the hours as a number, such as %(example)s."
 msgstr "Escribe las horas como un número, por ejemplo %(example)s."
 
+msgid "Enter the hours as a number, such as 7.50."
+msgstr "Escribe las horas como un número, por ejemplo 7,50."
+
 msgid "Enter the hours with two decimals at most."
 msgstr "Escribe las horas con dos decimales como máximo."
+
+msgid "Enter what has to be done."
+msgstr "Escribe qué hay que hacer."
 
 msgid "Equipment"
 msgstr "Equipos"
@@ -315,6 +355,9 @@ msgstr ""
 msgid "Export to Excel"
 msgstr "Exportar a Excel"
 
+msgid "Far too long"
+msgstr "Demasiado largo"
+
 msgid "Filter components"
 msgstr "Filtrar componentes"
 
@@ -340,6 +383,12 @@ msgstr ""
 "Aquí es un formulario sencillo y recarga la página. En una pantalla, htmx"
 " sustituye solo los resultados."
 
+msgid "High"
+msgstr "Alta"
+
+msgid "High goes first in the plan."
+msgstr "La alta va primero en el plan."
+
 msgid "Hours"
 msgstr "Horas"
 
@@ -354,6 +403,9 @@ msgid "Hours worked stayed within 6 % of the plan in every month."
 msgstr ""
 "Las horas trabajadas no se alejaron más de un 6 % de lo previsto en "
 "ningún mes."
+
+msgid "I have read the safety sheet"
+msgstr "He leído la ficha de seguridad"
 
 msgid ""
 "In groups, grouped_table does the same with one tbody per group and a "
@@ -370,6 +422,13 @@ msgstr "En servicio"
 
 msgid "Inspections"
 msgstr "Inspecciones"
+
+msgid ""
+"It has its icon and its words, so it does not depend on colour. Every "
+"field macro writes it and ties it to the control."
+msgstr ""
+"Tiene su icono y sus palabras, así que no depende del color. Cada macro "
+"de campo lo escribe y lo vincula al control."
 
 msgid ""
 "It uses Tailwind's own colours, which this base removes, so some colours "
@@ -389,6 +448,9 @@ msgstr "Cargando"
 
 msgid "Location"
 msgstr "Ubicación"
+
+msgid "Low"
+msgstr "Baja"
 
 msgid "Maintenance plan"
 msgstr "Plan de mantenimiento"
@@ -438,6 +500,12 @@ msgstr "Ninguna orden de trabajo coincide"
 msgid "No work orders yet"
 msgstr "Aún no hay órdenes de trabajo"
 
+msgid "None"
+msgstr "Ninguno"
+
+msgid "Normal"
+msgstr "Normal"
+
 msgid "North plant"
 msgstr "Planta norte"
 
@@ -474,6 +542,11 @@ msgstr ""
 msgid "On this page"
 msgstr "En esta página"
 
+msgid ""
+"One primary action, the way out beside it, and what is dangerous out of "
+"the way."
+msgstr "Una acción principal, la salida al lado, y lo peligroso bien apartado."
+
 msgid "Only people with the administrator role can open this page."
 msgstr "Solo pueden abrir esta página las personas con el rol de administrador."
 
@@ -508,6 +581,9 @@ msgstr "Embalaje"
 
 msgid "Part"
 msgstr "Parte"
+
+msgid "People needed"
+msgstr "Personas necesarias"
 
 msgid "Placement"
 msgstr "Posición"
@@ -545,6 +621,12 @@ msgstr "Anterior"
 msgid "Print"
 msgstr "Imprimir"
 
+msgid "Priority"
+msgstr "Prioridad"
+
+msgid "Production is told a day before."
+msgstr "Se avisa a producción un día antes."
+
 msgid ""
 "Published by daisyUI, in English. Their text is left as it is. Pictures "
 "are replaced by a neutral placeholder."
@@ -554,6 +636,9 @@ msgstr ""
 
 msgid "Records"
 msgstr "Registros"
+
+msgid "Reference"
+msgstr "Referencia"
 
 msgid "Reported"
 msgstr "Comunicado"
@@ -657,6 +742,15 @@ msgstr ""
 "órdenes de las que se abrían."
 
 msgid ""
+"The browser's list of accepted types helps a person choose and decides "
+"nothing. The server reads the file itself: see Uploads in the "
+"specification."
+msgstr ""
+"La lista de tipos aceptados del navegador ayuda a elegir y no decide "
+"nada. El servidor lee el propio archivo: consulta Subidas en la "
+"especificación."
+
+msgid ""
 "The database does not answer. Check APP_DATABASE_URL, and that its server"
 " is running."
 msgstr ""
@@ -668,6 +762,12 @@ msgstr "Las filas de la demo aún no están aquí"
 
 msgid "The dot is decoration: its colour never says anything the word does not."
 msgstr "El punto es decoración: su color nunca dice nada que no diga la palabra."
+
+msgid "The equipment must stop for this work"
+msgstr "El equipo debe parar para este trabajo"
+
+msgid "The file is empty. Choose one with something in it."
+msgstr "El archivo está vacío. Elige uno que tenga contenido."
 
 msgid ""
 "The warehouse takes the most hours, the roof the most money for each "
@@ -712,6 +812,12 @@ msgstr ""
 msgid "This year"
 msgstr "Este año"
 
+msgid "Tick this to go on."
+msgstr "Márcalo para continuar."
+
+msgid "Title"
+msgstr "Título"
+
 msgid "Total"
 msgstr "Total"
 
@@ -727,12 +833,21 @@ msgstr "Prueba con menos filtros o con otra palabra."
 msgid "Type"
 msgstr "Tipo"
 
+msgid "Type to narrow the list."
+msgstr "Escribe para acotar la lista."
+
 msgid "Updated"
 msgstr "Actualizado"
 
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualizado: %(moment)s"
+
+msgid "Use 2000 characters at most."
+msgstr "Usa 2000 caracteres como máximo."
+
+msgid "Use letters and numbers, with no spaces."
+msgstr "Usa letras y números, sin espacios."
 
 msgid "View"
 msgstr "Ver"
@@ -744,8 +859,20 @@ msgstr "Ver %(code)s"
 msgid "Warehouse"
 msgstr "Almacén"
 
+msgid "What has to be done, in a few words."
+msgstr "Qué hay que hacer, en pocas palabras."
+
 msgid "What it does"
 msgstr "Qué hace"
+
+msgid "What was seen, and when."
+msgstr "Qué se vio y cuándo."
+
+msgid "Where the equipment stands today."
+msgstr "Cómo está el equipo hoy."
+
+msgid "With two decimals at most."
+msgstr "Con dos decimales como máximo."
 
 msgid "Work"
 msgstr "Trabajo"
