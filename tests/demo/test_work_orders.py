@@ -133,6 +133,11 @@ def test_what_does_not_exist_is_not_found(filled, path):
     assert filled.get(path).status_code == 404
 
 
+@pytest.mark.parametrize("path", ["/work-orders/1/files/1", "/work-orders/1/files/1/delete"])
+def test_without_the_rows_a_file_is_simply_not_there(client, person, path):
+    assert client.get(path, headers=person).status_code == 404
+
+
 def test_without_the_rows_it_says_what_to_run(client, person):
     response = client.get("/work-orders/new", headers=person, follow_redirects=False)
     assert (response.status_code, response.headers["location"]) == (303, "/planning")

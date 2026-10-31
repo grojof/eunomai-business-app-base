@@ -458,7 +458,8 @@ def delete(
 
 def _file_or_404(session: Session, order_id: int, file_id: int) -> WorkOrderFile:
     """A file is reached through its own order, and only by numbers: nothing from the address names a path."""
-    file = session.get(WorkOrderFile, file_id) if file_id <= LARGEST_ID else None
+    ready = rows_state(session) == READY and file_id <= LARGEST_ID
+    file = session.get(WorkOrderFile, file_id) if ready else None
     if file is None or file.work_order_id != order_id:
         raise HTTPException(status_code=404)
     return file
