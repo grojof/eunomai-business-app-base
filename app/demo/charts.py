@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session, contains_eager
 
 from app.core.charts import STATE_COLOURS, ChartData, Point, Series, chart_data, point_data
 from app.core.database import exact_sum, total
-from app.core.formatters import format_decimal, format_month, format_percent, rounded
+from app.core.formatters import format_date, format_decimal, format_month, format_percent, rounded
 from app.core.i18n import _
 from app.demo.equipment import STATUS_LABELS
 from app.demo.models import (
@@ -124,6 +124,12 @@ def inspections_due(session: Session) -> int:
     return session.scalar(select(func.count()).select_from(Equipment).where(Equipment.next_inspection <= limit)) or 0
 
 
+def _overdue_item(order: WorkOrder) -> tuple[str, str, str, str]:
+    """One line of the Overdue card. An overdue order always has a date: `overdue()` compares it."""
+    planned = format_date(order.planned_on) if order.planned_on else ""
+    return order.equipment.name, order.title, f"/equipment/{order.equipment_id}?tab=orders", planned
+
+
 def dashboard_figures(session: Session, zone: str) -> dict[str, Any]:
     """What the dashboard shows when the rows are there."""
     open_orders = WorkOrder.status.in_(OPEN_STATES)
@@ -149,7 +155,7 @@ def dashboard_figures(session: Session, zone: str) -> dict[str, Any]:
         "cost_chart": cost,
         "states_chart": equipment_by_state(session),
         "overdue_count": session.scalar(select(func.count()).select_from(WorkOrder).where(overdue())) or 0,
-        "overdue_orders": oldest,
+        "overdue_items": [_overdue_item(order) for order in oldest],
         "updated": LAST_MOMENT,
         "plan": [
             ("Preventive plan", _closed_share(session, "Preventive plan"), "primary"),

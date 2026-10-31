@@ -50,7 +50,7 @@ def dashboard(request: Request, session: DatabaseSession) -> Response:
         "equipment": EQUIPMENT,
         "orders_chart": None,
         "overdue_count": 0,
-        "overdue_orders": [],
+        "overdue_items": [],
         "updated": datetime(2026, 10, 30, 7, 30, tzinfo=UTC),
         "plan": PLAN,
     }
