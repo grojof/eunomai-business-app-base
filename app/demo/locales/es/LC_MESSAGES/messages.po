@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 16:52+0100\n"
+"POT-Creation-Date: 2026-10-31 17:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -193,6 +193,9 @@ msgstr ""
 "Los ejemplos y sus traducciones proceden de la documentación de daisyUI, "
 "con licencia MIT. Disponible significa un ejemplo oficial, mostrado tal "
 "como se publicó y sin auditar aquí: no es una promesa de accesibilidad."
+
+msgid "Export to Excel"
+msgstr "Exportar a Excel"
 
 msgid "Filter components"
 msgstr "Filtrar componentes"
@@ -410,6 +413,9 @@ msgstr "Prueba con menos filtros o con otra palabra."
 
 msgid "Type"
 msgstr "Tipo"
+
+msgid "Updated"
+msgstr "Actualizado"
 
 #, python-format
 msgid "Updated: %(moment)s"

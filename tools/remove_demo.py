@@ -21,6 +21,7 @@ DEMO_ICONS = (
     "component",
     "database",
     "eye",
+    "file-spreadsheet",
     "gauge",
     "history",
     "shield",

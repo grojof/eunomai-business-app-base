@@ -229,7 +229,7 @@ def test_the_same_list_elsewhere_keeps_its_filters_and_order_but_not_its_page():
 
 def test_everything_gives_every_row_in_the_same_order(session):
     view = view_of({"sort": "cost", "dir": "desc", "size": "10"})
-    assert list(view.everything(session, select(THING.c.id))) == [2, 4, 3, 1]
+    assert [row.id for row in view.everything(session, select(THING.c.id))] == [2, 4, 3, 1]
 
 
 def test_the_statement_a_page_sends_binds_every_value():

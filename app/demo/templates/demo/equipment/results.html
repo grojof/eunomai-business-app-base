@@ -1,7 +1,9 @@
 {#- What changes when the list changes: a whole page includes it, and htmx asks for it alone. -#}
 {% from "ui/macros.html" import filter_bar, list_summary, server_table, row_header, cell, row_actions, status_label, pagination, empty_state, link_button %}
 {% if refill_filters %}{{ filter_bar(view, refill=true) }}{% endif %}
-{% call list_summary(view, ngettext("%(count)s piece of equipment", "%(count)s pieces of equipment", view.total, count=view.total|decimal)) %}{% endcall %}
+{% call list_summary(view, ngettext("%(count)s piece of equipment", "%(count)s pieces of equipment", view.total, count=view.total|decimal)) %}
+{% if view.rows %}{{ link_button(_("Export to Excel"), view.elsewhere("/equipment/export"), small=true, name="file-spreadsheet", attributes={"download": ""}) }}{% endif %}
+{% endcall %}
 {% if view.rows %}
 {% call(row) server_table(view, _("Equipment, where it is, its state, its next inspection and its cost"), _("Actions")) %}
 {% set label, kind = statuses[row.status] %}

@@ -192,4 +192,5 @@ in the Ubuntu job.
 | SEC-11 | An error reveals nothing to the person, and its detail reaches the log | [ASVS V16](https://asvs.owasp.org/), [Top 10 A10](https://top10.owasp.org/2025/) | Automatic |
 | SEC-12 | Uploads are checked by size and real type | [ASVS V5](https://asvs.owasp.org/), [OWASP File Upload](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html) | Milestone 3 |
 | SEC-14 | Text is never run as code: no `eval`, `new Function` or `exec`, and the browser refuses them | [CWE-95](https://cwe.mitre.org/data/definitions/95.html), [CSP 3](https://www.w3.org/TR/CSP3/), [htmx security](https://htmx.org/essays/web-security-basics-with-htmx/) | Automatic |
+| SEC-15 | A spreadsheet never runs what it exports: text that could start a formula is neutralised, and no cell holds one | [OWASP CSV Injection](https://owasp.org/www-community/attacks/CSV_Injection) | Automatic |
 | SEC-13 | Cookies are `HttpOnly` and `SameSite`, and `Secure` in production; a redirect never leaves the application | [ASVS V3](https://asvs.owasp.org/), [Top 10 A01](https://top10.owasp.org/2025/) | Automatic |

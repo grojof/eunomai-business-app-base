@@ -30,6 +30,7 @@ _CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
 """PostgreSQL refuses a NUL inside text, and none of these belongs in a search."""
 
 Direction = Literal["asc", "desc"]
+AnySelect = Select[*tuple[Any, ...]]
 
 
 @dataclass(frozen=True)
@@ -157,7 +158,7 @@ class ListView:
             main = main.nulls_last()
         return [*first, main, self.tiebreak.desc() if descending else self.tiebreak.asc()]
 
-    def load(self, session: Session, statement: Select[Any], *first: Any, options: Sequence[Any] = ()) -> None:
+    def load(self, session: Session, statement: AnySelect, *first: Any, options: Sequence[Any] = ()) -> None:
         """Counts what the filters leave, then reads one page. A page past the end shows the last one."""
         filtered = statement.where(*self.conditions)
         counted = filtered.with_only_columns(func.count(), maintain_column_froms=True).order_by(None)
@@ -167,11 +168,11 @@ class ListView:
         self.rows = list(session.scalars(ordered.limit(self.size).offset((self.page - 1) * self.size)))
 
     def everything(
-        self, session: Session, statement: Select[Any], *first: Any, options: Sequence[Any] = ()
+        self, session: Session, statement: AnySelect, *first: Any, options: Sequence[Any] = ()
     ) -> Iterator[Any]:
         """Every row the filters leave, in the same order as the screen, read in blocks: what an export needs."""
         ordered = statement.where(*self.conditions).options(*options).order_by(*self.order(*first))
-        yield from session.scalars(ordered.execution_options(yield_per=READ_IN_BLOCKS))
+        yield from session.execute(ordered.execution_options(yield_per=READ_IN_BLOCKS))
 
     @property
     def pages(self) -> int:

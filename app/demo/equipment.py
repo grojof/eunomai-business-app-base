@@ -4,10 +4,11 @@ from collections.abc import Iterable, Mapping
 from typing import Any
 
 from fastapi import FastAPI, Request
-from fastapi.responses import Response
+from fastapi.responses import RedirectResponse, Response
 from sqlalchemy import ColumnElement, case, select
 
 from app.core.database import DatabaseSession
+from app.core.excel import ExcelColumn, excel_response
 from app.core.i18n import N_, _
 from app.core.tables import Column, Filter, ListView, render_list
 from app.core.templating import render
@@ -88,5 +89,36 @@ def equipment_list(request: Request, session: DatabaseSession) -> Response:
     )
 
 
+def equipment_export(request: Request, session: DatabaseSession) -> Response:
+    """Exactly what the list shows, in the same order, on every page of it. It blocks one worker while it writes."""
+    if rows_state(session) != READY:
+        return RedirectResponse("/equipment", status_code=303)
+    view = equipment_view(request.query_params)
+    columns = (
+        ExcelColumn(_("Code"), width=14),
+        ExcelColumn(_("Name"), width=30),
+        ExcelColumn(_("Location"), width=18),
+        ExcelColumn(_("State"), width=14),
+        ExcelColumn(_("Next inspection"), "date", width=16),
+        ExcelColumn(_("Cost"), "number", width=16),
+        ExcelColumn(_("Updated"), "moment", width=20),
+    )
+    statement = select(
+        Equipment.code,
+        Equipment.name,
+        Equipment.location,
+        Equipment.status,
+        Equipment.next_inspection,
+        Equipment.cost,
+        Equipment.updated_at,
+    )
+    rows = (
+        (row.code, row.name, _(row.location), _(STATUS_LABELS[row.status][0]), *row[4:])
+        for row in view.everything(session, statement)
+    )
+    return excel_response(_("Equipment"), columns, rows, request.app.state.settings.time_zone)
+
+
 def install(application: FastAPI) -> None:
     application.add_api_route("/equipment", equipment_list, include_in_schema=False)
+    application.add_api_route("/equipment/export", equipment_export, include_in_schema=False)
