@@ -33,7 +33,7 @@ Add your own components as [the specification](docs/specification.md#adapting-it
   refuses them.
 - Use the existing macros before writing anything new: screens call `button`, not a raw `.btn`. daisyUI's examples in
   the gallery are reference material, not a model for a screen. After changing templates, run
-  `uv run python tools/css.py`.
+  `uv run --frozen python tools/css.py`.
 - Each screen handles its empty, loading, error and no-permission states.
 - A new component needs its page in the demo and its tests, in the same change.
 - Add a dependency only if the [stack](docs/specification.md#stack) needs it. Pin it and check it for known
@@ -47,15 +47,16 @@ done, and say plainly what was not checked. Where a check cannot tell, such as h
 test by hand and record it in the pull request.
 
 ```bash
-uv run ruff check && uv run ruff format --check && uv run mypy
-uv run python tools/vendor.py check
-uv run python tools/css.py check
-uv run python tools/components.py check     # after changing the catalogue: tools/components.py
-uv run python tools/gallery.py check        # generated from daisyUI's documentation: tools/gallery.py
-uv run python tools/translations.py check   # after changing texts: tools/translations.py update
-uv run pytest -q
+uv lock --check
+uv run --frozen ruff check && uv run --frozen ruff format --check && uv run --frozen mypy
+uv run --frozen python tools/vendor.py check
+uv run --frozen python tools/css.py check
+uv run --frozen python tools/components.py check     # after changing the catalogue: tools/components.py
+uv run --frozen python tools/gallery.py check        # generated from daisyUI's documentation: tools/gallery.py
+uv run --frozen python tools/translations.py check   # after changing texts: tools/translations.py update
+uv run --frozen pytest -q
 ```
 
 Start the server with `--no-proxy-headers`, as the [README](README.md#try-it) does. Browser tests use the Chrome
 already on the computer; nothing is downloaded. After upgrading Babel, a test may ask for
-`uv run python tools/cldr_grouping.py`.
+`uv run --frozen python tools/cldr_grouping.py`.

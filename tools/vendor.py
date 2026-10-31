@@ -1,7 +1,7 @@
 """The files copied into the repository: vendor.json says which, and from where.
 
-    uv run python tools/vendor.py check    every file matches its recorded hash
-    uv run python tools/vendor.py update   move each to the newest version the rules allow, within its major version
+    uv run --frozen python tools/vendor.py check    every file matches its recorded hash
+    uv run --frozen python tools/vendor.py update   move each to the newest version allowed, within its major version
 
 Nothing runs npm. How each file is pinned:
 

@@ -1,6 +1,6 @@
 """Which languages leave four-digit numbers ungrouped, from Unicode's own data.
 
-    uv run python tools/cldr_grouping.py
+    uv run --frozen python tools/cldr_grouping.py
 
 Babel does not apply CLDR's minimumGroupingDigits. This writes the value of each locale that differs from its parent,
 from the CLDR version Babel uses; app/core/formatters.py looks a locale up, then its parents, then uses 1. CLDR omits

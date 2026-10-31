@@ -1,6 +1,6 @@
 """Daily dependency maintenance: the newest versions the rules allow (docs/specification.md#dependencies), nothing else.
 
-    uv run python tools/update_dependencies.py --summary summary.md --problems problems.md
+    uv run --frozen python tools/update_dependencies.py --summary summary.md --problems problems.md
 
 Writes what changed, every package included, and the problems no allowed version solves. A problem with one
 dependency never stops the others, so a security update is not lost: it goes to the problems, which keep an issue

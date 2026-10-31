@@ -1,7 +1,7 @@
 """The gallery's data, generated from daisyUI's own documentation so that nothing in it is written by hand.
 
-    uv run python tools/gallery.py         write app/demo/examples/
-    uv run python tools/gallery.py check   fail if it is out of date
+    uv run --frozen python tools/gallery.py         write app/demo/examples/
+    uv run --frozen python tools/gallery.py check   fail if it is out of date
 
 The source is tools/tailwind/daisyui-docs.json, pinned in vendor.json to the same version as daisyUI itself. For each
 component it takes the title, description, class tables and every example, with the Spanish and Catalan that daisyUI

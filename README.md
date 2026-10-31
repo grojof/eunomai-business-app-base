@@ -31,14 +31,14 @@ Needs [uv](https://docs.astral.sh/uv/). A copy of `.env.example` gives a fake id
 
 ```bash
 cp .env.example .env
-uv run uvicorn app.main:app --reload --no-proxy-headers
+uv run --frozen uvicorn app.main:app --reload --no-proxy-headers
 ```
 
 Keep `--no-proxy-headers`: without it, Uvicorn replaces the proxy's address with the one in `X-Forwarded-For`, the
 address stops being trusted, and everyone gets 401.
 
-To start an application of your own, clone this, then run `uv run python tools/remove_demo.py` and
-`uv run python tools/css.py`.
+To start an application of your own, clone this, then run `uv run --frozen python tools/remove_demo.py` and
+`uv run --frozen python tools/css.py`.
 
 ## Documentation
 
