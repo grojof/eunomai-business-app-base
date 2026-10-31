@@ -15,7 +15,7 @@ from typing import Any, Literal
 from urllib.parse import parse_qsl, urlencode, urlsplit
 
 from fastapi import Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from sqlalchemy import ColumnElement, Select, func, or_
 from sqlalchemy.orm import Session
 
@@ -298,6 +298,14 @@ def fragment_requested(request: Request) -> bool:
     """htmx asks for the part that changes. Going back through history asks for the whole page."""
     headers = request.headers
     return headers.get("hx-request") == "true" and headers.get("hx-history-restore-request") != "true"
+
+
+def whole_page(request: Request, address: str) -> Response:
+    """Sends a person to a whole page, however they asked. htmx follows a plain redirect by itself and would put that
+    page inside a fragment, so it is told in a header, and it navigates."""
+    if fragment_requested(request):
+        return Response(headers={"HX-Redirect": address})
+    return RedirectResponse(address, status_code=303)
 
 
 def render_list(request: Request, view: ListView, page: str, results: str, **context: Any) -> HTMLResponse:

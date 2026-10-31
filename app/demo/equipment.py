@@ -4,13 +4,13 @@ from collections.abc import Iterable, Mapping
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import RedirectResponse, Response
+from fastapi.responses import Response
 from sqlalchemy import ColumnElement, case, select
 
 from app.core.database import DatabaseSession, exact_sum
 from app.core.excel import ExcelColumn, excel_response
 from app.core.i18n import N_, _
-from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list
+from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list, whole_page
 from app.core.templating import render
 from app.demo.data import GENERATE, READY, rows_state
 from app.demo.models import EQUIPMENT_STATUSES, LOCATIONS, Equipment, WorkOrder
@@ -83,6 +83,8 @@ def equipment_view(params: Mapping[str, str]) -> ListView:
 def equipment_list(request: Request, session: DatabaseSession) -> Response:
     state = rows_state(session)
     if state != READY:
+        if fragment_requested(request):
+            return whole_page(request, "/equipment")
         return render(request, "demo/equipment/list.html", state=state, command=GENERATE)
     view = equipment_view(request.query_params)
     view.load(session, select(Equipment))
@@ -100,7 +102,7 @@ def equipment_list(request: Request, session: DatabaseSession) -> Response:
 def equipment_export(request: Request, session: DatabaseSession) -> Response:
     """Exactly what the list shows, in the same order, on every page of it. It blocks one worker while it writes."""
     if rows_state(session) != READY:
-        return RedirectResponse("/equipment", status_code=303)
+        return whole_page(request, "/equipment")
     view = equipment_view(request.query_params)
     columns = (
         ExcelColumn(_("Code"), width=14),
@@ -135,6 +137,8 @@ def _list_address(request: Request) -> str:
 def equipment_detail(request: Request, equipment_id: int, session: DatabaseSession) -> Response:
     state = rows_state(session)
     if state != READY:
+        if fragment_requested(request):
+            return whole_page(request, f"/equipment/{equipment_id}")
         return render(request, "demo/equipment/detail_missing.html", state=state, command=GENERATE)
     item = session.get(Equipment, equipment_id) if equipment_id <= LARGEST_ID else None
     if item is None:

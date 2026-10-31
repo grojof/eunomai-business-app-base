@@ -19,7 +19,7 @@ from app.core.database import DatabaseSession, totals_by
 from app.core.formatters import format_decimal, format_month_and_year, parse_decimal
 from app.core.i18n import N_, _, ngettext
 from app.core.identity import Person, require_role
-from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list
+from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list, whole_page
 from app.core.templating import render
 from app.demo.data import GENERATE, READY, rows_state
 from app.demo.equipment import LARGEST_ID, ORDER_LABELS, labels_in_order, ranked
@@ -182,6 +182,8 @@ def _list_context(request: Request, person: Person | None) -> dict[str, Any]:
 def planning(request: Request, session: DatabaseSession) -> Response:
     state = rows_state(session)
     if state != READY:
+        if fragment_requested(request):
+            return whole_page(request, "/planning")
         return render(request, "demo/planning/list.html", state=state, command=GENERATE)
     view = planning_view(request.query_params)
     sections = load_sections(view, session)
@@ -241,7 +243,7 @@ def planning_edit(
 ) -> Response:
     """The editor of one row: in the dialog for htmx, as its own page without JavaScript."""
     if rows_state(session) != READY:
-        return RedirectResponse("/planning", status_code=303)
+        return whole_page(request, "/planning")
     order = _order_or_404(session, order_id)
     back = _view_of(request.query_params.get("back", "")).here
     values = {
@@ -293,7 +295,7 @@ def planning_save(
 ) -> Response:
     """Saves one row. Cross-site posts never reach this: `_context` refuses them, as SEC-07 says."""
     if rows_state(session) != READY:
-        return RedirectResponse("/planning", status_code=303)
+        return whole_page(request, "/planning")
     order = _order_or_404(session, order_id)
     view = _view_of(back)
     partial = fragment_requested(request)
