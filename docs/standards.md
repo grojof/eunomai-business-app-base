@@ -1,8 +1,8 @@
 ---
 type: reference
 title: Standards
-description: "Every rule that screens and components follow, each with its official source and how it is checked: accessibility, usability, language, components and security."
-tags: [accessibility, usability, i18n, security, standards]
+description: "Every rule that screens and components follow, each with its official source and how it is checked: accessibility, usability, language, components, data and security."
+tags: [accessibility, usability, i18n, data, security, standards]
 related: [specification.md, decisions.md]
 ---
 
@@ -28,6 +28,7 @@ a row starting `| XXX-NN |` does not parse. Rules proved only on demo screens ar
 | Language | [BCP 47](https://www.rfc-editor.org/info/bcp47) | Internet standard for language tags | Free |
 | Language | [Unicode CLDR](https://cldr.unicode.org/) | The reference data for formats and plurals | Free |
 | Language | [GNU gettext manual](https://www.gnu.org/software/gettext/manual/gettext.html) | The reference for message catalogues | Free |
+| Data | [PostgreSQL](https://www.postgresql.org/docs/current/) and [SQLite](https://www.sqlite.org/docs.html) documentation | What each database promises | Free |
 | Security | [OWASP ASVS 5.0](https://asvs.owasp.org/) | Verification standard for applications | Free |
 | Security | [OWASP Top 10:2025](https://top10.owasp.org/2025/) | The reference list of web risks | Free |
 | Security | [CWE Top 25](https://cwe.mitre.org/top25/) | Most dangerous software weaknesses | Free |
@@ -121,7 +122,7 @@ applies anyway.
 | LANG-12 | Each language is named in itself (Català, Español), without flags: a flag is a country | Project decision | Automatic |
 | LANG-13 | A missing text falls back to the source language; never a blank or a key | [gettext manual](https://www.gnu.org/software/gettext/manual/gettext.html) | Automatic |
 | LANG-14 | No *fuzzy* text remains in a catalogue: fuzzy text is not finished | Project decision | Automatic |
-| LANG-15 | Moments are stored in UTC | [W3C Working with Time Zones](https://www.w3.org/TR/timezone/) | Milestone 2 |
+| LANG-15 | Moments are stored in UTC. A column takes only a datetime with its time zone, and gives one back in UTC, on both databases | [W3C Working with Time Zones](https://www.w3.org/TR/timezone/) | Automatic |
 | LANG-16 | No text in images; CSS logical properties | [W3C authoring](https://www.w3.org/International/techniques/authoring-html) | By hand |
 | LANG-17 | A translation by AI stays *fuzzy* until a person accepts it | Project decision | By hand |
 | LANG-18 | Screens use the formatters for numbers, dates and times, never their own | [Unicode CLDR](https://cldr.unicode.org/) | By hand |
@@ -157,6 +158,22 @@ Catalan.
 | COMP-02 | Every component has a page with frontmatter and a description; each official page shows its status; one with problems says why | Project decision | Automatic |
 | COMP-03 | The gallery shows every component with its status and every official example, counted from daisyUI's documentation, and generated data matches that documentation. A macro appears on the page of its component | Project decision | Automatic |
 | COMP-04 | A class in use must exist, read from real pages, macro arguments, `{% set %}` values and the catalogue; values such as `[color:#ff0000]` are refused. Component classes outside what Tailwind reads are caught; Tailwind utilities in Python files are not | Project decision | Automatic |
+
+## Data
+
+Where the two databases [differ](specification.md#where-the-two-databases-differ) is stated in the specification. These
+rules are what holds on both. The tests of `DATA-02` to `DATA-06` and `LANG-15` run on SQLite everywhere, and on PostgreSQL
+in the Ubuntu job.
+
+| ID | Rule | Source | Check |
+|---|---|---|---|
+| DATA-01 | Production runs on PostgreSQL: the application refuses to start on anything else, and SQLite is the default only with `APP_ENVIRONMENT=development` | [SQLite: appropriate uses](https://www.sqlite.org/whentouse.html) | Automatic |
+| DATA-02 | Money and quantities use one exact column type: `Numeric(38, 20)` on PostgreSQL, text on SQLite, written in one form. A float is refused, on writing and in a query, and so is a value the column cannot hold whole. No model or migration declares another decimal type | [PostgreSQL numeric types](https://www.postgresql.org/docs/current/datatype-numeric.html), [Python decimal](https://docs.python.org/3/library/decimal.html) | Automatic |
+| DATA-03 | On SQLite, ordering and comparing an exact column are numeric, and a sum, a function, arithmetic, a cast or a case over one, built with SQLAlchemy, fails loudly instead of going through a float. `total()` gives the same exact sum on both databases | [SQLite collation](https://www.sqlite.org/datatype3.html#collation), [SQLite aggregates](https://www.sqlite.org/lang_aggfunc.html) | Automatic |
+| DATA-04 | Foreign keys hold on both databases | [SQLite foreign keys](https://www.sqlite.org/foreignkeys.html#fk_enable) | Automatic |
+| DATA-05 | A route that uses the database is declared with `def`, so a query runs in a worker thread and does not stop the server | [FastAPI: concurrency](https://fastapi.tiangolo.com/async/) | Automatic |
+| DATA-06 | Models and migrations say the same on both databases, every migration goes down and up again, and a batch change keeps the rows that point to its table | [Alembic autogenerate](https://alembic.sqlalchemy.org/en/latest/autogenerate.html), [Alembic batch](https://alembic.sqlalchemy.org/en/latest/batch.html) | Automatic |
+| DATA-07 | Demo data is generated: the same seed and the same number of rows give the same rows on any computer and Python, and no real person or company appears | Project decision | Automatic |
 
 ## Security
 

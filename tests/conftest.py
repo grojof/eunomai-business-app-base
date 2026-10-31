@@ -1,19 +1,24 @@
+import os
 import socket
 import threading
 import time
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from typing import Any
+from uuid import uuid4
 
 import pytest
 import uvicorn
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine, make_url
 
 from app.core.settings import Settings
 from app.main import create_app
 
 PERSON = {"X-Remote-User": "demo.person", "X-Remote-Name": "Demo Person", "X-Remote-Groups": "staff|admins"}
+TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "")
+"""A PostgreSQL to run the database tests on as well. Nothing in it is touched: each test gets a schema of its own."""
 
 
 def build_settings(**overrides: Any) -> Settings:
@@ -22,7 +27,26 @@ def build_settings(**overrides: Any) -> Settings:
         "trusted_proxies": ["testclient"],
         "role_groups": {"admin": ["admins"]},
     }
+    if overrides.get("environment") == "production":
+        values["database_url"] = "postgresql+psycopg://application@localhost/application"  # nothing connects to it
     return Settings(**(values | overrides), _env_file=None)  # type: ignore[call-arg]
+
+
+@pytest.fixture(params=["sqlite", "postgresql"] if TEST_DATABASE_URL else ["sqlite"])
+def database_url(request: pytest.FixtureRequest, tmp_path: Any) -> Iterator[str]:
+    """An empty database on each engine available. The folder of the SQLite file does not exist yet, on purpose."""
+    if request.param == "sqlite":
+        yield f"sqlite:///{(tmp_path / 'database' / 'test.db').as_posix()}"
+        return
+    schema = f"test_{uuid4().hex}"
+    administrator = create_engine(TEST_DATABASE_URL)
+    with administrator.begin() as connection:
+        connection.exec_driver_sql(f"CREATE SCHEMA {schema}")
+    url = make_url(TEST_DATABASE_URL).update_query_dict({"options": f"-csearch_path={schema}"})
+    yield url.render_as_string(hide_password=False)
+    with administrator.begin() as connection:
+        connection.exec_driver_sql(f"DROP SCHEMA {schema} CASCADE")
+    administrator.dispose()
 
 
 @pytest.fixture

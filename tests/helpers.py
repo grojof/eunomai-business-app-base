@@ -10,7 +10,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent.parent
 TEXT_ATTRIBUTES = ("aria-label", "title", "placeholder", "alt", "data-announce")
 WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
-NOT_OURS = {".git", ".venv", ".cache", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
+NOT_OURS = {".git", ".venv", ".cache", ".data", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
 ANIMATIONS_FINISHED = """Promise.race([
     Promise.allSettled(
         document.getAnimations()

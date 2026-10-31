@@ -491,6 +491,13 @@ def job(name):
     return WORKFLOW[WORKFLOW.index(f"\n  {name}:\n") :]
 
 
+def test_the_database_tests_run_on_a_postgresql_pinned_by_digest():
+    tests = (ROOT / ".github" / "workflows" / "tests.yml").read_text(encoding="utf-8")
+    assert re.search(r"postgres: postgres:[\d.]+@sha256:[0-9a-f]{64}\n", tests)
+    assert "image: ${{ matrix.postgres }}" in tests
+    assert "TEST_DATABASE_URL: ${{ matrix.test_database_url }}" in tests
+
+
 def test_the_update_job_uses_no_cache():
     update = job("update")[: WORKFLOW.index("\n  propose:\n")]
     assert "enable-cache: false" in update

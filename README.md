@@ -22,7 +22,8 @@ flowchart LR
 ```
 
 > **Status:** milestone 1: the application's shell with its layouts, a settings menu and a command palette (Ctrl+K or
-> Cmd+K), the gallery, identity, languages, themes and every check running. The rest is in the
+> Cmd+K), the gallery, identity, languages, themes and every check running. From milestone 2, the data layer: PostgreSQL
+> and SQLite, exact decimals, migrations and generated demo data, with no screen on them yet. The rest is in the
 > [milestones](docs/specification.md#milestones).
 
 ## Try it
@@ -37,6 +38,22 @@ uv run --frozen uvicorn app.main:app --reload --no-proxy-headers
 Keep `--no-proxy-headers`: without it, Uvicorn replaces the proxy's address with the one in `X-Forwarded-For`, the
 address stops being trusted, and everyone gets 401.
 
+No database is needed for that: the demo's screens read no table yet. Without `.env` the application refuses to start,
+because production is the default and production never runs on SQLite.
+
+To fill the demo's tables, in a SQLite file under `.data/`, with 50,000 rows:
+
+```bash
+uv run --frozen python -m app.demo.generate
+```
+
+For PostgreSQL, set `APP_DATABASE_URL` and apply the migrations, then generate if you want the rows. The database tests
+run on it too if `TEST_DATABASE_URL` gives one. [Data](docs/specification.md#data) says how the two differ.
+
+```bash
+uv run --frozen alembic upgrade head
+```
+
 To start an application of your own, clone this, then run `uv run --frozen python tools/remove_demo.py` and
 `uv run --frozen python tools/css.py`.
 
@@ -44,8 +61,8 @@ To start an application of your own, clone this, then run `uv run --frozen pytho
 
 | Page | What it contains |
 |---|---|
-| [Specification](docs/specification.md) | What the base contains, its components, the demo, how it is adapted, and the milestones |
-| [Standards](docs/standards.md) | Every rule of accessibility, usability, language, components and security, with its official source and its check |
+| [Specification](docs/specification.md) | What the base contains, its data, its components, the demo, how it is adapted, and the milestones |
+| [Standards](docs/standards.md) | Every rule of accessibility, usability, language, components, data and security, with its official source and its check |
 | [Components](docs/components/README.md) | Every component on offer, one page each, with its status |
 | [Decisions](docs/decisions.md) | Why it is built this way, and what is still open |
 

@@ -3,8 +3,10 @@
 from functools import lru_cache
 from typing import Literal, Self
 
-from pydantic import model_validator
+from pydantic import SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy import make_url
+from sqlalchemy.exc import ArgumentError
 
 LAYOUTS: dict[str, tuple[str, ...]] = {
     "navigation": ("side", "compact", "top", "hidden"),
@@ -18,10 +20,14 @@ LAYOUTS: dict[str, tuple[str, ...]] = {
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="APP_", env_file=".env", extra="ignore")
+    # Hiding the input keeps a password in database_url out of the message of any refused setting.
+    model_config = SettingsConfigDict(env_prefix="APP_", env_file=".env", extra="ignore", hide_input_in_errors=True)
 
     environment: Literal["development", "production"] = "production"
     name: str = "Business App"
+
+    # PostgreSQL is the real database. SQLite is for the demo and previews, and refuses to start in production.
+    database_url: SecretStr = SecretStr("sqlite:///.data/app.db")
 
     # Languages: the first one the person accepts wins; `default_language` is the last resort.
     default_language: str = "en"
@@ -61,7 +67,21 @@ class Settings(BaseSettings):
         unknown = set(self.layout_choices) - set(LAYOUTS)
         if unknown:
             raise ValueError(f"layout_choices has unknown names: {sorted(unknown)}")
+        self._check_database()
         return self
+
+    def _check_database(self) -> None:
+        try:
+            backend = make_url(self.database_url.get_secret_value()).get_backend_name()
+        except ArgumentError:
+            raise ValueError("database_url is not a database address") from None
+        if backend not in ("postgresql", "sqlite"):
+            raise ValueError("database_url must be PostgreSQL or SQLite")
+        if backend != "postgresql" and self.environment != "development":
+            raise ValueError(
+                "SQLite never runs in production: set APP_DATABASE_URL to PostgreSQL. "
+                "To try the application, copy .env.example to .env, which sets APP_ENVIRONMENT=development"
+            )
 
 
 @lru_cache
