@@ -1,16 +1,24 @@
 """Excel files, read back by unzipping their XML: no reader is a dependency of this repository."""
 
+import hashlib
 import logging
 import re
+import socket
+import tempfile
+import time
 import xml.etree.ElementTree as ET
 import zipfile
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
 
+import anyio
 import pytest
+from starlette.requests import ClientDisconnect
 
 from app.core.excel import ExcelColumn, exact_enough, excel_response, safe_text, sheet_name, write_workbook
+from app.main import create_app
+from tests.conftest import build_settings, running_server
 
 MAIN = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
 COLUMNS = (
@@ -172,7 +180,6 @@ def test_the_download_is_named_and_typed():
     response = excel_response("Equipos", COLUMNS, [("A", None, None, None)], "UTC")
     assert response.media_type.endswith("spreadsheetml.sheet")
     assert re.search(r'attachment; filename="Equipos-\d{4}-\d{2}-\d{2}\.xlsx"', response.headers["content-disposition"])
-    Path(response.path).unlink()
 
 
 @pytest.mark.parametrize(
@@ -224,4 +231,127 @@ def test_the_file_is_named_for_the_applications_day(monkeypatch, zone, day):
     monkeypatch.setattr("app.core.excel.datetime", Clock)
     response = excel_response("List", COLUMNS, [("A", None, None, None)], zone)
     assert f"List-{day}.xlsx" in response.headers["content-disposition"]
-    Path(response.path).unlink()
+
+
+ROWS_BEYOND_THE_BUFFERS = 20_000
+"""About 10 megabytes of file. A smaller one fits in the sockets' buffers, and the server finishes with no client."""
+
+
+def hard_to_compress(rows: int) -> list[tuple[str, None, None, None]]:
+    return [(hashlib.sha512(str(number).encode()).hexdigest() * 8, None, None, None) for number in range(rows)]
+
+
+def files_in(folder: Path) -> list[str]:
+    return [path.name for path in folder.iterdir()]
+
+
+def download(port: int, size: int) -> tuple[socket.socket, bytes]:
+    """Starts a download on a real socket, with a small window so that the server cannot finish behind its back, and
+    reads `size` bytes of it."""
+    client = socket.socket()
+    client.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 4096)
+    client.connect(("127.0.0.1", port))
+    client.sendall(b"GET /list HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n")
+    received = b""
+    while len(received) < size:
+        received += client.recv(4096)
+    return client, received
+
+
+@pytest.fixture
+def temporary(tmp_path, monkeypatch):
+    """Where temporary files go, and those opened, to see them all gone."""
+    folder = tmp_path / "temporary"
+    folder.mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(folder))
+    opened = []
+    real = tempfile.TemporaryFile
+
+    def watched(*arguments, **options):
+        opened.append(real(*arguments, **options))
+        return opened[-1]
+
+    monkeypatch.setattr(tempfile, "TemporaryFile", watched)
+    return folder, opened
+
+
+@pytest.fixture
+def exports(temporary):
+    """A real server that exports a list too long to fit in the sockets' buffers."""
+    application = create_app(build_settings(fake_identity=True, fake_groups=["admins"], trusted_proxies=[]))
+    rows = hard_to_compress(ROWS_BEYOND_THE_BUFFERS)
+    application.add_api_route("/list", lambda: excel_response("List", COLUMNS, rows, "UTC"))
+    with running_server(application) as port:
+        yield port, *temporary
+
+
+def gone(folder: Path, opened: list) -> bool:
+    return not files_in(folder) and all(file.closed for file in opened)
+
+
+def until_gone(folder: Path, opened: list) -> None:
+    deadline = time.monotonic() + 5
+    while time.monotonic() < deadline and not gone(folder, opened):
+        time.sleep(0.02)
+    assert files_in(folder) == []
+    assert all(file.closed for file in opened)
+
+
+def test_a_finished_download_leaves_no_file_behind(exports):
+    port, folder, opened = exports
+    client, received = download(port, 1)
+    while b"\r\n\r\n" not in received:
+        received += client.recv(65536)
+    head, body = received.split(b"\r\n\r\n", 1)
+    length = int(re.search(rb"content-length: (\d+)", head, re.I)[1])
+    while len(body) < length:
+        body += client.recv(65536)
+    client.close()
+    assert body[:2] == b"PK"
+    until_gone(folder, opened)
+
+
+def test_a_client_that_leaves_halfway_leaves_no_file_behind(exports):
+    """The file holds business data. A task that runs after the response does not run when the client goes."""
+    port, folder, opened = exports
+    client, _received = download(port, 100_000)
+    assert files_in(folder) or not all(file.closed for file in opened), "the download had already ended"
+    client.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, b"\x01\x00\x00\x00\x00\x00\x00\x00")  # a reset, at once
+    client.close()
+    until_gone(folder, opened)
+
+
+SCOPE = {"type": "http", "method": "GET", "headers": [], "asgi": {"spec_version": "2.4"}}
+
+
+async def disconnected() -> dict[str, str]:
+    return {"type": "http.disconnect"}
+
+
+def test_a_send_that_fails_leaves_no_file_behind(temporary):
+    """ASGI lets a server raise OSError on a client that has gone, and then a response's background task never runs.
+    Today's Uvicorn, under `_context`, sends on to nowhere, which is why the test above cannot tell the two apart."""
+
+    async def send(message):
+        if message["type"] == "http.response.body":
+            raise OSError("the client has gone")
+
+    response = excel_response("List", COLUMNS, [("A", None, None, None)], "UTC")
+    with pytest.raises((OSError, ClientDisconnect)):
+        anyio.run(response, SCOPE, disconnected, send)
+    until_gone(*temporary)
+
+
+def test_a_download_cancelled_halfway_leaves_no_file_behind(temporary):
+    """As a server that is shutting down does."""
+
+    async def send(message):
+        if message["type"] == "http.response.body":
+            await anyio.sleep_forever()
+
+    async def cancelled(response):
+        with anyio.move_on_after(0.05):
+            await response(SCOPE, disconnected, send)
+
+    anyio.run(cancelled, excel_response("List", COLUMNS, [("A", None, None, None)], "UTC"))
+    until_gone(*temporary)

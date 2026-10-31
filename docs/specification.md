@@ -287,6 +287,8 @@ return excel_response(_("Equipment"), columns, rows, settings.time_zone)
 | Language | Headers, the sheet's name, the file's name and labels are the person's, and the date in the file's name is the application's day |
 | Too many rows | More than Excel holds is an error, never a shorter file |
 
+The file is written to a temporary file that the system deletes when it closes, and that has no name on disk where the system allows that. The response closes it however the download ends, so a client that leaves, a send that fails or a server that stops leaves no business data behind. A background task would not: it runs only after a response that finished.
+
 It runs in a worker thread, so other requests go on. Nobody sees progress: at 50,000 rows it takes about 2.2 seconds on one
 laptop before the download starts. Progress belongs to [milestone 4](#milestones).
 
