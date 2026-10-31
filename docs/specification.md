@@ -245,7 +245,7 @@ data = chart_data(months, [Series(_("Planned"), planned), Series(_("Worked"), wo
 | Motion | None if a person asks for `prefers-reduced-motion` |
 | Without the picture | Without JavaScript the canvas is hidden and the summary and table remain. If Chart.js fails to load, or one chart fails to draw, its table opens by itself, and no other chart stops |
 | What is refused | A colour outside the list and a negative value in a pie, a doughnut or a polar area are errors on the server, while the code is written. Chart.js would draw the negative as positive |
-| On a phone | Axes thin their labels, and a chart keeps its height |
+| On a phone | Every label that fits stays. When they do not all fit they spread evenly and the first and the last always stay, which Chart.js's own thinning does not promise: it left out October. A chart keeps its height |
 
 daisyUI's colours pass the checks for colour blindness (neighbouring series stay apart) and normal vision, on both
 themes. `accent` and `warning` are light, at 1.9:1 against white, under the 3:1 of A11Y-14. The base keeps the themes as

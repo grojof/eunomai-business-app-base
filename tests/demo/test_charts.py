@@ -395,3 +395,34 @@ def test_a_chart_that_fails_on_a_change_of_theme_stops_no_other(open_page):
     page.evaluate(f"void (Chart.getChart({first}).update = () => {{ throw new Error('broken'); }})")
     page.emulate_media(color_scheme="dark")
     until(page, f"{second}.options.plugins.tooltip.backgroundColor !== {json.dumps(before)}")
+
+
+MONTH_AXES = """() => [...document.querySelectorAll('figure canvas')]
+    .map((canvas) => Chart.getChart(canvas))
+    .filter((chart) => chart?.scales.x?.type === 'category')
+    .map((chart) => {
+      const shown = chart.scales.x.ticks.map((tick) => tick.label).filter(Boolean);
+      const labels = chart.data.labels;
+      return {shown, first: labels[0], last: labels[labels.length - 1], count: labels.length};
+    })"""
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize("width", [320, 390])
+@pytest.mark.parametrize("language", ["en", "es", "ca"])
+def test_a_month_axis_on_a_phone_always_keeps_its_first_and_last_month(open_filled, width, language):
+    page = open_filled("/", width=width, language=language)
+    until(page, "document.querySelector('figure canvas') && Chart.getChart(document.querySelector('figure canvas'))")
+    axes = page.evaluate(MONTH_AXES)
+    assert axes
+    for axis in axes:
+        assert axis["first"] in axis["shown"], axis
+        assert axis["last"] in axis["shown"], axis
+
+
+@pytest.mark.browser
+def test_every_month_is_named_when_they_fit(open_filled):
+    page = open_filled("/", width=1280)
+    until(page, "document.querySelector('figure canvas') && Chart.getChart(document.querySelector('figure canvas'))")
+    for axis in page.evaluate(MONTH_AXES):
+        assert len(axis["shown"]) == axis["count"], axis
