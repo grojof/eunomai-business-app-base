@@ -306,8 +306,11 @@ def test_the_whole_base_works_with_the_demo_deleted(tmp_path):
 
     assert not (copy / "app" / "demo").exists()
     assert "install_demo" not in (copy / "app" / "main.py").read_text(encoding="utf-8")
+    assert "app.demo" not in (copy / "migrations" / "env.py").read_text(encoding="utf-8")
+    assert list((copy / "migrations" / "versions").glob("*.py")) == []
+    assert (copy / "migrations" / "script.py.mako").exists()
     assert "demo-admins" not in (copy / ".env.example").read_text(encoding="utf-8")
-    for changed in ("app/main.py", ".env.example", "docs/standards.md"):
+    for changed in ("app/main.py", "migrations/env.py", ".env.example", "docs/standards.md"):
         assert b"\r\n" not in (copy / changed).read_bytes(), changed
     rows = {
         row["id"]: row["check"] for row in ROW.finditer((copy / "docs" / "standards.md").read_text(encoding="utf-8"))

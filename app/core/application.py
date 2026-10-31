@@ -9,9 +9,11 @@ from urllib.parse import urlsplit
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy.orm import sessionmaker
 from starlette.exceptions import HTTPException
 
 from app.core import identity
+from app.core.database import create_database_engine
 from app.core.i18n import Languages, _
 from app.core.settings import LAYOUTS, Settings
 from app.core.templating import UI, SearchItem, register_search, render, search_items
@@ -198,6 +200,8 @@ def create_core(settings: Settings) -> FastAPI:
     application.state.settings = settings
     application.state.navigation = []
     application.state.search = []
+    engine = create_database_engine(settings.database_url.get_secret_value())
+    application.state.sessions = sessionmaker(engine, expire_on_commit=False)
     application.state.languages = Languages(
         settings.languages, settings.default_language, allow_pseudo=settings.environment == "development"
     )

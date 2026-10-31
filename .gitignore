@@ -11,6 +11,9 @@ htmlcov/
 # Compiled translations
 *.mo
 
+# The demo's SQLite file
+.data/
+
 # Secrets and local settings
 .env
 .env.*

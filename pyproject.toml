@@ -5,11 +5,14 @@ description = "A demo business application to clone and adapt."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic>=1.20,<2",
     "babel>=2.18,<3",
     "fastapi>=0.143,<1",
     "jinja2>=3.1.6,<4",
+    "psycopg[binary]>=3.3,<4",
     "pydantic-settings>=2.6,<3",
     "python-multipart>=0.0.32,<1",
+    "sqlalchemy>=2.1,<3",
     "tzdata>=2025.2",  # Windows has no time zone database of its own. No upper limit: its versions are dates
     "uvicorn>=0.54,<1",
 ]
@@ -29,6 +32,16 @@ package = false
 # known vulnerability, and removes it once the two weeks have passed.
 exclude-newer = "14 days"
 exclude-newer-package = {}
+
+[tool.alembic]
+script_location = "%(here)s/migrations"
+prepend_sys_path = ["%(here)s"]
+
+[[tool.alembic.post_write_hooks]]
+name = "ruff"
+type = "exec"
+executable = "ruff"
+options = "format REVISION_SCRIPT_FILENAME"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -51,8 +64,9 @@ select = ["E", "F", "I", "B", "UP", "S", "C4", "RUF"]
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S603", "S607"]
 "tools/**" = ["S310", "S603", "S607"]
+"migrations/versions/*" = ["F401"]  # the template imports the exact types, and not every migration uses them
 
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["app", "tools"]
+files = ["app", "tools", "migrations/env.py"]

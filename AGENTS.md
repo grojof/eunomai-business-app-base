@@ -7,10 +7,11 @@ person or real system: it stays neutral so anyone can clone it.
 
 | Folder | Contents | Rule |
 |---|---|---|
-| `app/core/` | Identity, roles, settings, languages, formatters, errors, health | Never imports from `app/demo/` |
+| `app/core/` | Identity, roles, settings, the database and its column types, languages, formatters, errors, health | Never imports from `app/demo/` |
 | `app/ui/` | Components as macros, the settings menu, the command palette, the stylesheet's source, the few JavaScript files | Screens call macros; daisyUI classes stay here where possible |
 | `app/brand/` | The theme, logos | The only folder an organization must change |
-| `app/demo/` | Demo screens, data, the gallery and their translations | Deleting it leaves a working application |
+| `app/demo/` | Demo screens, models, generated data, the gallery and their translations | Deleting it leaves a working application |
+| `migrations/` | Alembic's setup, and one file per change of the models | A model that changes needs its migration: a test compares them on both databases |
 
 ## Components
 
@@ -36,6 +37,9 @@ Add your own components as [the specification](docs/specification.md#adapting-it
   `uv run --frozen python tools/css.py`.
 - Each screen handles its empty, loading, error and no-permission states.
 - A new component needs its page in the demo and its tests, in the same change.
+- Money and quantities are `Mapped[Decimal]`, moments `Mapped[datetime]` with their time zone. Never a float. On SQLite,
+  a sum in SQL raises `InexactQuery`: use `total()`. [Data](docs/specification.md#data) says how the two databases differ.
+- A route that uses the database takes `DatabaseSession`, is declared with `def`, and commits itself.
 - Add a dependency only if the [stack](docs/specification.md#stack) needs it. Pin it and check it for known
   vulnerabilities.
 - No secrets in the repository, and no real people or companies in demo data.
@@ -54,7 +58,7 @@ uv run --frozen python tools/css.py check
 uv run --frozen python tools/components.py check     # after changing the catalogue: tools/components.py
 uv run --frozen python tools/gallery.py check        # generated from daisyUI's documentation: tools/gallery.py
 uv run --frozen python tools/translations.py check   # after changing texts: tools/translations.py update
-uv run --frozen pytest -q
+uv run --frozen pytest -q                            # with TEST_DATABASE_URL, the database tests run on PostgreSQL too
 ```
 
 Start the server with `--no-proxy-headers`, as the [README](README.md#try-it) does. Browser tests use the Chrome
