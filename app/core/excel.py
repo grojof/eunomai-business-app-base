@@ -164,7 +164,9 @@ def excel_response(
     title: str, columns: Sequence[ExcelColumn], rows: Iterable[Sequence[Any]], zone: str
 ) -> StreamingResponse:
     """A download from a temporary file with no name to find it by, where the system allows that, and which the system
-    deletes when it closes: the file holds business data, and even a server killed halfway leaves none behind."""
+    deletes when it closes: the file holds business data, so a download that ends any way leaves it behind nowhere.
+    While a file is written, XlsxWriter's own temporary file does exist under a name. Its `with` clears that when a row
+    fails, and only a server killed in those seconds could leave it."""
     file = tempfile.TemporaryFile(suffix=".xlsx")  # the response closes it
     try:
         write_workbook(file, title, columns, rows, zone)
