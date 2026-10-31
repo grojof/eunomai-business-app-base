@@ -1,10 +1,9 @@
 {#- The tabs and their panels. htmx asks for this alone, and only the open panel shows: on paper, both do. -#}
 {% from "ui/macros.html" import tabs, description_list, status_label, card, table, empty_state %}
 {% set label, kind = statuses[item.status] %}
-{% set page = "/equipment/" ~ item.id %}
 {{ tabs(_("Sections of this page"), [
-  ("overview", _("Overview"), page),
-  ("orders", _("Work orders (%(count)s)", count=orders|length|decimal), page ~ "?tab=orders"),
+  ("overview", _("Overview"), overview_address),
+  ("orders", _("Work orders (%(count)s)", count=orders|length|decimal), orders_address),
 ], tab, "#equipment-tabs") }}
 <div class="hidden" data-announce="{{ _('Overview') if tab == 'overview' else _('Work orders') }}"></div>
 

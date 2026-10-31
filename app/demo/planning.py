@@ -191,9 +191,17 @@ def planning(request: Request, session: DatabaseSession) -> Response:
     view = planning_view(request.query_params)
     sections = load_sections(view, session)
     context = _list_context(request, request.state.person)
+    context["saved"] = _saved_message(session, request.query_params.get("saved", ""))
     return render_list(
         request, view, "demo/planning/list.html", "demo/planning/results.html", sections=sections, **context
     )
+
+
+def _saved_message(session: Session, number: str) -> str:
+    """After a save without JavaScript the address says what was saved. A value that is no order says nothing."""
+    if not number.isascii() or not number.isdigit() or int(number) > LARGEST_ID:
+        return ""
+    return _("Work order %(number)s saved.") % {"number": number} if session.get(WorkOrder, int(number)) else ""
 
 
 def _view_of(back: str) -> ListView:
@@ -316,10 +324,11 @@ def planning_save(
     session.commit()
 
     if not partial:
-        return RedirectResponse(view.here, status_code=303)
+        separator = "&" if "?" in view.here else "?"
+        return RedirectResponse(f"{view.here}{separator}saved={order_id}", status_code=303)
     sections = load_sections(view, session)
     context = _list_context(request, request.state.person)
-    context["saved"] = _("Work order %(number)s saved.") % {"number": order_id}
+    context["saved"] = _saved_message(session, str(order_id))
     return render(
         request,
         "demo/planning/saved.html",

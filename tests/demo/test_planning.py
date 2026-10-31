@@ -227,7 +227,7 @@ def test_without_javascript_a_save_goes_back_to_the_same_list(writable):
 def test_a_save_never_leaves_the_list(writable, back):
     client, _url = writable
     response = client.post("/planning/1", data=valid(back=back), headers=SAME_SITE, follow_redirects=False)
-    assert response.headers["location"] == "/planning"
+    assert response.headers["location"] == "/planning?saved=1"
 
 
 def test_closing_records_when_and_reopening_clears_it(writable):
@@ -507,7 +507,7 @@ def test_a_malformed_back_is_ignored(writable, back):
     client, _url = writable
     assert client.get("/planning/1/edit", params={"back": back}).status_code == 200
     response = client.post("/planning/1", data=valid(back=back), headers=SAME_SITE, follow_redirects=False)
-    assert (response.status_code, response.headers["location"]) == (303, "/planning")
+    assert (response.status_code, response.headers["location"]) == (303, "/planning?saved=1")
 
 
 def test_a_row_that_goes_while_it_is_saved_is_not_found_and_not_an_error(writable, monkeypatch):
@@ -601,3 +601,37 @@ def test_a_group_missing_from_the_totals_is_no_error(filled, monkeypatch, groupi
     response = filled.get(f"/planning?status=&group={grouping}")
     assert response.status_code == 200
     assert GROUP.findall(response.text)
+
+
+def test_without_javascript_the_list_says_what_was_saved(writable):
+    client, _url = writable
+    response = client.post("/planning/1", data=valid(), headers=SAME_SITE)
+    assert response.status_code == 200
+    assert "Work order 1 saved." in response.text
+
+
+@pytest.mark.parametrize("value", ["x", "", "-1", "999999", "99999999999999999999"])
+def test_a_saved_message_for_nothing_says_nothing(filled, value):
+    assert " saved." not in filled.get("/planning", params={"saved": value}).text
+
+
+def test_the_saved_message_keeps_the_list_it_came_from(writable):
+    client, _url = writable
+    back = "/planning?status=&sort=hours"
+    location = client.post("/planning/1", data=valid(back=back), headers=SAME_SITE, follow_redirects=False)
+    assert location.headers["location"] == "/planning?status=&sort=hours&saved=1"
+
+
+def test_the_saved_message_is_not_kept_in_the_lists_own_links(filled):
+    html = filled.get("/planning?saved=1&sort=hours").text
+    assert "saved=1" not in html.split('id="planning-results"', 1)[1].split("</dialog>", 1)[0]
+
+
+@pytest.mark.browser
+def test_without_javascript_a_save_shows_its_message(open_filled):
+    page = open_filled("/planning", javascript=False)
+    page.locator("[id^=edit-]").first.click()
+    page.wait_for_url(re.compile(r"/planning/\d+/edit"))
+    page.get_by_role("button", name="Save").click()
+    page.wait_for_url(re.compile(r"/planning\?saved="))
+    assert page.get_by_text(" saved.").first.is_visible()

@@ -201,3 +201,51 @@ def test_a_malformed_referer_is_ignored(filled, referer):
     response = filled.get("/equipment/1", headers={"Referer": referer})
     assert response.status_code == 200
     assert '<li><a href="/equipment">' in response.text
+
+
+def test_tabs_carry_the_list_a_person_came_from(filled):
+    html = filled.get("/equipment/1", headers={"Referer": "http://testserver/equipment?status=stopped"}).text
+    assert re.search(r'id="tab-orders"[^>]*href="/equipment/1\?tab=orders&amp;back=', html)
+
+
+def test_the_breadcrumb_reads_the_list_from_the_address_of_a_tab(filled):
+    html = filled.get("/equipment/1", params={"tab": "orders", "back": "/equipment?status=stopped"}).text
+    assert '<a href="/equipment?status=stopped">' in html
+
+
+def test_a_default_list_keeps_the_addresses_of_tabs_clean(filled):
+    assert re.search(r'id="tab-orders"[^>]*href="/equipment/1\?tab=orders"', filled.get("/equipment/1").text)
+
+
+@pytest.mark.parametrize("back", ["//[", "https://attacker.example/equipment?status=stopped&x=1", "/administration"])
+def test_a_strange_back_in_a_tab_is_read_like_any_other(filled, back):
+    response = filled.get("/equipment/1", params={"tab": "orders", "back": back})
+    assert response.status_code == 200
+    links = re.findall(r'(?:breadcrumbs.*?<a|id="tab-\w+"[^>]*) href="([^"]*)"', response.text, re.S)
+    assert links
+    assert not [link for link in links if "attacker" in link or "administration" in link]
+
+
+@pytest.mark.browser
+def test_without_javascript_the_breadcrumb_survives_a_tab(open_filled):
+    page = open_filled("/equipment?status=stopped", javascript=False)
+    page.locator("tbody th a").first.click()
+    page.wait_for_url(re.compile(r"/equipment/\d+"))
+    assert page.locator("nav.breadcrumbs a").first.get_attribute("href") == "/equipment?status=stopped"
+    page.locator("#tab-orders").click()
+    page.wait_for_url(re.compile(r"tab=orders"))
+    assert page.locator("nav.breadcrumbs a").first.get_attribute("href") == "/equipment?status=stopped"
+    page.locator("#tab-overview").click()
+    page.wait_for_load_state()
+    assert page.locator("nav.breadcrumbs a").first.get_attribute("href") == "/equipment?status=stopped"
+
+
+@pytest.mark.browser
+def test_with_javascript_the_breadcrumb_survives_a_tab_and_a_reload(open_filled):
+    page = open_filled("/equipment?status=stopped")
+    page.locator("tbody th a").first.click()
+    page.wait_for_url(re.compile(r"/equipment/\d+"))
+    page.locator("#tab-orders").click()
+    page.wait_for_url(re.compile(r"tab=orders"))
+    page.reload()
+    assert page.locator("nav.breadcrumbs a").first.get_attribute("href") == "/equipment?status=stopped"

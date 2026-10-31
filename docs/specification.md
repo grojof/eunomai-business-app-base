@@ -265,7 +265,7 @@ nothing to learn in between.
 | Editing | One row at a time, in a native `<dialog>` that htmx fills. The browser keeps the keyboard inside, and Escape closes it. Without JavaScript the same address is a page of its own |
 | Saving | A POST, checked by `_context` as [SEC-07](standards.md#security) says: a request from another site is refused before it reaches the route. Editing needs the `admin` role, on the server, and without it the Edit action is not offered |
 | Errors | Listed at the top of the form, each a link to its field, with focus on the list. What was typed stays. This is the pattern milestone 3 turns into a form component |
-| After a save | The list comes back in the order and on the page it was, because the row may now belong to another group, or to none. Focus returns to the row's Edit link, or to the table if the row left the list. A message says what was saved, on screen and to a screen reader |
+| After a save | The list comes back in the order and on the page it was, because the row may now belong to another group, or to none. Focus returns to the row's Edit link, or to the table if the row left the list. A message says what was saved, on screen and to a screen reader, and without JavaScript too: the address carries `saved` for that one page |
 
 Two people editing one row: the last save wins. Nothing warns the first.
 

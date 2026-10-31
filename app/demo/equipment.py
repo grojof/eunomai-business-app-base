@@ -2,6 +2,7 @@
 
 from collections.abc import Iterable, Mapping
 from typing import Any
+from urllib.parse import urlencode
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import Response
@@ -130,8 +131,10 @@ def equipment_export(request: Request, session: DatabaseSession) -> Response:
 
 
 def _list_address(request: Request) -> str:
-    """Back to the list a person came from, with its filters. Only the query is kept, and it is read like any other."""
-    return equipment_view(list_query(request.headers.get("referer", ""), "/equipment")).here
+    """Back to the list a person came from, with its filters. A tab's own address says it, because after a click on a
+    tab the Referer is this same page. Only the query is kept, and it is read like any other."""
+    came_from = request.query_params.get("back") or request.headers.get("referer", "")
+    return equipment_view(list_query(came_from, "/equipment")).here
 
 
 def equipment_detail(request: Request, equipment_id: int, session: DatabaseSession) -> Response:
@@ -149,8 +152,13 @@ def equipment_detail(request: Request, equipment_id: int, session: DatabaseSessi
         .where(WorkOrder.equipment_id == equipment_id)
         .order_by(WorkOrder.opened_at.desc(), WorkOrder.id.desc())
     ).all()
+    back = _list_address(request)
+    keep = {} if back == "/equipment" else {"back": back}
+    page = f"/equipment/{equipment_id}"
     context: dict[str, Any] = {
         "item": item,
+        "overview_address": f"{page}?{urlencode(keep)}" if keep else page,
+        "orders_address": f"{page}?{urlencode({'tab': 'orders'} | keep)}",
         "tab": tab if tab == "orders" else "overview",
         "orders": orders,
         "hours": exact_sum(order.hours for order in orders),
@@ -161,7 +169,7 @@ def equipment_detail(request: Request, equipment_id: int, session: DatabaseSessi
     if fragment_requested(request):
         response = render(request, "demo/equipment/tabs.html", **context)
     else:
-        response = render(request, "demo/equipment/detail.html", back=_list_address(request), **context)
+        response = render(request, "demo/equipment/detail.html", back=back, **context)
     response.headers["Vary"] = "HX-Request"
     return response
 
