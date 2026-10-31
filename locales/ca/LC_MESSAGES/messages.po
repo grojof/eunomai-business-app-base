@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 17:16+0100\n"
+"POT-Creation-Date: 2026-10-31 17:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -27,6 +27,13 @@ msgid ""
 msgstr ""
 "%(count)s. Es mostren del %(first)s al %(last)s, ordenats per %(column)s,"
 " %(direction)s."
+
+msgid ""
+"A figure with its text summary and its data as a table, drawn with "
+"Chart.js."
+msgstr ""
+"Una figura amb el seu resum en text i les seves dades en una taula, "
+"dibuixada amb Chart.js."
 
 msgid "A list of terms and their values, for one record's details."
 msgstr "Una llista de termes i els seus valors, per als detalls d'un registre."
@@ -72,6 +79,9 @@ msgstr ""
 "Canvia com es veu aquesta aplicació per a tu. Cada opció s'aplica de "
 "seguida i es recorda en aquest navegador."
 
+msgid "Chart"
+msgstr "Gràfic"
+
 msgid "Check the address, or go back to the start."
 msgstr "Comprova l'adreça o torna a l'inici."
 
@@ -101,6 +111,9 @@ msgstr "Mostrar dades"
 
 msgid "Data input"
 msgstr "Entrada de dades"
+
+msgid "Data table"
+msgstr "Taula de dades"
 
 msgid "Decorative"
 msgstr "Decoratiu"

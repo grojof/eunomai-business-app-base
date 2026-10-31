@@ -26,8 +26,8 @@ def test_every_response_carries_the_security_headers(client, person):
 
 @pytest.mark.rule("SEC-06")
 def test_pages_have_no_inline_script_or_style(client, person):
-    html = client.get("/", headers=person).text
-    assert not re.search(r"<script(?![^>]*\ssrc=)", html)
+    html = client.get("/gallery/chart", headers=person).text
+    assert not re.search(r"<script(?![^>]*\s(?:src=|type=\"application/json\"))", html)  # JSON is data: nothing runs it
     assert "<style" not in html
     assert " style=" not in html
     assert not re.search(r"\son\w+=", html)
@@ -108,7 +108,7 @@ def test_no_code_of_ours_runs_text_as_code():
     sources = [
         *(ROOT / "app").rglob("*.py"),
         *(ROOT / "tools").rglob("*.py"),
-        ROOT / "app" / "ui" / "static" / "app.js",
+        *(ROOT / "app" / "ui" / "static").glob("*.js"),
     ]
     for source in sources:
         assert not re.search(r"\b(eval|exec)\(|new Function", source.read_text(encoding="utf-8")), source

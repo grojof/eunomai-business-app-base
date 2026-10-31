@@ -29,7 +29,7 @@ THEME = N_(
 )
 
 
-OWN_TITLES = (N_("Description list"), N_("Filter bar"))
+OWN_TITLES = (N_("Chart"), N_("Description list"), N_("Filter bar"))
 """Components of this base with no page in daisyUI: the gallery names them from their catalogue name."""
 
 
@@ -62,6 +62,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("badge", macro="badge"),
             Component("card", APPROVED, macro="card"),
             Component("carousel"),
+            Component(
+                "chart",
+                note=N_("A figure with its text summary and its data as a table, drawn with Chart.js."),
+                macro="chart",
+                icon="chart-column",
+            ),
             Component("chat"),
             Component("collapse"),
             Component("countdown"),

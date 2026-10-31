@@ -413,7 +413,7 @@ def test_no_page_has_inline_code_or_reaches_another_server(pages, name):
         assert not [key for key in attributes if key.startswith("on")], (tag, attributes)
         for key in ("src", "href", "poster", "srcset", "action"):
             assert not re.match(r"(?:https?:)?//", attributes.get(key, "")), (tag, attributes)
-        if tag == "script":
+        if tag == "script" and attributes.get("type") != "application/json":  # JSON is data: nothing runs it
             assert attributes["src"].startswith("/static/")
         assert "url(http" not in attributes.get("data-style", "")
     assert not re.findall(r"<style\b", html)

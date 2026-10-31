@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 from babel.dates import format_date as babel_date
 from babel.dates import format_datetime as babel_datetime
+from babel.dates import format_skeleton
 from babel.numbers import format_decimal as babel_decimal
 from babel.numbers import format_percent as babel_percent
 from babel.numbers import parse_decimal as babel_parse
@@ -76,6 +77,11 @@ def format_percent(value: int | Decimal) -> str:
 
 def format_date(value: date) -> str:
     return babel_date(value, format="medium", locale=current_language())
+
+
+def format_month(value: date) -> str:
+    """A short month, as a chart's axis needs it."""
+    return format_skeleton("MMM", value, locale=current_language())
 
 
 def format_datetime(value: datetime, time_zone: str) -> str:

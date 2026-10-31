@@ -88,6 +88,14 @@
     "page": "docs/components/carousel.md"
   },
   {
+    "name": "chart",
+    "category": "data-display",
+    "status": "available",
+    "note": "A figure with its text summary and its data as a table, drawn with Chart.js.",
+    "use": "A figure with its text summary and its data as a table, drawn with Chart.js.",
+    "page": "docs/components/chart.md"
+  },
+  {
     "name": "chat",
     "category": "data-display",
     "status": "available",

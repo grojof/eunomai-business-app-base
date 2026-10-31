@@ -178,10 +178,14 @@ def test_paper_shows_both_tabs_and_none_of_the_shell(open_filled):
 @pytest.mark.browser
 def test_a_dark_theme_prints_light_and_comes_back(open_filled):
     page = open_filled("/equipment/1", theme="dark")
+    surface = "getComputedStyle(document.documentElement).getPropertyValue('--color-base-100')"
+    dark = page.evaluate(surface)
     page.evaluate("dispatchEvent(new Event('beforeprint'))")
-    assert page.evaluate("document.documentElement.dataset.theme") == "light"
+    assert page.evaluate(surface) != dark
     page.evaluate("dispatchEvent(new Event('afterprint'))")
+    assert page.evaluate(surface) == dark
     assert page.evaluate("document.documentElement.dataset.theme") == "dark"
+    assert page.locator("input.theme-controller").count() > 0
 
 
 @pytest.mark.browser

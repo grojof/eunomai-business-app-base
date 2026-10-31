@@ -6,6 +6,14 @@
     "script": true,
     "sha384": "2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg"
   },
+  "chart.js": {
+    "version": "4.6.1",
+    "file": "dist/chart.umd.min.js",
+    "target": "app/ui/static/vendor/chart.umd.min.js",
+    "script": true,
+    "on_demand": true,
+    "sha384": "Emf5ZVIUiarAdhkgtqK+5/Z5qIvM6QoVrS+qAVtfyZVuD5lIHrac0me485+Antp0"
+  },
   "axe-core": {
     "version": "4.14.0",
     "file": "axe.min.js",

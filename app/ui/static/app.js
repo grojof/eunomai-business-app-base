@@ -43,7 +43,8 @@ document.addEventListener("click", (event) => {
 });
 
 // Printing. Paper is white whatever the theme, and a browser leaves out backgrounds, so a dark theme's light text would
-// vanish: the page wears the light theme for as long as it prints.
+// vanish: the page wears the light theme for as long as it prints. daisyUI's theme controller wins over data-theme while
+// it is checked, so for that time its inputs stop being controllers.
 document.addEventListener("click", (event) => {
   if (event.target.closest("[data-print]")) {
     print();
@@ -51,11 +52,15 @@ document.addEventListener("click", (event) => {
 });
 const page = document.documentElement;
 let themeOnScreen;
+let themeControllers = [];
 addEventListener("beforeprint", () => {
   themeOnScreen = page.dataset.theme;
   page.dataset.theme = "light";
+  themeControllers = [...document.querySelectorAll("input.theme-controller")];
+  themeControllers.forEach((input) => input.classList.remove("theme-controller"));
 });
 addEventListener("afterprint", () => {
+  themeControllers.forEach((input) => input.classList.add("theme-controller"));
   if (themeOnScreen) {
     page.dataset.theme = themeOnScreen;
   } else {

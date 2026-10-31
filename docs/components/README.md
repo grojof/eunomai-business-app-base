@@ -31,6 +31,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`badge`](badge.md) | available | Use a badge to show the status of data. |
 | [`card`](card.md) | approved | Use cards to group and show content. |
 | [`carousel`](carousel.md) | available | Use a carousel to show images or content in a scrollable area. |
+| [`chart`](chart.md) | available | A figure with its text summary and its data as a table, drawn with Chart.js. |
 | [`chat`](chat.md) | available | A chat bubble shows one line of a conversation and its related data. This data can include the author image, name, and time. |
 | [`collapse`](collapse.md) | available | Use the collapse component to show and hide content. |
 | [`countdown`](countdown.md) | available | A countdown gives a transition effect when a number changes from 0 through 999. |

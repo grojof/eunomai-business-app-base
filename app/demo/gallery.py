@@ -14,6 +14,7 @@ from markupsafe import Markup, escape
 from app.core.i18n import N_, _, current_language
 from app.core.tables import Column, Filter, ListView
 from app.core.templating import NavigationGroup, SearchItem, add_templates, environment, register_search, render
+from app.demo.charts import chart_examples
 from app.ui.catalog import CATEGORIES, STATUSES, Component, components
 
 DATA = Path(__file__).resolve().parent / "examples"
@@ -237,6 +238,7 @@ async def gallery_component(request: Request, name: str) -> Response:
         ],
         examples=examples,
         sample=sample,
+        chart_figures=chart_examples() if name == "chart" else [],
         previous=(neighbours[0].name, title_of(neighbours[0].name)) if neighbours[0] else None,
         following=(neighbours[1].name, title_of(neighbours[1].name)) if neighbours[1] else None,
     )

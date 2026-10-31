@@ -3,16 +3,20 @@
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 
+from app.core.database import DatabaseSession
+from app.core.formatters import rounded
 from app.core.i18n import N_, _
 from app.core.identity import Person, require_role
 from app.core.templating import NavigationItem, add_templates, render
 from app.demo import equipment, gallery
+from app.demo.charts import dashboard_figures
+from app.demo.data import GENERATE, READY, rows_state
 
 HERE = Path(__file__).resolve().parent
 IN_SERVICE = (N_("In service"), "success")
@@ -33,20 +37,30 @@ PLAN = [
 WORK_ORDER_STEPS = (N_("Reported"), N_("Planned"), N_("In progress"), N_("Checked"), N_("Closed"))
 
 
-async def dashboard(request: Request) -> Response:
-    cost = Decimal("12500.12345678901234567890")
+def dashboard(request: Request, session: DatabaseSession) -> Response:
+    """Fixed values for a first run, and the generated rows once they are there. It never needs a database."""
+    state = rows_state(session)
+    figures: dict[str, Any] = {
+        "open_orders": 3,
+        "hours": Decimal("1250.75"),
+        "cost": Decimal("12500.12345678901234567890"),
+        "next_inspection": date(2027, 3, 15),
+        "next_equipment": N_("Air compressor"),
+        "equipment": EQUIPMENT,
+        "orders_chart": None,
+    }
+    if state == READY:
+        figures |= dashboard_figures(session, request.app.state.settings.time_zone)
     return render(
         request,
         "demo/dashboard.html",
-        open_orders=3,
-        hours=Decimal("1250.75"),
-        cost=cost,
-        cost_rounded=cost.quantize(Decimal("0.01")),
-        next_inspection=date(2027, 3, 15),
+        **figures,
+        cost_rounded=rounded(figures["cost"]),
         updated=datetime(2026, 10, 30, 7, 30, tzinfo=UTC),
-        equipment=EQUIPMENT,
         plan=PLAN,
         steps=[_(step) for step in WORK_ORDER_STEPS],
+        state=state,
+        command=GENERATE,
     )
 
 

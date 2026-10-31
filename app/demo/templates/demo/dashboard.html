@@ -1,58 +1,104 @@
 {% extends "layout.html" %}
-{% from "ui/macros.html" import page_heading, button, card, stats, stat, badge, progress, steps as work_steps, table, empty_state %}
+{% from "ui/macros.html" import page_heading, button, card, stats, stat, badge, progress, steps as work_steps, table, empty_state, chart %}
 {% block title %}{{ _("Dashboard") }}{% endblock %}
 {% block content %}
-{{ page_heading(_("Dashboard"), _("A fictional company that maintains its equipment.")) }}
+{% macro figure(item) %}{{ chart(item.title, item.summary, item.data, item.type, item.identifier) }}{% endmacro %}
 
-{% call stats() %}
-{{ stat(_("Open work orders"), open_orders|decimal, "clipboard-list", ngettext("%(num)d open work order", "%(num)d open work orders", open_orders)) }}
-{{ stat(_("Hours worked"), hours|decimal, "clock", _("This month")) }}
-{{ stat(_("Cost to date"), cost_rounded|decimal, "wallet", _("Exactly %(value)s", value=cost|decimal)) }}
-{{ stat(_("Next inspection"), next_inspection|date, "calendar", _("Air compressor")) }}
-{% endcall %}
-
-<div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
-  <div class="min-w-0 xl:col-span-2">
-    {% call card(_("Equipment"), "equipment-title") %}
-    {% call table(_("Equipment, where it is, its next inspection and its state"), "equipment-caption") %}
-    <thead>
-      <tr><th scope="col">{{ _("Equipment") }}</th><th scope="col">{{ _("Location") }}</th><th scope="col">{{ _("Next inspection") }}</th><th scope="col">{{ _("State") }}</th></tr>
-    </thead>
-    <tbody>
-      {% for name, place, due, (state, kind) in equipment %}
-      <tr>
-        <th scope="row" class="font-medium">{{ _(name) }}</th>
-        <td>{{ _(place) }}</td>
-        <td class="whitespace-nowrap">{{ due|date }}</td>
-        <td>{{ badge(_(state), kind) }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-    {% endcall %}
-    {% endcall %}
-  </div>
-  {% call card(_("Maintenance plan"), "plan-title") %}
-  <div class="space-y-4">
-    {% for label, value, kind in plan %}
-    {{ progress(_(label), value, value|percent, kind) }}
-    {% endfor %}
-  </div>
-  <p class="text-sm">{{ _("Updated: %(moment)s", moment=local_datetime(updated)) }}</p>
-  {% endcall %}
+{% set plan_card %}
+{% call card(_("Maintenance plan"), "plan-title") %}
+<div class="space-y-4">
+  {% for label, value, kind in plan %}
+  {{ progress(_(label), value, value|percent, kind) }}
+  {% endfor %}
 </div>
+<p class="text-sm">{{ _("Updated: %(moment)s", moment=local_datetime(updated)) }}</p>
+{% endcall %}
+{% endset %}
 
+{% set equipment_card %}
+{% call card(_("Next inspections"), "equipment-title") %}
+{% call table(_("Equipment, where it is, its next inspection and its state"), "equipment-caption") %}
+<thead>
+  <tr><th scope="col">{{ _("Equipment") }}</th><th scope="col" class="hidden md:table-cell">{{ _("Location") }}</th><th scope="col">{{ _("Next inspection") }}</th><th scope="col">{{ _("State") }}</th></tr>
+</thead>
+<tbody>
+  {% for name, place, due, (state_label, kind) in equipment %}
+  <tr>
+    <th scope="row" class="font-medium">{{ _(name) }}</th>
+    <td class="hidden md:table-cell">{{ _(place) }}</td>
+    <td class="whitespace-nowrap">{{ due|date }}</td>
+    <td>{{ badge(_(state_label), kind) }}</td>
+  </tr>
+  {% endfor %}
+</tbody>
+{% endcall %}
+{% endcall %}
+{% endset %}
+
+{% set order_card %}
 {% call card(_("Work order for the cooling tower"), "order-title") %}
 {{ work_steps(steps, 2) }}
 {% endcall %}
+{% endset %}
 
-<div class="grid gap-6 lg:grid-cols-2">
-  {% call card(_("Inspections"), "inspections-title") %}
-  <div id="inspections">
-    {{ button(_("Show inspections"), "primary", attributes={"hx-get": "/inspections", "hx-target": "#inspections"}, loading=_("Loading")) }}
-  </div>
-  {% endcall %}
-  {% call card(_("Overdue"), "overdue-title") %}
-  {{ empty_state(_("Nothing overdue"), _("Work orders appear here when their date passes.")) }}
-  {% endcall %}
+{% set inspections_card %}
+{% call card(_("Inspections"), "inspections-title") %}
+<div id="inspections">
+  {{ button(_("Show inspections"), "primary", attributes={"hx-get": "/inspections", "hx-target": "#inspections"}, loading=_("Loading")) }}
 </div>
+{% endcall %}
+{% endset %}
+
+{% set overdue_card %}
+{% call card(_("Overdue"), "overdue-title") %}
+{{ empty_state(_("Nothing overdue"), _("Work orders appear here when their date passes.")) }}
+{% endcall %}
+{% endset %}
+
+{{ page_heading(_("Dashboard"), _("A fictional company that maintains its equipment.")) }}
+
+{% call stats() %}
+{% if orders_chart %}
+{{ stat(_("Open work orders"), open_orders|decimal, "clipboard-list", _("Of 10,000 opened this year")) }}
+{{ stat(_("Hours worked"), hours|decimal(2), "clock", _("This year")) }}
+{{ stat(_("Cost to date"), cost_rounded|decimal(2), "wallet", _("This year")) }}
+{% else %}
+{{ stat(_("Open work orders"), open_orders|decimal, "clipboard-list", ngettext("%(count)s open work order", "%(count)s open work orders", open_orders, count=open_orders|decimal)) }}
+{{ stat(_("Hours worked"), hours|decimal, "clock", _("This year")) }}
+{{ stat(_("Cost to date"), cost_rounded|decimal(2), "wallet", _("Exactly %(value)s", value=cost|decimal)) }}
+{% endif %}
+{{ stat(_("Next inspection"), next_inspection|date, "calendar", _(next_equipment)) }}
+{% endcall %}
+
+{% if orders_chart %}
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+  <div class="min-w-0 xl:col-span-2">{{ figure(orders_chart) }}</div>
+  {{ figure(states_chart) }}
+</div>
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+  <div class="min-w-0 xl:col-span-2">{{ figure(cost_chart) }}</div>
+  <div class="min-w-0 space-y-6">
+    {{ plan_card }}
+    {{ inspections_card }}
+  </div>
+</div>
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+  <div class="min-w-0 xl:col-span-2">{{ equipment_card }}</div>
+  {{ overdue_card }}
+</div>
+{{ order_card }}
+{% else %}
+{% with advice=_("Charts and live figures appear here once the demo's rows are generated. Run this command once, then reload the page.") %}
+{% include "demo/rows_missing.html" %}
+{% endwith %}
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+  <div class="min-w-0 xl:col-span-2">{{ equipment_card }}</div>
+  {{ plan_card }}
+</div>
+{{ order_card }}
+<div class="grid gap-6 lg:grid-cols-2">
+  {{ inspections_card }}
+  {{ overdue_card }}
+</div>
+{% endif %}
 {% endblock %}
