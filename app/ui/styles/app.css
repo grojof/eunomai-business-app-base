@@ -34,6 +34,11 @@
   max-height: min(40rem, calc(100dvh - 1rem));
 }
 
+/* A box around a text box shows the focus, as daisyUI draws it: a second line inside would only compete with it */
+.input > input:focus-visible {
+  outline: none;
+}
+
 /* A table's box takes the keyboard so it can scroll, and shows it inside: the box touches the edge of its panel */
 .table-scroll:focus-visible {
   outline: 2px solid var(--color-primary);

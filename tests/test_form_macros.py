@@ -176,8 +176,9 @@ def test_the_summary_lists_each_error_as_a_link_to_its_field_and_takes_focus():
     assert 'role="alert"' in html
     assert 'tabindex="-1"' in html
     assert "data-focus" in html
-    assert '<a class="underline" href="#box">Fix this</a>' in html
-    assert '<a class="underline" href="#other">And this</a>' in html
+    assert re.search(r'<a class="[^"]*\bunderline\b[^"]*" href="#box">Fix this</a>', html)
+    assert re.search(r'<a class="[^"]*\bunderline\b[^"]*" href="#other">And this</a>', html)
+    assert "min-h-6" in html, "two links one under the other must each be a target of 24 pixels"
 
 
 def test_form_actions_put_the_way_out_after_the_main_action():

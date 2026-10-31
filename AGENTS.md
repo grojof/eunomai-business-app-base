@@ -43,6 +43,8 @@ Add your own components as [the specification](docs/specification.md#adapting-it
 - A long list uses `ListView` from `app/core/tables.py`, whose values are checked against lists, never text from the
   address in SQL: read [Lists on the server](docs/specification.md#lists-on-the-server). Charts come from
   `app/core/charts.py` and the `chart` macro, always with a summary. Excel comes from `app/core/excel.py`.
+- A form uses the field macros and reads every value with `app/core/forms.py`, at the edge: read
+  [Forms](docs/specification.md#forms). It is `novalidate`, and a failed save keeps what was typed.
 - Add a dependency only if the [stack](docs/specification.md#stack) needs it. Pin it and check it for known
   vulnerabilities.
 - No secrets in the repository, and no real people or companies in demo data.

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 19:47+0100\n"
+"POT-Creation-Date: 2026-10-31 19:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -155,6 +155,22 @@ msgstr "Desplegable"
 msgid "Each one is real: try it here, then choose the one the header should show."
 msgstr "Cada uno es real: pruébalo aquí y elige el que debe mostrar la cabecera."
 
+#, python-format
+msgid "Enter a date between %(earliest)s and %(latest)s."
+msgstr "Escribe una fecha entre %(earliest)s y %(latest)s."
+
+#, python-format
+msgid "Enter a number between %(low)s and %(high)s."
+msgstr "Escribe un número entre %(low)s y %(high)s."
+
+#, python-format
+msgid "Enter a number, such as %(example)s."
+msgstr "Escribe un número, por ejemplo %(example)s."
+
+#, python-format
+msgid "Enter a whole number between %(low)s and %(high)s."
+msgstr "Escribe un número entero entre %(low)s y %(high)s."
+
 msgid "Error"
 msgstr "Error"
 
@@ -186,6 +202,11 @@ msgstr "Acciones del formulario"
 
 msgid "Full"
 msgstr "Completa"
+
+msgid "Go back and try again. If it happens again, tell whoever runs this."
+msgstr ""
+"Vuelve atrás e inténtalo de nuevo. Si vuelve a pasar, avisa a quien "
+"gestiona esto."
 
 msgid "Hidden"
 msgstr "Oculta"
@@ -324,6 +345,9 @@ msgstr "Opción"
 msgid "Remove filter %(name)s: %(value)s"
 msgstr "Quitar el filtro %(name)s: %(value)s"
 
+msgid "Remove the special characters, such as tabs, from this text."
+msgstr "Quita de este texto los caracteres especiales, como los tabuladores."
+
 msgid "Results"
 msgstr "Resultados"
 
@@ -375,6 +399,9 @@ msgstr ""
 "Texto que cada persona escribe como su idioma escribe los números. Nunca "
 "un float."
 
+msgid "That could not be read"
+msgstr "No se ha podido leer"
+
 msgid "That did not work. Try again in a moment."
 msgstr "No ha funcionado. Vuelve a intentarlo en un momento."
 
@@ -409,6 +436,9 @@ msgstr ""
 "Esto ya no está aquí: quizá alguien lo ha quitado. Recarga la página para"
 " ver lo que hay ahora."
 
+msgid "Tick the box or leave it empty."
+msgstr "Marca la casilla o déjala vacía."
+
 msgid "Toggle"
 msgstr "Interruptor"
 
@@ -420,6 +450,16 @@ msgstr "Prueba con otra palabra, o con una más corta."
 
 msgid "Type to search"
 msgstr "Escribe para buscar"
+
+#, python-format
+msgid "Use %(most)s characters at most."
+msgstr "Usa %(most)s caracteres como máximo."
+
+#, python-format
+msgid "Use %(places)s decimal at most."
+msgid_plural "Use %(places)s decimals at most."
+msgstr[0] "Usa %(places)s decimal como máximo."
+msgstr[1] "Usa %(places)s decimales como máximo."
 
 msgid "Use this one"
 msgstr "Usar este"

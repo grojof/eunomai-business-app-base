@@ -14,7 +14,7 @@ from app.core.formatters import rounded
 from app.core.i18n import N_, _
 from app.core.identity import Person, require_role
 from app.core.templating import NavigationItem, add_templates, render
-from app.demo import equipment, gallery, planning
+from app.demo import equipment, gallery, planning, work_orders
 from app.demo.charts import dashboard_figures, inspections_due
 from app.demo.data import GENERATE, READY, rows_state
 from app.demo.models import LAST_DAY
@@ -95,4 +95,5 @@ def install(application: FastAPI) -> None:
     application.add_api_route("/administration", administration, include_in_schema=False)
     equipment.install(application)
     planning.install(application)
+    work_orders.install(application)
     gallery.install(application)

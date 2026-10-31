@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 19:47+0100\n"
+"POT-Creation-Date: 2026-10-31 19:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -153,6 +153,22 @@ msgstr "Desplegable"
 msgid "Each one is real: try it here, then choose the one the header should show."
 msgstr "Cada un és real: prova'l aquí i tria el que ha de mostrar la capçalera."
 
+#, python-format
+msgid "Enter a date between %(earliest)s and %(latest)s."
+msgstr "Escriu una data entre %(earliest)s i %(latest)s."
+
+#, python-format
+msgid "Enter a number between %(low)s and %(high)s."
+msgstr "Escriu un nombre entre %(low)s i %(high)s."
+
+#, python-format
+msgid "Enter a number, such as %(example)s."
+msgstr "Escriu un nombre, per exemple %(example)s."
+
+#, python-format
+msgid "Enter a whole number between %(low)s and %(high)s."
+msgstr "Escriu un nombre enter entre %(low)s i %(high)s."
+
 msgid "Error"
 msgstr "Error"
 
@@ -184,6 +200,11 @@ msgstr "Accions del formulari"
 
 msgid "Full"
 msgstr "Completa"
+
+msgid "Go back and try again. If it happens again, tell whoever runs this."
+msgstr ""
+"Torna enrere i torna-ho a provar. Si torna a passar, avisa qui gestiona "
+"això."
 
 msgid "Hidden"
 msgstr "Oculta"
@@ -322,6 +343,9 @@ msgstr "Opció"
 msgid "Remove filter %(name)s: %(value)s"
 msgstr "Treu el filtre %(name)s: %(value)s"
 
+msgid "Remove the special characters, such as tabs, from this text."
+msgstr "Treu d'aquest text els caràcters especials, com ara els tabuladors."
+
 msgid "Results"
 msgstr "Resultats"
 
@@ -373,6 +397,9 @@ msgstr ""
 "Text que cada persona escriu com el seu idioma escriu els nombres. Mai un"
 " float."
 
+msgid "That could not be read"
+msgstr "No s'ha pogut llegir"
+
 msgid "That did not work. Try again in a moment."
 msgstr "No ha funcionat. Torna-ho a provar d'aquí a un moment."
 
@@ -409,6 +436,9 @@ msgstr ""
 "Això ja no és aquí: potser algú ho ha tret. Recarrega la pàgina per veure"
 " què hi ha ara."
 
+msgid "Tick the box or leave it empty."
+msgstr "Marca la casella o deixa-la buida."
+
 msgid "Toggle"
 msgstr "Interruptor"
 
@@ -420,6 +450,16 @@ msgstr "Prova amb una altra paraula, o amb una de més curta."
 
 msgid "Type to search"
 msgstr "Escriu per cercar"
+
+#, python-format
+msgid "Use %(most)s characters at most."
+msgstr "Fes servir %(most)s caràcters com a màxim."
+
+#, python-format
+msgid "Use %(places)s decimal at most."
+msgid_plural "Use %(places)s decimals at most."
+msgstr[0] "Fes servir %(places)s decimal com a màxim."
+msgstr[1] "Fes servir %(places)s decimals com a màxim."
 
 msgid "Use this one"
 msgstr "Fes servir aquest"

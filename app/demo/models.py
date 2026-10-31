@@ -3,7 +3,7 @@
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
-from sqlalchemy import CheckConstraint, ColumnElement, ForeignKey, String, and_
+from sqlalchemy import CheckConstraint, ColumnElement, ForeignKey, String, Text, and_, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -11,6 +11,7 @@ from app.core.database import Base
 EQUIPMENT_STATUSES = ("in_service", "due_soon", "stopped")
 WORK_ORDER_STATUSES = ("reported", "planned", "in_progress", "checked", "closed")
 OPEN_STATES = ("reported", "planned", "in_progress", "checked")
+PRIORITIES = ("low", "normal", "high")
 LOCATIONS = ("Workshop", "Packing", "Plant room", "Roof", "Warehouse")
 LAST_DAY = date(2026, 10, 31)
 """The demo's today: its data ends here, and what is overdue is overdue on this day, whenever it is read."""
@@ -19,8 +20,8 @@ LAST_MOMENT = datetime(2026, 10, 31, 12, tzinfo=UTC)
 """At noon, so that no time zone moves the first or the last moment to another day, or another month."""
 
 
-def _one_of(values: tuple[str, ...]) -> str:
-    return "status IN (" + ", ".join(f"'{value}'" for value in values) + ")"
+def _one_of(values: tuple[str, ...], column: str = "status") -> str:
+    return f"{column} IN (" + ", ".join(f"'{value}'" for value in values) + ")"
 
 
 class Equipment(Base):
@@ -41,7 +42,10 @@ class Equipment(Base):
 
 class WorkOrder(Base):
     __tablename__ = "work_order"
-    __table_args__ = (CheckConstraint(_one_of(WORK_ORDER_STATUSES), name="status"),)
+    __table_args__ = (
+        CheckConstraint(_one_of(WORK_ORDER_STATUSES), name="status"),
+        CheckConstraint(_one_of(PRIORITIES, "priority"), name="priority"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     equipment_id: Mapped[int] = mapped_column(ForeignKey("equipment.id", ondelete="CASCADE"), index=True)
@@ -52,6 +56,11 @@ class WorkOrder(Base):
     opened_at: Mapped[datetime]
     closed_at: Mapped[datetime | None]
     planned_on: Mapped[date | None] = mapped_column(index=True)
+    description: Mapped[str] = mapped_column(Text, server_default="")
+    fault: Mapped[str | None] = mapped_column(String(24))
+    priority: Mapped[str] = mapped_column(String(8), server_default="normal")
+    crew: Mapped[int] = mapped_column(server_default="1")
+    stop_needed: Mapped[bool] = mapped_column(server_default=false())
 
     equipment: Mapped[Equipment] = relationship(back_populates="work_orders")
 

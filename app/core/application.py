@@ -7,6 +7,7 @@ from typing import Annotated
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Form, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import sessionmaker
@@ -91,6 +92,7 @@ async def _context(request: Request, call_next: Callable[[Request], Awaitable[Re
 
 def _error_page(request: Request, status: int) -> Response:
     titles = {
+        400: (_("That could not be read"), _("Go back and try again. If it happens again, tell whoever runs this.")),
         401: (_("Sign-in required"), _("We could not tell who you are. Open the application from your portal.")),
         403: (_("You do not have permission"), _("Ask whoever manages this application if you need access.")),
         404: (_("Page not found"), _("Check the address, or go back to the start.")),
@@ -103,6 +105,12 @@ def _error_page(request: Request, status: int) -> Response:
 async def _on_stale_row(request: Request, _error: Exception) -> Response:
     """Someone removed the row between reading and saving it: the same answer as if it had gone a moment earlier."""
     return _error_page(request, 404)
+
+
+async def _on_unreadable_form(request: Request, _error: Exception) -> Response:
+    """A form that is not what a page sends, as when a file arrives for a text field. No page of ours sends that, and
+    FastAPI's own answer repeats what came, so a person gets a page."""
+    return _error_page(request, 400)
 
 
 async def _on_http_error(request: Request, error: Exception) -> Response:
@@ -226,6 +234,7 @@ def create_core(settings: Settings) -> FastAPI:
         register_search(application.state, _settings_item)
     application.add_api_route("/health", _health, include_in_schema=False)
     application.add_exception_handler(HTTPException, _on_http_error)
+    application.add_exception_handler(RequestValidationError, _on_unreadable_form)
     application.add_exception_handler(StaleDataError, _on_stale_row)
     application.middleware("http")(_context)
     return application

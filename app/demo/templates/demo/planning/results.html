@@ -2,13 +2,16 @@
 {% from "ui/macros.html" import filter_bar, list_summary, grouped_table, row_header, cell, status_label, dialog_action, pagination, empty_state, link_button, message %}
 {% if refill_filters %}{{ filter_bar(view, refill=true) }}{% endif %}
 {% if saved %}<div class="px-4 pt-3" role="status">{{ message("success", saved) }}</div>{% endif %}
-{{ list_summary(view, ngettext("%(count)s work order", "%(count)s work orders", view.total, count=view.total|decimal)) }}
+{% set back = view.here|urlencode %}
+{% call list_summary(view, ngettext("%(count)s work order", "%(count)s work orders", view.total, count=view.total|decimal)) %}
+{% if can_edit %}{{ link_button(_("New work order"), "/work-orders/new?back=" ~ back, "primary", small=true, name="plus") }}{% endif %}
+{% endcall %}
 {% if view.rows %}
 {% call(row) grouped_table(view, _("Work orders by group, with their equipment, state, planned date and hours"), sections, _("Actions") if can_edit else "") %}
 {% set label, kind = order_statuses[row.status] %}
 {{ row_header(row.equipment.name, "/equipment/" ~ row.equipment_id) }}
 {{ cell(row.id, numeric=true, wide_only=true) }}
-{{ cell(row.title, wide_only=true) }}
+{{ cell(row.title, wide_only=true, href="/work-orders/" ~ row.id ~ "/edit?back=" ~ back if can_edit else "", name=_("All the fields of work order %(number)s: %(work)s", number=row.id, work=row.title)) }}
 {{ cell(status_label(_(label), kind)) }}
 {{ cell(row.planned_on|date if row.planned_on else _("Not planned yet"), wide_only=true) }}
 {{ cell(row.hours|decimal(2), numeric=true, wide_only=true) }}

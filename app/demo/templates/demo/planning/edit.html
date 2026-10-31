@@ -9,6 +9,7 @@
   <div class="flex gap-2">
     {{ button(_("Save"), "primary", "submit") }}
     {{ link_button(_("Cancel"), back) }}
+    {{ link_button(_("All the fields"), "/work-orders/" ~ order.id ~ "/edit?back=" ~ back|urlencode, "ghost") }}
   </div>
 </form>
 {% endblock %}

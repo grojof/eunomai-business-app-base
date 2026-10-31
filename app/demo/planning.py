@@ -16,19 +16,31 @@ from sqlalchemy import ColumnElement, String, func, literal_column, select
 from sqlalchemy.orm import Session, contains_eager
 
 from app.core.database import DatabaseSession, exact_sum, totals_by
-from app.core.formatters import format_decimal, format_month_and_year, parse_date, parse_decimal
+from app.core.formatters import format_decimal, format_month_and_year
+from app.core.forms import read_choice, read_date, read_decimal, read_fields
 from app.core.i18n import N_, _, ngettext
 from app.core.identity import Person, require_role
 from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list, whole_page
 from app.core.templating import render
 from app.demo.data import GENERATE, READY, rows_state
-from app.demo.equipment import LARGEST_ID, ORDER_LABELS, labels_in_order, ranked
+from app.demo.equipment import (
+    LARGEST_ID,
+    ORDER_LABELS,
+    can_edit,
+    labels_in_order,
+    outcome_message,
+    ranked,
+    saved_message,
+)
 from app.demo.models import LOCATIONS, WORK_ORDER_STATUSES, Equipment, WorkOrder, overdue
 
 OPEN = "open"
 FIELD_IDS = {"status": "field-status", "planned_on": "field-planned", "hours": "field-hours"}
 LONGEST_JOB = Decimal(9999)
 HOUR_DECIMALS = 2
+EARLIEST = date(2000, 1, 1)
+LATEST = date(2099, 12, 31)
+"""A planned day outside these is a year mistyped, such as 0026."""
 GROUPS = {"location": N_("Location"), "status": N_("State"), "month": N_("Month planned")}
 _STATEMENT = select(WorkOrder).join(WorkOrder.equipment)
 _LOADED = (contains_eager(WorkOrder.equipment),)
@@ -175,7 +187,7 @@ def load_sections(view: ListView, session: Session) -> list[Section]:
 def _list_context(request: Request, person: Person | None) -> dict[str, Any]:
     return {
         "order_statuses": ORDER_LABELS,
-        "can_edit": bool(person and "admin" in person.roles),
+        "can_edit": can_edit(request),
         "saved": "",
         "state": READY,
         "command": GENERATE,
@@ -191,17 +203,10 @@ def planning(request: Request, session: DatabaseSession) -> Response:
     view = planning_view(request.query_params)
     sections = load_sections(view, session)
     context = _list_context(request, request.state.person)
-    context["saved"] = _saved_message(session, request.query_params.get("saved", ""))
+    context["saved"] = outcome_message(session, request.query_params)
     return render_list(
         request, view, "demo/planning/list.html", "demo/planning/results.html", sections=sections, **context
     )
-
-
-def _saved_message(session: Session, number: str) -> str:
-    """After a save without JavaScript the address says what was saved. A value that is no order says nothing."""
-    if not number.isascii() or not number.isdigit() or int(number) > LARGEST_ID:
-        return ""
-    return _("Work order %(number)s saved.") % {"number": number} if session.get(WorkOrder, int(number)) else ""
 
 
 def _view_of(back: str) -> ListView:
@@ -266,32 +271,36 @@ def planning_edit(
     return _form(request, template, order, back, values, {})
 
 
+def read_hours(text: str) -> Decimal:
+    return read_decimal(
+        text,
+        0,
+        LONGEST_JOB,
+        HOUR_DECIMALS,
+        not_a_number=_("Enter the hours as a number, such as %(example)s.") % {"example": _hours_text(Decimal("7.5"))},
+        out_of_range=_("Enter between 0 and %(most)s hours.") % {"most": format_decimal(LONGEST_JOB)},
+        too_precise=_("Enter the hours with two decimals at most."),
+    )
+
+
+def set_status(order: WorkOrder, status: str) -> None:
+    """A state changes with its moment: closing records when, and opening again clears it."""
+    if status != order.status:
+        order.closed_at = datetime.now(UTC) if status == "closed" else None
+    order.status = status
+
+
 def checked(status: str, planned_on: str, hours: str) -> tuple[dict[str, Any], dict[str, str]]:
     """What can be saved, and what cannot, by field, in words that say how to fix it. Each value is checked here."""
-    clean: dict[str, Any] = {}
-    errors: dict[str, str] = {}
-    if status in WORK_ORDER_STATUSES:
-        clean["status"] = status
-    else:
-        errors["status"] = _("Choose a state from the list.")
-    try:
-        clean["planned_on"] = parse_date(planned_on) if planned_on else None
-    except ValueError:
-        errors["planned_on"] = _("Enter a date, or leave it empty if it is not planned yet.")
-    try:
-        number = parse_decimal(hours)
-    except ValueError:
-        errors["hours"] = _("Enter the hours as a number, such as %(example)s.") % {
-            "example": _hours_text(Decimal("7.5"))
+    return read_fields(
+        {
+            "status": lambda: read_choice(status, WORK_ORDER_STATUSES, _("Choose a state from the list.")),
+            "planned_on": lambda: read_date(
+                planned_on, EARLIEST, LATEST, _("Enter a date, or leave it empty if it is not planned yet.")
+            ),
+            "hours": lambda: read_hours(hours),
         }
-    else:
-        if not 0 <= number <= LONGEST_JOB:
-            errors["hours"] = _("Enter between 0 and %(most)s hours.") % {"most": format_decimal(LONGEST_JOB)}
-        elif -number.as_tuple().exponent > HOUR_DECIMALS:  # type: ignore[operator]
-            errors["hours"] = _("Enter the hours with two decimals at most.")
-        else:
-            clean["hours"] = number
-    return clean, errors
+    )
 
 
 def planning_save(
@@ -316,9 +325,7 @@ def planning_save(
         template = "demo/planning/editor.html" if partial else "demo/planning/edit.html"
         return _form(request, template, order, view.here, values, errors, 200 if partial else 422)
 
-    if clean["status"] != order.status:
-        order.closed_at = datetime.now(UTC) if clean["status"] == "closed" else None
-    order.status = clean["status"]
+    set_status(order, clean["status"])
     order.planned_on = clean["planned_on"]
     order.hours = clean["hours"]
     session.commit()
@@ -328,7 +335,7 @@ def planning_save(
         return RedirectResponse(f"{view.here}{separator}saved={order_id}", status_code=303)
     sections = load_sections(view, session)
     context = _list_context(request, request.state.person)
-    context["saved"] = _saved_message(session, str(order_id))
+    context["saved"] = saved_message(session, str(order_id))
     return render(
         request,
         "demo/planning/saved.html",

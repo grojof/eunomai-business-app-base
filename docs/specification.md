@@ -23,7 +23,7 @@ Success means three things, each testable:
 
 ```text
 app/
-  core/      identity, roles, settings, database, exact column types, server lists, languages, formatters, errors, health
+  core/      identity, roles, settings, database, exact column types, server lists, reading forms, languages, formatters, errors, health
   ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, charts.js, vendored htmx and Chart.js
   brand/     theme.css, logo.svg
   demo/      screens, their fixed values, models and generated data, the gallery with its generated examples/, translations
@@ -269,6 +269,26 @@ nothing to learn in between.
 
 Two people editing one row: the last save wins. Nothing warns the first.
 
+### Forms
+
+The work order form is the pattern of the planning editor, grown up: `/work-orders/new` and `/work-orders/<id>/edit`,
+reached from Planning and from the equipment detail, and needing the `admin` role, as editing does.
+
+| What | How |
+|---|---|
+| Fields | One macro per kind of field, all with a visible label, as the [gallery](#gallery) shows. A hint and an error reach the control through `aria-describedby`, and `aria-invalid` marks the error |
+| Checking | `app/core/forms.py`, at the edge, as [SEC-03](standards.md#security) says. A reader takes text and gives the value to save, or raises `Refused` with what the person should read. `read_fields` runs them all, so every problem shows at once. The browser's `required` and `maxlength` help a person; forms are `novalidate`, and the server decides |
+| Text | Trimmed, one form of line break, its length checked, and no control characters: PostgreSQL refuses a NUL, which would be an error page there and stored on SQLite |
+| Numbers and dates | `read_decimal` and `read_whole` through `parse_decimal`, and `read_date` through `parse_date`, with limits, because a year typed as 0026 is a valid date and a mistake. Never a float. Generated costs have twenty decimals, so the cost field shows every one and a form nobody changed saves the same value |
+| A failed save | The form comes back with what was typed, an error summary whose links land on the fields, and focus on it. A 422 page without JavaScript, the form alone in its place with htmx |
+| A date typed halfway | A browser sends such a field as nothing, which would clear an optional date in silence, so `app.js` tells the server, and it asks for the date. The value cannot come back: the browser does not give it |
+| A saved form | Back where the person came from, Planning or the equipment page, with their filters. The address says what happened, for that one page, as `saved` or `deleted`; a number that does not fit says nothing. `way_back` rebuilds the address from what it can read, so it never leaves those two screens |
+| Deleting | With a [confirmation](components/confirmation-dialog.md) that names the row, in a dialog with htmx, and on a page of its own without JavaScript. The form that deletes is a plain POST in both |
+| A form that is not one | A file sent for a text field or a part too long is a 400 page. FastAPI's own answer repeats what was sent |
+
+The equipment is asked for by its code. A searchable select holds its options in the page, because without JavaScript it
+is a plain select, and 50,000 of them is a page of megabytes. So the searchable select is the list of faults.
+
 ### Excel
 
 `app/core/excel.py` writes a list with XlsxWriter's `constant_memory`, so a row goes to disk as it arrives, and the route
@@ -363,7 +383,8 @@ daisyUI classes, so the look can change in one place. Each macro appears on the 
 [gallery](#gallery), and has tests. The macros today are `icon`, `page_heading`, `message`, `button`, `link_button`, `card`,
 `panel`, `stats`, `stat`, `badge`, `status_label`, `progress`, `steps`, `table`, `empty_state`, `command`, `select_field`, `item_list`,
 `breadcrumbs`, `description_list`, `tabs`, `chart`, `dialog`, `dialog_buttons`, `input_field`, `field_error`,
-`error_summary`, `grouped_table`, `dialog_action`, `filter_bar`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`
+`error_summary`, `textarea_field`, `date_field`, `number_field`, `checkbox_field`, `radio_group`, `searchable_select`,
+`file_field`, `form_actions`, `confirmation`, `confirm_link`, `grouped_table`, `dialog_action`, `filter_bar`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`
 and `pagination`.
 
 Tabs come in two kinds. `tabs` are links, one address each, as on the equipment detail: they work without JavaScript and
@@ -403,7 +424,7 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Equipment list, `/equipment` | Server table with 50,000 rows, search, filters, sorting, paging, row actions, its empty and no-results states, Excel export | Milestone 2 |
 | Equipment detail, `/equipment/<id>` | Breadcrumbs, description list, tabs as links, history of work orders, status label, print style | Milestone 2 |
 | Planning, `/planning` | Rich table: groups on the server, and one row edited at a time in a dialog | Milestone 2 |
-| Work order form | All form fields, validation, decimals, dates, file upload | Milestone 3 |
+| Work order form, `/work-orders/new` and `/work-orders/<id>/edit` | All form fields, validation, decimals, dates, delete with a confirmation | Milestone 3 |
 | Import | Long task with progress, its result and its errors | Milestone 4 |
 
 The demo's tables, `equipment` and `work_order`, hold what `app/demo/generate.py` makes: 50,000 pieces of equipment and

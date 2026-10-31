@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import breadcrumbs, page_heading, dialog %}
+{% set title = _("Work order %(number)s", number=order.id) if order else _("New work order") %}
+{% block title %}{{ _("Error") ~ ": " if errors else "" }}{{ title }}{% endblock %}
+{% block content %}
+{{ breadcrumbs([(_("Planning") if came_from_planning else _("Equipment"), back), (title, "")]) }}
+{{ page_heading(title, order.equipment.name ~ " · " ~ order.title if order else _("Fill in what is known: only what is marked as optional can wait.")) }}
+<div id="work-order" class="max-w-4xl">
+  {% include "demo/work_orders/form.html" %}
+</div>
+{% if order %}{{ dialog("confirm", _("Close"), alert=true) }}{% endif %}
+{% endblock %}

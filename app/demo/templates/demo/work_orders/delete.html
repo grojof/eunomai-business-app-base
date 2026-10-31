@@ -1,0 +1,10 @@
+{#- The same question as the dialog's, on a page of its own without JavaScript. -#}
+{% extends "layout.html" %}
+{% from "ui/macros.html" import breadcrumbs, confirmation %}
+{% block title %}{{ _("Delete work order %(number)s?", number=order.id) }}{% endblock %}
+{% block content %}
+{{ breadcrumbs([(_("Work order %(number)s", number=order.id), "/work-orders/" ~ order.id ~ "/edit?back=" ~ back|urlencode), (_("Delete"), "")]) }}
+<div class="max-w-xl">
+  {{ confirmation("confirm", _("Delete work order %(number)s?", number=order.id), _("This cannot be undone. These go with it:"), lost, _("Delete it"), _("Keep it"), "/work-orders/" ~ order.id ~ "/delete", [("back", back)], back="/work-orders/" ~ order.id ~ "/edit?back=" ~ back|urlencode, level=1) }}
+</div>
+{% endblock %}

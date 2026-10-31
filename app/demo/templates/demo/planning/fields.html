@@ -1,7 +1,7 @@
 {#- The form of one work order, for the dialog and for the page without JavaScript. -#}
-{% from "ui/macros.html" import select_field, input_field, error_summary %}
+{% from "ui/macros.html" import select_field, date_field, number_field, error_summary %}
 {% if errors %}{{ error_summary(_("Check what you entered"), summary) }}{% endif %}
 {{ select_field("status", _("State"), options, values.status, "field-status", error=errors.get("status", ""), attributes={} if errors else {"data-focus": "", "autofocus": ""}) }}
-{{ input_field("planned_on", _("Planned for"), values.planned_on, "field-planned", "date", error=errors.get("planned_on", ""), hint=_("Leave it empty if it is not planned yet.")) }}
-{{ input_field("hours", _("Hours"), values.hours, "field-hours", error=errors.get("hours", ""), attributes={"inputmode": "decimal", "autocomplete": "off"}) }}
+{{ date_field("planned_on", _("Planned for"), values.planned_on, "field-planned", error=errors.get("planned_on", ""), hint=_("Leave it empty if it is not planned yet.")) }}
+{{ number_field("hours", _("Hours"), values.hours, "field-hours", error=errors.get("hours", "")) }}
 <input type="hidden" name="back" value="{{ back }}">
