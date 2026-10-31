@@ -471,3 +471,15 @@ def test_the_message_of_a_failed_request_can_be_closed(open_filled):
     until(page, "!document.querySelector('#request-problem').hidden")
     page.locator("#request-problem button").click()
     assert not page.locator("#request-problem").is_visible()
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-09")
+def test_focus_lands_on_the_empty_state_when_no_table_comes_back(open_filled):
+    page = open_filled("/equipment?q=nothing+like+this&status=stopped")
+    page.locator("a[aria-label^='Remove filter State']").focus()
+    page.keyboard.press("Enter")
+    page.wait_for_url("**/equipment?q=nothing+like+this")
+    until(page, "document.activeElement !== document.body")
+    assert page.evaluate("document.activeElement.matches('[data-focus-fallback]')")
+    assert "No equipment matches" in page.evaluate("document.activeElement.textContent")

@@ -127,8 +127,9 @@
 </figure>
 {% endmacro %}
 
+{#- It can take focus: when a list comes back with no rows, the table that held focus is gone. -#}
 {% macro empty_state(title, advice, name="", level=3) %}
-<div class="px-4 py-10 text-center">
+<div class="px-4 py-10 text-center" tabindex="-1" data-focus-fallback>
   {% if name %}<span class="mx-auto mb-3 grid size-12 place-items-center rounded-full bg-base-200">{{ icon(name, "size-6") }}</span>{% endif %}
   <h{{ level }} class="text-base font-semibold">{{ title }}</h{{ level }}>
   <p class="mx-auto max-w-prose text-sm">{{ advice }}</p>

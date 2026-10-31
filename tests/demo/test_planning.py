@@ -6,7 +6,7 @@ from decimal import Decimal
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Session
 
@@ -568,3 +568,25 @@ def test_edit_on_a_row_that_has_gone_says_so(browser, tmp_path):
         until(page, "!document.querySelector('#request-problem').hidden")
         assert "no longer here" in problem_shown(page).inner_text()
         assert not page.evaluate("document.querySelector('dialog#editor').open")
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-09")
+def test_focus_lands_on_the_empty_state_when_the_last_row_leaves_the_list(browser, tmp_path):
+    url, application = in_a_page_of_its_own(browser, tmp_path)
+    engine = create_database_engine(url)
+    with Session(engine) as session:
+        number = session.scalar(
+            select(WorkOrder.id).where(WorkOrder.status != "closed").order_by(WorkOrder.id).limit(1)
+        )
+        session.execute(update(WorkOrder).where(WorkOrder.id != number).values(status="closed"))
+        session.commit()
+    engine.dispose()
+    with running_server(application) as port, page_opener(browser, f"http://127.0.0.1:{port}") as opener:
+        page = opener("/planning")
+        open_editor(page)
+        page.locator("dialog select[name=status]").select_option("closed")
+        page.get_by_role("button", name="Save").click()
+        until(page, "!document.querySelector('dialog').open")
+        until(page, "document.activeElement.matches('[data-focus-fallback]')")
+        assert "No work order matches" in page.evaluate("document.activeElement.textContent")
