@@ -340,6 +340,41 @@ def test_a_delete_does_not_destroy_a_file_its_confirmation_never_named(writable)
     assert stored_in(folder) == []
 
 
+def test_a_file_added_in_the_instant_before_a_delete_is_not_destroyed_or_left_behind(writable, monkeypatch):
+    """Past the last look at the list. The foreign key's cascade would take its row and leave it on the disk."""
+    client, url, folder = writable
+    named, _html = asked(client)
+    real_delete = work_orders.sql_delete
+
+    def another_adds_a_file(*arguments):
+        monkeypatch.setattr(work_orders, "sql_delete", real_delete)
+        folder.mkdir(exist_ok=True)
+        (folder / ("a" * 32)).write_bytes(PDF)
+        moment = read_order(url).opened_at
+        engine = create_database_engine(url)
+        with Session(engine) as session:
+            session.add(
+                WorkOrderFile(
+                    work_order_id=1,
+                    name="late.pdf",
+                    stored_name="a" * 32,
+                    media_type="application/pdf",
+                    size=len(PDF),
+                    added_at=moment,
+                )
+            )
+            session.commit()
+        engine.dispose()
+        return real_delete(*arguments)
+
+    monkeypatch.setattr(work_orders, "sql_delete", another_adds_a_file)
+    response = save(client, "/work-orders/1/delete", named)
+    assert response.status_code == 409
+    assert "<li>Attached file: late.pdf</li>" in response.text
+    assert read_order(url) is not None
+    assert (folder / ("a" * 32)).exists()
+
+
 def test_a_delete_that_comes_late_shows_what_is_there_now(writable):
     client, url, _files = writable
     someone_else_saves(url, title="Theirs")

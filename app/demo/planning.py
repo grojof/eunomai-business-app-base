@@ -214,8 +214,8 @@ def _view_of(back: str) -> ListView:
     return planning_view(list_query(back, "/planning"))
 
 
-def _order_or_404(session: Session, order_id: int) -> WorkOrder:
-    order = session.get(WorkOrder, order_id) if order_id <= LARGEST_ID else None
+def _order_or_404(session: Session, order_id: int, lock: bool = False) -> WorkOrder:
+    order = session.get(WorkOrder, order_id, with_for_update=lock or None) if order_id <= LARGEST_ID else None
     if order is None:
         raise HTTPException(status_code=404)
     return order

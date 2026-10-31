@@ -13,6 +13,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import Response
+from sqlalchemy import delete as sql_delete
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -459,18 +460,31 @@ def delete(
     version: Annotated[str, Form()] = "",
     files: Annotated[str, Form()] = "",
 ) -> Response:
-    """A confirmation named what would go. If that changed, it asks again with what is there now."""
+    """A confirmation named what would go. If that changed, it asks again with what is there now.
+
+    The files go first, by one statement that says which, because the foreign key's cascade would say nothing: a file
+    added in the last instant would lose its row, stay on the disk, and never have been named. The lock is PostgreSQL's
+    answer to that instant, and on SQLite the statement itself holds the only writer.
+    """
     if rows_state(session) != READY:
         return whole_page(request, "/planning")
-    order = _order_or_404(session, order_id)
-    if read_version(version) != order.version or files != _files_named(order):
-        return _asking(request, order, way_back(back), "demo/work_orders/delete.html", 409)
-    stored = [file.stored_name for file in order.files]
+    order = _order_or_404(session, order_id, lock=True)
+    template = "demo/work_orders/delete.html"
+    if read_version(version) != order.version:
+        return _asking(request, order, way_back(back), template, 409)
+    taken = session.execute(
+        sql_delete(WorkOrderFile)
+        .where(WorkOrderFile.work_order_id == order_id)
+        .returning(WorkOrderFile.id, WorkOrderFile.stored_name)
+    ).all()
+    if ",".join(str(row.id) for row in sorted(taken, key=lambda row: row.id)) != files:
+        session.rollback()
+        return _asking(request, _order_or_404(session, order_id), way_back(back), template, 409)
     session.delete(order)
     if not saved(session):
-        return _asking(request, _order_or_404(session, order_id), way_back(back), "demo/work_orders/delete.html", 409)
-    for name in stored:
-        _store(request).remove(name)
+        return _asking(request, _order_or_404(session, order_id), way_back(back), template, 409)
+    for row in taken:
+        _store(request).remove(row.stored_name)
     return whole_page(request, _ending(way_back(back), "deleted", order_id))
 
 

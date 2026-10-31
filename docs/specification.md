@@ -337,7 +337,7 @@ is in the base:
 | Quotas and a rate limit, per person | Without them one person can fill the disk, 10 MB at a time |
 | Reading images again, where they are shown | Files here are only downloaded. An application that shows an image should decode it and write a new one, which drops what was hidden in it, and serve it from another origin |
 | A record of who added, downloaded and removed what | The demo keeps a moment and no name. A real application needs its audit trail, under the rules for personal data |
-| Retention, and sweeping files with no row | A crash between the two steps leaves a file behind. Decide how long files stay, and clear them on a schedule |
+| Retention, and sweeping files with no row | A crash between a file reaching the disk and its row being saved or removed, or a removal that fails, leaves a file behind. Decide how long files stay, and clear them on a schedule |
 
 ### Excel
 
