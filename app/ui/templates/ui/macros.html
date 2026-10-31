@@ -302,7 +302,7 @@
     template, and the select stays underneath, hidden, holding the value the form sends. For a list that fits in a page,
     up to some hundreds: without JavaScript a plain select must hold all of it. -#}
 {% macro searchable_select(name, label, options, value, identifier, every="", error="", hint="", attributes={}, required=none) %}
-<div class="fieldset p-0 text-sm" data-combobox data-count="{{ _('Options: %(count)s', count='{count}') }}">
+<div class="fieldset p-0 text-sm" data-combobox data-count="{{ _('Options: %(count)s', count='{count}') }}"{% if value and value not in options|map("first")|list %} data-typed="{{ value }}"{% endif %}>
   {{ _label(label, identifier, required) }}
   {{ _hint(identifier, hint) }}
   {{ field_error(identifier, error) }}
@@ -313,6 +313,7 @@
     {% endfor %}
   </select>
   <template>
+    <p class="font-medium" data-combobox-refused hidden>{{ icon("triangle-alert", "size-4 me-1 inline-block") }}{{ _("This is not on the list. Choose one of its options.") }}</p>
     <div class="relative">
       <div class="input w-full{{ ' input-error' if error else '' }}">
         <input class="grow" type="text" role="combobox" autocomplete="off" spellcheck="false" aria-autocomplete="list" aria-expanded="false"{% if every %} placeholder="{{ every }}"{% endif %}>

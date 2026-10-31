@@ -23,9 +23,11 @@ underneath, hidden, and it is what the form sends, so the server sees the same f
 | Down, Up | Open the list and move through it |
 | Alt+Down, Alt+Up | Open or close the list without moving |
 | Enter | Chooses the option, and closes the list |
-| Escape | Closes the list; pressed again, empties the box |
+| Escape | Closes the list, and leaves the text; pressed again, empties the box |
 | Tab | Chooses the option the arrows are on, and leaves |
 
-Leaving the box settles it: empty means nothing is chosen, and text that matches no option goes back to what was chosen.
+The select follows the box at every keystroke, so a form sends what the box shows. Leaving the box settles it: an
+option's own text if it is one, empty means nothing is chosen, and anything else stays, with an error at the field. If
+the form is sent like that, the text goes as it is and the server refuses it, which is the check that counts.
 All options are in the page, so a list must fit there, up to some hundreds. A list of 50,000 needs another answer: the
 demo's work order asks for the equipment's code instead.

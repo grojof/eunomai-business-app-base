@@ -553,6 +553,46 @@ def test_with_htmx_a_save_goes_to_the_list_and_says_so(own_rows):
     assert edit.get_by_role("radio", name="High").is_checked()
 
 
+def box_and_select(page):
+    return page.evaluate(
+        """[document.querySelector('#field-fault').value, document.querySelector('select[name=fault]').value]"""
+    )
+
+
+@pytest.mark.browser
+def test_text_left_in_the_box_then_escape_and_enter_is_refused_by_the_server_and_stays(own_rows):
+    page = own_rows("/work-orders/1/edit")
+    page.locator("#field-fault").fill("bearing")
+    page.keyboard.press("Escape")
+    assert box_and_select(page) == ["bearing", "bearing"]
+    page.keyboard.press("Enter")
+    page.wait_for_selector("#work-order [role=alert]")
+    assert "Choose a fault from the list." in page.locator("#work-order [role=alert]").inner_text()
+    assert box_and_select(page) == ["bearing", "bearing"]
+    assert page.locator("#field-fault").get_attribute("aria-invalid") == "true"
+
+
+@pytest.mark.browser
+def test_escape_twice_with_a_value_chosen_then_enter_sends_an_empty_box(own_rows):
+    page = own_rows("/work-orders/1/edit?back=%2Fplanning")
+    page.locator("#field-fault").fill("bearing wear")
+    page.keyboard.press("Tab")
+    page.get_by_role("button", name="Save").click()
+    page.wait_for_url("**/planning?saved=1")
+
+    page = own_rows("/work-orders/1/edit?back=%2Fplanning")
+    assert box_and_select(page) == ["Bearing wear", "bearing_wear"]
+    page.locator("#field-fault").focus()
+    page.keyboard.press("ArrowDown")
+    page.keyboard.press("Escape")
+    page.keyboard.press("Escape")
+    assert box_and_select(page) == ["", ""]
+    page.keyboard.press("Enter")
+    page.wait_for_url("**/planning?saved=1")
+    page = own_rows("/work-orders/1/edit")
+    assert box_and_select(page) == ["", ""]
+
+
 @pytest.mark.browser
 def test_a_date_typed_halfway_is_refused_and_not_cleared_in_silence(own_rows):
     page = own_rows("/work-orders/1/edit")

@@ -157,12 +157,42 @@ def test_escape_closes_the_list_and_a_second_escape_empties_the_box(box):
 
 
 @pytest.mark.browser
-def test_text_that_matches_nothing_goes_back_to_what_was_chosen(box):
-    box.locator(BOX).fill("")
+def test_text_that_matches_nothing_stays_and_is_a_visible_error_at_the_field(box):
+    typed = box.locator(BOX)
+    typed.fill("")
     box.keyboard.type("zzz")
     box.keyboard.press("Tab")
-    assert box.locator(BOX).input_value() == "Conveyor belt"
-    assert source_value(box) == "b"
+    assert typed.input_value() == "zzz"
+    assert source_value(box) == "zzz", "what the form sends is what the box shows, and the server decides"
+    message = box.locator("[data-combobox-refused]:visible")
+    assert message.count() == 1
+    assert typed.get_attribute("aria-invalid") == "true"
+    assert message.get_attribute("id") in typed.get_attribute("aria-describedby")
+
+
+@pytest.mark.browser
+def test_correcting_the_text_clears_the_error(box):
+    typed = box.locator(BOX)
+    typed.fill("zzz")
+    box.keyboard.press("Tab")
+    typed.fill("forklift")
+    box.keyboard.press("Tab")
+    assert typed.input_value() == "Forklift"
+    assert source_value(box) == "d"
+    assert box.locator("[data-combobox-refused]:visible").count() == 0
+    assert typed.get_attribute("aria-invalid") is None
+
+
+@pytest.mark.browser
+def test_the_select_follows_the_box_at_every_keystroke(box):
+    """A form can be sent with Enter while the box still has focus, so nothing may wait for it to be left."""
+    typed = box.locator(BOX)
+    typed.fill("for")
+    assert source_value(box) == "for"
+    typed.fill("forklift")
+    assert source_value(box) == "d"
+    typed.fill("")
+    assert source_value(box) == ""
 
 
 @pytest.mark.browser

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 21:42+0100\n"
+"POT-Creation-Date: 2026-10-31 21:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -484,6 +484,9 @@ msgid ""
 msgstr ""
 "Això ja no és aquí: potser algú ho ha tret. Recarrega la pàgina per veure"
 " què hi ha ara."
+
+msgid "This is not on the list. Choose one of its options."
+msgstr "Això no és a la llista. Tria una de les seves opcions."
 
 #, python-format
 msgid "This is not really a %(kind)s file. Choose another."

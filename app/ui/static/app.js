@@ -263,8 +263,10 @@ document.querySelectorAll("input[data-follows-system]").forEach((input) => {
 });
 
 // A searchable select: ARIA's editable combobox with a list. The select stays, hidden, and it is what the form sends; the
-// input takes its id, so its label and the error summary's link land there. What arrives in the template is what the
-// macro wrote, so no class lives here. See `searchable_select` in ui/macros.html.
+// input takes its id, so its label and the error summary's link land there. The select follows the box at every moment,
+// so what is sent is always what is shown: text that matches no option goes as it is, in an option of its own, and the
+// server refuses it. Nothing is dropped. What arrives in the template is what the macro wrote, so no class lives here.
+// See `searchable_select` in ui/macros.html.
 const plainText = (text) =>
   text
     .normalize("NFD")
@@ -279,6 +281,8 @@ function upgradeCombobox(box) {
   const popup = parts.querySelector("[data-combobox-popup]");
   const nothing = parts.querySelector("[data-combobox-none]");
   const toggle = parts.querySelector("[data-combobox-toggle]");
+  const refused = parts.querySelector("[data-combobox-refused]");
+  const typed = document.createElement("option");
   const identifier = select.id;
   const options = [...select.options].map((option, position) => {
     const item = document.createElement("li");
@@ -298,16 +302,59 @@ function upgradeCombobox(box) {
       input.setAttribute(name, select.getAttribute(name));
     }
   }
+  const describedBy = input.getAttribute("aria-describedby");
+  const invalid = input.getAttribute("aria-invalid");
   select.removeAttribute("id");
   select.tabIndex = -1;
   select.hidden = true;
   input.id = identifier;
+  refused.id = `${identifier}-refused`;
 
   let shown = options;
   let active = -1;
+  let sent = select.value;
 
-  const chosen = () => (select.value ? select.selectedOptions[0].text : "");
-  input.value = chosen();
+  function follow() {
+    const text = input.value.trim();
+    const plain = plainText(text);
+    const match = options.find((entry) => (plain ? entry.text === plain : !entry.option.value));
+    typed.remove();
+    if (match) {
+      select.value = match.option.value;
+    } else {
+      typed.value = text;
+      typed.text = text;
+      select.append(typed);
+      typed.selected = true;
+    }
+    return match;
+  }
+  function report(wrong) {
+    refused.hidden = !wrong;
+    if (wrong) {
+      input.setAttribute("aria-invalid", "true");
+      input.setAttribute("aria-describedby", [describedBy, refused.id].filter(Boolean).join(" "));
+      announce(refused.textContent.trim());
+      return;
+    }
+    for (const [name, value] of [["aria-invalid", invalid], ["aria-describedby", describedBy]]) {
+      if (value === null) {
+        input.removeAttribute(name);
+      } else {
+        input.setAttribute(name, value);
+      }
+    }
+  }
+  function changed() {
+    if (select.value !== sent) {
+      sent = select.value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+
+  input.value = box.dataset.typed ?? (select.value ? select.selectedOptions[0].text : "");
+  follow();
+  sent = select.value;
 
   function show(position) {
     shown[active]?.item.setAttribute("aria-selected", "false");
@@ -344,31 +391,34 @@ function upgradeCombobox(box) {
     input.setAttribute("aria-expanded", "false");
   }
   function choose(entry) {
-    const changed = select.value !== entry.option.value;
-    select.value = entry.option.value;
-    input.value = chosen();
+    input.value = entry.option.value ? entry.option.text : "";
+    follow();
     close();
-    if (changed) {
-      select.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    report(false);
+    changed();
   }
-  // Leaving the field settles it: an empty box means nothing is chosen, and what matches no option goes back to what was.
+  // Leaving the field settles it: an option's own text if it is one, an empty box means nothing is chosen, and anything
+  // else stays, with an error at the field.
   function settle() {
     if (active >= 0) {
       choose(shown[active]);
       return;
     }
-    const text = plainText(input.value.trim());
-    const match = options.find((entry) => entry.text === text) ?? options.find((entry) => !text && !entry.option.value);
+    const match = follow();
     if (match) {
       choose(match);
     } else {
-      input.value = chosen();
       close();
+      report(true);
+      changed();
     }
   }
 
-  input.addEventListener("input", () => open());
+  input.addEventListener("input", () => {
+    follow();
+    report(false);
+    open();
+  });
   input.addEventListener("blur", settle);
   input.addEventListener("keydown", (event) => {
     const isOpen = !popup.hidden;
@@ -378,7 +428,7 @@ function upgradeCombobox(box) {
         (event.key === "ArrowDown" ? open : close)(true);
       } else {
         if (!isOpen) {
-          open(input.value === chosen());
+          open(input.value === select.selectedOptions[0]?.text);
         }
         const step = event.key === "ArrowDown" ? 1 : -1;
         const from = active < 0 && step < 0 ? 0 : active;
@@ -396,6 +446,8 @@ function upgradeCombobox(box) {
       } else if (input.value) {
         event.preventDefault();
         input.value = "";
+        follow();
+        report(false);
       }
     }
   });

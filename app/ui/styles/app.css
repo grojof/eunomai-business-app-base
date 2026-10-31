@@ -209,6 +209,11 @@
     }
   }
 
+  /* A searchable select with text that is not on its list, as a server's error would mark it */
+  .input:has(> [role="combobox"][aria-invalid="true"]) {
+    --input-color: var(--color-error);
+  }
+
   /* A searchable select's options: the one the arrow keys are on, as in the palette */
   [data-combobox] [role="option"][aria-selected="true"] > span {
     background-color: var(--color-neutral);
