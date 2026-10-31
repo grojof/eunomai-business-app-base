@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.core.columns import ExactDecimal
 from app.core.database import create_database_engine
-from app.core.tables import Column, Filter, ListView
+from app.core.tables import Column, Filter, ListView, list_query
 
 METADATA = MetaData()
 THING = Table(
@@ -238,3 +238,22 @@ def test_the_statement_a_page_sends_binds_every_value():
     assert "'a'" not in str(compiled)
     assert "'%x%'" not in str(compiled)
     assert len(compiled.params) >= 2
+
+
+@pytest.mark.rule("USE-05")
+def test_a_blank_value_in_an_address_is_kept_because_it_means_something():
+    assert list_query("/things?kind=&sort=cost", "/things") == {"kind": "", "sort": "cost"}
+
+
+@pytest.mark.parametrize("address", ["//[", "http://[", "http://[/things?kind=a", "//[/things", "http://a:b:c]/"])
+def test_a_malformed_address_is_ignored_and_never_an_error(address):
+    assert list_query(address, "/things") == {}
+
+
+@pytest.mark.parametrize("address", ["/other?kind=a", "", "https://attacker.example/x?kind=a"])
+def test_an_address_of_another_list_gives_nothing(address):
+    assert list_query(address, "/things") == {}
+
+
+def test_the_address_of_the_same_list_on_any_host_gives_its_query():
+    assert list_query("http://testserver/things?kind=a", "/things") == {"kind": "a"}

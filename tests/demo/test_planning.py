@@ -474,3 +474,31 @@ def test_the_planning_query_compiles_for_postgresql():
     sql = str(statement.compile(dialect=postgresql.dialect()))
     assert "ILIKE" in sql
     assert "NULLS LAST" in sql
+
+
+@pytest.mark.rule("USE-05")
+def test_a_save_on_all_states_stays_on_all_states(writable):
+    client, _url = writable
+    form = valid(status="closed", back="/planning?status=")
+    response = client.post("/planning/1", data=form, headers=SAME_SITE | HTMX)
+    assert 'id="edit-1"' in response.text
+    assert "Remove filter State" in response.text
+
+
+@pytest.mark.rule("USE-05")
+def test_without_javascript_all_states_survives_the_editor_and_the_save(writable):
+    client, _url = writable
+    editor = client.get("/planning/1/edit", params={"back": "/planning?status=&sort=hours"}).text
+    assert 'name="back" value="/planning?status=&amp;sort=hours"' in editor
+    response = client.post(
+        "/planning/1", data=valid(back="/planning?status="), headers=SAME_SITE, follow_redirects=False
+    )
+    assert response.headers["location"].startswith("/planning?status=")
+
+
+@pytest.mark.parametrize("back", ["//[", "http://["])
+def test_a_malformed_back_is_ignored(writable, back):
+    client, _url = writable
+    assert client.get("/planning/1/edit", params={"back": back}).status_code == 200
+    response = client.post("/planning/1", data=valid(back=back), headers=SAME_SITE, follow_redirects=False)
+    assert (response.status_code, response.headers["location"]) == (303, "/planning")

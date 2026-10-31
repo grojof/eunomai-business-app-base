@@ -194,3 +194,10 @@ def test_a_theme_that_follows_the_system_comes_back_too(open_filled):
     page.evaluate("dispatchEvent(new Event('beforeprint'))")
     page.evaluate("dispatchEvent(new Event('afterprint'))")
     assert page.evaluate("document.documentElement.dataset.theme") is None
+
+
+@pytest.mark.parametrize("referer", ["//[", "http://[", "http://[/equipment?status=stopped"])
+def test_a_malformed_referer_is_ignored(filled, referer):
+    response = filled.get("/equipment/1", headers={"Referer": referer})
+    assert response.status_code == 200
+    assert '<li><a href="/equipment">' in response.text

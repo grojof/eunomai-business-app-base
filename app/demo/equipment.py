@@ -2,7 +2,6 @@
 
 from collections.abc import Iterable, Mapping
 from typing import Any
-from urllib.parse import parse_qsl, urlsplit
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse, Response
@@ -11,7 +10,7 @@ from sqlalchemy import ColumnElement, case, select
 from app.core.database import DatabaseSession, exact_sum
 from app.core.excel import ExcelColumn, excel_response
 from app.core.i18n import N_, _
-from app.core.tables import Column, Filter, ListView, fragment_requested, render_list
+from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list
 from app.core.templating import render
 from app.demo.data import GENERATE, READY, rows_state
 from app.demo.models import EQUIPMENT_STATUSES, LOCATIONS, Equipment, WorkOrder
@@ -130,10 +129,7 @@ def equipment_export(request: Request, session: DatabaseSession) -> Response:
 
 def _list_address(request: Request) -> str:
     """Back to the list a person came from, with its filters. Only the query is kept, and it is read like any other."""
-    came_from = urlsplit(request.headers.get("referer", ""))
-    if came_from.path != "/equipment":
-        return "/equipment"
-    return equipment_view(dict(parse_qsl(came_from.query))).here
+    return equipment_view(list_query(request.headers.get("referer", ""), "/equipment")).here
 
 
 def equipment_detail(request: Request, equipment_id: int, session: DatabaseSession) -> Response:

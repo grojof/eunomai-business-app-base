@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Annotated, Any
-from urllib.parse import parse_qsl, urlsplit
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse, Response
@@ -20,7 +19,7 @@ from app.core.database import DatabaseSession, totals_by
 from app.core.formatters import format_decimal, format_month_and_year, parse_decimal
 from app.core.i18n import N_, _, ngettext
 from app.core.identity import Person, require_role
-from app.core.tables import Column, Filter, ListView, fragment_requested, render_list
+from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list
 from app.core.templating import render
 from app.demo.data import GENERATE, READY, rows_state
 from app.demo.equipment import LARGEST_ID, ORDER_LABELS, labels_in_order, ranked
@@ -193,8 +192,8 @@ def planning(request: Request, session: DatabaseSession) -> Response:
 
 
 def _view_of(back: str) -> ListView:
-    """The list a person came from. Only its query is kept, and it is read like any other."""
-    return planning_view(dict(parse_qsl(urlsplit(back).query)))
+    """The list a person came from."""
+    return planning_view(list_query(back, "/planning"))
 
 
 def _order_or_404(session: Session, order_id: int) -> WorkOrder:

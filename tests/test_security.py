@@ -54,6 +54,12 @@ def test_a_change_with_a_foreign_origin_is_refused(client, person):
 
 
 @pytest.mark.rule("SEC-07")
+@pytest.mark.parametrize("origin", ["http://[", "//[", "http://[::1"])
+def test_a_change_with_a_malformed_origin_is_refused_not_an_error(client, person, origin):
+    assert client.post("/preferences", data={"theme": "dark"}, headers=person | {"Origin": origin}).status_code == 403
+
+
+@pytest.mark.rule("SEC-07")
 def test_a_change_from_the_application_works(client, person):
     response = client.post(
         "/preferences",

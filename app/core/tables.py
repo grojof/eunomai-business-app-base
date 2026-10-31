@@ -12,7 +12,7 @@ import re
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Literal
-from urllib.parse import urlencode
+from urllib.parse import parse_qsl, urlencode, urlsplit
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
@@ -278,6 +278,20 @@ class ListView:
     @property
     def form_id(self) -> str:
         return f"{self.name}-filters"
+
+
+def list_query(address: str, path: str) -> dict[str, str]:
+    """The state in an address a person came from, for the list at `path`, to pass to `ListView.read`.
+
+    It is input like any other, so nothing but the query is kept, and what cannot be read counts as nothing: a bad value
+    is ignored, never an error. Blank values stay, because they mean something: `status=` is every state, and with the
+    value dropped the list would quietly go back to its default.
+    """
+    try:
+        parts = urlsplit(address)
+        return dict(parse_qsl(parts.query, keep_blank_values=True)) if parts.path == path else {}
+    except ValueError:
+        return {}
 
 
 def fragment_requested(request: Request) -> bool:

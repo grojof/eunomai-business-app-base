@@ -46,7 +46,12 @@ def _cross_site(request: Request) -> bool:
     if site is not None:
         return site not in ("same-origin", "none")
     origin = request.headers.get("origin")
-    return origin is not None and urlsplit(origin).netloc != request.headers.get("host")
+    if origin is None:
+        return False
+    try:
+        return urlsplit(origin).netloc != request.headers.get("host")
+    except ValueError:  # an origin no browser sends: refused, and not an error
+        return True
 
 
 def _is_public(path: str) -> bool:

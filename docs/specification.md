@@ -207,7 +207,7 @@ return render_list(request, view, "orders/list.html", "orders/results.html")
 | What | How |
 |---|---|
 | State | In the address: `q`, each filter, `sort`, `dir`, `size`, `page`. Defaults are left out, so one state has one address, and it can be bookmarked, reloaded and shared |
-| Input | Each value is checked against its list in `ListView.read`. A value outside it is ignored, so an old bookmark still opens. A sort name selects a `Column` by key, so nothing from the address reaches SQL as text, and the search term is a bound parameter with `%` and `_` escaped |
+| Input | Each value is checked against its list in `ListView.read`, and `list_query` reads the address a person came from, keeping blank values, which mean something, and ignoring what it cannot read. A value outside its list is ignored, so an old bookmark still opens. A sort name selects a `Column` by key, so nothing from the address reaches SQL as text, and the search term is a bound parameter with `%` and `_` escaped |
 | Order | A tiebreak on the primary key keeps rows from moving between pages. A column marked `nullable` puts empty values last on both databases, which by themselves disagree |
 | A label sorts as read | The database cannot sort what it does not hold. `case` gives each stored value its position, as the demo's locations do in the person's language and its states by what needs attention first. Such a column uses no index: about 10 milliseconds at 50,000 rows |
 | Without JavaScript | Headers and pages are links, and filters are a GET form with an Apply button |
