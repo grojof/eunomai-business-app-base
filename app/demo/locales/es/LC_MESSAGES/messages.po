@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 23:36+0100\n"
+"POT-Creation-Date: 2026-10-31 16:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -29,6 +29,12 @@ msgstr ""
 "%(version)s"
 
 #, python-format
+msgid "%(count)s piece of equipment"
+msgid_plural "%(count)s pieces of equipment"
+msgstr[0] "%(count)s equipo"
+msgstr[1] "%(count)s equipos"
+
+#, python-format
 msgid "%(num)d inspection is due"
 msgid_plural "%(num)d inspections are due"
 msgstr[0] "%(num)d inspección pendiente"
@@ -46,11 +52,20 @@ msgstr "Una tarjeta con título, lista para cualquier contenido."
 msgid "A fictional company that maintains its equipment."
 msgstr "Una empresa ficticia que mantiene sus equipos."
 
+msgid "Actions"
+msgstr "Acciones"
+
 msgid "Administration"
 msgstr "Administración"
 
 msgid "Air compressor"
 msgstr "Compresor de aire"
+
+msgid "All locations"
+msgstr "Todas las ubicaciones"
+
+msgid "All states"
+msgstr "Todos los estados"
 
 msgid ""
 "Available: official examples, shown as published and not audited here. "
@@ -79,11 +94,17 @@ msgstr "Clase"
 msgid "Class names"
 msgstr "Clases"
 
+msgid "Clear all"
+msgstr "Quitar todos"
+
 msgid "Closed"
 msgstr "Cerrado"
 
 msgid "Code"
 msgstr "Código"
+
+msgid "Code or name"
+msgstr "Código o nombre"
 
 msgid "Colour"
 msgstr "Color"
@@ -110,6 +131,9 @@ msgstr "Copiado"
 msgid "Copy"
 msgstr "Copiar"
 
+msgid "Cost"
+msgstr "Coste"
+
 msgid "Cost to date"
 msgstr "Coste hasta la fecha"
 
@@ -134,8 +158,14 @@ msgstr "Vence pronto"
 msgid "Equipment"
 msgstr "Equipos"
 
+msgid "Equipment list"
+msgstr "Lista de equipos"
+
 msgid "Equipment, where it is, its next inspection and its state"
 msgstr "Equipos, dónde están, su próxima inspección y su estado"
+
+msgid "Equipment, where it is, its state, its next inspection and its cost"
+msgstr "Equipos, dónde están, su estado, su próxima inspección y su coste"
 
 msgid ""
 "Every component on offer, with an honest status, and every official "
@@ -143,6 +173,13 @@ msgid ""
 msgstr ""
 "Todos los componentes disponibles, con un estado honesto, y todos los "
 "ejemplos oficiales de cada uno."
+
+msgid ""
+"Every machine the company maintains: where it is, its state and when it "
+"is next inspected."
+msgstr ""
+"Todas las máquinas que mantiene la empresa: dónde están, en qué estado y "
+"cuándo toca inspeccionarlas."
 
 #, python-format
 msgid "Exactly %(value)s"
@@ -165,6 +202,9 @@ msgstr "Carretilla elevadora"
 
 msgid "Gallery"
 msgstr "Galería"
+
+msgid "Generated rows"
+msgstr "Filas generadas"
 
 msgid "Hours worked"
 msgstr "Horas trabajadas"
@@ -200,6 +240,9 @@ msgstr "Plan de mantenimiento"
 msgid "Modifier"
 msgstr "Modificador"
 
+msgid "Name"
+msgstr "Nombre"
+
 msgid "Next"
 msgstr "Siguiente"
 
@@ -208,6 +251,9 @@ msgstr "Próxima inspección"
 
 msgid "No component matches"
 msgstr "Ningún componente coincide"
+
+msgid "No equipment matches"
+msgstr "Ningún equipo coincide"
 
 msgid "Nothing overdue"
 msgstr "Nada vencido"
@@ -327,6 +373,16 @@ msgstr "Estilo"
 msgid "Summary"
 msgstr "Resumen"
 
+msgid ""
+"The database does not answer. Check APP_DATABASE_URL, and that its server"
+" is running."
+msgstr ""
+"La base de datos no responde. Revisa APP_DATABASE_URL y que su servidor "
+"esté en marcha."
+
+msgid "The demo's rows are not here yet"
+msgstr "Las filas de la demo aún no están aquí"
+
 msgid "The work order could not be saved. Try again."
 msgstr "La orden de trabajo no se ha podido guardar. Vuelve a intentarlo."
 
@@ -339,8 +395,18 @@ msgstr "A este equipo le toca inspección."
 msgid "This month"
 msgstr "Este mes"
 
+msgid ""
+"This screen reads 50,000 generated rows. Run this command once, then "
+"reload the page. Nothing else in the demo needs it."
+msgstr ""
+"Esta pantalla lee 50.000 filas generadas. Ejecuta este comando una vez y "
+"recarga la página. El resto de la demo no lo necesita."
+
 msgid "Try another word, or look through the categories."
 msgstr "Prueba con otra palabra, o mira las categorías."
+
+msgid "Try fewer filters, or another word."
+msgstr "Prueba con menos filtros o con otra palabra."
 
 msgid "Type"
 msgstr "Tipo"
@@ -348,6 +414,13 @@ msgstr "Tipo"
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualizado: %(moment)s"
+
+msgid "View"
+msgstr "Ver"
+
+#, python-format
+msgid "View %(code)s"
+msgstr "Ver %(code)s"
 
 msgid "Warehouse"
 msgstr "Almacén"
@@ -358,8 +431,15 @@ msgstr "Qué hace"
 msgid "Work order for the cooling tower"
 msgstr "Orden de trabajo de la torre de refrigeración"
 
+msgid "Work orders"
+msgstr "Órdenes de trabajo"
+
 msgid "Work orders appear here when their date passes."
 msgstr "Las órdenes de trabajo aparecen aquí cuando pasa su fecha."
+
+#, python-format
+msgid "Work orders of %(code)s"
+msgstr "Órdenes de trabajo de %(code)s"
 
 msgid "Workshop"
 msgstr "Taller"

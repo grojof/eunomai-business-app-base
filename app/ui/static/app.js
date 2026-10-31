@@ -1,5 +1,6 @@
 // After htmx replaces content, keep keyboard and screen-reader users in the right place.
-// New content marks where focus goes with data-focus, and what to announce with data-announce.
+// New content marks where focus goes with data-focus, and what to announce with data-announce. htmx puts focus back on
+// an element that kept its id; if none did, as when the Next link is gone on the last page, data-focus-fallback takes it.
 document.addEventListener("htmx:afterSettle", (event) => {
   const content = event.detail.target;
   const announcement = content.querySelector("[data-announce]");
@@ -7,6 +8,9 @@ document.addEventListener("htmx:afterSettle", (event) => {
     announce(announcement.dataset.announce);
   }
   content.querySelector("[data-focus]")?.focus();
+  if (document.activeElement === document.body) {
+    content.querySelector("[data-focus-fallback]")?.focus();
+  }
   applyStyles(content);
 });
 
@@ -122,9 +126,13 @@ document.addEventListener("click", async (event) => {
   }, 2000);
 });
 
-// A control that applies at once: its form goes to the server, which saves the choice.
+// A control that applies at once: its form goes to the server. `form` also finds a control placed outside the form with
+// the form attribute. A search box sends itself while typing, so leaving it must not send it again.
 document.addEventListener("change", (event) => {
-  event.target.closest("form[data-autosubmit]")?.requestSubmit();
+  const form = event.target.form ?? event.target.closest("form");
+  if (form?.matches("[data-autosubmit]") && event.target.type !== "search") {
+    form.requestSubmit();
+  }
 });
 
 // The page reloads after each preference, so focus comes back to the control that was used.

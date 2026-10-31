@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 23:36+0100\n"
+"POT-Creation-Date: 2026-10-31 16:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -29,6 +29,12 @@ msgstr ""
 "%(version)s"
 
 #, python-format
+msgid "%(count)s piece of equipment"
+msgid_plural "%(count)s pieces of equipment"
+msgstr[0] "%(count)s equip"
+msgstr[1] "%(count)s equips"
+
+#, python-format
 msgid "%(num)d inspection is due"
 msgid_plural "%(num)d inspections are due"
 msgstr[0] "%(num)d inspecció pendent"
@@ -46,11 +52,20 @@ msgstr "Una targeta amb títol, a punt per a qualsevol contingut."
 msgid "A fictional company that maintains its equipment."
 msgstr "Una empresa fictícia que manté els seus equips."
 
+msgid "Actions"
+msgstr "Accions"
+
 msgid "Administration"
 msgstr "Administració"
 
 msgid "Air compressor"
 msgstr "Compressor d'aire"
+
+msgid "All locations"
+msgstr "Totes les ubicacions"
+
+msgid "All states"
+msgstr "Tots els estats"
 
 msgid ""
 "Available: official examples, shown as published and not audited here. "
@@ -79,11 +94,17 @@ msgstr "Classe"
 msgid "Class names"
 msgstr "Classes"
 
+msgid "Clear all"
+msgstr "Treu-los tots"
+
 msgid "Closed"
 msgstr "Tancat"
 
 msgid "Code"
 msgstr "Codi"
+
+msgid "Code or name"
+msgstr "Codi o nom"
 
 msgid "Colour"
 msgstr "Color"
@@ -110,6 +131,9 @@ msgstr "Copiat"
 msgid "Copy"
 msgstr "Copia"
 
+msgid "Cost"
+msgstr "Cost"
+
 msgid "Cost to date"
 msgstr "Cost fins avui"
 
@@ -134,8 +158,14 @@ msgstr "Venç aviat"
 msgid "Equipment"
 msgstr "Equips"
 
+msgid "Equipment list"
+msgstr "Llista d'equips"
+
 msgid "Equipment, where it is, its next inspection and its state"
 msgstr "Equips, on són, la seva pròxima inspecció i el seu estat"
+
+msgid "Equipment, where it is, its state, its next inspection and its cost"
+msgstr "Equips, on són, el seu estat, la seva propera inspecció i el seu cost"
 
 msgid ""
 "Every component on offer, with an honest status, and every official "
@@ -143,6 +173,13 @@ msgid ""
 msgstr ""
 "Tots els components disponibles, amb un estat honest, i tots els exemples"
 " oficials de cadascun."
+
+msgid ""
+"Every machine the company maintains: where it is, its state and when it "
+"is next inspected."
+msgstr ""
+"Totes les màquines que manté l'empresa: on són, en quin estat i quan toca"
+" inspeccionar-les."
 
 #, python-format
 msgid "Exactly %(value)s"
@@ -166,6 +203,9 @@ msgstr "Carretó elevador"
 
 msgid "Gallery"
 msgstr "Galeria"
+
+msgid "Generated rows"
+msgstr "Files generades"
 
 msgid "Hours worked"
 msgstr "Hores treballades"
@@ -201,6 +241,9 @@ msgstr "Pla de manteniment"
 msgid "Modifier"
 msgstr "Modificador"
 
+msgid "Name"
+msgstr "Nom"
+
 msgid "Next"
 msgstr "Següent"
 
@@ -209,6 +252,9 @@ msgstr "Propera inspecció"
 
 msgid "No component matches"
 msgstr "Cap component no coincideix"
+
+msgid "No equipment matches"
+msgstr "Cap equip no coincideix"
 
 msgid "Nothing overdue"
 msgstr "Res vençut"
@@ -328,6 +374,16 @@ msgstr "Estil"
 msgid "Summary"
 msgstr "Resum"
 
+msgid ""
+"The database does not answer. Check APP_DATABASE_URL, and that its server"
+" is running."
+msgstr ""
+"La base de dades no respon. Revisa APP_DATABASE_URL i que el seu servidor"
+" estigui en marxa."
+
+msgid "The demo's rows are not here yet"
+msgstr "Les files de la demo encara no són aquí"
+
 msgid "The work order could not be saved. Try again."
 msgstr "L'ordre de treball no s'ha pogut desar. Torna-ho a provar."
 
@@ -340,8 +396,18 @@ msgstr "Aquest equip ha de passar la inspecció."
 msgid "This month"
 msgstr "Aquest mes"
 
+msgid ""
+"This screen reads 50,000 generated rows. Run this command once, then "
+"reload the page. Nothing else in the demo needs it."
+msgstr ""
+"Aquesta pantalla llegeix 50.000 files generades. Executa aquesta ordre "
+"una vegada i recarrega la pàgina. La resta de la demo no ho necessita."
+
 msgid "Try another word, or look through the categories."
 msgstr "Prova amb una altra paraula, o mira les categories."
+
+msgid "Try fewer filters, or another word."
+msgstr "Prova amb menys filtres o amb una altra paraula."
 
 msgid "Type"
 msgstr "Tipus"
@@ -349,6 +415,13 @@ msgstr "Tipus"
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualitzat: %(moment)s"
+
+msgid "View"
+msgstr "Mostra"
+
+#, python-format
+msgid "View %(code)s"
+msgstr "Mostra %(code)s"
 
 msgid "Warehouse"
 msgstr "Magatzem"
@@ -359,8 +432,15 @@ msgstr "Què fa"
 msgid "Work order for the cooling tower"
 msgstr "Ordre de treball de la torre de refrigeració"
 
+msgid "Work orders"
+msgstr "Ordres de treball"
+
 msgid "Work orders appear here when their date passes."
 msgstr "Les ordres de treball apareixen aquí quan passa la seva data."
+
+#, python-format
+msgid "Work orders of %(code)s"
+msgstr "Ordres de treball de %(code)s"
 
 msgid "Workshop"
 msgstr "Taller"

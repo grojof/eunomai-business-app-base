@@ -65,7 +65,12 @@ class _Texts(HTMLParser):
 def untranslated(html: str, allowed: tuple[str, ...]) -> list[str]:
     """Texts a person would see that did not go through translation: in the pseudo-language, all others are marked."""
     parser = _Texts()
-    parser.feed(re.sub(r"⟦.*?⟧", "", without_official_examples(html), flags=re.S))  # marks may hold <code>
+    html = without_official_examples(html)
+    while "⟦" in html:  # innermost first, because a translated text can hold another. Marks may hold <code>
+        html, removed = re.subn(r"⟦[^⟦⟧]*⟧", "", html, flags=re.S)
+        if not removed:
+            break
+    parser.feed(html)
     found = []
     for rest in parser.texts:
         text = rest

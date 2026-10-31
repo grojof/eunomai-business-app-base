@@ -7,7 +7,7 @@ person or real system: it stays neutral so anyone can clone it.
 
 | Folder | Contents | Rule |
 |---|---|---|
-| `app/core/` | Identity, roles, settings, the database and its column types, languages, formatters, errors, health | Never imports from `app/demo/` |
+| `app/core/` | Identity, roles, settings, the database and its column types, lists on the server, languages, formatters, errors, health | Never imports from `app/demo/` |
 | `app/ui/` | Components as macros, the settings menu, the command palette, the stylesheet's source, the few JavaScript files | Screens call macros; daisyUI classes stay here where possible |
 | `app/brand/` | The theme, logos | The only folder an organization must change |
 | `app/demo/` | Demo screens, models, generated data, the gallery and their translations | Deleting it leaves a working application |

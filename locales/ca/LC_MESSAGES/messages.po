@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 23:36+0100\n"
+"POT-Creation-Date: 2026-10-31 16:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -19,6 +19,14 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid ""
+"%(count)s. Showing %(first)s to %(last)s, sorted by %(column)s, "
+"%(direction)s."
+msgstr ""
+"%(count)s. Es mostren del %(first)s al %(last)s, ordenats per %(column)s,"
+" %(direction)s."
 
 msgid "Actions"
 msgstr "Accions"
@@ -54,11 +62,20 @@ msgstr ""
 msgid "Check the address, or go back to the start."
 msgstr "Comprova l'adreça o torna a l'inici."
 
+msgid "Clear all"
+msgstr "Treu-los tots"
+
 msgid "Close"
 msgstr "Tanca"
 
 msgid "Compact"
 msgstr "Compacta"
+
+msgid "Copied"
+msgstr "Copiat"
+
+msgid "Copy"
+msgstr "Copia"
 
 msgid "Dark"
 msgstr "Fosc"
@@ -92,6 +109,9 @@ msgstr "Error"
 
 msgid "Feedback"
 msgstr "Avisos"
+
+msgid "Filters"
+msgstr "Filtres"
 
 msgid "Fixed header"
 msgstr "Capçalera fixa"
@@ -146,6 +166,9 @@ msgstr "Disposició, tema, idioma i com es veuen els seus controls."
 msgid "Light"
 msgstr "Clar"
 
+msgid "Links in the column headers sort the table."
+msgstr "Els enllaços de les capçaleres de columna ordenen la taula."
+
 msgid "Main"
 msgstr "Principal"
 
@@ -161,11 +184,17 @@ msgstr "Es mou sol i només un punter el pot aturar: WCAG 2.2.2."
 msgid "Navigation"
 msgstr "Navegació"
 
+msgid "Next page"
+msgstr "Pàgina següent"
+
 msgid "No"
 msgstr "No"
 
 msgid "No results"
 msgstr "Sense resultats"
+
+msgid "No results."
+msgstr "Sense resultats."
 
 msgid "Normal"
 msgstr "Normal"
@@ -185,6 +214,14 @@ msgstr ""
 msgid "Open menu"
 msgstr "Obre el menú"
 
+#, python-format
+msgid "Page %(page)s"
+msgstr "Pàgina %(page)s"
+
+#, python-format
+msgid "Page %(page)s of %(pages)s"
+msgstr "Pàgina %(page)s de %(pages)s"
+
 msgid "Page not found"
 msgstr "No s'ha trobat la pàgina"
 
@@ -194,8 +231,15 @@ msgstr "Pàgines"
 msgid "Preferences"
 msgstr "Preferències"
 
+msgid "Previous page"
+msgstr "Pàgina anterior"
+
 msgid "Radio"
 msgstr "Opció"
+
+#, python-format
+msgid "Remove filter %(name)s: %(value)s"
+msgstr "Treu el filtre %(name)s: %(value)s"
 
 msgid "Results"
 msgstr "Resultats"
@@ -203,6 +247,9 @@ msgstr "Resultats"
 #, python-format
 msgid "Results: %(count)s"
 msgstr "Resultats: %(count)s"
+
+msgid "Rows per page"
+msgstr "Files per pàgina"
 
 msgid "Search"
 msgstr "Cerca"
@@ -278,6 +325,12 @@ msgstr "Sí"
 
 msgid "You do not have permission"
 msgstr "No tens permís"
+
+msgid "ascending"
+msgstr "ascendent"
+
+msgid "descending"
+msgstr "descendent"
 
 msgid "to close"
 msgstr "per tancar"

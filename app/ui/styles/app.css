@@ -34,6 +34,12 @@
   max-height: min(40rem, calc(100dvh - 1rem));
 }
 
+/* A table's box takes the keyboard so it can scroll, and shows it inside: the box touches the edge of its panel */
+.table-scroll:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
 /* A swap hides its box, so its label shows the focus */
 .swap:has(input:focus-visible) {
   outline: 2px solid var(--color-primary);
@@ -96,6 +102,55 @@
   /* Words break between letters only where nothing else fits: a table can scroll instead */
   .table {
     overflow-wrap: normal;
+  }
+
+  /* Tall enough for a useful page of rows, and short enough that its header stays on screen */
+  .table-scroll {
+    max-block-size: max(24rem, calc(100dvh - 21rem));
+    overflow: auto;
+  }
+
+  /* daisyUI's table-pin-cols pins every th, which would pile up the header row: this pins the first column only */
+  .table-pin-first tr > :first-child {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 1;
+    background-color: var(--color-base-100);
+  }
+
+  .table-pin-first thead tr > :first-child {
+    z-index: 2;
+  }
+
+  .sort-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-block-size: 1.5rem;
+  }
+
+  .sort-link:hover {
+    text-decoration: underline;
+  }
+
+  [aria-sort] .sort-link {
+    color: var(--color-base-content);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* The results fade while the next ones are on their way */
+  [data-results] {
+    transition: opacity 150ms;
+  }
+
+  [data-results].htmx-request {
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-results] {
+      transition: none;
+    }
   }
 
   #palette-results [role="option"][aria-selected="true"] {

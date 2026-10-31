@@ -23,7 +23,7 @@ Success means three things, each testable:
 
 ```text
 app/
-  core/      identity, roles, settings, database, exact column types, languages, formatters, errors, health
+  core/      identity, roles, settings, database, exact column types, server lists, languages, formatters, errors, health
   ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, vendored htmx
   brand/     theme.css, logo.svg
   demo/      screens, their fixed values, models and generated data, the gallery with its generated examples/, translations
@@ -177,7 +177,7 @@ exact column is for a person to catch in review.
 
 | What | PostgreSQL | SQLite |
 |---|---|---|
-| Ordering an exact column | Native, and can use an index | A Python call per comparison: about 0.7 seconds to sort 50,000 rows |
+| Ordering an exact column | Native, and can use an index | A Python call per comparison. With an index on the column a page of 50,000 rows takes under a millisecond, because the comparisons were paid when the index was written. Without one, about 0.65 seconds |
 | Reading the file with another tool | Not applicable | Ordering an exact column stops with `no such collation sequence`, and foreign keys may be off |
 | Sums and arithmetic in SQL | Exact | Refused, as above |
 | `String(40)` | Enforced | Not enforced: longer text is stored |
@@ -190,6 +190,32 @@ exact column is for a person to catch in review.
 
 The tests of the database layer run on both, so a difference that breaks them shows. Those that stay are the table above:
 a query that depends on one passes on one database and not the other.
+
+### Lists on the server
+
+`app/core/tables.py` is what a long list needs, and it stays when the demo goes. A route describes its columns and filters
+in a `ListView`, which reads the address, and the macros `filter_bar`, `list_summary`, `server_table` and `pagination`
+draw it:
+
+```python
+view = ListView.read("orders", "/orders", request.query_params, columns, Order.id, "opened", filters, searched, label)
+view.load(session, select(Order))
+return render_list(request, view, "orders/list.html", "orders/results.html")
+```
+
+| What | How |
+|---|---|
+| State | In the address: `q`, each filter, `sort`, `dir`, `size`, `page`. Defaults are left out, so one state has one address, and it can be bookmarked, reloaded and shared |
+| Input | Each value is checked against its list in `ListView.read`. A value outside it is ignored, so an old bookmark still opens. A sort name selects a `Column` by key, so nothing from the address reaches SQL as text, and the search term is a bound parameter with `%` and `_` escaped |
+| Order | A tiebreak on the primary key keeps rows from moving between pages. A column marked `nullable` puts empty values last on both databases, which by themselves disagree |
+| A label sorts as read | The database cannot sort what it does not hold. `case` gives each stored value its position, as the demo's locations do in the person's language and its states by what needs attention first. Such a column uses no index: about 10 milliseconds at 50,000 rows |
+| Without JavaScript | Headers and pages are links, and filters are a GET form with an Apply button |
+| With htmx | The same address answers with its results alone. `Vary: HX-Request` keeps the two apart, and `HX-Push-Url` gives the address its one form. History is not kept in the browser: going back reloads the address, so a form can never show an older state than the table, and no row is left in `localStorage` |
+| Focus | htmx puts it back on an element that kept its id, as a sort header does. If none did, as the Next link on the last page, `data-focus-fallback` takes it |
+| Announcement | `data-announce` on the summary goes to the announcement region after each change: rows, order and direction |
+
+Measured on one laptop, on SQLite with 50,000 rows and the demo's indexes: the first page takes 0.6 milliseconds whether
+it sorts by code or by cost, the last page 4, a search 27. A whole request, with its page drawn, takes 10 to 30.
 
 ## Identity
 
@@ -259,8 +285,9 @@ with daisyUI's translated names and descriptions, and its class names as keyword
 
 A component is one Jinja macro or one piece of the shell, using only the brand's colours. Screens call macros, not
 daisyUI classes, so the look can change in one place. Each macro appears on the page of its component in the
-[gallery](#gallery), and has tests. The macros today are `icon`, `page_heading`, `message`, `button`, `card`, `stats`,
-`stat`, `badge`, `progress`, `steps`, `table` and `empty_state`.
+[gallery](#gallery), and has tests. The macros today are `icon`, `page_heading`, `message`, `button`, `link_button`, `card`,
+`panel`, `stats`, `stat`, `badge`, `status_label`, `progress`, `steps`, `table`, `empty_state`, `command`, `select_field`,
+`filter_bar`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions` and `pagination`.
 
 | Group | Components | Since |
 |---|---|---|
@@ -287,18 +314,22 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Dashboard | Stats, a table, badges, progress, steps, an empty state, formats, content replaced with focus and an announcement. Charts with their tables arrive in milestone 2 | Milestone 1 |
 | Gallery | [Every component on offer](#gallery), by category, with its status, its macro and every official example | Milestone 1 |
 | Administration | Visible only to one role, proving permissions | Milestone 1 |
-| Equipment list | Server table with 50,000 rows, filters, sorting, Excel export | Milestone 2 |
+| Equipment list, `/equipment` | Server table with 50,000 rows, search, filters, sorting, paging, row actions, its empty and no-results states | Milestone 2 |
 | Equipment detail | Description list, tabs, history | Milestone 2 |
 | Planning | Rich table: grouping and editing, or its accessible replacement | Milestone 2 |
 | Work order form | All form fields, validation, decimals, dates, file upload | Milestone 3 |
 | Import | Long task with progress, its result and its errors | Milestone 4 |
 
-The screens above show values fixed in the code, so a first run needs no database: nothing connects until a query does.
 The demo's tables, `equipment` and `work_order`, hold what `app/demo/generate.py` makes: 50,000 pieces of equipment and
 10,000 work orders, from a seed, with no third-party package. Each row comes from a hash of the seed and its position, so
-the same seed gives the same rows on any computer and Python version. No screen reads these tables yet: the equipment
-list comes next. Generating refuses to run outside development, because it replaces what those tables hold. One
-fictional role exists, `admin`.
+the same seed gives the same rows on any computer and Python version. Generating refuses to run outside development,
+because it replaces what those tables hold. One fictional role exists, `admin`.
+
+A first run stays `cp .env.example .env` and one command, with no database to prepare. Generating is one more command,
+in seconds, and it can run while the server does. A screen that reads the rows asks first, in `app/demo/data.py`: if the
+SQLite file is not there it does not connect, so showing a page never creates one. Without the rows, or with migrations
+behind the code, it shows the command to run, and with a database that does not answer it says so. Every other
+screen keeps working.
 
 ## Gallery
 

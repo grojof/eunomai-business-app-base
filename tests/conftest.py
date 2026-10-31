@@ -1,9 +1,11 @@
 import os
 import socket
+import tempfile
 import threading
 import time
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
@@ -19,6 +21,8 @@ from app.main import create_app
 PERSON = {"X-Remote-User": "demo.person", "X-Remote-Name": "Demo Person", "X-Remote-Groups": "staff|admins"}
 TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "")
 """A PostgreSQL to run the database tests on as well. Nothing in it is touched: each test gets a schema of its own."""
+NO_DATABASE = (Path(tempfile.gettempdir()) / "business-app-base-tests" / "nothing-here.db").as_posix()
+"""Where a test looks unless it asks for a database: a person's own `.data/` must not change what tests see."""
 
 
 def build_settings(**overrides: Any) -> Settings:
@@ -26,17 +30,21 @@ def build_settings(**overrides: Any) -> Settings:
         "environment": "development",
         "trusted_proxies": ["testclient"],
         "role_groups": {"admin": ["admins"]},
+        "database_url": f"sqlite:///{NO_DATABASE}",
     }
     if overrides.get("environment") == "production":
         values["database_url"] = "postgresql+psycopg://application@localhost/application"  # nothing connects to it
     return Settings(**(values | overrides), _env_file=None)  # type: ignore[call-arg]
 
 
-@pytest.fixture(params=["sqlite", "postgresql"] if TEST_DATABASE_URL else ["sqlite"])
-def database_url(request: pytest.FixtureRequest, tmp_path: Any) -> Iterator[str]:
-    """An empty database on each engine available. The folder of the SQLite file does not exist yet, on purpose."""
-    if request.param == "sqlite":
-        yield f"sqlite:///{(tmp_path / 'database' / 'test.db').as_posix()}"
+ENGINES = ["sqlite", "postgresql"] if TEST_DATABASE_URL else ["sqlite"]
+
+
+@contextmanager
+def empty_database(engine_name: str, folder: Path) -> Iterator[str]:
+    """An empty database on one engine. The folder of the SQLite file does not exist yet, on purpose."""
+    if engine_name == "sqlite":
+        yield f"sqlite:///{(folder / 'database' / 'test.db').as_posix()}"
         return
     schema = f"test_{uuid4().hex}"
     administrator = create_engine(TEST_DATABASE_URL)
@@ -47,6 +55,12 @@ def database_url(request: pytest.FixtureRequest, tmp_path: Any) -> Iterator[str]
     with administrator.begin() as connection:
         connection.exec_driver_sql(f"DROP SCHEMA {schema} CASCADE")
     administrator.dispose()
+
+
+@pytest.fixture(params=ENGINES)
+def database_url(request: pytest.FixtureRequest, tmp_path: Path) -> Iterator[str]:
+    with empty_database(request.param, tmp_path) as url:
+        yield url
 
 
 @pytest.fixture
@@ -96,8 +110,8 @@ def browser() -> Iterator[Any]:
         chrome.close()
 
 
-@pytest.fixture
-def open_page(browser: Any, base_url: str) -> Iterator[Callable[..., Any]]:
+@contextmanager
+def page_opener(browser: Any, base_url: str) -> Iterator[Callable[..., Any]]:
     contexts = []
 
     def opener(
@@ -107,8 +121,11 @@ def open_page(browser: Any, base_url: str) -> Iterator[Callable[..., Any]]:
         width: int = 1280,
         bypass_csp: bool = False,
         layout: dict[str, str] | None = None,
+        javascript: bool = True,
     ) -> Any:
-        context = browser.new_context(viewport={"width": width, "height": 800}, bypass_csp=bypass_csp)
+        context = browser.new_context(
+            viewport={"width": width, "height": 800}, bypass_csp=bypass_csp, java_script_enabled=javascript
+        )
         contexts.append(context)
         context.add_cookies(
             [
@@ -124,3 +141,9 @@ def open_page(browser: Any, base_url: str) -> Iterator[Callable[..., Any]]:
     yield opener
     for context in contexts:
         context.close()
+
+
+@pytest.fixture
+def open_page(browser: Any, base_url: str) -> Iterator[Callable[..., Any]]:
+    with page_opener(browser, base_url) as opener:
+        yield opener

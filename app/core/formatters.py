@@ -2,7 +2,7 @@
 
 import json
 from datetime import date, datetime
-from decimal import Decimal, localcontext
+from decimal import ROUND_HALF_UP, Decimal, localcontext
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -36,14 +36,26 @@ def _groups(value: Decimal, language: str) -> bool:
     return len(str(abs(int(value)))) >= 3 + _minimum_grouping(language.replace("_", "-"))
 
 
-def format_decimal(value: Decimal | int) -> str:
-    language = current_language()
+def rounded(value: Decimal | int, places: int = 2) -> Decimal:
+    """The application's rule for a figure shown to fewer decimals than it has: half up, as a person expects."""
     exact = Decimal(value)
+    with localcontext(prec=len(format(exact, "f")) + places + _MARGIN):
+        return exact.quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
+
+
+def format_decimal(value: Decimal | int, places: int | None = None) -> str:
+    """Every decimal the value has, or exactly `places` of them, as a column of money needs."""
+    language = current_language()
+    exact = Decimal(value) if places is None else rounded(value, places)
     # Sized to the value: Python's default of 28 digits, or any fixed limit, cuts longer ones without an error.
     # The margin covers the decimals Babel reserves even for a whole number.
     with localcontext(prec=len(format(exact, "f")) + _MARGIN):
         return babel_decimal(
-            exact, locale=language, decimal_quantization=False, group_separator=_groups(exact, language)
+            exact,
+            format=None if places is None else "#,##0." + "0" * places,
+            locale=language,
+            decimal_quantization=False,
+            group_separator=_groups(exact, language),
         )
 
 

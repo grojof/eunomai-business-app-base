@@ -1,0 +1,25 @@
+{#- What changes when the list changes: a whole page includes it, and htmx asks for it alone. -#}
+{% from "ui/macros.html" import filter_bar, list_summary, server_table, row_header, cell, row_actions, status_label, pagination, empty_state, link_button %}
+{% if refill_filters %}{{ filter_bar(view, refill=true) }}{% endif %}
+{% call list_summary(view, ngettext("%(count)s piece of equipment", "%(count)s pieces of equipment", view.total, count=view.total|decimal)) %}{% endcall %}
+{% if view.rows %}
+{% call(row) server_table(view, _("Equipment, where it is, its state, its next inspection and its cost"), _("Actions")) %}
+{% set label, kind = statuses[row.status] %}
+{{ row_header(row.code, "/equipment/" ~ row.id) }}
+{{ cell(row.name) }}
+{{ cell(_(row.location), wide_only=true) }}
+{{ cell(status_label(_(label), kind)) }}
+{{ cell(row.next_inspection|date, wide_only=true) }}
+{{ cell(row.cost|decimal(2), numeric=true, wide_only=true) }}
+{{ row_actions([
+  (_("View"), _("View %(code)s", code=row.code), "/equipment/" ~ row.id, "eye"),
+  (_("Work orders"), _("Work orders of %(code)s", code=row.code), "/equipment/" ~ row.id ~ "?tab=orders", "history"),
+]) }}
+{% endcall %}
+{{ pagination(view) }}
+{% else %}
+<input type="hidden" name="size" value="{{ view.size }}" form="{{ view.form_id }}">
+{% call empty_state(_("No equipment matches"), _("Try fewer filters, or another word."), "search", 2) %}
+{{ link_button(_("Clear all"), view.clear_link, small=true) }}
+{% endcall %}
+{% endif %}

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-30 23:36+0100\n"
+"POT-Creation-Date: 2026-10-31 16:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -19,6 +19,14 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid ""
+"%(count)s. Showing %(first)s to %(last)s, sorted by %(column)s, "
+"%(direction)s."
+msgstr ""
+"%(count)s. Se muestran del %(first)s al %(last)s, ordenados por "
+"%(column)s, %(direction)s."
 
 msgid "Actions"
 msgstr "Acciones"
@@ -54,11 +62,20 @@ msgstr ""
 msgid "Check the address, or go back to the start."
 msgstr "Comprueba la dirección o vuelve al inicio."
 
+msgid "Clear all"
+msgstr "Quitar todos"
+
 msgid "Close"
 msgstr "Cerrar"
 
 msgid "Compact"
 msgstr "Compacta"
+
+msgid "Copied"
+msgstr "Copiado"
+
+msgid "Copy"
+msgstr "Copiar"
 
 msgid "Dark"
 msgstr "Oscuro"
@@ -92,6 +109,9 @@ msgstr "Error"
 
 msgid "Feedback"
 msgstr "Avisos"
+
+msgid "Filters"
+msgstr "Filtros"
 
 msgid "Fixed header"
 msgstr "Cabecera fija"
@@ -146,6 +166,9 @@ msgstr "Disposición, tema, idioma y cómo se ven sus controles."
 msgid "Light"
 msgstr "Claro"
 
+msgid "Links in the column headers sort the table."
+msgstr "Los enlaces de las cabeceras de columna ordenan la tabla."
+
 msgid "Main"
 msgstr "Principal"
 
@@ -161,11 +184,17 @@ msgstr "Se mueve solo y solo un puntero puede pausarlo: WCAG 2.2.2."
 msgid "Navigation"
 msgstr "Navegación"
 
+msgid "Next page"
+msgstr "Página siguiente"
+
 msgid "No"
 msgstr "No"
 
 msgid "No results"
 msgstr "Sin resultados"
+
+msgid "No results."
+msgstr "Sin resultados."
 
 msgid "Normal"
 msgstr "Normal"
@@ -185,6 +214,14 @@ msgstr ""
 msgid "Open menu"
 msgstr "Abrir el menú"
 
+#, python-format
+msgid "Page %(page)s"
+msgstr "Página %(page)s"
+
+#, python-format
+msgid "Page %(page)s of %(pages)s"
+msgstr "Página %(page)s de %(pages)s"
+
 msgid "Page not found"
 msgstr "Página no encontrada"
 
@@ -194,8 +231,15 @@ msgstr "Páginas"
 msgid "Preferences"
 msgstr "Preferencias"
 
+msgid "Previous page"
+msgstr "Página anterior"
+
 msgid "Radio"
 msgstr "Opción"
+
+#, python-format
+msgid "Remove filter %(name)s: %(value)s"
+msgstr "Quitar el filtro %(name)s: %(value)s"
 
 msgid "Results"
 msgstr "Resultados"
@@ -203,6 +247,9 @@ msgstr "Resultados"
 #, python-format
 msgid "Results: %(count)s"
 msgstr "Resultados: %(count)s"
+
+msgid "Rows per page"
+msgstr "Filas por página"
 
 msgid "Search"
 msgstr "Buscar"
@@ -276,6 +323,12 @@ msgstr "Sí"
 
 msgid "You do not have permission"
 msgstr "No tienes permiso"
+
+msgid "ascending"
+msgstr "ascendente"
+
+msgid "descending"
+msgstr "descendente"
 
 msgid "to close"
 msgstr "para cerrar"

@@ -38,10 +38,11 @@ uv run --frozen uvicorn app.main:app --reload --no-proxy-headers
 Keep `--no-proxy-headers`: without it, Uvicorn replaces the proxy's address with the one in `X-Forwarded-For`, the
 address stops being trusted, and everyone gets 401.
 
-No database is needed for that: the demo's screens read no table yet. Without `.env` the application refuses to start,
-because production is the default and production never runs on SQLite.
+No database is needed for that. Without `.env` the application refuses to start, because production is the default and
+production never runs on SQLite.
 
-To fill the demo's tables, in a SQLite file under `.data/`, with 50,000 rows:
+The screens with 50,000 rows read generated data. They say so, and show this command, which takes seconds, makes a SQLite
+file under `.data/` and can run while the server does. Then reload the page:
 
 ```bash
 uv run --frozen python -m app.demo.generate

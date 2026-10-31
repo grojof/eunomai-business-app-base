@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading, panel, filter_bar %}
+{% block title %}{{ _("Equipment") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("Equipment"), _("Every machine the company maintains: where it is, its state and when it is next inspected.")) }}
+{% if state == "ready" %}
+{% call panel(_("Equipment list")) %}
+{{ filter_bar(view) }}
+<div id="equipment-results" data-results>
+  {% include "demo/equipment/results.html" %}
+</div>
+{% endcall %}
+{% else %}
+{% include "demo/rows_missing.html" %}
+{% endif %}
+{% endblock %}

@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from app.core.i18n import N_, _
 from app.core.identity import Person, require_role
 from app.core.templating import NavigationItem, add_templates, render
-from app.demo import gallery
+from app.demo import equipment, gallery
 
 HERE = Path(__file__).resolve().parent
 IN_SERVICE = (N_("In service"), "success")
@@ -63,13 +63,15 @@ def install(application: FastAPI) -> None:
     application.state.languages.add_folder(HERE / "locales")
     application.state.navigation += [
         NavigationItem(N_("Dashboard"), "/", "gauge"),
+        NavigationItem(N_("Equipment"), "/equipment", "wrench"),
         NavigationItem(N_("Gallery"), "/gallery", "component", children=gallery.navigation_groups),
         NavigationItem(N_("Administration"), "/administration", "shield", role="admin"),
     ]
     if application.state.settings.layout_choices:
-        application.state.navigation.insert(2, NavigationItem(N_("Settings"), "/settings", "sliders-horizontal"))
+        application.state.navigation.insert(3, NavigationItem(N_("Settings"), "/settings", "sliders-horizontal"))
     application.mount("/static/demo", StaticFiles(directory=HERE / "static"), name="demo")
     application.add_api_route("/", dashboard, include_in_schema=False)
     application.add_api_route("/inspections", inspections, include_in_schema=False)
     application.add_api_route("/administration", administration, include_in_schema=False)
+    equipment.install(application)
     gallery.install(application)

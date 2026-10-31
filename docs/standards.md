@@ -93,7 +93,7 @@ regions, marked in the page, and not our frame around them.
 | USE-02 | Messages say what happened and what to do, in plain language | [Nielsen 9: recover from errors](https://www.nngroup.com/articles/ten-usability-heuristics/), [GOV.UK error message](https://design-system.service.gov.uk/components/error-message/) | By hand |
 | USE-03 | A failed submission keeps what was typed | [GOV.UK validation](https://design-system.service.gov.uk/patterns/validation/) | Milestone 3 |
 | USE-04 | Actions can be undone where possible; a confirmation names what will be lost | [Nielsen 3 and 5: user control, error prevention](https://www.nngroup.com/articles/ten-usability-heuristics/) | Milestone 3 |
-| USE-05 | Filters, sort and page live in the URL, and survive a reload | Project decision | Milestone 2 |
+| USE-05 | Filters, sort and page live in the URL, survive a reload and work with the back button | Project decision | Automatic |
 | USE-06 | Any action responds at once; a long task shows progress and can be left running | [Nielsen 1: visibility of system status](https://www.nngroup.com/articles/ten-usability-heuristics/) | Milestone 4 |
 | USE-07 | One primary action per screen | Project decision | By hand |
 | USE-08 | The same thing looks and behaves the same, in the same place | [WCAG 3.2.3](https://www.w3.org/TR/WCAG22/#consistent-navigation), [3.2.4](https://www.w3.org/TR/WCAG22/#consistent-identification), [Nielsen 4: consistency](https://www.nngroup.com/articles/ten-usability-heuristics/) | By hand |
@@ -183,7 +183,7 @@ in the Ubuntu job.
 | SEC-02 | Permissions are checked on the server, per action; hiding a button is not a control | [ASVS V8](https://asvs.owasp.org/), [Top 10 A01](https://top10.owasp.org/2025/) | Automatic |
 | SEC-03 | Input is validated at the edge | [ASVS V2](https://asvs.owasp.org/), [Top 10 A05](https://top10.owasp.org/2025/) | Milestone 3 |
 | SEC-04 | Escaping is always on; user data is never marked as safe | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Automatic |
-| SEC-05 | Queries are parameterised; no text built from input | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Milestone 2 |
+| SEC-05 | Queries are parameterised; no text built from input | [ASVS V1](https://asvs.owasp.org/), [CWE Top 25](https://cwe.mitre.org/top25/) | Automatic |
 | SEC-06 | A Content Security Policy without inline scripts or styles, on every page, official examples included: none reaches a page with `style=`, `on*=` or an address on another server, and a browser opening each page finds no violation | [CSP 3](https://www.w3.org/TR/CSP3/), [OWASP CSP](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html) | Automatic |
 | SEC-07 | Changes from another site are refused | [OWASP CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html), [Fetch Metadata](https://www.w3.org/TR/fetch-metadata/) | Automatic |
 | SEC-08 | Only the personal data needed; none in logs or URLs | [ASVS V14](https://asvs.owasp.org/), [OWASP Logging](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) | By hand |

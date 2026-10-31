@@ -22,11 +22,11 @@ class Equipment(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     code: Mapped[str] = mapped_column(String(16), unique=True)
-    name: Mapped[str] = mapped_column(String(80))
+    name: Mapped[str] = mapped_column(String(80), index=True)
     location: Mapped[str] = mapped_column(String(40), index=True)
     status: Mapped[str] = mapped_column(String(16), index=True)
     next_inspection: Mapped[date] = mapped_column(index=True)
-    cost: Mapped[Decimal]
+    cost: Mapped[Decimal] = mapped_column(index=True)
     updated_at: Mapped[datetime]
 
     work_orders: Mapped[list["WorkOrder"]] = relationship(back_populates="equipment", passive_deletes=True)

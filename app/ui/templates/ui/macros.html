@@ -6,9 +6,12 @@
 {% endmacro %}
 
 {% macro page_heading(title, description="") %}
-<header class="space-y-1">
-  <h1>{{ title }}</h1>
-  {% if description %}<p class="max-w-3xl">{{ description }}</p>{% endif %}
+<header class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+  <div class="min-w-0 space-y-1">
+    <h1>{{ title }}</h1>
+    {% if description %}<p class="max-w-3xl">{{ description }}</p>{% endif %}
+  </div>
+  {% if caller is defined %}<div class="flex flex-wrap items-center gap-2 print:hidden">{{ caller() }}</div>{% endif %}
 </header>
 {% endmacro %}
 
@@ -18,6 +21,13 @@
   {{- text -}}
   {%- if loading %} <span class="htmx-indicator">{{ loading }}</span>{% endif -%}
 </button>
+{% endmacro %}
+
+{% macro link_button(text, href, kind="default", small=false, name="", attributes={}) %}
+{% set classes = {"default": "", "primary": "btn-primary", "ghost": "btn-ghost"} %}
+<a class="btn {{ classes[kind] }}{{ ' btn-sm' if small else '' }}" href="{{ href }}"{{ attributes|xmlattr }}>
+  {%- if name %}{{ icon(name, "size-4") }}{% endif %}{{ text -}}
+</a>
 {% endmacro %}
 
 {% macro message(kind, text) %}
@@ -85,9 +95,176 @@
 </div>
 {% endmacro %}
 
-{% macro empty_state(title, advice) %}
-<div class="py-8 text-center">
-  <h3 class="font-semibold">{{ title }}</h3>
-  <p class="text-sm">{{ advice }}</p>
+{% macro empty_state(title, advice, name="", level=3) %}
+<div class="px-4 py-10 text-center">
+  {% if name %}<span class="mx-auto mb-3 grid size-12 place-items-center rounded-full bg-base-200">{{ icon(name, "size-6") }}</span>{% endif %}
+  <h{{ level }} class="text-base font-semibold">{{ title }}</h{{ level }}>
+  <p class="mx-auto max-w-prose text-sm">{{ advice }}</p>
+  {% if caller is defined %}<div class="mt-4">{{ caller() }}</div>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro command(text, identifier) %}
+<div class="mx-auto flex max-w-xl items-center gap-2 rounded-field border border-base-300 bg-base-200 py-1 ps-3 pe-1 text-start">
+  <code id="{{ identifier }}" class="grow text-sm">{{ text }}</code>
+  <button class="btn btn-ghost btn-xs gap-1" type="button" data-copy="{{ identifier }}" data-copied="{{ _('Copied') }}">{{ icon("copy", "size-3") }}<span data-copy-label>{{ _("Copy") }}</span></button>
+</div>
+{% endmacro %}
+
+{% macro status_label(text, kind="neutral") %}
+{% set classes = {"neutral": "status-neutral", "info": "status-info", "success": "status-success", "warning": "status-warning", "danger": "status-error"} %}
+<span class="inline-flex items-center gap-2 whitespace-nowrap"><span class="status {{ classes[kind] }}" aria-hidden="true"></span>{{ text }}</span>
+{% endmacro %}
+
+{#- The server table and what goes with it. Each takes a ListView from app/core/tables.py, which holds the state. -#}
+
+{% macro panel(label) %}
+<section class="rounded-box border border-base-300 bg-base-100" aria-label="{{ label }}">
+  {{ caller() }}
+</section>
+{% endmacro %}
+
+{% macro select_field(name, label, options, value, identifier, every="") %}
+<div class="grid gap-1">
+  <label class="text-sm font-medium" for="{{ identifier }}">{{ label }}</label>
+  <select class="select select-sm w-full" id="{{ identifier }}" name="{{ name }}">
+    {% if every %}<option value=""{% if value == "" %} selected{% endif %}>{{ every }}</option>{% endif %}
+    {% for option, text in options %}
+    <option value="{{ option }}"{% if option == value %} selected{% endif %}>{{ text }}</option>
+    {% endfor %}
+  </select>
+</div>
+{% endmacro %}
+
+{#- A plain GET form: daisyUI's `filter` is a set of radio buttons, not this. With JavaScript, htmx sends it as it changes;
+    without it, the Apply button appears. -#}
+{% macro filter_bar(view, refill=false) %}
+<form id="{{ view.form_id }}" class="grid gap-3 border-b border-base-300 p-4 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-end print:hidden" role="search" aria-label="{{ _('Filters') }}"
+      method="get" action="{{ view.path }}" data-autosubmit
+      hx-get="{{ view.path }}" hx-target="#{{ view.name }}-results" hx-push-url="true" hx-sync="this:replace" hx-indicator="#{{ view.name }}-results"
+      hx-trigger="submit, input changed delay:300ms from:#{{ view.name }}-search"{% if refill %} hx-swap-oob="true"{% endif %}>
+  <div class="grid gap-1 sm:col-span-2 lg:min-w-64 lg:flex-1">
+    <label class="text-sm font-medium" for="{{ view.name }}-search">{{ view.search_label }}</label>
+    <div class="input input-sm w-full">
+      {{ icon("search", "size-4") }}
+      <input id="{{ view.name }}-search" type="search" name="q" value="{{ view.term }}" maxlength="80" autocomplete="off">
+    </div>
+  </div>
+  {% for choice in view.filters %}
+  <div class="lg:w-48">
+    {{ select_field(choice.key, choice.label, choice.options, view.chosen[choice.key], view.name ~ "-" ~ choice.key, choice.every) }}
+  </div>
+  {% endfor %}
+  {% for name, value in view.hidden_fields %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+  <button class="btn btn-sm hidden noscript:inline-flex" type="submit">{{ _("Apply") }}</button>
+</form>
+{% endmacro %}
+
+{% macro _swaps(view, url) %}{{ {"hx-get": url, "hx-target": "#" ~ view.name ~ "-results", "hx-push-url": "true", "hx-indicator": "#" ~ view.name ~ "-results"}|xmlattr }}{% endmacro %}
+
+{#- How many rows there are and what narrows them. `data-announce` is read out after each change of the list; what the
+    macro's caller writes, such as an export link, goes at the end of the line. -#}
+{% macro list_summary(view, count) %}
+{% set direction = _("ascending") if view.direction == "asc" else _("descending") %}
+<div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
+  <div class="flex min-w-0 flex-wrap items-center gap-2">
+    <p class="text-sm font-semibold" data-announce="{{ _('%(count)s. Showing %(first)s to %(last)s, sorted by %(column)s, %(direction)s.', count=count, first=view.first_row|decimal, last=view.last_row|decimal, column=view.sorted_label, direction=direction) if view.total else _('No results.') }}">{{ count }}</p>
+    {% for name, value, link in view.active %}
+    <a class="btn btn-xs btn-soft font-normal" href="{{ link }}"{{ _swaps(view, link) }} aria-label="{{ _('Remove filter %(name)s: %(value)s', name=name, value=value) }}">
+      <span>{{ name }}: <strong class="font-semibold">{{ value }}</strong></span>{{ icon("x", "size-3") }}
+    </a>
+    {% endfor %}
+    {% if view.active %}<a class="btn btn-ghost btn-xs" href="{{ view.clear_link }}"{{ _swaps(view, view.clear_link) }}>{{ _("Clear all") }}</a>{% endif %}
+  </div>
+  {% if caller is defined %}<div class="print:hidden">{{ caller() }}</div>{% endif %}
+</div>
+{% endmacro %}
+
+{#- A native table, sorted, paged and filtered on the server. Its box scrolls by itself, so the header stays in sight, and
+    the keyboard can reach the box. W3C's sortable table: a link in the header, and `aria-sort` only on the sorted one.
+    The caller writes the cells of a row. -#}
+{% macro server_table(view, caption, actions="") %}
+<div class="table-scroll" role="region" tabindex="0" aria-labelledby="{{ view.name }}-caption" data-focus-fallback>
+  <table class="table table-sm table-pin-rows table-pin-first">
+    <caption id="{{ view.name }}-caption" class="sr-only">{{ caption }}. {{ _("Links in the column headers sort the table.") }}</caption>
+    <thead>
+      <tr>
+        {% for column in view.columns %}
+        {% set state = view.sort_state(column) %}
+        <th scope="col" class="{{ 'text-end' if column.numeric else '' }}{{ ' hidden md:table-cell' if column.wide_only else '' }}"{% if state %} aria-sort="{{ state }}"{% endif %}>
+          {% if column.sortable %}
+          {% set link = view.sort_link(column) %}
+          <a id="{{ view.name }}-sort-{{ column.key }}" class="sort-link" href="{{ link }}"{{ _swaps(view, link) }}>
+            {{- column.label }}{{ icon("arrow-up" if state == "ascending" else "arrow-down" if state == "descending" else "chevrons-up-down", "size-3.5") -}}
+          </a>
+          {% else %}{{ column.label }}{% endif %}
+        </th>
+        {% endfor %}
+        {% if actions %}<th scope="col" class="hidden text-end sm:table-cell print:hidden">{{ actions }}</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in view.rows %}
+      <tr class="hover:bg-base-200">{{ caller(row) }}</tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endmacro %}
+
+{% macro row_header(text, href="") %}
+<th scope="row" class="font-medium whitespace-nowrap">{% if href %}<a class="link link-hover" href="{{ href }}">{{ text }}</a>{% else %}{{ text }}{% endif %}</th>
+{% endmacro %}
+
+{% macro cell(value, numeric=false, wide_only=false) %}
+<td class="{{ 'text-end tabular-nums ' if numeric else '' }}{{ 'hidden md:table-cell ' if wide_only else '' }}whitespace-nowrap">{{ value }}</td>
+{% endmacro %}
+
+{#- `items`: (label, name for a screen reader, address, icon). The name says which row: a list of ten "View" says nothing. -#}
+{% macro row_actions(items) %}
+<td class="hidden text-end whitespace-nowrap sm:table-cell print:hidden">
+  {% for label, name, href, picture in items %}
+  <a class="btn btn-ghost btn-xs" href="{{ href }}" aria-label="{{ name }}">{{ icon(picture, "size-3.5") }}<span class="hidden xl:inline">{{ label }}</span></a>
+  {% endfor %}
+</td>
+{% endmacro %}
+
+{#- `aria-current` marks the page. Numbers are hidden on a phone, where the text says where a person is. -#}
+{% macro pagination(view) %}
+<div class="flex flex-wrap items-center justify-between gap-3 border-t border-base-300 px-4 py-3 print:hidden">
+  <div class="flex items-center gap-2 text-sm">
+    <label for="{{ view.name }}-size">{{ _("Rows per page") }}</label>
+    <select class="select select-sm w-20" id="{{ view.name }}-size" name="size" form="{{ view.form_id }}">
+      {% for size in view.sizes %}<option value="{{ size }}"{% if size == view.size %} selected{% endif %}>{{ size }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-sm hidden noscript:inline-flex" type="submit" form="{{ view.form_id }}">{{ _("Apply") }}</button>
+  </div>
+  <nav class="flex items-center gap-3" aria-label="{{ _('Pages') }}">
+    <p class="text-sm tabular-nums sm:hidden">{{ _("Page %(page)s of %(pages)s", page=view.page|decimal, pages=view.pages|decimal) }}</p>
+    <div class="join">
+      {% if view.page > 1 %}
+      {% set link = view.link(page=view.page - 1) %}
+      <a id="{{ view.name }}-previous" class="join-item btn btn-sm btn-square" href="{{ link }}" rel="prev"{{ _swaps(view, link) }} aria-label="{{ _('Previous page') }}">{{ icon("chevron-left", "size-4") }}</a>
+      {% else %}
+      <span class="join-item btn btn-sm btn-square btn-disabled" aria-disabled="true">{{ icon("chevron-left", "size-4") }}</span>
+      {% endif %}
+      {% for number in view.page_numbers() %}
+      {% if number is none %}
+      <span class="join-item btn btn-sm btn-disabled hidden sm:inline-flex" aria-hidden="true">…</span>
+      {% elif number == view.page %}
+      <a id="{{ view.name }}-page-{{ number }}" class="join-item btn btn-sm btn-primary hidden tabular-nums sm:inline-flex" href="{{ view.link(page=number) }}" aria-current="page" aria-label="{{ _('Page %(page)s', page=number|decimal) }}">{{ number|decimal }}</a>
+      {% else %}
+      {% set link = view.link(page=number) %}
+      <a id="{{ view.name }}-page-{{ number }}" class="join-item btn btn-sm hidden tabular-nums sm:inline-flex" href="{{ link }}"{{ _swaps(view, link) }} aria-label="{{ _('Page %(page)s', page=number|decimal) }}">{{ number|decimal }}</a>
+      {% endif %}
+      {% endfor %}
+      {% if view.page < view.pages %}
+      {% set link = view.link(page=view.page + 1) %}
+      <a id="{{ view.name }}-next" class="join-item btn btn-sm btn-square" href="{{ link }}" rel="next"{{ _swaps(view, link) }} aria-label="{{ _('Next page') }}">{{ icon("chevron-right", "size-4") }}</a>
+      {% else %}
+      <span class="join-item btn btn-sm btn-square btn-disabled" aria-disabled="true">{{ icon("chevron-right", "size-4") }}</span>
+      {% endif %}
+    </div>
+  </nav>
 </div>
 {% endmacro %}
