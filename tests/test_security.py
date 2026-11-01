@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import create_app
+from tests import helpers
 from tests.conftest import PERSON, build_settings, running_server
 from tests.helpers import ROOT, repository_text_files
 from tools import css
@@ -165,6 +166,19 @@ def test_no_file_in_the_repository_holds_an_obvious_secret():
     assert len(files) > 50
     found = {path: secrets_in(path.read_text(encoding="utf-8", errors="replace")) for path in files}
     assert {path: secrets for path, secrets in found.items() if secrets} == {}
+
+
+@pytest.mark.parametrize("git", ["no git at all", "gitdir: C:/a/folder/only/another/computer/has"])
+def test_the_list_of_our_files_comes_from_the_folder_with_or_without_a_working_git(tmp_path, monkeypatch, git):
+    """A copy has no `.git`, and a sandbox can hold a worktree's, which points to a folder that is not there."""
+    for name in ("ours.py", ".env.example", ".env", ".env.local", ".venv/theirs.py", "__pycache__/built.py"):
+        (tmp_path / name).parent.mkdir(exist_ok=True)
+        (tmp_path / name).write_text("text", encoding="utf-8")
+    (tmp_path / "picture.png").write_bytes(b"\0binary")
+    if git != "no git at all":
+        (tmp_path / ".git").write_text(git, encoding="utf-8")
+    monkeypatch.setattr(helpers, "ROOT", tmp_path)
+    assert sorted(path.name for path in repository_text_files()) == [".env.example", "ours.py"]
 
 
 @pytest.mark.rule("SEC-09")

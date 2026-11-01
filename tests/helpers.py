@@ -139,15 +139,17 @@ def run_in(folder: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def _is_ours(name: str) -> bool:
+    return name not in NOT_OURS and (name == ".env.example" or not re.fullmatch(r"\.env(\..*)?", name))
+
+
 def repository_text_files() -> list[Path]:
-    """Every file git tracks or would track; in a copy without git, every file that is ours."""
-    if (ROOT / ".git").exists():
-        listing = ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"]
-        names = subprocess.run(listing, cwd=ROOT, check=True, capture_output=True, text=True, encoding="utf-8")
-        files = [ROOT / name for name in names.stdout.split("\0") if name]
-    else:
-        files = [path for path in ROOT.rglob("*") if not NOT_OURS & set(path.relative_to(ROOT).parts)]
-    return [path for path in files if path.is_file() and b"\0" not in path.read_bytes()[:8000]]
+    """Every text file that is ours, from the folder itself: a copy has no git, and a sandbox's may not work there."""
+    files: list[Path] = []
+    for folder, folders, names in ROOT.walk():
+        folders[:] = [name for name in folders if name not in NOT_OURS]
+        files += [folder / name for name in names if _is_ours(name)]
+    return [path for path in files if b"\0" not in path.read_bytes()[:8000]]
 
 
 def overflows_sideways(page: Any) -> bool:
