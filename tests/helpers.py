@@ -1,8 +1,14 @@
+import http.client
 import os
 import re
 import shutil
+import socket
 import subprocess
 import sys
+import time
+import tomllib
+from collections.abc import Iterator
+from contextlib import contextmanager
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
@@ -136,6 +142,57 @@ def run_in(folder: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
         encoding="utf-8",
         errors="replace",  # a child's traceback can be in the system's encoding, and it must still be read
     )
+
+
+def preview_section(folder: Path) -> dict[str, Any]:
+    section: dict[str, Any] = tomllib.loads((folder / ".eunomai" / "project.toml").read_text(encoding="utf-8"))[
+        "preview"
+    ]
+    return section
+
+
+@contextmanager
+def preview_running(folder: Path) -> Iterator[int]:
+    """Exactly what `[preview]` says, in a folder with no `.env`, and only the system's variables besides its own."""
+    section = preview_section(folder)
+    tools = str(Path(sys.executable).parent)
+    system = {name: os.environ[name] for name in ("SYSTEMROOT", "TEMP", "TMP", "HOME", "PATH") if name in os.environ}
+    environment = system | section["environment"]
+
+    def command(words: list[str]) -> list[str]:
+        return [shutil.which(words[0], path=tools) or words[0], *words[1:]]
+
+    for step in section["setup"]:
+        done = subprocess.run(
+            command(step), cwd=folder, env=environment, capture_output=True, text=True, errors="replace"
+        )
+        assert done.returncode == 0, f"{step}: {done.stdout[-1000:]} {done.stderr[-1000:]}"
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    words = command([word.replace("{port}", str(port)) for word in section["run"]])
+    server = subprocess.Popen(words, cwd=folder, env=environment, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        for _ in range(600):
+            with socket.socket() as probe:
+                if probe.connect_ex(("127.0.0.1", port)) == 0:
+                    break
+            assert server.poll() is None, "the application ended before it answered"
+            time.sleep(0.05)
+        yield port
+    finally:
+        server.terminate()
+        server.wait(timeout=10)
+
+
+def fetch(port: int, path: str) -> tuple[int, str]:
+    """What a person's browser gets, with no headers of anyone's."""
+    connection = http.client.HTTPConnection("127.0.0.1", port, timeout=30)
+    connection.request("GET", path)
+    response = connection.getresponse()
+    text = response.read().decode("utf-8")
+    connection.close()
+    return response.status, text
 
 
 def _is_ours(name: str) -> bool:

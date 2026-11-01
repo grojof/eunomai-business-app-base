@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from tests.helpers import ROOT, repository_copy, run_in
+from tests.helpers import ROOT, preview_section, repository_copy, run_in
 from tests.test_components import add_a_component, check_the_added_component
 from tests.test_standards import ROW, traced
 from tools import remove_demo
@@ -55,8 +55,13 @@ def test_nothing_of_the_demo_stays(application):
     assert "/* demo */" not in (application / "app" / "ui" / "styles" / "app.css").read_text(encoding="utf-8")
 
 
+def test_the_preview_needs_only_the_migrations(application):
+    assert preview_section(application)["setup"] == [["alembic", "upgrade", "head"]]
+    assert "demo" not in (application / ".eunomai" / "project.toml").read_text(encoding="utf-8")
+
+
 def test_the_files_it_changes_keep_their_line_endings(application):
-    for changed in ("app/main.py", "migrations/env.py", ".env.example", "docs/standards.md"):
+    for changed in ("app/main.py", "migrations/env.py", ".env.example", "docs/standards.md", ".eunomai/project.toml"):
         assert b"\r\n" not in (application / changed).read_bytes(), changed
 
 

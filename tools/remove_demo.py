@@ -104,6 +104,11 @@ uv run --frozen pytest -q -m "not browser"
     ),
 )
 """What changes in AGENTS.md: the base describes a neutral demo, and an application is neither of those."""
+PREVIEW_CHANGES = (
+    ('setup = [["python", "-m", "app.demo.generate"]]', 'setup = [["alembic", "upgrade", "head"]]'),
+    ("demo-admins", "admins"),
+)
+"""There are no generated rows to make, and the migrations are all an application's first run needs."""
 
 
 def rewrite(path: Path, content: str) -> None:
@@ -161,6 +166,7 @@ def main() -> None:
         rewrite(standards, text)
 
     changed(ROOT / "AGENTS.md", AGENTS_CHANGES)
+    changed(ROOT / ".eunomai" / "project.toml", PREVIEW_CHANGES)
 
 
 if __name__ == "__main__":

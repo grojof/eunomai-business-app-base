@@ -1,7 +1,21 @@
-# Where and with what eunomai-business's specialist may write code in a clone of this repository.
-# Treat it like AGENTS.md: changed through a reviewed pull request.
+# Where and with what eunomai-business's specialist may write code in this repository, and how a person's computer
+# starts it. Treat it like AGENTS.md: changed through a reviewed pull request.
 
 [development]
 code = true
 technologies = ["Python", "FastAPI", "Pydantic", "SQLAlchemy", "Alembic", "PostgreSQL", "SQLite", "Jinja2", "htmx",
                 "Tailwind CSS", "daisyUI", "Chart.js", "XlsxWriter", "HTML and CSS"]
+
+# The application on a person's computer, from a fresh export with no .env. Each command runs after `uv run --frozen`,
+# in the export, with the environment below: `setup` once, then `run`. See docs/specification.md#adapting-it
+[preview]
+setup = [["python", "-m", "app.demo.generate"]]
+run = ["uvicorn", "app.main:app", "--no-proxy-headers", "--host", "127.0.0.1", "--port", "{port}"]
+
+# A made-up person with the admin role, so nobody signs in, and a SQLite file in the run folder.
+[preview.environment]
+APP_ENVIRONMENT = "development"
+APP_DATABASE_URL = "sqlite:///.data/preview.db"
+APP_FAKE_IDENTITY = "true"
+APP_FAKE_GROUPS = '["demo-admins"]'
+APP_ROLE_GROUPS = '{"admin":["demo-admins"]}'
