@@ -127,11 +127,10 @@ def repository_copy(target: Path) -> Path:
 
 
 def run_in(folder: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
-    """Runs Python there, as a person would, with the marker that stops the copy from copying itself."""
+    """Runs Python there, as a person would, with nothing set that a person would not set."""
     return subprocess.run(
         [sys.executable, *arguments],
         cwd=folder,
-        env=os.environ | {"BASE_WITHOUT_DEMO": "1"},
         capture_output=True,
         text=True,
         encoding="utf-8",
