@@ -51,9 +51,9 @@ Add your own components as [the specification](docs/specification.md#adapting-it
 
 ## Checks
 
-Automatic checks are what protect this repository; these rules only explain them. Run them all before calling something
-done, and say plainly what was not checked. Where a check cannot tell, such as how a screen reader announces a change,
-test by hand and record it in the pull request.
+Automatic checks are what protect this repository; these rules only explain them. While working, run only the tests near
+the change. Run them all once, at the end, before calling something done, and say plainly what was not checked. Where a
+check cannot tell, such as how a screen reader announces a change, test by hand and record it in the pull request.
 
 ```bash
 uv lock --check
@@ -69,3 +69,19 @@ uv run --frozen pytest -q                            # with TEST_DATABASE_URL, t
 Start the server with `--no-proxy-headers`, as the [README](README.md#try-it) does. Browser tests use the Chrome
 already on the computer; nothing is downloaded. After upgrading Babel, a test may ask for
 `uv run --frozen python tools/cldr_grouping.py`.
+
+## In a sandbox
+
+An assistant's sandbox may cut a shell command at about 3 minutes, and may have no Chrome and no PostgreSQL. Everything
+but the browser tests, in two commands that each fit; if one is cut, split it by file:
+
+```bash
+uv run --frozen pytest -q -m "not browser" --ignore=tests/demo
+uv run --frozen pytest -q -m "not browser" tests/demo
+```
+
+- `tests/demo/test_clean_application.py` needs Tailwind's executable, which `tools/css.py` downloads to `.cache/`. Without
+  it and without network, add `--ignore=tests/demo/test_clean_application.py` and say so.
+- Browser tests are left for CI: say so in the pull request.
+- Never run git in the project folder from a sandbox shell.
+- Never ask a person to run a command: what cannot run here goes in the pull request as not checked.
