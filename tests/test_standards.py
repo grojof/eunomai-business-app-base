@@ -15,8 +15,8 @@ from fastapi.testclient import TestClient
 from app.main import create_app
 from tests import classes
 from tests.conftest import build_settings
-from tests.helpers import ROOT, repository_copy, run_in
-from tools import remove_demo, vendor
+from tests.helpers import ROOT
+from tools import vendor
 
 STANDARDS = ROOT / "docs" / "standards.md"
 ROW = re.compile(r"^\| (?P<id>[A-Z0-9]+-\d{2}) \| (?P<rule>.+?) \| (?P<source>.+?) \| (?P<check>.+?) \|$", re.M)
@@ -102,12 +102,6 @@ def test_a_comment_or_a_string_does_not_count_as_a_test(tmp_path):
         encoding="utf-8",
     )
     assert set(collected_rules(str(tmp_path))) == {"AAA-03"}
-
-
-@pytest.mark.skipif(not WITH_DEMO, reason="this compares the demo's tests with the others")
-def test_the_rules_proved_only_on_demo_screens_are_exactly_the_listed_ones():
-    only_on_demo = {rule for rule, tests in traced().items() if all(t.startswith("tests/demo/") for t in tests)}
-    assert only_on_demo == remove_demo.ONLY_ON_DEMO
 
 
 def test_every_check_is_automatic_manual_or_planned():
@@ -249,20 +243,33 @@ def test_a_plain_class_is_not_an_invented_value(name):
 @pytest.mark.rule("COMP-04")
 def test_no_class_lives_where_tailwind_does_not_look():
     """Tailwind reads templates and catalog.py. A class elsewhere would get no CSS, however real it looks."""
-    found = {}
-    for source in (ROOT / "app").rglob("*.py"):
-        if source.name != "catalog.py":
-            found[source.name] = classes.misplaced_classes(source.read_text(encoding="utf-8"), python=True)
-    for script in (ROOT / "app").rglob("*.js"):
-        if "vendor" not in script.parts:
-            found[script.name] = classes.misplaced_classes(script.read_text(encoding="utf-8"), python=False)
-    assert {name: words for name, words in found.items() if words} == {}
+    assert classes.misplaced_in(ROOT / "app") == {}
 
 
 @pytest.mark.rule("COMP-04")
 def test_the_check_for_misplaced_classes_finds_one():
     assert classes.misplaced_classes('STYLE = "btn-primary shadow"\n', python=True) == {"btn-primary"}
     assert classes.misplaced_classes('element.className = "badge-error";', python=False) == {"badge-error"}
+
+
+@pytest.mark.rule("COMP-04")
+def test_the_check_for_misplaced_classes_does_not_depend_on_the_order_of_the_folder(tmp_path):
+    """Keyed by name, only the last `__init__.py` read would count, and each computer reads them in its own order."""
+    application = tmp_path / "vendor" / "app"
+    for name, text in (("a", ""), ("b", 'STYLE = "btn-primary"\n'), ("c", "")):
+        (application / name).mkdir(parents=True)
+        (application / name / "__init__.py").write_text(text, encoding="utf-8")
+    (application / "a" / "own.js").write_text('element.className = "badge-error";', encoding="utf-8")
+    (application / "vendor").mkdir()
+    (application / "vendor" / "theirs.js").write_text('element.className = "badge-error";', encoding="utf-8")
+    assert classes.misplaced_in(application) == {"a/own.js": {"badge-error"}, "b/__init__.py": {"btn-primary"}}
+
+
+@pytest.mark.rule("COMP-04")
+def test_an_icons_name_is_not_a_misplaced_class(monkeypatch):
+    assert classes.misplaced_classes('ICON = "btn-arrow"\n', python=True) == {"btn-arrow"}
+    monkeypatch.setattr(classes, "ICONS", {"btn-arrow"})
+    assert classes.misplaced_classes('ICON = "btn-arrow"\n', python=True) == set()
 
 
 def test_colours_live_only_in_the_brand():
@@ -296,48 +303,3 @@ def test_scripts_carry_their_integrity(client, person):
 def test_the_core_never_imports_the_demo():
     for source in (ROOT / "app" / "core").rglob("*.py"):
         assert "app.demo" not in source.read_text(encoding="utf-8").replace("Nothing here imports from app.demo", "")
-
-
-@pytest.mark.skipif(bool(os.environ.get("BASE_WITHOUT_DEMO")), reason="runs once, on the full repository")
-def test_the_whole_base_works_with_the_demo_deleted(tmp_path):
-    copy = repository_copy(tmp_path / "application")
-    removed = run_in(copy, "tools/remove_demo.py")
-    assert removed.returncode == 0, removed.stderr
-
-    assert not (copy / "app" / "demo").exists()
-    assert "install_demo" not in (copy / "app" / "main.py").read_text(encoding="utf-8")
-    assert "app.demo" not in (copy / "migrations" / "env.py").read_text(encoding="utf-8")
-    assert list((copy / "migrations" / "versions").glob("*.py")) == []
-    assert (copy / "migrations" / "script.py.mako").exists()
-    assert "demo-admins" not in (copy / ".env.example").read_text(encoding="utf-8")
-    for changed in ("app/main.py", "migrations/env.py", ".env.example", "docs/standards.md"):
-        assert b"\r\n" not in (copy / changed).read_bytes(), changed
-    rows = {
-        row["id"]: row["check"] for row in ROW.finditer((copy / "docs" / "standards.md").read_text(encoding="utf-8"))
-    }
-    assert {rows[rule] for rule in remove_demo.ONLY_ON_DEMO} == {"By hand"}
-
-    assert not (copy / "tools" / "tailwind" / "daisyui-docs.json").exists()
-    assert "daisyui-docs" not in (copy / "vendor.json").read_text(encoding="utf-8")
-    assert not (copy / "app" / "ui" / "static" / "placeholders").exists()
-    assert "/* demo */" not in (copy / "app" / "ui" / "styles" / "app.css").read_text(encoding="utf-8")
-
-    sources = [*(copy / "app").rglob("*.html"), *(copy / "app").rglob("*.py")]
-    shell = "".join(path.read_text(encoding="utf-8") for path in sources)
-    icons = copy / "app" / "ui" / "templates" / "ui" / "icons"
-    assert [icon.stem for icon in icons.glob("*.svg") if f'"{icon.stem}"' not in shell] == []
-
-    for command in (
-        ["tools/css.py"],
-        ["tools/css.py", "check"],
-        ["tools/components.py", "check"],
-        ["tools/gallery.py", "check"],
-        ["tools/translations.py", "check"],
-        ["tools/vendor.py", "check"],
-        ["-m", "pytest", "-q", "-x"],
-    ):
-        result = run_in(copy, *command)
-        assert result.returncode == 0, f"{command}: {result.stdout[-2000:]} {result.stderr[-1000:]}"
-    built = copy / "app" / "ui" / "static" / "app.css"
-    assert built.stat().st_size < (ROOT / "app" / "ui" / "static" / "app.css").stat().st_size * 0.75
-    assert "example-preview" not in built.read_text(encoding="utf-8")

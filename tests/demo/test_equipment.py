@@ -363,6 +363,21 @@ def test_paging_keeps_focus_and_at_the_end_moves_it_to_the_table(open_filled):
 
 
 @pytest.mark.browser
+@pytest.mark.rule("A11Y-09")
+def test_a_link_works_from_the_moment_it_arrives(open_filled):
+    """The next thing a browser does after a swap may be a second click: a link not wired yet would reload the page."""
+    page = open_filled("/equipment?size=100")
+    page.evaluate("""() => {
+        window.sameDocument = true;
+        const next = () => document.getElementById("equipment-next").click();
+        document.addEventListener("htmx:afterSwap", () => setTimeout(next), {once: true});
+    }""")
+    page.get_by_role("link", name="Next page").click()
+    until(page, "document.querySelector('#equipment-results a[aria-current]').textContent === '3'")
+    assert page.evaluate("window.sameDocument === true")
+
+
+@pytest.mark.browser
 def test_the_page_size_applies_at_once_and_goes_to_the_first_page(open_filled):
     page = open_filled("/equipment?page=3")
     page.locator("#equipment-size").focus()

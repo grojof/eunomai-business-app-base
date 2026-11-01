@@ -63,7 +63,10 @@ workflow by hand: *Actions*, *Tests*, *Run workflow*, or `gh workflow run tests.
 publishing, and after a change to paths or tools.
 
 To start an application of your own, clone this, then run `uv run --frozen python tools/remove_demo.py` and
-`uv run --frozen python tools/css.py`.
+`uv run --frozen python tools/css.py`. The first is what turns the clone into an application: the demo goes, and
+`AGENTS.md` stops describing a neutral base and describes an application, so real work belongs there. Fill in *What this
+application is* at the top of it before anything else: every assistant reads it first. The step runs once, and a second
+run changes nothing, so what you wrote stays.
 
 ## Documentation
 

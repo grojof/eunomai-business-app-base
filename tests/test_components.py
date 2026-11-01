@@ -1,9 +1,9 @@
 """The catalogue and its documentation stay complete, in step with daisyUI and readable by an assistant."""
 
 import json
-import os
 import re
 import shutil
+from pathlib import Path
 
 import pytest
 
@@ -244,27 +244,26 @@ def test_the_button_macro_refuses_a_kind_it_does_not_have():
         environment.get_template("ui/macros.html").module.button("Save", "invented")
 
 
-@pytest.mark.skipif(bool(os.environ.get("BASE_WITHOUT_DEMO")), reason="runs once, on the full repository")
-@pytest.mark.parametrize("demo", [True, False], ids=["with the demo", "without the demo"])
-def test_the_promised_way_to_add_a_component_passes_the_checks(tmp_path, demo):
-    copy = repository_copy(tmp_path / "application")
-    if not demo:
-        assert run_in(copy, "tools/remove_demo.py").returncode == 0
-
+def add_a_component(copy: Path) -> None:
     list_file = copy / "app" / "ui" / "catalog.py"
     text = list_file.read_text(encoding="utf-8")
     entry = '    "own": (N_("Own"), (Component("signature"),)),\n    "mockups": ('
     list_file.write_text(text.replace('    "mockups": (', entry), encoding="utf-8", newline="\n")
     (copy / "docs" / "components" / "signature.md").write_text(OWN_PAGE, encoding="utf-8", newline="\n")
-    tests = ["tests/test_components.py"]
-    if demo:
-        specimen = copy / "app" / "demo" / "templates" / "demo" / "gallery" / "specimens" / "signature.html"
-        specimen.write_text('<p>{{ _("Save") }}</p>\n', encoding="utf-8", newline="\n")
-        tests.append("tests/demo/test_gallery.py")
 
+
+def check_the_added_component(copy: Path, *tests: str) -> None:
     assert run_in(copy, "tools/components.py").returncode == 0
     checked = run_in(copy, "tools/components.py", "check")
     assert checked.returncode == 0, checked.stdout
-    result = run_in(copy, "-m", "pytest", "-q", "-x", "-m", "not browser", *tests)
+    # Leaves this test out of its own run, or the copy would copy itself for ever.
+    arguments = ("-m", "pytest", "-q", "-x", "-m", "not browser", "-k", "not promised_way", *tests)
+    result = run_in(copy, *arguments)
     assert result.returncode == 0, result.stdout[-2000:]
     assert "signature" in (copy / "docs" / "components" / "README.md").read_text(encoding="utf-8")
+
+
+def test_the_promised_way_to_add_a_component_passes_the_checks(tmp_path):
+    copy = repository_copy(tmp_path / "application")
+    add_a_component(copy)
+    check_the_added_component(copy, "tests/test_components.py")

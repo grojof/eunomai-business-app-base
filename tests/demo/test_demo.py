@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from app.core.i18n import PSEUDO
 from app.main import create_app
 from tests.conftest import build_settings
-from tests.helpers import ROOT, overflows_sideways, run_axe, untranslated
+from tests.helpers import ROOT, overflows_sideways, repository_text_files, run_axe, untranslated
 
 PAGES = ["/", "/settings", "/administration"]
 LAYOUTS = [
@@ -18,6 +18,12 @@ LAYOUTS = [
     {"density": "compact"},
 ]
 ALLOWED = ("Business App", "Demo Person", "Mar 15, 2027", "Nov 20, 2026", "Jan 12, 2027", "Nov 9, 2026", "May 3, 2027")
+
+
+def test_the_base_names_no_product_it_does_not_depend_on():
+    """The base stays neutral so anyone can clone it. An application may name what it uses: this goes with the demo."""
+    word = "co" + "work"
+    assert [p.name for p in repository_text_files() if word in p.read_text("utf-8", "replace").lower()] == []
 
 
 @pytest.mark.rule("LANG-01")

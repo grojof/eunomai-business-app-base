@@ -1,8 +1,14 @@
+import http.client
 import os
 import re
 import shutil
+import socket
 import subprocess
 import sys
+import time
+import tomllib
+from collections.abc import Iterator
+from contextlib import contextmanager
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
@@ -127,11 +133,10 @@ def repository_copy(target: Path) -> Path:
 
 
 def run_in(folder: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
-    """Runs Python there, as a person would, with the marker that stops the copy from copying itself."""
+    """Runs Python there, as a person would, with nothing set that a person would not set."""
     return subprocess.run(
         [sys.executable, *arguments],
         cwd=folder,
-        env=os.environ | {"BASE_WITHOUT_DEMO": "1"},
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -139,15 +144,68 @@ def run_in(folder: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def preview_section(folder: Path) -> dict[str, Any]:
+    section: dict[str, Any] = tomllib.loads((folder / ".eunomai" / "project.toml").read_text(encoding="utf-8"))[
+        "preview"
+    ]
+    return section
+
+
+@contextmanager
+def preview_running(folder: Path) -> Iterator[int]:
+    """Exactly what `[preview]` says, in a folder with no `.env`, and only the system's variables besides its own."""
+    section = preview_section(folder)
+    tools = str(Path(sys.executable).parent)
+    system = {name: os.environ[name] for name in ("SYSTEMROOT", "TEMP", "TMP", "HOME", "PATH") if name in os.environ}
+    environment = system | section["environment"]
+
+    def command(words: list[str]) -> list[str]:
+        return [shutil.which(words[0], path=tools) or words[0], *words[1:]]
+
+    for step in section["setup"]:
+        done = subprocess.run(
+            command(step), cwd=folder, env=environment, capture_output=True, text=True, errors="replace"
+        )
+        assert done.returncode == 0, f"{step}: {done.stdout[-1000:]} {done.stderr[-1000:]}"
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    words = command([word.replace("{port}", str(port)) for word in section["run"]])
+    server = subprocess.Popen(words, cwd=folder, env=environment, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        for _ in range(600):
+            with socket.socket() as probe:
+                if probe.connect_ex(("127.0.0.1", port)) == 0:
+                    break
+            assert server.poll() is None, "the application ended before it answered"
+            time.sleep(0.05)
+        yield port
+    finally:
+        server.terminate()
+        server.wait(timeout=10)
+
+
+def fetch(port: int, path: str) -> tuple[int, str]:
+    """What a person's browser gets, with no headers of anyone's."""
+    connection = http.client.HTTPConnection("127.0.0.1", port, timeout=30)
+    connection.request("GET", path)
+    response = connection.getresponse()
+    text = response.read().decode("utf-8")
+    connection.close()
+    return response.status, text
+
+
+def _is_ours(name: str) -> bool:
+    return name not in NOT_OURS and (name == ".env.example" or not re.fullmatch(r"\.env(\..*)?", name))
+
+
 def repository_text_files() -> list[Path]:
-    """Every file git tracks or would track; in a copy without git, every file that is ours."""
-    if (ROOT / ".git").exists():
-        listing = ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"]
-        names = subprocess.run(listing, cwd=ROOT, check=True, capture_output=True, text=True, encoding="utf-8")
-        files = [ROOT / name for name in names.stdout.split("\0") if name]
-    else:
-        files = [path for path in ROOT.rglob("*") if not NOT_OURS & set(path.relative_to(ROOT).parts)]
-    return [path for path in files if path.is_file() and b"\0" not in path.read_bytes()[:8000]]
+    """Every text file that is ours, from the folder itself: a copy has no git, and a sandbox's may not work there."""
+    files: list[Path] = []
+    for folder, folders, names in ROOT.walk():
+        folders[:] = [name for name in folders if name not in NOT_OURS]
+        files += [folder / name for name in names if _is_ours(name)]
+    return [path for path in files if b"\0" not in path.read_bytes()[:8000]]
 
 
 def overflows_sideways(page: Any) -> bool:
