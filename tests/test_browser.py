@@ -115,6 +115,13 @@ def test_htmx_has_evaluation_turned_off(open_page):
     assert page.evaluate("htmx.config.allowEval") is False
 
 
+def test_htmx_leaves_no_time_between_a_swap_and_wiring_what_arrived(open_page):
+    """During that time a link is a plain link: a second click reloads the page and loses focus."""
+    page = open_page("/")
+    page.wait_for_load_state("networkidle")
+    assert page.evaluate("htmx.config.defaultSettleDelay") == 0
+
+
 @pytest.mark.rule("SEC-06")
 def test_htmx_never_writes_a_style_attribute(open_page):
     """It would copy `style` onto swapped elements, which the policy refuses."""
