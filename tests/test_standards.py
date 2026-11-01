@@ -249,20 +249,33 @@ def test_a_plain_class_is_not_an_invented_value(name):
 @pytest.mark.rule("COMP-04")
 def test_no_class_lives_where_tailwind_does_not_look():
     """Tailwind reads templates and catalog.py. A class elsewhere would get no CSS, however real it looks."""
-    found = {}
-    for source in (ROOT / "app").rglob("*.py"):
-        if source.name != "catalog.py":
-            found[source.name] = classes.misplaced_classes(source.read_text(encoding="utf-8"), python=True)
-    for script in (ROOT / "app").rglob("*.js"):
-        if "vendor" not in script.parts:
-            found[script.name] = classes.misplaced_classes(script.read_text(encoding="utf-8"), python=False)
-    assert {name: words for name, words in found.items() if words} == {}
+    assert classes.misplaced_in(ROOT / "app") == {}
 
 
 @pytest.mark.rule("COMP-04")
 def test_the_check_for_misplaced_classes_finds_one():
     assert classes.misplaced_classes('STYLE = "btn-primary shadow"\n', python=True) == {"btn-primary"}
     assert classes.misplaced_classes('element.className = "badge-error";', python=False) == {"badge-error"}
+
+
+@pytest.mark.rule("COMP-04")
+def test_the_check_for_misplaced_classes_does_not_depend_on_the_order_of_the_folder(tmp_path):
+    """Keyed by name, only the last `__init__.py` read would count, and each computer reads them in its own order."""
+    application = tmp_path / "vendor" / "app"
+    for name, text in (("a", ""), ("b", 'STYLE = "btn-primary"\n'), ("c", "")):
+        (application / name).mkdir(parents=True)
+        (application / name / "__init__.py").write_text(text, encoding="utf-8")
+    (application / "a" / "own.js").write_text('element.className = "badge-error";', encoding="utf-8")
+    (application / "vendor").mkdir()
+    (application / "vendor" / "theirs.js").write_text('element.className = "badge-error";', encoding="utf-8")
+    assert classes.misplaced_in(application) == {"a/own.js": {"badge-error"}, "b/__init__.py": {"btn-primary"}}
+
+
+@pytest.mark.rule("COMP-04")
+def test_an_icons_name_is_not_a_misplaced_class(monkeypatch):
+    assert classes.misplaced_classes('ICON = "btn-arrow"\n', python=True) == {"btn-arrow"}
+    monkeypatch.setattr(classes, "ICONS", {"btn-arrow"})
+    assert classes.misplaced_classes('ICON = "btn-arrow"\n', python=True) == set()
 
 
 def test_colours_live_only_in_the_brand():

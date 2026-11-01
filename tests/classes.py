@@ -4,15 +4,18 @@ import ast
 import re
 from collections.abc import Iterable, Iterator
 from html.parser import HTMLParser
+from pathlib import Path
 
 from jinja2 import nodes
 
 from app.core.templating import environment
 from app.ui.catalog import STATUSES, components
-from tests.helpers import without_official_examples
+from tests.helpers import ROOT, without_official_examples
 
 NO_CSS_OF_THEIR_OWN = {"drawer-button", "theme-controller"}
 """Real names in daisyUI's documentation that only mark an element: no rule needs them in this stylesheet."""
+ICONS = {icon.stem for icon in (ROOT / "app" / "ui" / "templates" / "ui" / "icons").glob("*.svg")}
+"""`calendar-range` looks like a class of daisyUI's calendar, and Python may well hold it: it names an icon."""
 _ESCAPE = r"\\[0-9a-fA-F]{1,6}\s?|\\[^0-9a-fA-F\n]"
 _START = rf"-{{0,2}}(?:[A-Za-z_]|[^\x00-\x7f]|{_ESCAPE})"
 _CLASS = re.compile(rf"(?<![\w.%\\])\.({_START}(?:[\w-]|[^\x00-\x7f]|{_ESCAPE})*)")
@@ -141,4 +144,15 @@ def misplaced_classes(source: str, python: bool) -> set[str]:
     else:
         texts = re.findall(r"\"([^\"]*)\"|'([^']*)'", source)
         texts = [first or second for first, second in texts]
-    return {word for text in texts for word in text.split() if _OUTSIDE_TAILWINDS_SIGHT.match(word)}
+    return {word for text in texts for word in text.split() if _OUTSIDE_TAILWINDS_SIGHT.match(word)} - ICONS
+
+
+def misplaced_in(folder: Path) -> dict[str, set[str]]:
+    """Each file under a folder with the class names found in it, by path: names repeat, as `__init__.py` does."""
+    sources = [source for source in folder.rglob("*.py") if source.name != "catalog.py"]
+    scripts = [script for script in folder.rglob("*.js") if "vendor" not in script.relative_to(folder).parts]
+    found = {
+        path.relative_to(folder).as_posix(): misplaced_classes(path.read_text(encoding="utf-8"), python=path in sources)
+        for path in [*sources, *scripts]
+    }
+    return {path: words for path, words in found.items() if words}
