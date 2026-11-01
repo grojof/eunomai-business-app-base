@@ -1,4 +1,5 @@
-"""Turns a clone into a clean application: deletes the demo and what only the demo needs. Then run tools/css.py.
+"""Turns a clone into a clean application, once: deletes the demo and what only the demo needs, and makes AGENTS.md
+describe an application. Then run tools/css.py, and write what the application is at the top of AGENTS.md.
 
 uv run --frozen python tools/remove_demo.py
 """
@@ -34,13 +35,96 @@ DEMO_ICONS = (
 )
 """Icons only the demo uses. The rest belong to the application's shell."""
 DEMO_MIGRATIONS = "*_demo_*.py"
+AGENTS_CHANGES = (
+    (
+        """# AGENTS.md — business-app-base
+
+For anyone working in this repository, person or AI assistant. The repository is in English and names no organization,
+person or real system: it stays neutral so anyone can clone it.
+""",
+        """# AGENTS.md
+
+For anyone working in this repository, person or AI assistant.
+
+## What this application is
+
+Not written yet. Whoever owns this application says here, in a few lines, what it does, for whom, and which real systems
+it reads or writes. It belongs to its organization: its names, its systems and its real work belong in it.
+""",
+    ),
+    ("| Never imports from `app/demo/` |", "| Never imports from the application's own folders |"),
+    (
+        "| `app/demo/` | Demo screens, models, generated data, the gallery and their translations | "
+        "Deleting it leaves a working application |\n",
+        "| `app/<your-folder>/` | This application's screens, models and their translations | "
+        "Installed from `app/main.py` |\n",
+    ),
+    (
+        "`app/ui/catalog.py`, then run `tools/components.py`. `app/demo/examples/` is generated too, from daisyUI's "
+        "documentation:\nnever edit it, run `tools/gallery.py`. To see a component live, open `/gallery/<name>` in the "
+        "demo.\n",
+        "`app/ui/catalog.py`, then run `tools/components.py`.\n",
+    ),
+    (
+        """screens call `button`, not a raw `.btn`. daisyUI's examples in
+  the gallery are reference material, not a model for a screen. After changing templates, run
+""",
+        """screens call `button`, not a raw `.btn`. After changing templates, run
+""",
+    ),
+    ("- A new component needs its page in the demo and its tests,", "- A new component needs its tests,"),
+    ("and no real people or companies in demo data.", "and no real people's data in tests or examples."),
+    (
+        "uv run --frozen python tools/gallery.py check        "
+        "# generated from daisyUI's documentation: tools/gallery.py\n",
+        "",
+    ),
+    (
+        """Everything
+but the browser tests, in two commands that each fit; if one is cut, split it by file:
+
+```bash
+uv run --frozen pytest -q -m "not browser" --ignore=tests/demo
+uv run --frozen pytest -q -m "not browser" tests/demo
+```
+
+"""
+        "- `tests/demo/test_clean_application.py` needs Tailwind's executable, which `tools/css.py` downloads to "
+        """`.cache/`. Without
+  it and without network, add `--ignore=tests/demo/test_clean_application.py` and say so.
+""",
+        """Everything
+but the browser tests, which fits; if it is cut, split it by file:
+
+```bash
+uv run --frozen pytest -q -m "not browser"
+```
+
+""",
+    ),
+)
+"""What changes in AGENTS.md: the base describes a neutral demo, and an application is neither of those."""
 
 
 def rewrite(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8", newline="\n")
 
 
+def changed(path: Path, changes: tuple[tuple[str, str], ...]) -> None:
+    """A base can have edited the file: what is not there is said, and the rest of the step still happens."""
+    text = path.read_text(encoding="utf-8")
+    for old, new in changes:
+        if old in text:
+            text = text.replace(old, new)
+        else:
+            print(f"{path.name}: not found, so change it by hand: {old.splitlines()[0]}")
+    rewrite(path, text)
+
+
 def main() -> None:
+    if not (ROOT / "app" / "demo").exists():
+        raise SystemExit("There is no demo here: this is an application already, and nothing was changed.")
+
     for folder in (ROOT / "app" / "demo", ROOT / "tests" / "demo", ROOT / "app" / "ui" / "static" / "placeholders"):
         if folder.exists():
             shutil.rmtree(folder)
@@ -75,6 +159,8 @@ def main() -> None:
         for rule in sorted(ONLY_ON_DEMO):
             text = re.sub(rf"^(\| {rule} \|.*\| )Automatic( \|)$", r"\1By hand\2", text, flags=re.M)
         rewrite(standards, text)
+
+    changed(ROOT / "AGENTS.md", AGENTS_CHANGES)
 
 
 if __name__ == "__main__":

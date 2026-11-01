@@ -4,6 +4,7 @@ Each runs in a copy, in the way a person would, with nothing set that a person w
 would hide the very thing it is here to find.
 """
 
+import re
 import subprocess
 from pathlib import Path
 
@@ -70,6 +71,35 @@ def test_every_icon_left_is_used(application):
     shell = "".join(path.read_text(encoding="utf-8") for path in sources)
     icons = application / "app" / "ui" / "templates" / "ui" / "icons"
     assert [icon.stem for icon in icons.glob("*.svg") if f'"{icon.stem}"' not in shell] == []
+
+
+def test_agents_md_describes_an_application(application):
+    text = (application / "AGENTS.md").read_text(encoding="utf-8")
+    assert re.findall(r"^## .+", text, re.M)[0] == "## What this application is"
+    assert not re.search(r"\bdemo\b|gallery|business-app-base|neutral|tests/demo", text, re.I)
+    assert b"\r\n" not in (application / "AGENTS.md").read_bytes()
+    for link in re.findall(r"\]\((?!http)([^)#]+)", text):
+        assert (application / link).exists(), link
+
+
+def test_it_changes_all_of_agents_md_and_a_base_that_edited_it_hears_what_it_missed(tmp_path, capsys):
+    source = ROOT / "AGENTS.md"
+    assert all(old in source.read_text(encoding="utf-8") for old, _new in remove_demo.AGENTS_CHANGES)
+    edited = tmp_path / "AGENTS.md"
+    edited.write_text("# Our base\n\n- A new component needs its page in the demo and its tests,\n", encoding="utf-8")
+    remove_demo.changed(edited, remove_demo.AGENTS_CHANGES[5:6])
+    assert edited.read_text(encoding="utf-8") == "# Our base\n\n- A new component needs its tests,\n"
+    remove_demo.changed(edited, remove_demo.AGENTS_CHANGES[:1])
+    assert "AGENTS.md: not found, so change it by hand: # AGENTS.md — business-app-base" in capsys.readouterr().out
+
+
+def test_a_second_run_changes_nothing(application):
+    agents = application / "AGENTS.md"
+    before = agents.read_bytes()
+    again = run_in(application, "tools/remove_demo.py")
+    assert again.returncode != 0
+    assert "an application already" in again.stderr
+    assert agents.read_bytes() == before
 
 
 def test_the_stylesheet_shrinks(application):

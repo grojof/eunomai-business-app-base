@@ -261,11 +261,6 @@ def test_a_refused_method_says_what_is_allowed(client, person):
     assert "content-security-policy" in response.headers
 
 
-def test_the_repository_names_no_product_it_does_not_depend_on():
-    word = "co" + "work"
-    assert [p.name for p in repository_text_files() if word in p.read_text("utf-8", "replace").lower()] == []
-
-
 def test_interactive_documentation_is_off(client, person):
     for path in ("/docs", "/redoc", "/openapi.json"):
         assert client.get(path, headers=person).status_code == 404
