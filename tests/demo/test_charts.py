@@ -338,9 +338,7 @@ def test_a_chart_is_redrawn_by_a_screen_size_change(open_page):
     canvas = page.locator("[data-chart-examples] canvas").first
     wide = canvas.bounding_box()["width"]
     page.set_viewport_size({"width": 390, "height": 800})
-    page.wait_for_timeout(300)
-    box = canvas.bounding_box()
-    assert box["width"] < wide
+    until(page, f"document.querySelector('[data-chart-examples] canvas').getBoundingClientRect().width < {wide}")
     assert not overflows_sideways(page)
 
 
