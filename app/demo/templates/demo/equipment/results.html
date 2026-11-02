@@ -15,7 +15,7 @@
 {{ cell(row.cost|decimal(2), numeric=true, wide_only=true) }}
 {{ row_actions([
   (_("View"), _("View %(code)s", code=row.code), "/equipment/" ~ row.id, "eye"),
-  (_("Work orders"), _("Work orders of %(code)s", code=row.code), "/equipment/" ~ row.id ~ "?tab=orders", "history"),
+  (_("Work orders"), _("Work orders of %(code)s", code=row.code), "/equipment/" ~ row.id ~ "?tab=orders", "rotate-ccw-clock"),
 ]) }}
 {% endcall %}
 {{ pagination(view) }}

@@ -15,3 +15,5 @@ app/ui/static/vendor/** -text
 tests/vendor/** -text
 tools/tailwind/** -text
 app/ui/static/app.css -text
+tools/lucide/** -text
+app/ui/templates/ui/icons/** -text

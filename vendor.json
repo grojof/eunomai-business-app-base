@@ -67,5 +67,19 @@
     "target": "tools/tailwind/daisyui-docs.json",
     "script": false,
     "sha384": "I2ONUDQdmD8ANCUlc8SAVSEgse4Wrmfm3spZ7Pgn0DZcj8Ez5SviOOAFHchTaPib"
+  },
+  "lucide-static": {
+    "version": "1.59.0",
+    "folder": "app/ui/templates/ui/icons",
+    "script": false,
+    "sha384": "TVPNN4B7+sDQv2LR4/6SaS6bEVu8ChEoMaTDZeun1i1WYzNSAEhok+LwWYZSucZ3"
+  },
+  "lucide-index": {
+    "package": "lucide-static",
+    "version": "1.59.0",
+    "archive": "https://codeload.github.com/lucide-icons/lucide/tar.gz/refs/tags/{version}",
+    "target": "tools/lucide/index.json",
+    "script": false,
+    "sha384": "6OnQSCqpe1HuvDg9fXYo2Z752keLEDH2LRa3oxzSbY0psMNwwFphb8yutn6TcfC6"
   }
 }

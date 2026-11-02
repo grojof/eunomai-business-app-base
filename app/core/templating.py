@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-from jinja2 import ChoiceLoader, Environment, FileSystemLoader, StrictUndefined
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader, PrefixLoader, StrictUndefined
 
 from app import __version__
 from app.core import formatters, i18n
@@ -20,6 +20,8 @@ from app.core.settings import LAYOUTS
 UI = Path(__file__).resolve().parent.parent / "ui"
 ROOT = UI.parent.parent
 _loaders: list[FileSystemLoader] = [FileSystemLoader(UI / "templates")]
+BRAND_ICONS = FileSystemLoader(UI.parent / "brand" / "icons")
+"""The organization's own icons, as `brand-icons/<name>.svg`. Only the icon macro includes them, as it does Lucide's."""
 _VENDORED = json.loads((ROOT / "vendor.json").read_text(encoding="utf-8"))
 
 
@@ -30,7 +32,7 @@ def _script(entry: dict[str, Any]) -> dict[str, str]:
 _VENDOR_SCRIPTS = [_script(entry) for entry in _VENDORED.values() if entry.get("script") and not entry.get("on_demand")]
 
 environment = Environment(
-    loader=ChoiceLoader(_loaders),
+    loader=ChoiceLoader([ChoiceLoader(_loaders), PrefixLoader({"brand-icons": BRAND_ICONS})]),
     autoescape=True,
     undefined=StrictUndefined,
     extensions=["jinja2.ext.i18n"],

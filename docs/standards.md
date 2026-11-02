@@ -158,6 +158,7 @@ Catalan.
 | COMP-02 | Every component has a page with frontmatter and a description; each official page shows its status; one with problems says why | Project decision | Automatic |
 | COMP-03 | The gallery shows every component with its status and every official example, counted from daisyUI's documentation, and generated data matches that documentation. A macro appears on the page of its component | Project decision | Automatic |
 | COMP-04 | A class in use must exist, read from real pages, macro arguments, `{% set %}` values and the catalogue; values such as `[color:#ff0000]` are refused. Component classes outside what Tailwind reads are caught; Tailwind utilities in Python files are not | Project decision | Automatic |
+| COMP-05 | An icon comes from Lucide's pinned set or the organization's own, only through the `icon` macro: no SVG is drawn inline in a template, code, script or stylesheet, and no SVG file lies outside its place. Every name a template or the code asks for exists, no name is in both sets, and the organization's icons are drawn like Lucide's: 24 by 24, in `currentColor`, with no colour, style, id or size of their own | Project decision | Automatic |
 
 ## Data
 
@@ -193,4 +194,5 @@ in the Ubuntu job.
 | SEC-12 | Uploads are checked by size and real type | [ASVS V5](https://asvs.owasp.org/), [OWASP File Upload](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html) | Automatic |
 | SEC-14 | Text is never run as code: no `eval`, `new Function` or `exec`, and the browser refuses them | [CWE-95](https://cwe.mitre.org/data/definitions/95.html), [CSP 3](https://www.w3.org/TR/CSP3/), [htmx security](https://htmx.org/essays/web-security-basics-with-htmx/) | Automatic |
 | SEC-15 | A spreadsheet never runs what it exports: text that could start a formula is neutralised, and no cell holds one | [OWASP CSV Injection](https://owasp.org/www-community/attacks/CSV_Injection) | Automatic |
+| SEC-16 | An illustration is a file in `app/ui/static/illustrations/`, shown with `<img>` or as a CSS background, never inline, so nothing in it can run in the page. It and every other SVG shown as an image hold no script, event attribute, `javascript:` address, `<foreignObject>`, or reference outside the file other than an embedded raster image | [SVG Integration, secure animated mode](https://www.w3.org/TR/svg-integration/#secure-animated-mode), [OWASP XSS Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html) | Automatic |
 | SEC-13 | Cookies are `HttpOnly` and `SameSite`, and `Secure` in production; a redirect never leaves the application | [ASVS V3](https://asvs.owasp.org/), [Top 10 A01](https://top10.owasp.org/2025/) | Automatic |

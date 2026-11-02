@@ -13,6 +13,11 @@ Nothing runs npm. How each file is pinned:
 - daisyUI's documentation source: the gallery's examples and daisyUI's own translations of them. daisyui.com has no
   file for this, so its pages are collected from the same tag into one file, pinned by the hash recorded here.
 - Tailwind's executables: the hashes come from the release's sha256sums.txt, and tools/css.py checks them on every run.
+- Lucide's icons: a whole folder, taken from lucide-static's tarball, which the registry's integrity checks. It holds
+  every icon the package lists in tags.json, and its licence. The folder is pinned by one hash of every file's name and
+  content, so an icon added by hand, changed or removed fails the check.
+- Lucide's index: each icon's tags, categories and old names, from Lucide's repository at the version's git tag, which
+  publishes no checksum: pinned by the hash recorded here, and moved with the icons or not at all.
 
 Every version passes the same rules: nothing younger than two weeks, unless it fixes a known vulnerability.
 """
@@ -40,6 +45,10 @@ LLMS_RECIPE = "packages/docs/src/routes/llms.txt/+server.js"
 DOCS_PAGE = re.compile(r"packages/docs/src/routes/\(routes\)/components/([a-z0-9-]+)/\+page\.md")
 DOCS_TRANSLATION = re.compile(r"packages/docs/src/translation/([a-z]+)\.components\.json")
 DOCS_LICENCE = "LICENSE"
+LUCIDE_LISTING = "package/tags.json"
+"""Every icon lucide-static offers, by name. Its icons/ folder also has each old name as a copy: those stay out."""
+LUCIDE_ICON = re.compile(r"icons/([a-z0-9-]+)\.json")
+LUCIDE_CATEGORY = re.compile(r"categories/([a-z0-9-]+)\.json")
 
 
 class Refused(RuntimeError):
@@ -170,14 +179,97 @@ def assemble_llms(skills: dict[str, str]) -> str:
     return _frontmatter("\n\n".join(part for part in parts if part))
 
 
-def tag_files(version: str) -> Iterator[tuple[str, bytes]]:
-    """Each file of a version's git tag, with its path inside the repository."""
-    url = f"https://codeload.github.com/saadeghi/daisyui/tar.gz/refs/tags/v{version}"
+def archive_files(url: str) -> Iterator[tuple[str, bytes]]:
+    """Each file of a git tag's archive, with its path inside the repository: the archive's top folder goes."""
     with tarfile.open(fileobj=io.BytesIO(download(url))) as archive:
         for member in archive.getmembers():
             extracted = archive.extractfile(member) if member.isfile() else None
             if extracted is not None:
-                yield member.name.removeprefix(f"daisyui-{version}/"), extracted.read()
+                yield member.name.partition("/")[2], extracted.read()
+
+
+def tag_files(version: str) -> Iterator[tuple[str, bytes]]:
+    """Each file of a daisyUI version's git tag."""
+    return archive_files(f"https://codeload.github.com/saadeghi/daisyui/tar.gz/refs/tags/v{version}")
+
+
+def lucide_icons(version: str) -> dict[str, bytes]:
+    """The icon folder for one version: each listed icon as `<name>.svg`, as published, and the licence."""
+    with tarfile.open(fileobj=io.BytesIO(tarball("lucide-static", version))) as archive:
+        files = {
+            member.name: extracted.read()
+            for member in archive.getmembers()
+            if member.isfile() and (extracted := archive.extractfile(member)) is not None
+        }
+    if LUCIDE_LISTING not in files or "package/LICENSE" not in files:
+        raise Refused(f"lucide-static {version}: no list of icons or no licence where they were")
+    listed = sorted(json.loads(files[LUCIDE_LISTING]))
+    missing = [name for name in listed if f"package/icons/{name}.svg" not in files]
+    if missing:
+        raise Refused(f"lucide-static {version}: listed icons with no drawing: {missing}")
+    return {f"{name}.svg": files[f"package/icons/{name}.svg"] for name in listed} | {
+        "LICENSE": files["package/LICENSE"]
+    }
+
+
+def index_text(version: str, licence: str, categories: dict[str, str], icons: dict[str, dict[str, Any]]) -> str:
+    """JSON with one line per icon and per category, so a new version reads as a list of the icons that changed."""
+
+    def lines(items: dict[str, Any]) -> str:
+        return ",\n".join(
+            f"  {json.dumps(key)}: {json.dumps(value, ensure_ascii=False, sort_keys=True)}"
+            for key, value in sorted(items.items())
+        )
+
+    head = f'{{\n "version": {json.dumps(version)},\n "licence": {json.dumps(licence, ensure_ascii=False)},\n'
+    return head + f' "categories": {{\n{lines(categories)}\n }},\n "icons": {{\n{lines(icons)}\n }}\n}}\n'
+
+
+def lucide_index(version: str, url: str) -> bytes:
+    """Each icon's tags, categories, old names and whether it is deprecated, from the version's tag."""
+    icons: dict[str, dict[str, Any]] = {}
+    categories: dict[str, str] = {}
+    licence = ""
+    for path, content in archive_files(url.format(version=version)):
+        icon = LUCIDE_ICON.fullmatch(path)
+        category = LUCIDE_CATEGORY.fullmatch(path)
+        if icon:
+            data = json.loads(content)
+            aliases = sorted(alias["name"] if isinstance(alias, dict) else alias for alias in data.get("aliases", []))
+            entry: dict[str, Any] = {"tags": data.get("tags", []), "categories": data.get("categories", [])}
+            if aliases:
+                entry["aliases"] = aliases
+            if data.get("deprecated"):
+                entry["deprecated"] = True
+            icons[icon[1]] = entry
+        elif category:
+            categories[category[1]] = json.loads(content)["title"]
+        elif path == "LICENSE":
+            licence = content.decode("utf-8")
+    unknown = sorted({name for icon in icons.values() for name in icon["categories"]} - set(categories))
+    if not icons or not categories or not licence or unknown:
+        raise Refused(f"lucide-index {version}: icons, categories {unknown} or licence not where they were")
+    return index_text(version, licence, categories, icons).encode("utf-8")
+
+
+def folder_digest(files: dict[str, bytes]) -> str:
+    """One hash for a whole folder: every file's name and content, in the order of their names."""
+    return sha384("".join(f"{name}\0{sha384(content)}\n" for name, content in sorted(files.items())).encode())
+
+
+def read_folder(folder: Path) -> dict[str, bytes]:
+    if not folder.is_dir():
+        return {}
+    return {path.relative_to(folder).as_posix(): path.read_bytes() for path in folder.rglob("*") if path.is_file()}
+
+
+def write_folder(folder: Path, files: dict[str, bytes]) -> None:
+    """The folder holds exactly these files afterwards."""
+    for name in set(read_folder(folder)) - set(files):
+        (folder / name).unlink()
+    for name, content in files.items():
+        (folder / name).parent.mkdir(parents=True, exist_ok=True)
+        (folder / name).write_bytes(content)
 
 
 def daisyui_llms(version: str, recipe: str) -> bytes:
@@ -220,6 +312,8 @@ def content_of(name: str, entry: dict[str, Any], version: str) -> bytes:
         return daisyui_llms(version, entry["recipe"])
     if "languages" in entry:
         return daisyui_docs(version, entry["languages"])
+    if "archive" in entry:
+        return lucide_index(version, entry["archive"])
     if "url" in entry:
         return download(entry["url"].format(version=version))
     return fetch(name, version, entry["file"])
@@ -228,6 +322,10 @@ def content_of(name: str, entry: dict[str, Any], version: str) -> bytes:
 def check() -> list[str]:
     problems = []
     for name, entry in read_entries().items():
+        if "folder" in entry:
+            if folder_digest(read_folder(ROOT / entry["folder"])) != entry["sha384"]:
+                problems.append(f"{name}: {entry['folder']} does not match vendor.json")
+            continue
         if "target" not in entry:  # an executable: tools/css.py checks it every time it runs
             continue
         path = ROOT / entry["target"]
@@ -246,6 +344,8 @@ def _update_entry(name: str, entry: dict[str, Any], changes: list[str]) -> str |
             entry.update(version=version, executables=executable_hashes(version, entry["executables"]))
             changes.append(f"`{name}` to {version}")
         return None
+    if "folder" in entry:
+        return _update_folder(name, entry, version, changes)
     target = ROOT / entry["target"]
     same_version = version == entry["version"]
     if same_version and target.exists() and sha384(target.read_bytes()) == entry["sha384"]:
@@ -257,6 +357,26 @@ def _update_entry(name: str, entry: dict[str, Any], changes: list[str]) -> str |
     target.write_bytes(content)
     changes.append(f"`{name}` {entry['version']} to {version}")
     entry.update(version=version, sha384=sha384(content))
+    return None
+
+
+def _update_folder(name: str, entry: dict[str, Any], version: str, changes: list[str]) -> str | None:
+    """Lucide's icons, as a whole. A screen may use any of them, so a version that removes one waits for a person."""
+    folder = ROOT / entry["folder"]
+    same_version = version == entry["version"]
+    present = read_folder(folder)
+    if same_version and folder_digest(present) == entry["sha384"]:
+        return None
+    files = lucide_icons(version)
+    if same_version and folder_digest(files) != entry["sha384"]:
+        raise Refused(f"version {version} no longer gives the folder recorded in vendor.json")
+    if not same_version:
+        removed = sorted(Path(item).stem for item in set(present) - set(files) if item.endswith(".svg"))
+        if removed:
+            raise Refused(f"version {version} removes icons a screen may use: {removed}")
+    write_folder(folder, files)
+    changes.append(f"`{name}` {entry['version']} to {version}")
+    entry.update(version=version, sha384=folder_digest(files))
     return None
 
 

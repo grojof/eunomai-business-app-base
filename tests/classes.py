@@ -14,8 +14,16 @@ from tests.helpers import ROOT, without_official_examples
 
 NO_CSS_OF_THEIR_OWN = {"drawer-button", "theme-controller"}
 """Real names in daisyUI's documentation that only mark an element: no rule needs them in this stylesheet."""
-ICONS = {icon.stem for icon in (ROOT / "app" / "ui" / "templates" / "ui" / "icons").glob("*.svg")}
-"""`calendar-range` looks like a class of daisyUI's calendar, and Python may well hold it: it names an icon."""
+DAISYUI_CLASSES = {
+    name
+    for page in (ROOT / "docs" / "components").glob("*.md")
+    for name in re.findall(r"`([a-z0-9-]+)`", page.read_text(encoding="utf-8"))
+}
+ICONS = {
+    icon.stem for folder in ("ui/templates/ui/icons", "brand/icons") for icon in (ROOT / "app" / folder).glob("*.svg")
+} - DAISYUI_CLASSES
+"""`calendar-range` looks like a class of daisyUI's calendar, and Python may well hold it: it names an icon. A name that
+is also one of daisyUI's classes, such as Lucide's `badge-info`, stays suspect: as a class, it would get no CSS."""
 _ESCAPE = r"\\[0-9a-fA-F]{1,6}\s?|\\[^0-9a-fA-F\n]"
 _START = rf"-{{0,2}}(?:[A-Za-z_]|[^\x00-\x7f]|{_ESCAPE})"
 _CLASS = re.compile(rf"(?<![\w.%\\])\.({_START}(?:[\w-]|[^\x00-\x7f]|{_ESCAPE})*)")

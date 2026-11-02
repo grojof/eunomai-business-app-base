@@ -13,27 +13,6 @@ ROOT = Path(__file__).resolve().parent.parent
 ONLY_ON_DEMO = {"A11Y-09", "COMP-03", "DATA-07", "USE-03"}
 """Rules whose only proof is a demo screen. Without the demo nothing proves them automatically, so they stop saying so:
 they become `By hand` until the application has a screen, and a test, of its own. A test keeps this set exact."""
-DEMO_ICONS = (
-    "calendar",
-    "calendar-range",
-    "clipboard-list",
-    "clock",
-    "component",
-    "database",
-    "download",
-    "eye",
-    "file-spreadsheet",
-    "gauge",
-    "history",
-    "paperclip",
-    "plus",
-    "printer",
-    "shield",
-    "trash-2",
-    "wallet",
-    "wrench",
-)
-"""Icons only the demo uses. The rest belong to the application's shell."""
 DEMO_MIGRATIONS = "*_demo_*.py"
 AGENTS_CHANGES = (
     (
@@ -133,8 +112,7 @@ def main() -> None:
     for folder in (ROOT / "app" / "demo", ROOT / "tests" / "demo", ROOT / "app" / "ui" / "static" / "placeholders"):
         if folder.exists():
             shutil.rmtree(folder)
-    for icon in DEMO_ICONS:
-        (ROOT / "app" / "ui" / "templates" / "ui" / "icons" / f"{icon}.svg").unlink(missing_ok=True)
+    # Lucide's icons stay whole, as vendor.json pins them, and so do the organization's: any screen may use any of them.
 
     # These migrations hold only the demo's tables. The tooling stays, and the application's own starts from zero.
     for migration in (ROOT / "migrations" / "versions").glob(DEMO_MIGRATIONS):

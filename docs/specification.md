@@ -24,13 +24,14 @@ Success means three things, each testable:
 ```text
 app/
   core/      identity, roles, settings, database, exact column types, server lists, reading forms, languages, formatters, errors, health
-  ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, charts.js, vendored htmx and Chart.js
-  brand/     theme.css, logo.svg
+  ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, charts.js, vendored htmx and Chart.js,
+             Lucide's icons in templates/ui/icons/, illustrations in static/illustrations/
+  brand/     theme.css, logo.svg, the organization's own icons in icons/
   demo/      screens, their fixed values, models and generated data, the gallery with its generated examples/, translations
 locales/     the translations of core and ui
 migrations/  Alembic: how it reaches the database, the template of a migration, and versions/
 tests/
-tools/       stylesheet, component pages, gallery data, translations, CLDR data, copied files, dependency update, demo removal
+tools/       stylesheet, component pages, gallery data, translations, CLDR data, copied files, icon search and checks, dependency update, demo removal
 docs/
   components/  one page per component, generated, and catalog.json
 ```
@@ -59,6 +60,7 @@ In use today:
 | Tables | A native HTML table with daisyUI's classes; paging, sorting, filtering and grouping on the server |
 | Excel | XlsxWriter, on the server |
 | Charts | Chart.js, with a text summary and the data as a table |
+| Icons | Lucide, every icon, copied and pinned; no other collection. The organization may add its own |
 | Support | python-multipart for posted forms and uploads; tzdata, because Windows has no time zone database |
 | Development | pytest, httpx2, Playwright for Python, axe-core, Ruff, mypy |
 
@@ -97,7 +99,8 @@ open. *Reported* below means exactly that: the problem goes to the issue, the ve
 
 If a new daisyUI file breaks `docs/components/` or the [gallery](#gallery), such as a new or removed component or a
 changed format, every daisyUI file stays at its version, an issue says why, and everything else goes ahead. They move
-together or not at all. Any failed update opens the issue too. The job that
+together or not at all, and so do Lucide's icons and their index. A Lucide version that would remove an icon is
+refused, because a screen may use it: a person decides. Any failed update opens the issue too. The job that
 runs upgraded code can only read; a separate job, which runs no project code, opens the pull request, and accepts only
 the files the update produces.
 
@@ -110,6 +113,8 @@ Each copied file is pinned, and the same version with different bytes is refused
 | daisyUI's `.mjs` files | A hash recorded on first download: daisyUI publishes no checksum for them |
 | daisyUI's `llms.txt` | A hash of what [the rebuild](#documentation-for-assistants) gives |
 | daisyUI's documentation source | A hash of the file collected from the version's tag, for the [gallery](#gallery) |
+| Lucide's icons | The integrity npm publishes for `lucide-static`, then one hash of the whole folder: every file's name and content |
+| Lucide's index | A hash of the file collected from the version's tag: Lucide publishes no checksum for it |
 
 A new version of any of these files is accepted on the two-week rule. Its checksum proves it is what was published, not
 that it is good, and the `.mjs` files do not have even that.
@@ -462,6 +467,44 @@ leaves out backgrounds. The equipment detail prints both of its tabs.
 
 A component is left out until a real need appears for it. The base stays small enough to read.
 
+### Icons and illustrations
+
+An icon is a small symbol beside words; an illustration is a picture that stands on its own. They are kept apart:
+
+| | Icons | Illustrations |
+|---|---|---|
+| Where | Lucide's in `app/ui/templates/ui/icons/`; the organization's in `app/brand/icons/` | `app/ui/static/illustrations/` |
+| Shown | Only by the `icon` macro, which writes that one icon into the page, hidden from screen readers | Only with `<img src>`, with its `alt`, or as a CSS background: never inline |
+| Made by | Lucide; the organization's designer or tools | The organization's own tools, animated ones included |
+| Checked by | `tools/vendor.py check` for Lucide's folder; `tools/icons.py check` and the tests for the rest, [COMP-05](standards.md#components) | `tools/icons.py check` and the tests, [SEC-16](standards.md#security) |
+
+**Lucide.** Every icon of `lucide-static`, as published, about 1,900, with its ISC licence beside them in `LICENSE`.
+Lucide accepts no brand logos. The package's folder also holds each old name as a copy of the new one: those stay out,
+and the index keeps them, so `tools/icons.py search trash-2` answers `trash`. A page grows only by the icons it shows.
+`tools/lucide/index.json` holds, for each icon, Lucide's tags and categories from its repository at the same version,
+one line per icon. Both are [copied files](#dependencies), updated by the same daily workflow.
+
+**Search.** `uv run --frozen python tools/icons.py search <words>` reads names, tags, categories, old names, the
+organization's tags, and `tools/icon-synonyms.json`: about a hundred common business words in Spanish and in Catalan,
+kept here, each pointing at icons that exist. Lucide's English tags alone find the right icon for 3 of 108 Spanish
+words and 4 of 108 Catalan ones, which is why the list exists. The search needs no network.
+
+**The organization's icons.** SVG files in `app/brand/icons/`, named like Lucide's, with an optional `tags.json` in the
+index's form: `{"icons": {"pallet-jack": {"tags": ["forklift"], "categories": ["transportation"]}}}`. The search shows
+them as the organization's. Each must look like Lucide's: viewBox `0 0 24 24`, drawn in `currentColor` so themes and
+states colour it, and no colour, `style`, `<style>`, `id`, or size other than 24 of its own, since the page's policy
+refuses inline style and the macro's classes size it. A name Lucide already has is refused, so nothing is replaced in
+silence: an organization's version of a concept takes its own name, such as `truck-ours`.
+
+**Illustrations.** A file shown as an image runs no script and loads nothing else, which inline SVG cannot promise.
+Each SVG there, the brand's logos and the demo's placeholders are still checked for what would matter if one were opened
+on its own: no `<script>`, event attribute, `javascript:` address, `<foreignObject>`, element outside SVG, DOCTYPE, or
+reference outside the file, in `href`, `url()` or `@import`, except an embedded PNG, JPEG, GIF, WebP or AVIF. The check
+names the file and the reason. Measured in Chrome 156 with the page's own policy on the page and on the SVG, served as
+the application serves static files: SMIL and CSS animations in a `<style>` block both play, in `<img>` and as a CSS
+background, so no policy changes. Opened directly as a page, the same SVG loses its `<style>`, which the policy refuses.
+A browser test keeps that measurement.
+
 ## The demo
 
 A fictional company maintains its equipment. The scenario needs no real data:
@@ -597,6 +640,8 @@ each page says so.
 | To do this | Change |
 |---|---|
 | Your colours, radius and logos | The base uses daisyUI's `light` and `dark` themes as they come. To change them, paste what [daisyUI's theme generator](https://daisyui.com/theme-generator/) gives you into `app/brand/theme.css`, in hex or oklch, and run `tools/css.py`. Contrast of your theme's text colours is then computed |
+| Your icons | SVG files in `app/brand/icons/`, drawn as [Icons and illustrations](#icons-and-illustrations) says, and their words in `app/brand/icons/tags.json`. Use a name Lucide does not have. Then `tools/icons.py check` |
+| Your illustrations | Files in `app/ui/static/illustrations/`, from your own tools, shown with `<img src>` or as a CSS background. Then `tools/icons.py check` |
 | Another CSS library | `app/ui/`: the macros and the stylesheet's source; screens do not change |
 | Your languages | Each folder under `locales/` is a required language: add yours, run `tools/translations.py update` and translate it. Change `APP_LANGUAGES` too |
 | Your time zone | `APP_TIME_ZONE`; the default is UTC |
@@ -604,7 +649,7 @@ each page says so.
 | Your uploads | `APP_UPLOAD_FOLDER`, `APP_UPLOAD_MAX_BYTES`, `APP_REQUEST_MAX_BYTES`, and `KINDS` in `app/core/uploads.py`. Read [what production needs](#uploads) |
 | Add a table | A model on `Base`, its module imported in `migrations/env.py`, then `alembic revision --autogenerate` and read what it wrote. A test compares models and migrations |
 | Your identity proxy | Settings: `APP_TRUSTED_PROXIES`, `APP_HEADER_*`, `APP_GROUPS_SEPARATOR`, `APP_ROLE_GROUPS` |
-| Start an application | Clone your copy and run `tools/remove_demo.py`, then `tools/css.py`. It deletes the demo with its tests and icons, its models and first migration, the gallery's source and placeholders, renames `demo-admins` in `.env.example` and in the preview, turns the rules only the demo proved to *By hand*, and makes `AGENTS.md` describe an application, with a place at its top for what yours is. Fill that in first. A base that edited `AGENTS.md` is told which changes it must make by hand. It runs once: a second run refuses, so it can never overwrite what was written. The application keeps the settings menu, the palette, `app/core/`'s database and Alembic with no migrations, ready for its own, and its stylesheet shrinks by more than a quarter. Run it before adding a migration, which would otherwise follow the demo's. `tools/gallery.py` stays, with nothing to do |
+| Start an application | Clone your copy and run `tools/remove_demo.py`, then `tools/css.py`. It deletes the demo with its tests, its models and first migration, the gallery's source and placeholders, renames `demo-admins` in `.env.example` and in the preview, turns the rules only the demo proved to *By hand*, and makes `AGENTS.md` describe an application, with a place at its top for what yours is. Fill that in first. A base that edited `AGENTS.md` is told which changes it must make by hand. It runs once: a second run refuses, so it can never overwrite what was written. The application keeps the settings menu, the palette, every icon, Lucide's and the organization's, the illustrations, `app/core/`'s database and Alembic with no migrations, ready for its own, and its stylesheet shrinks by more than a quarter. Run it before adding a migration, which would otherwise follow the demo's. `tools/gallery.py` stays, with nothing to do |
 | See it on a person's computer | `[preview]` in `.eunomai/project.toml`, which a connector reads from the main branch: `setup` runs once, then `run`, each after `uv run --frozen`, in an export of the repository with no `.env`, with `[preview.environment]`. That gives a made-up person with the admin role, so nobody signs in, and a SQLite file in the run folder. Everything it needs is in the main dependencies: the connector installs without development tools. `tools/remove_demo.py` changes `setup` to the migrations. An application that adds its own first rows adds them here |
 | Add your own component | A macro in `app/ui/`, its line in `app/ui/catalog.py`, and a page in `docs/components/`. Only `description` is required in the page's frontmatter; do not put the `Generated by tools/components.py` marker in it. `tools/components.py` keeps your page and adds it to the index. An approved component needs `macro=` in its line. In your organization's base, add `app/demo/templates/demo/gallery/specimens/<name>.html` and it appears on its gallery page; applications have no gallery |
 | Fix or hide the settings menu | `APP_LAYOUT_*` for the look, `APP_LAYOUT_CHOICES` for what people may change; `[]` hides the menu |
@@ -638,7 +683,8 @@ still runs.
 | Generated stylesheet | `tools/css.py check`: `app.css` matches the templates |
 | Component pages | `tools/components.py check`: `docs/components/` matches the official file and the catalogue |
 | Gallery data | `tools/gallery.py check`: `app/demo/examples/` matches daisyUI's documentation. A browser opens every component page and fails on console errors, policy violations and failed requests. Every official example appears, counted from the source; no inline style, handler or other server reaches a page; ids are unique per page |
-| Copied files | `tools/vendor.py check`: each file matches its recorded hash |
+| Copied files | `tools/vendor.py check`: each file matches its recorded hash, and Lucide's folder holds exactly the pinned version's files |
+| Icons and illustrations | `tools/icons.py check` and `tests/test_icons.py`: every name asked for exists, nothing is drawn inline, the organization's icons look like Lucide's and share no name with them, and every SVG shown as an image holds nothing that runs or loads. A browser test plays animated illustrations under the policy |
 | Linter, type checker, lock file, [dependency rules](#dependencies) | The code and its dependencies |
 
 Browser tests use Playwright for Python and a vendored axe-core. Both are development tools: no server needs them.

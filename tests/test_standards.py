@@ -272,6 +272,14 @@ def test_an_icons_name_is_not_a_misplaced_class(monkeypatch):
     assert classes.misplaced_classes('ICON = "btn-arrow"\n', python=True) == set()
 
 
+@pytest.mark.rule("COMP-04")
+def test_an_icon_named_like_a_daisyui_class_is_still_caught_as_a_class():
+    """Lucide has an icon called `badge-info`, which is also daisyUI's class: in Python it would get no CSS."""
+    assert (ROOT / "app" / "ui" / "templates" / "ui" / "icons" / "badge-info.svg").exists()
+    assert classes.misplaced_classes('KIND = "badge-info"\n', python=True) == {"badge-info"}
+    assert classes.misplaced_classes('ICON = "calendar-range"\n', python=True) == set()
+
+
 def test_colours_live_only_in_the_brand():
     for source in (ROOT / "app" / "ui" / "styles").rglob("*.css"):
         assert re.findall(r"#[0-9a-fA-F]{3,8}\b|\b(?:rgb|hsl|oklch)a?\(", source.read_text(encoding="utf-8")) == []
