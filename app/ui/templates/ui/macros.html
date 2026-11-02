@@ -437,7 +437,7 @@
       <input id="{{ view.name }}-search" type="search" name="q" value="{{ view.term }}" maxlength="80" autocomplete="off">
     </div>
   </div>
-  {% for choice in view.filters %}
+  {% for choice in view.filters if choice.in_form %}
   <div class="{{ choice_classes }}">
     {{ select_field(choice.key, choice.label, choice.options, view.chosen[choice.key], view.name ~ "-" ~ choice.key, choice.every, small=true) }}
   </div>
@@ -697,6 +697,44 @@
       {% endif %}
     </section>
     {% endfor %}
+  </div>
+</div>
+{% endmacro %}
+
+{#- A Gantt chart: a native table and, beside it, the same rows as bars on a calendar, drawn on the server as SVG. `plan` is
+    a Timeline from app/core/gantt.py, whose rows are those of the table, in order. The caller writes the table's bodies,
+    one row per task and a `rowgroup` heading for a group, and every action, as editing, lives there: the picture is
+    a picture of the table, named for a screen reader, with nothing to reach. Rows are 2.5rem high in both, and the
+    picture is measured in rem too, so a larger text keeps them in line. Its box scrolls sideways by itself. -#}
+{% macro gantt(identifier, caption, plan, headers, summary) %}
+{% set row = 40 %}{% set header = 48 %}
+<p id="{{ identifier }}-summary" class="px-4 pb-3 text-sm">{{ summary }}</p>
+<div id="{{ identifier }}" class="gantt flex items-start border-t border-base-300">
+  <div class="gantt-table min-w-0 shrink">
+    <table class="table table-xs">
+      <caption id="{{ identifier }}-caption" class="sr-only">{{ caption }}</caption>
+      <thead><tr>{% for text, wide_only in headers %}<th scope="col"{% if wide_only %} class="hidden md:table-cell"{% endif %}>{{ text }}</th>{% endfor %}</tr></thead>
+      {{ caller() }}
+    </table>
+  </div>
+  <div class="gantt-scroll min-w-0 flex-1 overflow-x-auto border-s border-base-300" role="region" tabindex="0" aria-label="{{ _('Timeline') }}">
+    <svg id="{{ identifier }}-picture" class="gantt-picture" role="img" aria-labelledby="{{ identifier }}-summary" width="{{ plan.width / 16 }}rem" height="{{ plan.height / 16 }}rem" viewBox="0 0 {{ plan.width }} {{ plan.height }}">
+      <defs>
+        <marker id="{{ identifier }}-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="gantt-arrow" d="M0 0L6 3L0 6z"/></marker>
+      </defs>
+      {% for x in plan.weekends %}<rect class="gantt-weekend" x="{{ x }}" y="{{ header }}" width="{{ plan.unit }}" height="{{ plan.height - header }}"/>{% endfor %}
+      {% for number in range(plan.rows + 1) %}<line class="gantt-grid" x1="0" x2="{{ plan.width }}" y1="{{ header + number * row }}" y2="{{ header + number * row }}"/>{% endfor %}
+      {% for tick in plan.months %}<line class="gantt-grid" x1="{{ tick.x }}" x2="{{ tick.x }}" y1="0" y2="{{ plan.height }}"/><text class="gantt-month" x="{{ tick.x + 4 }}" y="18">{{ tick.label }}</text>{% endfor %}
+      {% for tick in plan.ticks %}<text class="gantt-tick" x="{{ tick.x + 4 }}" y="40">{{ tick.label }}</text>{% endfor %}
+      {% for bar in plan.bars %}
+      <rect id="{{ identifier }}-bar-{{ bar.key }}" class="gantt-bar gantt-bar-{{ bar.kind }}" x="{{ bar.x }}" y="{{ bar.y }}" width="{{ bar.width }}" height="20" rx="4"/>
+      <text class="gantt-label" x="{{ bar.x + bar.width + 6 }}" y="{{ bar.y + 14 }}">{{ bar.label }}</text>
+      {% endfor %}
+      {% for path in plan.links %}<path class="gantt-link" d="{{ path }}" marker-end="url(#{{ identifier }}-arrow)"/>{% endfor %}
+      {% if plan.today is not none %}
+      <line class="gantt-today" x1="{{ plan.today }}" x2="{{ plan.today }}" y1="{{ header - 4 }}" y2="{{ plan.height }}"/>
+      {% endif %}
+    </svg>
   </div>
 </div>
 {% endmacro %}

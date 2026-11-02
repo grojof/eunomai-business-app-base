@@ -68,6 +68,8 @@ class Filter:
     condition: Callable[[str], ColumnElement[bool]] | None = None
     every: str = ""
     default: str = ""
+    in_form: bool = True
+    """False for a choice made elsewhere on the page, such as a tab or a scale: the form keeps it, hidden."""
 
 
 def _whole_number(text: str | None, default: int) -> int:
@@ -293,7 +295,8 @@ class ListView:
         """What the filter form must carry so that a plain submit keeps the order."""
         state = self._state()
         defaults = self._defaults(state)
-        return [(key, state[key]) for key in ("sort", "dir", "panel") if state[key] != defaults[key]]
+        kept = ["sort", "dir", "panel", *(choice.key for choice in self.filters if not choice.in_form)]
+        return [(key, state[key]) for key in kept if state[key] != defaults[key]]
 
     def panel_link(self, state: str) -> str:
         """This same page with its filter panel shown or hidden."""

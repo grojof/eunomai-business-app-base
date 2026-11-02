@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-02 12:18+0100\n"
+"POT-Creation-Date: 2026-11-02 13:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -309,6 +309,9 @@ msgstr "Carcasa agrietada"
 msgid "Dashboard"
 msgstr "Panel"
 
+msgid "Days"
+msgstr "Días"
+
 msgid "Decorative: not meant for management applications."
 msgstr "Decorativo: no pensado para aplicaciones de gestión."
 
@@ -360,6 +363,23 @@ msgstr ""
 "Cada línea es un enlace a su campo. El foco va al resumen cuando un "
 "formulario vuelve con errores, y un lector de pantalla lo lee."
 
+msgid ""
+"Each piece of equipment from its first day of work to its last. The "
+"cooling tower waits for the conveyor belt."
+msgstr ""
+"Cada equipo desde su primer día de trabajo hasta el último. La torre de "
+"refrigeración espera a la cinta transportadora."
+
+#, python-format
+msgid ""
+"Each work order from its planned day for as many days as its hours take "
+"its crew. The upright red line is today, %(today)s, and an arrow leads to"
+" a work order that waits for another."
+msgstr ""
+"Cada orden de trabajo desde su día planificado, durante los días que sus "
+"horas ocupan a su equipo. La línea roja vertical es hoy, %(today)s, y una"
+" flecha lleva a la orden de trabajo que espera a otra."
+
 msgid "Edit"
 msgstr "Editar"
 
@@ -398,6 +418,9 @@ msgstr "Equipos"
 
 msgid "Equipment and its state"
 msgstr "Equipos y su estado"
+
+msgid "Equipment and when its work is planned"
+msgstr "Equipos y cuándo está planificado su trabajo"
 
 msgid "Equipment by location"
 msgstr "Equipos por ubicación"
@@ -556,6 +579,9 @@ msgstr ""
 "Las horas trabajadas no se alejaron más de un 6 % de lo previsto en "
 "ningún mes."
 
+msgid "How the work is shown"
+msgstr "Cómo se muestra el trabajo"
+
 msgid "I have read the safety sheet"
 msgstr "He leído la ficha de seguridad"
 
@@ -633,6 +659,9 @@ msgstr "Mes"
 
 msgid "Month planned"
 msgstr "Mes previsto"
+
+msgid "Months"
+msgstr "Meses"
 
 msgid "Motor overload"
 msgstr "Sobrecarga del motor"
@@ -885,6 +914,12 @@ msgstr "Guardar"
 msgid "Saving…"
 msgstr "Guardando…"
 
+msgid "Scale"
+msgstr "Escala"
+
+msgid "Scale of the timeline"
+msgstr "Escala de la línea de tiempo"
+
 msgid ""
 "Screens call this macro, with tests and a review behind it. Use it "
 "instead of the classes below."
@@ -910,6 +945,9 @@ msgstr "Verlas en Planificación"
 
 msgid "Settings"
 msgstr "Ajustes"
+
+msgid "Show"
+msgstr "Mostrar"
 
 msgid "Show inspections"
 msgstr "Mostrar inspecciones"
@@ -952,6 +990,9 @@ msgstr "Repuestos en existencias"
 msgid "Standby generator"
 msgstr "Generador de reserva"
 
+msgid "Starts"
+msgstr "Empieza"
+
 msgid "State"
 msgstr "Estado"
 
@@ -983,6 +1024,9 @@ msgstr "Por ejemplo EQ-000123. Está en la lista de equipos."
 
 msgid "Summary"
 msgstr "Resumen"
+
+msgid "Table"
+msgstr "Tabla"
 
 msgid "That place on the board has changed. Here it is as it is now: try again."
 msgstr ""
@@ -1090,6 +1134,9 @@ msgstr "Este año"
 msgid "Tick this to go on."
 msgstr "Márcalo para continuar."
 
+msgid "Timeline"
+msgstr "Línea de tiempo"
+
 msgid "Title"
 msgstr "Título"
 
@@ -1137,8 +1184,14 @@ msgstr "Ver"
 msgid "View %(code)s"
 msgstr "Ver %(code)s"
 
+msgid "Waits for"
+msgstr "Espera a"
+
 msgid "Warehouse"
 msgstr "Almacén"
+
+msgid "Weeks"
+msgstr "Semanas"
 
 msgid "What has to be done"
 msgstr "Qué hay que hacer"
@@ -1235,6 +1288,13 @@ msgstr "Órdenes de trabajo de %(code)s"
 
 msgid "Work orders of this equipment, newest first"
 msgstr "Órdenes de trabajo de este equipo, las más recientes primero"
+
+msgid ""
+"Work orders on a timeline, with their start, their days and what they "
+"wait for"
+msgstr ""
+"Órdenes de trabajo en una línea de tiempo, con su inicio, sus días y lo "
+"que esperan"
 
 msgid "Work orders opened and backlog"
 msgstr "Órdenes abiertas y pendientes"

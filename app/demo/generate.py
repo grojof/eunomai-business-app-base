@@ -31,6 +31,7 @@ from app.demo.models import (
     WORK_ORDER_STATUSES,
     Equipment,
     WorkOrder,
+    working_days,
 )
 
 EQUIPMENT_ROWS = 50_000
@@ -138,13 +139,27 @@ def ranked_orders(orders: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [row | {"rank": ranks[row["id"]]} for row in orders]
 
 
+def waiting_orders(orders: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Each order with the one it waits for: the order before it on the same equipment, when that one ends before this
+    one is planned to start, as one job follows another."""
+    found = []
+    for position, row in enumerate(orders):
+        before = orders[position - 1] if position % len(ORDER_SPREAD) in (1, 2, 4) else None
+        after_id = None
+        if before and before["planned_on"] and row["planned_on"]:
+            ends = before["planned_on"] + timedelta(days=working_days(before["hours"], 1))
+            after_id = before["id"] if row["planned_on"] >= ends else None
+        found.append(row | {"after_id": after_id})
+    return found
+
+
 def replace_rows(session: Session, rows: int = EQUIPMENT_ROWS, seed: int = SEED) -> int:
     """Replaces the demo's tables, and returns how many work orders that made. The caller commits."""
     session.execute(delete(WorkOrder))
     session.execute(delete(Equipment))
     orders = (rows + WORK_ORDER_EVERY - 1) // WORK_ORDER_EVERY
     session.execute(insert(Equipment), [equipment_row(position, seed) for position in range(rows)])
-    order_rows = ranked_orders([work_order_row(position, seed) for position in range(orders)])
+    order_rows = waiting_orders(ranked_orders([work_order_row(position, seed) for position in range(orders)]))
     session.execute(insert(WorkOrder), order_rows)
     if session.get_bind().dialect.name == "postgresql":  # the numbers above were given, so its counters did not move
         for table, last in (("equipment", rows), ("work_order", orders)):

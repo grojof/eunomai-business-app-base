@@ -276,6 +276,23 @@ all and where the rest are; the caller of the macro writes a card's content.
 | A phone | Columns stack, so the page never scrolls sideways |
 | Settled attributes | htmx settles `class`, `width` and `height` only. A `style` attribute set by htmx is inline style, which the policy refuses, and SortableJS moves cards through the CSSOM: a test keeps the setting |
 
+### Timelines
+
+`app/core/gantt.py` and the macro `gantt` show rows on a calendar: a native table and, beside it, the same rows as bars,
+drawn on the server as SVG. Planning's Timeline tab is it, on the same page of the same filtered and sorted rows as its
+table: `show=timeline` and `scale` live in the address as filters the form keeps hidden.
+
+| What | How |
+|---|---|
+| A task | `Task(key, label, start, end, kind, after)`: its first and last day, both included, a state's colour, and the tasks it waits for. A row with no dates has no bar, and `None` is a group's heading. A work order lasts its hours shared by its crew, in days of eight hours |
+| Scale | Days, weeks or months, from the address. A day is 32, 12 or 4 units wide; a week starts on Monday and a month on its first. A one-day task is never narrower than 6 units |
+| What is drawn | Each bar, the weekends shaded at the scales of days and weeks, today as an upright line, months and their days above, and an arrow from a task to one that waits for it when both are on the page. Geometry is SVG attributes, colours are classes from the theme, and a month label that the next would cover gives way |
+| Rows in line | Rows are 2.5rem in the table and in the picture, which is measured in rem, so a larger text, a compact density or 200 % zoom keeps each bar beside its row; a test measures it |
+| Accessibility | The table is what a keyboard and a screen reader use, and it holds every action. The picture is a named image, described by the summary above it, with nothing to reach. Its box scrolls sideways and takes the keyboard |
+| Editing | Through the row's Edit, the same dialog as the table's, and the timeline comes back in place |
+| Paper | The picture goes under its table, as wide as the page |
+| The one inline SVG | Icons and illustrations are never inline ([COMP-05 and SEC-16](standards.md#components)). This is a chart of data, so `tools/icons.py` allows an SVG in this macro alone, and a test checks that what it draws holds nothing that runs or loads |
+
 ### Groups and editing a row
 
 The planning screen is what a spreadsheet-like grid would be asked for, without one. People who need to change one work
@@ -468,7 +485,7 @@ daisyUI classes, so the look can change in one place. Each macro appears on the 
 `breadcrumbs`, `description_list`, `tabs`, `chart`, `dialog`, `dialog_buttons`, `input_field`, `field_error`,
 `error_summary`, `textarea_field`, `date_field`, `number_field`, `checkbox_field`, `radio_group`, `searchable_select`,
 `file_field`, `form_actions`, `confirmation`, `confirm_link`, `conflict_notice`, `grouped_table`, `dialog_action`, `filter_bar`, `filter_panel`,
-`list_with_filters`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`, `pagination` and `board`.
+`list_with_filters`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`, `pagination`, `board` and `gantt`.
 
 Tabs come in two kinds. `tabs` are links, one address each, as on the equipment detail: they work without JavaScript and
 with the back button, so they are a navigation with `aria-current`. The server reads what every panel needs and sends them
@@ -490,7 +507,7 @@ leaves out backgrounds. The equipment detail prints both of its tabs.
 | Output | Excel export, print style | Milestone 2 |
 | Forms | Text, text area, select, checkbox, radio, date, number and decimal, searchable select, file upload, error summary, field error, form actions | Milestone 3 |
 | Feedback | Confirmation dialog, conflict notice | Milestone 3 |
-| Data | Dense and wide lists, filter panel, a chart that filters a list, board | Milestone 4 |
+| Data | Dense and wide lists, filter panel, a chart that filters a list, board, Gantt | Milestone 4 |
 | Feedback | Loading state, progress of a long task | Milestone 5 |
 | Pages | Service unavailable | Milestone 5 |
 
@@ -549,6 +566,7 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Planning, `/planning` | Rich table: groups on the server, and one row edited at a time in a dialog | Milestone 2 |
 | Planning's filters | In a side panel that can be hidden, with its state in the address | Milestone 4 |
 | Board, `/board` | Work orders by state: a form on each card, dragging, order and conflicts on the server | Milestone 4 |
+| Planning's timeline, `/planning?show=timeline` | The page's work orders as bars beside their table, with what each waits for, at a scale of days, weeks or months | Milestone 4 |
 | Work order form, `/work-orders/new` and `/work-orders/<id>/edit` | All form fields, validation, decimals, dates, file upload, delete with a confirmation | Milestone 3 |
 | Import | Long task with progress, its result and its errors | Milestone 5 |
 

@@ -152,6 +152,14 @@
     "page": "docs/components/diff.md"
   },
   {
+    "name": "gantt",
+    "category": "data-display",
+    "status": "available",
+    "note": "A table and, beside it, the same rows as bars on a calendar, drawn on the server.",
+    "use": "A table and, beside it, the same rows as bars on a calendar, drawn on the server.",
+    "page": "docs/components/gantt.md"
+  },
+  {
     "name": "hover-3d",
     "category": "data-display",
     "status": "decorative",

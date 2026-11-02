@@ -41,6 +41,7 @@ OWN_TITLES = (
     N_("Filter bar"),
     N_("Filter panel"),
     N_("Form actions"),
+    N_("Gantt"),
     N_("Icon"),
     N_("Number field"),
     N_("Searchable select"),
@@ -105,6 +106,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
                 icon="clipboard-list",
             ),
             Component("diff", DECORATIVE),
+            Component(
+                "gantt",
+                note=N_("A table and, beside it, the same rows as bars on a calendar, drawn on the server."),
+                macro="gantt",
+                icon="chart-gantt",
+            ),
             Component("hover-3d", DECORATIVE),
             Component("hover-gallery", DECORATIVE),
             Component(

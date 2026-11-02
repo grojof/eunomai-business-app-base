@@ -1,5 +1,6 @@
 """The demo's tables: the equipment a fictional company maintains, and the work done on it."""
 
+import math
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
@@ -64,6 +65,8 @@ class WorkOrder(Base):
     version: Mapped[int] = mapped_column(server_default="1")
     rank: Mapped[int] = mapped_column(server_default="0", index=True)
     """Its place in its state's column on the board. See app/core/boards.py"""
+    after_id: Mapped[int | None] = mapped_column(ForeignKey("work_order.id", ondelete="SET NULL"), index=True)
+    """The work order this one waits for, drawn as an arrow on the planning's timeline."""
 
     __mapper_args__ = {"version_id_col": version}  # noqa: RUF012  # how SQLAlchemy asks for it
 
@@ -87,6 +90,15 @@ class WorkOrderFile(Base):
     added_at: Mapped[datetime]
 
     work_order: Mapped[WorkOrder] = relationship(back_populates="files")
+
+
+WORKING_DAY = 8
+"""Hours a crew works in a day: a work order lasts its hours shared by its crew, in whole days."""
+
+
+def working_days(hours: Decimal, crew: int) -> int:
+    """How many days a work order takes, from its planned day: at least one."""
+    return max(1, math.ceil(hours / (WORKING_DAY * max(crew, 1))))
 
 
 def overdue() -> ColumnElement[bool]:

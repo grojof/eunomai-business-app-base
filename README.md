@@ -27,7 +27,7 @@ flowchart LR
 > their tables, and a planning screen that groups rows and edits one at a time. Milestone 3, in review: every form field,
 > a work order form with validation at the edge, file upload, a confirmation dialog, and two people on one row finding
 > out. Milestone 4, in progress: lists that a person can make dense and as wide as the screen, the page's title in
-> the top bar, filters in a side panel that can be hidden, charts whose parts filter a list, and a board of work orders. The rest is in the [milestones](docs/specification.md#milestones).
+> the top bar, filters in a side panel that can be hidden, charts whose parts filter a list, a board of work orders, and a timeline in Planning. The rest is in the [milestones](docs/specification.md#milestones).
 
 ## Try it
 

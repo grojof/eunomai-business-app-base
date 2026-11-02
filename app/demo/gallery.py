@@ -3,6 +3,7 @@
 import json
 import re
 from collections.abc import Iterator, Mapping
+from datetime import date, timedelta
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, NamedTuple
@@ -12,6 +13,7 @@ from fastapi.responses import Response
 from markupsafe import Markup, escape
 
 from app.core.boards import Board, BoardCard, BoardColumn
+from app.core.gantt import Task, Timeline, timeline
 from app.core.i18n import N_, _, current_language
 from app.core.tables import Column, Filter, ListView
 from app.core.templating import NavigationGroup, SearchItem, add_templates, environment, register_search, render
@@ -38,6 +40,7 @@ SAMPLE_ROWS = (
     ("B-200", N_("Conveyor belt"), "due_soon", N_("Due soon"), "warning"),
     ("C-300", N_("Cooling tower"), "stopped", N_("Stopped"), "danger"),
 )
+SAMPLE_START = date(2026, 11, 2)
 _TAG = re.compile(r"(<!--.*?-->|<[^>]+>)", re.S)
 _ATTRIBUTE = re.compile(r"""([^\s=/>]+)(=)("[^"]*"|'[^']*')""")
 
@@ -223,6 +226,27 @@ def sample_board() -> Board:
     return Board("sample-board", _("Work orders by state"), columns, "")
 
 
+def sample_plan() -> Timeline:
+    """A timeline without a database: three tasks in one group, the last waiting for the second, with a weekend."""
+    return timeline(
+        [
+            None,
+            Task(1, _("Air compressor"), SAMPLE_START, SAMPLE_START + timedelta(days=2), "info"),
+            Task(2, _("Conveyor belt"), SAMPLE_START + timedelta(days=1), SAMPLE_START + timedelta(days=1), "warning"),
+            Task(
+                3,
+                _("Cooling tower"),
+                SAMPLE_START + timedelta(days=4),
+                SAMPLE_START + timedelta(days=8),
+                "success",
+                (2,),
+            ),
+        ],
+        "day",
+        SAMPLE_START + timedelta(days=3),
+    )
+
+
 async def gallery_component(request: Request, name: str) -> Response:
     every = list(ordered())
     position = next((number for number, (_category, item) in enumerate(every) if item.name == name), None)
@@ -257,6 +281,7 @@ async def gallery_component(request: Request, name: str) -> Response:
         sample=sample,
         chart_figures=chart_examples() if name == "chart" else [],
         sample_board=sample_board() if name == "board" else None,
+        sample_plan=sample_plan() if name == "gantt" else None,
         previous=(neighbours[0].name, title_of(neighbours[0].name)) if neighbours[0] else None,
         following=(neighbours[1].name, title_of(neighbours[1].name)) if neighbours[1] else None,
     )

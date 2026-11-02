@@ -1,5 +1,5 @@
 {#- What changes when the list changes: a whole page includes it, htmx asks for it alone, and a save sends it again. -#}
-{% from "ui/macros.html" import filter_panel, list_summary, grouped_table, row_header, cell, status_label, dialog_action, pagination, empty_state, link_button, message %}
+{% from "ui/macros.html" import filter_panel, list_summary, grouped_table, row_header, cell, status_label, dialog_action, pagination, empty_state, link_button, message, tabs, gantt %}
 {% if refill_filters %}{{ filter_panel(view, refill=true) }}{% endif %}
 {% if saved %}<div class="px-4 pt-3" role="status" data-once="saved deleted">{{ message("success", saved) }}</div>{% endif %}
 {% set back = view.here|urlencode %}
@@ -7,6 +7,29 @@
 {% if can_edit %}{{ link_button(_("New work order"), "/work-orders/new?back=" ~ back, "primary", small=true, name="plus") }}{% endif %}
 {% endcall %}
 {% if view.rows %}
+<div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 px-4">
+  {{ tabs(_("How the work is shown"), [("table", _("Table"), view.link(show="table")), ("timeline", _("Timeline"), view.link(show="timeline"))], view.chosen["show"], "#planning-results") }}
+  {% if plan %}{{ tabs(_("Scale of the timeline"), [("day", _("Days"), view.link(scale="day", page=view.page)), ("week", _("Weeks"), view.link(scale="week", page=view.page)), ("month", _("Months"), view.link(scale="month", page=view.page))], view.chosen["scale"], "#planning-results") }}{% endif %}
+</div>
+{% if plan %}
+{% set summary = _("Each work order from its planned day for as many days as its hours take its crew. The upright red line is today, %(today)s, and an arrow leads to a work order that waits for another.", today=today|date) %}
+{% call gantt("planning-timeline", _("Work orders on a timeline, with their start, their days and what they wait for"), plan, [(_("Work"), false), (_("Starts"), true), (_("Days"), true), (_("Waits for"), true), (_("Actions") if can_edit else "", false)], summary) %}
+{% for section in sections %}
+<tbody>
+  <tr><th scope="rowgroup" colspan="5" class="bg-base-200"><span class="font-semibold">{{ section.title }}</span> <span class="ms-2 font-normal">{{ section.note }}</span></th></tr>
+  {% for row in section.rows %}
+  <tr class="hover:bg-base-200" data-row="{{ row.id }}">
+    <th scope="row" class="max-w-28 truncate font-medium sm:max-w-48">{{ _("Work order %(number)s", number=row.id) }} · {{ row.title }}</th>
+    <td class="hidden md:table-cell">{{ row.planned_on|date if row.planned_on else _("Not planned yet") }}</td>
+    <td class="hidden text-end tabular-nums md:table-cell">{{ working_days(row.hours, row.crew)|decimal if row.planned_on else "" }}</td>
+    <td class="hidden md:table-cell">{{ _("Work order %(number)s", number=row.after_id) if row.after_id else "" }}</td>
+    {% if can_edit %}{{ dialog_action(_("Edit"), _("Edit work order %(number)s", number=row.id), "/planning/" ~ row.id ~ "/edit?back=" ~ view.here|urlencode, "edit-" ~ row.id, "editor") }}{% else %}<td></td>{% endif %}
+  </tr>
+  {% endfor %}
+</tbody>
+{% endfor %}
+{% endcall %}
+{% else %}
 {% call(row) grouped_table(view, _("Work orders by group, with their equipment, state, planned date and hours"), sections, _("Actions") if can_edit else "") %}
 {% set label, kind = order_statuses[row.status] %}
 {{ row_header(row.equipment.name, "/equipment/" ~ row.equipment_id) }}
@@ -19,6 +42,7 @@
 {{ dialog_action(_("Edit"), _("Edit work order %(number)s", number=row.id), "/planning/" ~ row.id ~ "/edit?back=" ~ view.here|urlencode, "edit-" ~ row.id, "editor") }}
 {% endif %}
 {% endcall %}
+{% endif %}
 {{ pagination(view) }}
 {% else %}
 <input type="hidden" name="size" value="{{ view.size }}" form="{{ view.form_id }}">

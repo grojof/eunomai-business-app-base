@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-02 12:18+0100\n"
+"POT-Creation-Date: 2026-11-02 13:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -58,6 +58,13 @@ msgid ""
 msgstr ""
 "Un formulari senzill que filtra una llista al servidor. El filter de "
 "daisyUI és un grup de botons d'opció."
+
+msgid ""
+"A table and, beside it, the same rows as bars on a calendar, drawn on the"
+" server."
+msgstr ""
+"Una taula i, al costat, les mateixes files com a barres en un calendari, "
+"dibuixades al servidor."
 
 msgid "Actions"
 msgstr "Accions"
@@ -246,6 +253,9 @@ msgstr "Accions del formulari"
 
 msgid "Full"
 msgstr "Completa"
+
+msgid "Gantt"
+msgstr "Gantt"
 
 msgid "Go back and choose a smaller file."
 msgstr "Torna enrere i tria un fitxer més petit."
@@ -584,6 +594,9 @@ msgstr "En realitat no és un fitxer %(kind)s. Tria'n un altre."
 
 msgid "Tick the box or leave it empty."
 msgstr "Marca la casella o deixa-la buida."
+
+msgid "Timeline"
+msgstr "Línia de temps"
 
 msgid "Toggle"
 msgstr "Interruptor"
