@@ -1,17 +1,20 @@
 """The board: work orders by state, moved by a form, by keyboard, without JavaScript and by dragging."""
 
 import re
+import threading
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import select, update
+from sqlalchemy import BigInteger, select, update
+from sqlalchemy.dialects import postgresql, sqlite
 from sqlalchemy.orm import Session
 
 from app.core.database import create_database_engine
 from app.core.i18n import PSEUDO
+from app.demo.board import column_lock
 from app.demo.models import WorkOrder
 from app.main import create_app
-from tests.conftest import PERSON, build_settings, page_opener, running_server
+from tests.conftest import PERSON, TEST_DATABASE_URL, build_settings, empty_database, page_opener, running_server
 from tests.demo.support import announced, fill, until
 from tests.helpers import overflows_sideways, run_axe, untranslated
 
@@ -135,7 +138,7 @@ def test_htmx_gets_the_board_with_focus_on_the_card_and_the_move_announced(writa
     order = orders(url, "reported")[0]
     html = client.post("/board/move", data=moving(order, "in_progress"), headers=HTMX).text
     assert "<html" not in html
-    assert f'id="board-move-{order.id}" class="select select-xs w-full" name="to" data-focus' in html
+    assert f'<summary id="board-move-{order.id}" class="btn btn-ghost btn-xs" data-focus>' in html
     assert f'data-announce="Work order {order.id} is now in In progress."' in html
 
 
@@ -225,9 +228,11 @@ def test_the_keyboard_moves_a_card_and_focus_follows_it(own_board):
     page = opener("/board")
     page.evaluate("window.notReloaded = true")
     number = card(page, "reported").get_attribute("data-card")
-    select = page.locator(f"#board-move-{number}")
-    select.focus()
-    select.select_option("in_progress")
+    page.locator(f"#board-move-{number}").focus()
+    page.keyboard.press("Enter")
+    page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement.id") == f"board-move-{number}-to"
+    page.locator(f"#board-move-{number}-to").select_option("in_progress")
     page.keyboard.press("Tab")
     page.keyboard.press("Enter")
     announced(page, f"Work order {number} is now in In progress.")
@@ -303,8 +308,53 @@ def test_without_javascript_the_form_moves_a_card(own_board):
     opener, url = own_board
     page = opener("/board?location=Roof", javascript=False)
     number = card(page, "reported").get_attribute("data-card")
-    page.locator(f"#board-move-{number}").select_option("closed")
+    page.locator(f"#board-move-{number}").click()
+    page.locator(f"#board-move-{number}-to").select_option("closed")
     page.locator(f"[data-card='{number}']").get_by_role("button", name="Move").click()
     page.wait_for_url(re.compile(rf"location=Roof&moved={number}"))
     assert f"Work order {number} is now in Closed." in page.locator("main").inner_text()
     assert read(url, int(number)).status == "closed"
+
+
+def test_a_rank_is_a_big_integer_on_both_databases():
+    assert isinstance(WorkOrder.__table__.c.rank.type, BigInteger)
+
+
+def test_a_move_locks_the_columns_it_reads_where_the_database_can():
+    statement = column_lock(("planned", "reported"))
+    assert "FOR UPDATE" in str(statement.compile(dialect=postgresql.dialect()))
+    assert "FOR UPDATE" not in str(statement.compile(dialect=sqlite.dialect()))
+
+
+@pytest.mark.skipif(not TEST_DATABASE_URL, reason="row locks need PostgreSQL: set TEST_DATABASE_URL")
+def test_a_move_waits_for_a_renumbering_and_lands_where_it_was_asked(tmp_path):
+    """One session holds the column while it numbers it again; a move into it waits, then reads the new numbers."""
+    with empty_database("postgresql", tmp_path) as url:
+        fill(url, 500)
+        client = TestClient(create_app(build_settings(database_url=url)))
+        client.headers.update(PERSON | SAME_SITE)
+        column = orders(url, "planned")
+        moving_card = orders(url, "reported")[0]
+        engine = create_database_engine(url)
+        with Session(engine) as holder:
+            holder.execute(column_lock(("planned", "reported")))
+            result = {}
+            worker = threading.Thread(
+                target=lambda: result.update(
+                    status=client.post(
+                        "/board/move", data=moving(moving_card, "planned", str(column[1].id))
+                    ).status_code
+                )
+            )
+            worker.start()
+            worker.join(timeout=1)
+            assert worker.is_alive(), "the move should wait for the column"
+            for position, row in enumerate(column):
+                holder.execute(
+                    update(WorkOrder.__table__).where(WorkOrder.id == row.id).values(rank=(position + 1) * 7)
+                )
+            holder.commit()
+        worker.join(timeout=30)
+        engine.dispose()
+        assert result["status"] == 200
+        assert [row.id for row in orders(url, "planned")][:3] == [column[0].id, column[1].id, moving_card.id]

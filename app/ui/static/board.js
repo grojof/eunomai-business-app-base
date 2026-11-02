@@ -40,7 +40,7 @@
       Sortable.create(list, {
         group: board.id,
         draggable: "[data-card]",
-        filter: "a, select, button, input, label",
+        filter: "a, select, button, input, label, summary",
         preventOnFilter: false,
         delayOnTouchOnly: true,
         delay: 150,

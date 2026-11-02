@@ -11,7 +11,7 @@ from urllib.parse import urlencode
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse, Response
-from sqlalchemy import Table, and_, bindparam, func, or_, select, update
+from sqlalchemy import Select, Table, and_, bindparam, func, or_, select, update
 from sqlalchemy.orm import Session, contains_eager
 
 from app.core.boards import Board, BoardCard, BoardColumn, Move, rank_between, read_move, renumbered
@@ -114,6 +114,15 @@ def _moved_message(order: WorkOrder) -> str:
     }
 
 
+def column_lock(statuses: tuple[str, ...]) -> Select[int]:
+    """Holds the rows of the columns a move reads and writes, where the database can: PostgreSQL locks them until the
+    commit, in one order, so two moves cannot deadlock, and a move that waited reads the ranks another move left. SQLite
+    has one writer at a time and takes no row locks: SQLAlchemy leaves FOR UPDATE out there."""
+    return (
+        select(WorkOrder.id).where(WorkOrder.status.in_(sorted(set(statuses)))).order_by(WorkOrder.id).with_for_update()
+    )
+
+
 def _neighbours(session: Session, order: WorkOrder, move: Move) -> tuple[int | None, int | None]:
     """The ranks around the place asked for, in the whole column and not only in what a page showed. Refused if the
     card to follow is not in that column."""
@@ -121,7 +130,7 @@ def _neighbours(session: Session, order: WorkOrder, move: Move) -> tuple[int | N
     if move.after is None:
         first = session.scalar(select(func.min(WorkOrder.rank)).where(column))
         return None, first
-    after = session.get(WorkOrder, move.after) if move.after <= LARGEST_ID else None
+    after = session.get(WorkOrder, move.after, populate_existing=True) if move.after <= LARGEST_ID else None
     if after is None or after.status != move.to or after.id == order.id:
         raise Refused(_("That place on the board has changed. Here it is as it is now: try again."))
     later = or_(WorkOrder.rank > after.rank, and_(WorkOrder.rank == after.rank, WorkOrder.id > after.id))
@@ -176,6 +185,8 @@ def move_card(
     if order is None:
         raise HTTPException(status_code=404)
     partial = fragment_requested(request)
+    session.execute(column_lock((order.status, move.to)))
+    session.refresh(order)  # what another move, which this one waited for, left
     if move.version != order.version:
         return _page(request, session, place, 200 if partial else 409, conflict=_conflict(order), focus=order.id)
     try:

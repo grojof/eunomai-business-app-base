@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from app.core.boards import RANK_STEP, Board, BoardCard, BoardColumn, rank_between, read_move, renumbered
+from app.core.boards import RANK_LIMIT, RANK_STEP, Board, BoardCard, BoardColumn, rank_between, read_move, renumbered
 from app.core.forms import Refused
 from app.core.templating import environment
 from tests.helpers import ROOT
@@ -43,8 +43,10 @@ def test_each_card_carries_a_plain_form_that_moves_it():
     assert '<input type="hidden" name="card" value="7">' in html
     assert '<input type="hidden" name="version" value="3">' in html
     assert '<input type="hidden" name="place" value="roof">' in html
-    assert '<label class="block text-xs font-medium" for="things-move-7">' in html
-    assert "Card seven" in html.split('for="things-move-7"')[1].split("</label>")[0]
+    assert '<label class="block text-xs font-medium" for="things-move-7-to">' in html
+    assert "Card seven" in html.split('for="things-move-7-to"')[1].split("</label>")[0]
+    assert html.count("<details") == 3
+    assert "Card seven" in html.split('<summary id="things-move-7"')[1].split("</summary>")[0]
 
 
 def test_a_person_who_may_not_move_gets_no_form_and_no_dragging():
@@ -62,7 +64,7 @@ def test_an_empty_column_says_so_and_a_long_one_leads_to_the_rest():
 
 
 def test_focus_comes_back_to_the_card_that_moved():
-    assert '<select id="things-move-9" class="select select-xs w-full" name="to" data-focus>' in drawn(focus=9)
+    assert '<summary id="things-move-9" class="btn btn-ghost btn-xs" data-focus>' in drawn(focus=9)
 
 
 @pytest.mark.rule("SEC-03")
@@ -128,3 +130,9 @@ def test_the_board_library_is_past_the_two_week_rule():
 
 def test_a_page_without_a_board_does_not_load_the_library(client, person):
     assert "Sortable" not in client.get("/settings", headers=person).text
+
+
+def test_a_rank_past_its_bound_asks_for_the_column_to_be_numbered_again():
+    assert rank_between(RANK_LIMIT - 10, None) is None
+    assert rank_between(None, -RANK_LIMIT + 10) is None
+    assert rank_between(RANK_LIMIT - 4000, None) == RANK_LIMIT - 4000 + RANK_STEP

@@ -4,7 +4,7 @@ import math
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
-from sqlalchemy import CheckConstraint, ColumnElement, ForeignKey, String, Text, and_, false
+from sqlalchemy import BigInteger, CheckConstraint, ColumnElement, ForeignKey, String, Text, and_, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -63,7 +63,7 @@ class WorkOrder(Base):
     crew: Mapped[int] = mapped_column(server_default="1")
     stop_needed: Mapped[bool] = mapped_column(server_default=false())
     version: Mapped[int] = mapped_column(server_default="1")
-    rank: Mapped[int] = mapped_column(server_default="0", index=True)
+    rank: Mapped[int] = mapped_column(BigInteger, server_default="0", index=True)
     """Its place in its state's column on the board. See app/core/boards.py"""
     after_id: Mapped[int | None] = mapped_column(ForeignKey("work_order.id", ondelete="SET NULL"), index=True)
     """The work order this one waits for, drawn as an arrow on the planning's timeline."""

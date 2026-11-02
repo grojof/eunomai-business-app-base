@@ -654,8 +654,8 @@
 {% endmacro %}
 
 {#- A board: cards in columns, drawn on the server. `board` is a Board from app/core/boards.py, and the caller writes a
-    card's content. Each card a person may move carries a form that moves it: a plain POST, so it works without
-    JavaScript, and by keyboard. board.js lets a pointer or a finger drag it, and sends that same form with the card it
+    card's content. Each card a person may move carries, behind a small "Change column" disclosure, a form that moves
+    it: a plain POST, so it works without JavaScript, and by keyboard. board.js lets a pointer or a finger drag it, and sends that same form with the card it
     now follows. The server answers with the board as it is, focus back on the card's control and the move announced.
     Columns stack on a narrow screen, so the page never scrolls sideways. `message` goes at the top: what was moved, or
     a conflict notice that takes focus. -#}
@@ -673,19 +673,22 @@
         <li id="{{ board.identifier }}-card-{{ card.id }}" class="rounded-box border border-base-300 bg-base-100 p-3 text-sm{{ ' cursor-grab' if board.can_move else '' }}" data-card="{{ card.id }}">
           {{ caller(card) }}
           {% if board.can_move %}
-          <form class="mt-2 flex items-end gap-2 print:hidden" method="post" action="{{ board.action }}" hx-post="{{ board.action }}" hx-target="#{{ board.identifier }}" hx-swap="outerHTML" data-move>
-            <input type="hidden" name="card" value="{{ card.id }}">
-            <input type="hidden" name="version" value="{{ card.version }}">
-            <input type="hidden" name="after" value="">
-            {% for name, value in board.hidden.items() %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
-            <div class="min-w-0 grow">
-              <label class="block text-xs font-medium" for="{{ board.identifier }}-move-{{ card.id }}">{{ _("Move to") }}<span class="sr-only">: {{ card.label }}</span></label>
-              <select id="{{ board.identifier }}-move-{{ card.id }}" class="select select-xs w-full" name="to"{% if board.focus == card.id %} data-focus{% endif %}>
-                {% for other in board.columns %}<option value="{{ other.key }}"{% if other.key == column.key %} selected{% endif %}>{{ other.title }}</option>{% endfor %}
-              </select>
-            </div>
-            <button class="btn btn-xs" type="submit">{{ _("Move") }}</button>
-          </form>
+          <details class="mt-1 print:hidden" data-move-menu>
+            <summary id="{{ board.identifier }}-move-{{ card.id }}" class="btn btn-ghost btn-xs"{% if board.focus == card.id %} data-focus{% endif %}>{{ icon("arrow-right", "size-3.5") }}{{ _("Change column") }}<span class="sr-only">: {{ card.label }}</span></summary>
+            <form class="mt-2 flex items-end gap-2" method="post" action="{{ board.action }}" hx-post="{{ board.action }}" hx-target="#{{ board.identifier }}" hx-swap="outerHTML" data-move>
+              <input type="hidden" name="card" value="{{ card.id }}">
+              <input type="hidden" name="version" value="{{ card.version }}">
+              <input type="hidden" name="after" value="">
+              {% for name, value in board.hidden.items() %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+              <div class="min-w-0 grow">
+                <label class="block text-xs font-medium" for="{{ board.identifier }}-move-{{ card.id }}-to">{{ _("Move to") }}<span class="sr-only">: {{ card.label }}</span></label>
+                <select id="{{ board.identifier }}-move-{{ card.id }}-to" class="select select-xs w-full" name="to">
+                  {% for other in board.columns %}<option value="{{ other.key }}"{% if other.key == column.key %} selected{% endif %}>{{ other.title }}</option>{% endfor %}
+                </select>
+              </div>
+              <button class="btn btn-xs" type="submit">{{ _("Move") }}</button>
+            </form>
+          </details>
           {% endif %}
         </li>
         {% else %}

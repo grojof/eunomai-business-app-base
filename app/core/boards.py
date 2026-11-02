@@ -17,6 +17,9 @@ from app.core.forms import Refused
 
 RANK_STEP = 1024
 """The gap between two cards numbered afresh: about ten cards can land between two neighbours before a renumbering."""
+RANK_LIMIT = 2**62
+"""Ranks are big integers. One that would pass this asks for the column to be numbered again, so no move can reach
+the end of the type, however many times a card goes to the top."""
 
 
 @dataclass(frozen=True)
@@ -84,17 +87,20 @@ def read_move(card: str, to: str, after: str, version: str, columns: Collection[
 
 
 def rank_between(previous: int | None, following: int | None) -> int | None:
-    """The rank for a card between two neighbours, either of which may be missing. None: there is no room left."""
+    """The rank for a card between two neighbours, either of which may be missing. None: there is no room left, or the
+    rank would pass its bound."""
     if previous is None and following is None:
-        return RANK_STEP
-    if previous is None:
+        rank = RANK_STEP
+    elif previous is None:
         assert following is not None  # noqa: S101  # both missing is answered above
-        return following - RANK_STEP
-    if following is None:
-        return previous + RANK_STEP
-    if following - previous < 2:
+        rank = following - RANK_STEP
+    elif following is None:
+        rank = previous + RANK_STEP
+    elif following - previous < 2:
         return None
-    return (previous + following) // 2
+    else:
+        rank = (previous + following) // 2
+    return rank if -RANK_LIMIT < rank < RANK_LIMIT else None
 
 
 def renumbered(ids: Sequence[int]) -> list[dict[str, int]]:

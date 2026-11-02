@@ -13,7 +13,7 @@ depends_on: str | Sequence[str] | None = None
 
 def upgrade() -> None:
     with op.batch_alter_table("work_order", schema=None) as batch_op:
-        batch_op.add_column(sa.Column("rank", sa.Integer(), server_default="0", nullable=False))
+        batch_op.add_column(sa.Column("rank", sa.BigInteger(), server_default="0", nullable=False))
         batch_op.create_index(batch_op.f("ix_work_order_rank"), ["rank"], unique=False)
 
 
