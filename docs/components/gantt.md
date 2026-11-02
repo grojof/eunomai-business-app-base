@@ -11,7 +11,9 @@ tags: [component, data-display, available]
 
 A native table and, beside it, a picture of the same rows on a calendar: each task a bar from its first day to its last,
 the weekends shaded, today marked, and an arrow from a task to the one that waits for it. `timeline` in
-`app/core/gantt.py` lays it out on the server, at a scale of days, weeks or months; the macro writes the geometry as SVG
+`app/core/gantt.py` lays it out on the server, at a scale of days, weeks or months, or `fit`, the finest that shows
+every task without scrolling, and never wider than 6,000 units: past that the scale coarsens, then the picture is a
+window from the first task and counts what it leaves out, and says so; the macro writes the geometry as SVG
 attributes and the colours as classes, read from the theme. Nothing runs in the browser.
 
 ```python

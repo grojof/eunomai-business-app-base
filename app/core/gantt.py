@@ -13,6 +13,13 @@ from datetime import date, timedelta
 from app.core.formatters import format_month, format_month_and_year
 
 SCALES = ("day", "week", "month")
+ASKED = ("fit", *SCALES)
+"""`fit` takes the finest scale that shows every task without scrolling, and is the default."""
+FIT_WIDTH = 800
+"""The width `fit` aims at, in the picture's units: what a wide screen shows beside its table and a filter panel."""
+MAX_WIDTH = 6000
+"""The widest a picture grows. Past it the scale coarsens, and past a month's it shows a window from the first task,
+and counts what falls outside: a page of tasks from 2000 to 2099 at a scale of days would be megabytes."""
 DAY_WIDTH = {"day": 32, "week": 12, "month": 4}
 """How wide a day is at each scale, in the picture's units: a pixel at the browser's usual text size."""
 ROW = 40
@@ -61,6 +68,8 @@ class Timeline:
     """What the `timeline` macro draws. Rows are tasks or, for a group's heading, None."""
 
     scale: str
+    asked: str
+    outside: int
     width: int
     height: int
     bars: list[Bar]
@@ -117,29 +126,48 @@ def _link(start: Bar, end: Bar) -> str:
     return f"M{x1} {y1}H{turn}V{middle}H{x2 - 8}V{y2}H{x2}"
 
 
+def _start(first: date, scale: str) -> date:
+    if scale == "month":
+        return first.replace(day=1)
+    if scale == "week":
+        return first - timedelta(days=first.weekday())
+    return first
+
+
+def _scale(asked: str, first: date, last: date) -> str:
+    """The scale to draw: the one asked for while it stays within MAX_WIDTH, else the next coarser; for `fit`, the
+    finest within FIT_WIDTH, else months."""
+    days = (last - first).days + 1
+    if asked == "fit":
+        return next((scale for scale in SCALES if days * DAY_WIDTH[scale] <= FIT_WIDTH), "month")
+    coarser = SCALES[SCALES.index(asked) :]
+    return next((scale for scale in coarser if days * DAY_WIDTH[scale] <= MAX_WIDTH), "month")
+
+
 def timeline(rows: Sequence[Task | None], scale: str, today: date, margin: int = 2) -> Timeline:
     """Lays out the rows, in their order, on a calendar from the first start to the last end, with `margin` days on
-    either side. A scale off its list takes `week`."""
-    scale = scale if scale in SCALES else "week"
+    either side, at the scale asked for or, if it would be too wide, a coarser one. A scale off its list is `fit`."""
+    asked = scale if scale in ASKED else "fit"
     tasks = [row for row in rows if row is not None and row.start and row.end]
     starts = [task.start for task in tasks if task.start] or [today]
     ends = [task.end for task in tasks if task.end] or [today]
     first = min(starts) - timedelta(days=margin)
     last = max(ends) + timedelta(days=margin)
-    if scale == "month":
-        first = first.replace(day=1)
-    elif scale == "week":
-        first -= timedelta(days=first.weekday())
+    scale = _scale(asked, first, last)
+    first = _start(first, scale)
     unit = DAY_WIDTH[scale]
+    last = min(last, first + timedelta(days=MAX_WIDTH // unit - 1))
+    shown = [row for row in tasks if row.start and row.start <= last]
+    outside = len(tasks) - len(shown)
 
     def x_of(day: date) -> int:
         return (day - first).days * unit
 
     bars: list[Bar] = []
     for position, row in enumerate(rows):
-        if row is None or not (row.start and row.end):
+        if row is None or not (row.start and row.end) or row.start > last:
             continue
-        width = max((row.end - row.start).days + 1, 1) * unit
+        width = max((min(row.end, last) - row.start).days + 1, 1) * unit
         y = HEADER + position * ROW + (ROW - BAR) // 2
         bars.append(
             Bar(
@@ -167,6 +195,8 @@ def timeline(rows: Sequence[Task | None], scale: str, today: date, margin: int =
     ticks, months = _ticks(first, last, scale, x_of)
     return Timeline(
         scale,
+        asked,
+        outside,
         span * unit,
         HEADER + len(rows) * ROW,
         bars,

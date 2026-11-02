@@ -513,6 +513,8 @@ def test_a_timelines_picture_holds_nothing_that_runs_or_loads():
     )
     macros = environment.get_template("ui/macros.html").module
     html = str(macros.gantt("plan", "Plan", plan, [("Work", False)], "Summary", caller=lambda: ""))
-    picture = html[html.index("<svg") : html.index("</svg>") + 6].replace("<svg ", f'<svg xmlns="{icons.SVG}" ', 1)
+    picture = html[html.index('<svg id="plan-picture"') : html.rindex("</svg>") + 6].replace(
+        "<svg ", f'<svg xmlns="{icons.SVG}" ', 1
+    )
     assert icons.unsafe(picture) == []
     assert "&lt;script&gt;" in picture

@@ -705,19 +705,26 @@
     a Timeline from app/core/gantt.py, whose rows are those of the table, in order. The caller writes the table's bodies,
     one row per task and a `rowgroup` heading for a group, and every action, as editing, lives there: the picture is
     a picture of the table, named for a screen reader, with nothing to reach. Rows are 2.5rem high in both, and the
-    picture is measured in rem too, so a larger text keeps them in line. Its box scrolls sideways by itself. -#}
+    picture is measured in rem too, so a larger text keeps them in line. Its box scrolls sideways by itself, and a
+    note says so whenever the picture is wider than its box. Columns marked wide-only wait for a very wide screen, so
+    the picture keeps its room. -#}
 {% macro gantt(identifier, caption, plan, headers, summary) %}
 {% set row = 40 %}{% set header = 48 %}
 <p id="{{ identifier }}-summary" class="px-4 pb-3 text-sm">{{ summary }}</p>
+<ul class="space-y-1 px-4 pb-3 text-sm" data-gantt-notes>
+  {% if plan.scale != plan.asked and plan.asked != "fit" %}<li>{{ icon("triangle-alert", "size-4 me-1 inline-block") }}{{ _("Shown at a coarser scale: the one asked for would be too wide.") }}</li>{% endif %}
+  {% if plan.outside %}<li>{{ icon("triangle-alert", "size-4 me-1 inline-block") }}{{ ngettext("%(count)s more starts past these dates: narrow what is shown to see it.", "%(count)s more start past these dates: narrow what is shown to see them.", plan.outside, count=plan.outside|decimal) }}</li>{% endif %}
+  <li{% if plan.width <= 800 %} hidden{% endif %} data-gantt-wider>{{ icon("move-horizontal", "size-4 me-1 inline-block") }}{{ _("The timeline is wider than its box: scroll it sideways, or choose a coarser scale.") }}</li>
+</ul>
 <div id="{{ identifier }}" class="gantt flex items-start border-t border-base-300">
   <div class="gantt-table min-w-0 shrink">
     <table class="table table-xs">
       <caption id="{{ identifier }}-caption" class="sr-only">{{ caption }}</caption>
-      <thead><tr>{% for text, wide_only in headers %}<th scope="col"{% if wide_only %} class="hidden md:table-cell"{% endif %}>{{ text }}</th>{% endfor %}</tr></thead>
+      <thead><tr>{% for text, wide_only in headers %}<th scope="col"{% if wide_only %} class="hidden 2xl:table-cell"{% endif %}>{{ text }}</th>{% endfor %}</tr></thead>
       {{ caller() }}
     </table>
   </div>
-  <div class="gantt-scroll min-w-0 flex-1 overflow-x-auto border-s border-base-300" role="region" tabindex="0" aria-label="{{ _('Timeline') }}">
+  <div class="gantt-scroll min-w-0 flex-1 overflow-x-auto border-s border-base-300" data-gantt-box role="region" tabindex="0" aria-label="{{ _('Timeline') }}">
     <svg id="{{ identifier }}-picture" class="gantt-picture" role="img" aria-labelledby="{{ identifier }}-summary" width="{{ plan.width / 16 }}rem" height="{{ plan.height / 16 }}rem" viewBox="0 0 {{ plan.width }} {{ plan.height }}">
       <defs>
         <marker id="{{ identifier }}-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="gantt-arrow" d="M0 0L6 3L0 6z"/></marker>

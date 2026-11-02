@@ -9,7 +9,7 @@
 {% if view.rows %}
 <div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 px-4">
   {{ tabs(_("How the work is shown"), [("table", _("Table"), view.link(show="table")), ("timeline", _("Timeline"), view.link(show="timeline"))], view.chosen["show"], "#planning-results") }}
-  {% if plan %}{{ tabs(_("Scale of the timeline"), [("day", _("Days"), view.link(scale="day", page=view.page)), ("week", _("Weeks"), view.link(scale="week", page=view.page)), ("month", _("Months"), view.link(scale="month", page=view.page))], view.chosen["scale"], "#planning-results") }}{% endif %}
+  {% if plan %}{{ tabs(_("Scale of the timeline"), [("fit", _("All dates"), view.link(scale="fit", page=view.page)), ("day", _("Days"), view.link(scale="day", page=view.page)), ("week", _("Weeks"), view.link(scale="week", page=view.page)), ("month", _("Months"), view.link(scale="month", page=view.page))], view.chosen["scale"], "#planning-results") }}{% endif %}
 </div>
 {% if plan %}
 {% set summary = _("Each work order from its planned day for as many days as its hours take its crew. The upright red line is today, %(today)s, and an arrow leads to a work order that waits for another.", today=today|date) %}
@@ -20,9 +20,9 @@
   {% for row in section.rows %}
   <tr class="hover:bg-base-200" data-row="{{ row.id }}">
     <th scope="row" class="max-w-28 truncate font-medium sm:max-w-48">{{ _("Work order %(number)s", number=row.id) }} · {{ row.title }}</th>
-    <td class="hidden md:table-cell">{{ row.planned_on|date if row.planned_on else _("Not planned yet") }}</td>
-    <td class="hidden text-end tabular-nums md:table-cell">{{ working_days(row.hours, row.crew)|decimal if row.planned_on else "" }}</td>
-    <td class="hidden md:table-cell">{{ _("Work order %(number)s", number=row.after_id) if row.after_id else "" }}</td>
+    <td class="hidden 2xl:table-cell">{{ row.planned_on|date if row.planned_on else _("Not planned yet") }}</td>
+    <td class="hidden text-end tabular-nums 2xl:table-cell">{{ working_days(row.hours, row.crew)|decimal if row.planned_on else "" }}</td>
+    <td class="hidden 2xl:table-cell">{{ _("Work order %(number)s", number=row.after_id) if row.after_id else "" }}</td>
     {% if can_edit %}{{ dialog_action(_("Edit"), _("Edit work order %(number)s", number=row.id), "/planning/" ~ row.id ~ "/edit?back=" ~ view.here|urlencode, "edit-" ~ row.id, "editor") }}{% else %}<td></td>{% endif %}
   </tr>
   {% endfor %}

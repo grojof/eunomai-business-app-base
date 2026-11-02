@@ -1,15 +1,19 @@
 """Planning's timeline: the same rows as the table, as bars beside it, drawn on the server."""
 
 import re
+from datetime import date
 
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session, aliased
 
 from app.core.database import create_database_engine
 from app.core.i18n import PSEUDO
 from app.demo.models import Equipment, WorkOrder
-from tests.demo.support import announced, until
+from app.main import create_app
+from tests.conftest import PERSON, build_settings
+from tests.demo.support import announced, fill, until
 from tests.helpers import overflows_sideways, run_axe, untranslated
 
 TIMELINE = "/planning?show=timeline&location=Roof"
@@ -18,6 +22,7 @@ ALLOWED += ("Forklift", "Preventive plan", "Safety checks", "Oil change", "Filte
 ALLOWED += ("Calibration", "Leak repair", "Electrical inspection", "January", "February", "March", "April", "May")
 ALLOWED += ("June", "July", "August", "September", "October", "November", "December", "Jan ", "Feb ", "Mar ", "Apr ")
 ALLOWED += ("Jun ", "Jul ", "Aug ", "Sep ", "Oct ", "Nov ", "Dec ")
+ALLOWED += ("Jan", "Feb", "Mar", "Apr", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")  # a month scale's ticks
 
 
 def a_waiting_pair(url):
@@ -41,7 +46,7 @@ def test_the_table_stays_the_default_and_the_timeline_is_asked_for(filled):
     html = filled.get(TIMELINE).text
     assert 'class="gantt-picture"' in html
     planned = re.findall(
-        r'data-row="(\d+)">\s*<th[^>]*>[^<]*</th>\s*<td class="hidden md:table-cell">(?!Not planned)', html
+        r'data-row="(\d+)">\s*<th[^>]*>[^<]*</th>\s*<td class="hidden 2xl:table-cell">(?!Not planned)', html
     )
     assert planned
     assert sorted(re.findall(r'id="planning-timeline-bar-(\d+)"', html)) == sorted(planned)
@@ -160,3 +165,40 @@ def test_without_javascript_the_tabs_are_links(open_filled):
     page.get_by_role("link", name="Timeline").click()
     page.wait_for_url(re.compile(r"show=timeline"))
     assert page.locator(".gantt-picture").count() == 1
+
+
+@pytest.fixture
+def far_apart(database_url):
+    """Two planned work orders a century apart, as the calendar's route allows."""
+    fill(database_url, 200)
+    engine = create_database_engine(database_url)
+    with Session(engine) as session:
+        first, second = session.scalars(select(WorkOrder).where(WorkOrder.status == "planned").limit(2)).all()
+        first.planned_on, second.planned_on = date(2000, 1, 3), date(2099, 12, 28)
+        session.commit()
+    engine.dispose()
+    client = TestClient(create_app(build_settings(database_url=database_url)))
+    client.headers.update(PERSON)
+    return client
+
+
+def test_a_century_of_work_stays_a_small_picture_and_says_what_it_leaves_out(far_apart):
+    response = far_apart.get("/planning?show=timeline&scale=day&status=planned&sort=planned&size=10")
+    assert len(response.content) < 300_000
+    assert "Shown at a coarser scale" in response.text
+    assert "past these dates" in response.text
+
+
+def test_all_dates_is_the_default_and_fits_what_it_can(filled):
+    html = filled.get("/planning?show=timeline&q=Forklift").text
+    assert re.search(r'id="tab-fit"[^>]*aria-current="page"', html)
+
+
+@pytest.mark.browser
+def test_a_timeline_wider_than_its_box_says_so_and_one_that_fits_does_not(open_filled):
+    page = open_filled("/planning?show=timeline&scale=day&status=", width=1280)
+    assert page.locator("[data-gantt-wider]").is_visible()
+    page = open_filled("/planning?show=timeline&status=&q=EQ-000001&panel=hidden", width=1920)
+    page.wait_for_load_state("load")
+    wider = page.locator("[data-gantt-box]").evaluate("box => box.scrollWidth > box.clientWidth + 1")
+    assert page.locator("[data-gantt-wider]").is_visible() is wider

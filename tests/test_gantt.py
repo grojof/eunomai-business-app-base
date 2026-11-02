@@ -1,11 +1,11 @@
 """Timelines on their own: what stays in an application after the demo is deleted."""
 
 import itertools
-from datetime import date
+from datetime import date, timedelta
 
 import pytest
 
-from app.core.gantt import BAR, DAY_WIDTH, HEADER, ROW, SHORTEST_BAR, Task, timeline
+from app.core.gantt import BAR, DAY_WIDTH, FIT_WIDTH, HEADER, MAX_WIDTH, ROW, SHORTEST_BAR, Task, timeline
 from app.core.templating import environment
 
 MACROS = environment.get_template("ui/macros.html").module
@@ -72,8 +72,8 @@ def test_a_week_starts_on_monday_and_a_month_on_its_first(scale, starts_on):
         assert plan.first.weekday() == starts_on
 
 
-def test_a_scale_off_its_list_is_a_week():
-    assert timeline(ROWS, "decade", TODAY).scale == "week"
+def test_a_scale_off_its_list_fits_the_tasks():
+    assert timeline(ROWS, "decade", TODAY).asked == "fit"
 
 
 def test_month_labels_that_would_cover_each_other_give_way():
@@ -91,7 +91,7 @@ def test_the_picture_is_drawn_with_attributes_and_classes_and_named_by_its_summa
     assert 'marker-end="url(#plan-arrow)"' in html
     assert 'class="gantt-today"' in html
     assert 'role="region" tabindex="0"' in html
-    assert '<th scope="col" class="hidden md:table-cell">Starts</th>' in html
+    assert '<th scope="col" class="hidden 2xl:table-cell">Starts</th>' in html
 
 
 def test_the_picture_is_measured_in_rem_so_it_keeps_in_line_with_the_table():
@@ -100,3 +100,34 @@ def test_the_picture_is_measured_in_rem_so_it_keeps_in_line_with_the_table():
     assert (
         f'width="{plan.width / 16}rem" height="{plan.height / 16}rem" viewBox="0 0 {plan.width} {plan.height}"' in html
     )
+
+
+FAR = [Task(1, "Early", date(2000, 1, 3), date(2000, 1, 7)), Task(2, "Late", date(2099, 12, 21), date(2099, 12, 24))]
+
+
+def test_a_span_too_wide_for_its_scale_takes_a_coarser_one_and_never_grows_past_its_limit():
+    plan = timeline(FAR, "day", TODAY)
+    assert plan.width <= MAX_WIDTH
+    assert plan.scale == "month"
+    assert plan.asked == "day"
+    assert len(drawn(plan)) < 200_000
+
+
+def test_what_falls_past_the_window_is_counted_and_not_drawn():
+    plan = timeline(FAR, "day", TODAY)
+    assert plan.last - plan.first < date(2099, 1, 1) - date(2000, 1, 1)
+    assert [bar.key for bar in plan.bars] == [1]
+    assert plan.outside == 1
+
+
+def test_a_span_that_fits_keeps_the_scale_it_was_asked_for():
+    plan = timeline(ROWS[:3], "day", TODAY)
+    assert (plan.scale, plan.outside) == ("day", 0)
+
+
+@pytest.mark.parametrize(("days", "expected"), [(10, "day"), (40, "week"), (400, "month")])
+def test_fit_takes_the_finest_scale_that_shows_every_task_without_scrolling(days, expected):
+    task = Task(1, "A", date(2026, 1, 5), date(2026, 1, 5) + timedelta(days=days))
+    plan = timeline([task], "fit", TODAY)
+    assert plan.scale == expected
+    assert plan.width <= FIT_WIDTH or expected == "month"

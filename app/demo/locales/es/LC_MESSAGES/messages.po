@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-02 14:55+0100\n"
+"POT-Creation-Date: 2026-11-02 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -126,6 +126,9 @@ msgstr "Agenda"
 
 msgid "Air compressor"
 msgstr "Compresor de aire"
+
+msgid "All dates"
+msgstr "Todas las fechas"
 
 msgid "All day"
 msgstr "Todo el día"

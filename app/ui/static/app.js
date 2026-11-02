@@ -16,7 +16,20 @@ document.addEventListener("htmx:afterSettle", (event) => {
   }
   applyStyles(content);
   showFilterPanels();
+  noteWideTimelines();
 });
+
+// A timeline wider than its box says so, whatever the screen: what is out of sight must not look absent.
+function noteWideTimelines() {
+  document.querySelectorAll("[data-gantt-box]").forEach((box) => {
+    const note = box.closest("[data-results], main")?.querySelector("[data-gantt-wider]");
+    if (note) {
+      note.hidden = box.scrollWidth <= box.clientWidth + 1;
+    }
+  });
+}
+addEventListener("load", noteWideTimelines);
+addEventListener("resize", noteWideTimelines);
 
 // A dialog whose body arrives with htmx opens then. `data-close-dialog` in what arrives closes it, and names where focus
 // goes: the row that opened it was replaced, so the browser cannot return there by itself.

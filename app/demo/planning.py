@@ -52,7 +52,7 @@ EARLIEST = date(2000, 1, 1)
 LATEST = date(2099, 12, 31)
 """A planned day outside these is a year mistyped, such as 0026."""
 GROUPS = {"location": N_("Location"), "status": N_("State"), "month": N_("Month planned")}
-SCALE_LABELS = {"day": N_("Days"), "week": N_("Weeks"), "month": N_("Months")}
+SCALE_LABELS = {"fit": N_("All dates"), "day": N_("Days"), "week": N_("Weeks"), "month": N_("Months")}
 _STATEMENT = select(WorkOrder).join(WorkOrder.equipment)
 _LOADED = (contains_eager(WorkOrder.equipment),)
 
@@ -119,7 +119,7 @@ def planning_view(params: Mapping[str, str]) -> ListView:
                 "scale",
                 _("Scale"),
                 [(key, _(label)) for key, label in SCALE_LABELS.items()],
-                default="week",
+                default="fit",
                 in_form=False,
             ),
         ),
