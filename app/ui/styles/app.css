@@ -204,6 +204,12 @@
     margin-inline-end: -0.5625rem;
   }
 
+  /* Where a dragged card would land */
+  .board-ghost {
+    opacity: 0.5;
+    outline: 2px dashed var(--color-primary);
+  }
+
   /* The page's h1 in the top bar takes the bar's size, not a page's */
   .page-title-bar {
     font-size: var(--text-lg);

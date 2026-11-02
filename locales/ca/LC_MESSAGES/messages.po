@@ -21,6 +21,12 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #, python-format
+msgid "%(count)s more in the list"
+msgid_plural "%(count)s more in the list"
+msgstr[0] "%(count)s més a la llista"
+msgstr[1] "%(count)s més a la llista"
+
+#, python-format
 msgid ""
 "%(count)s. Showing %(first)s to %(last)s, sorted by %(column)s, "
 "%(direction)s."
@@ -87,8 +93,18 @@ msgstr "Disponible"
 msgid "Back to the start"
 msgstr "Torna a l'inici"
 
+msgid "Board"
+msgstr "Tauler"
+
 msgid "Breadcrumbs"
 msgstr "Fil d'Ariadna"
+
+msgid ""
+"Cards in columns, each with a form that moves it, and dragging for a "
+"pointer or a finger."
+msgstr ""
+"Targetes en columnes, cadascuna amb un formulari que la mou, i "
+"arrossegament amb el punter o amb el dit."
 
 msgid "Centred"
 msgstr "Centrat"
@@ -325,6 +341,12 @@ msgstr "Llista de menú"
 msgid "Mockups"
 msgstr "Maquetes"
 
+msgid "Move"
+msgstr "Mou"
+
+msgid "Move to"
+msgstr "Mou a"
+
 msgid "Moves on its own and only a pointer can pause it: WCAG 2.2.2."
 msgstr "Es mou sol i només un punter el pot aturar: WCAG 2.2.2."
 
@@ -348,6 +370,9 @@ msgstr "Normal"
 
 msgid "Not recommended"
 msgstr "No recomanat"
+
+msgid "Nothing here"
+msgstr "Res aquí"
 
 msgid "Nothing matches. Try another word."
 msgstr "Res no coincideix. Prova amb una altra paraula."

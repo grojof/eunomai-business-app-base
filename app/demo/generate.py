@@ -18,6 +18,7 @@ from typing import Any
 from sqlalchemy import delete, insert, text
 from sqlalchemy.orm import Session
 
+from app.core.boards import RANK_STEP
 from app.core.database import create_database_engine, migrate
 from app.core.settings import get_settings
 from app.core.uploads import UploadStore
@@ -122,13 +123,29 @@ def work_order_row(position: int, seed: int = SEED) -> dict[str, Any]:
     }
 
 
+def ranked_orders(orders: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Each order with its place on the board: open work by its planned day, soonest first and unplanned last, and
+    closed work most recent first. The rows themselves stay as they are, so their frozen hash does not move."""
+
+    def place(row: dict[str, Any]) -> tuple[str, int, int]:
+        if row["status"] == "closed":
+            return row["status"], -row["closed_at"].toordinal(), row["id"]
+        planned = row["planned_on"].toordinal() if row["planned_on"] else date.max.toordinal()
+        return row["status"], planned, row["id"]
+
+    ordered = sorted(orders, key=place)
+    ranks = {row["id"]: (position + 1) * RANK_STEP for position, row in enumerate(ordered)}
+    return [row | {"rank": ranks[row["id"]]} for row in orders]
+
+
 def replace_rows(session: Session, rows: int = EQUIPMENT_ROWS, seed: int = SEED) -> int:
     """Replaces the demo's tables, and returns how many work orders that made. The caller commits."""
     session.execute(delete(WorkOrder))
     session.execute(delete(Equipment))
     orders = (rows + WORK_ORDER_EVERY - 1) // WORK_ORDER_EVERY
     session.execute(insert(Equipment), [equipment_row(position, seed) for position in range(rows)])
-    session.execute(insert(WorkOrder), [work_order_row(position, seed) for position in range(orders)])
+    order_rows = ranked_orders([work_order_row(position, seed) for position in range(orders)])
+    session.execute(insert(WorkOrder), order_rows)
     if session.get_bind().dialect.name == "postgresql":  # the numbers above were given, so its counters did not move
         for table, last in (("equipment", rows), ("work_order", orders)):
             sequence = text("SELECT setval(pg_get_serial_sequence(:table, 'id'), :last)")

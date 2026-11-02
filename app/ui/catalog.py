@@ -30,6 +30,7 @@ THEME = N_(
 
 
 OWN_TITLES = (
+    N_("Board"),
     N_("Chart"),
     N_("Confirmation dialog"),
     N_("Conflict notice"),
@@ -80,6 +81,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("accordion"),
             Component("avatar"),
             Component("badge", macro="badge"),
+            Component(
+                "board",
+                note=N_("Cards in columns, each with a form that moves it, and dragging for a pointer or a finger."),
+                macro="board",
+                icon="clipboard-list",
+            ),
             Component("card", APPROVED, macro="card"),
             Component("carousel"),
             Component(

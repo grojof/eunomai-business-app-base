@@ -80,6 +80,14 @@
     "page": "docs/components/badge.md"
   },
   {
+    "name": "board",
+    "category": "data-display",
+    "status": "available",
+    "note": "Cards in columns, each with a form that moves it, and dragging for a pointer or a finger.",
+    "use": "Cards in columns, each with a form that moves it, and dragging for a pointer or a finger.",
+    "page": "docs/components/board.md"
+  },
+  {
     "name": "card",
     "category": "data-display",
     "status": "approved",

@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import Response
 from markupsafe import Markup, escape
 
+from app.core.boards import Board, BoardCard, BoardColumn
 from app.core.i18n import N_, _, current_language
 from app.core.tables import Column, Filter, ListView
 from app.core.templating import NavigationGroup, SearchItem, add_templates, environment, register_search, render
@@ -208,6 +209,20 @@ def sample_view(path: str, params: Mapping[str, str], panelled: bool = False) ->
     return view
 
 
+def sample_board() -> Board:
+    """A board without a database: three fixed cards, which nobody may move here."""
+    cards = [
+        BoardCard(number, 1, _(name), {"code": code, "name": _(name), "label": _(label)})
+        for number, (code, name, _status, label, _kind) in enumerate(SAMPLE_ROWS, start=1)
+    ]
+    columns = [
+        BoardColumn("reported", _("Reported"), cards[:1], 1),
+        BoardColumn("planned", _("Planned"), cards[1:], 2),
+        BoardColumn("closed", _("Closed"), [], 0),
+    ]
+    return Board("sample-board", _("Work orders by state"), columns, "")
+
+
 async def gallery_component(request: Request, name: str) -> Response:
     every = list(ordered())
     position = next((number for number, (_category, item) in enumerate(every) if item.name == name), None)
@@ -241,6 +256,7 @@ async def gallery_component(request: Request, name: str) -> Response:
         examples=examples,
         sample=sample,
         chart_figures=chart_examples() if name == "chart" else [],
+        sample_board=sample_board() if name == "board" else None,
         previous=(neighbours[0].name, title_of(neighbours[0].name)) if neighbours[0] else None,
         following=(neighbours[1].name, title_of(neighbours[1].name)) if neighbours[1] else None,
     )

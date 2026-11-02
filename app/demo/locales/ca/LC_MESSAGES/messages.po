@@ -136,6 +136,9 @@ msgstr "Tots els camps de l'ordre de treball %(number)s: %(work)s"
 msgid "Any date"
 msgstr "Qualsevol data"
 
+msgid "Apply"
+msgstr "Aplica"
+
 msgid ""
 "Arrow keys move through the list, Enter chooses, Escape closes it. "
 "Without JavaScript it is a plain select, which is why a list must fit in "
@@ -184,6 +187,9 @@ msgstr "Filtre obstruït"
 
 msgid "Blown fuse"
 msgstr "Fusible fos"
+
+msgid "Board"
+msgstr "Tauler"
 
 msgid "Both sites score well on safety. The south site is weakest on records."
 msgstr "Les dues plantes puntuen bé en seguretat. La sud fluixeja en registres."
@@ -510,6 +516,15 @@ msgstr ""
 " substitueix només els resultats."
 
 msgid ""
+"Here nobody may move a card. On the board of the demo each card has a "
+"form that moves it, by keyboard and without JavaScript, and a pointer or "
+"a finger can drag it."
+msgstr ""
+"Aquí ningú no pot moure una targeta. Al tauler de la demo, cada targeta "
+"té un formulari que la mou, amb el teclat i sense JavaScript, i es pot "
+"arrossegar amb el punter o amb el dit."
+
+msgid ""
 "Here nothing is deleted. Focus starts on the way out, and comes back to "
 "the button when it closes. Without JavaScript the same address is a page "
 "of its own, with the same words: the work order form shows both."
@@ -696,6 +711,13 @@ msgstr ""
 "Encara no s'ha desat res teu, i el que has escrit continua aquí. Aquesta "
 "persona va desar el que apareix a sota. Desa una altra vegada per "
 "substituir-ho pel que has escrit, o cancel·la per conservar el seu."
+
+msgid ""
+"Nothing of yours was moved. The card is where they left it: move it again"
+" if you still want to."
+msgstr ""
+"No s'ha mogut res teu. La targeta és on la van deixar: torna-la a moure "
+"si encara vols."
 
 msgid "Nothing overdue"
 msgstr "Res vençut"
@@ -913,6 +935,9 @@ msgstr "Fallada de programari"
 msgid "Someone else changed this work order"
 msgstr "Una altra persona ha canviat aquesta ordre de treball"
 
+msgid "Someone else moved this work order first"
+msgstr "Una altra persona ha mogut abans aquesta ordre de treball"
+
 msgid ""
 "Sorting, filtering and paging happen in the database, and the state lives"
 " in the address. The equipment list uses it with 50,000 rows."
@@ -963,6 +988,9 @@ msgstr "Per exemple EQ-000123. És a la llista d'equips."
 
 msgid "Summary"
 msgstr "Resum"
+
+msgid "That place on the board has changed. Here it is as it is now: try again."
+msgstr "Aquell lloc del tauler ha canviat. Aquí és com és ara: torna-ho a provar."
 
 msgid "The backlog grew until April, then fell as more orders closed than opened."
 msgstr ""
@@ -1159,8 +1187,16 @@ msgid "Work order %(number)s deleted."
 msgstr "Ordre de treball %(number)s eliminada."
 
 #, python-format
+msgid "Work order %(number)s is now in %(state)s."
+msgstr "L'ordre de treball %(number)s ara és a %(state)s."
+
+#, python-format
 msgid "Work order %(number)s saved."
 msgstr "Ordre de treball %(number)s desada."
+
+#, python-format
+msgid "Work order %(number)s: %(work)s"
+msgstr "Ordre de treball %(number)s: %(work)s"
 
 msgid "Work order for the cooling tower"
 msgstr "Ordre de treball de la torre de refrigeració"
@@ -1183,6 +1219,16 @@ msgstr "Ordres de treball per tipus"
 
 msgid "Work orders by month"
 msgstr "Ordres de treball per mes"
+
+msgid "Work orders by state"
+msgstr "Ordres de treball per estat"
+
+msgid ""
+"Work orders by state. Move a card with its own form, or drag it to "
+"another place."
+msgstr ""
+"Ordres de treball per estat. Mou una targeta amb el seu formulari, o "
+"arrossega-la a un altre lloc."
 
 #, python-format
 msgid "Work orders of %(code)s"

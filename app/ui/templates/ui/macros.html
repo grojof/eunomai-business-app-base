@@ -652,3 +652,51 @@
   </nav>
 </div>
 {% endmacro %}
+
+{#- A board: cards in columns, drawn on the server. `board` is a Board from app/core/boards.py, and the caller writes a
+    card's content. Each card a person may move carries a form that moves it: a plain POST, so it works without
+    JavaScript, and by keyboard. board.js lets a pointer or a finger drag it, and sends that same form with the card it
+    now follows. The server answers with the board as it is, focus back on the card's control and the move announced.
+    Columns stack on a narrow screen, so the page never scrolls sideways. `message` goes at the top: what was moved, or
+    a conflict notice that takes focus. -#}
+{% macro board(board, message="") %}
+<div id="{{ board.identifier }}" class="space-y-4" data-board{% if board.can_move %} data-can-move data-ghost="board-ghost" data-board-library="{{ board_library.src }}" data-board-integrity="{{ board_library.integrity }}"{% endif %}>
+  {{ message }}
+  <div class="grid items-start gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+    {% for column in board.columns %}
+    <section class="rounded-box border border-base-300 bg-base-200 p-3" aria-labelledby="{{ board.identifier }}-{{ column.key }}-title">
+      <h2 id="{{ board.identifier }}-{{ column.key }}-title" class="mb-3 flex items-center justify-between gap-2 text-base">
+        <span>{{ column.title }}</span><span class="badge badge-sm">{{ column.total|decimal }}</span>
+      </h2>
+      <ol class="grid min-h-16 gap-2" data-board-list data-column="{{ column.key }}" aria-labelledby="{{ board.identifier }}-{{ column.key }}-title">
+        {% for card in column.cards %}
+        <li id="{{ board.identifier }}-card-{{ card.id }}" class="rounded-box border border-base-300 bg-base-100 p-3 text-sm{{ ' cursor-grab' if board.can_move else '' }}" data-card="{{ card.id }}">
+          {{ caller(card) }}
+          {% if board.can_move %}
+          <form class="mt-2 flex items-end gap-2 print:hidden" method="post" action="{{ board.action }}" hx-post="{{ board.action }}" hx-target="#{{ board.identifier }}" hx-swap="outerHTML" data-move>
+            <input type="hidden" name="card" value="{{ card.id }}">
+            <input type="hidden" name="version" value="{{ card.version }}">
+            <input type="hidden" name="after" value="">
+            {% for name, value in board.hidden.items() %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+            <div class="min-w-0 grow">
+              <label class="block text-xs font-medium" for="{{ board.identifier }}-move-{{ card.id }}">{{ _("Move to") }}<span class="sr-only">: {{ card.label }}</span></label>
+              <select id="{{ board.identifier }}-move-{{ card.id }}" class="select select-xs w-full" name="to"{% if board.focus == card.id %} data-focus{% endif %}>
+                {% for other in board.columns %}<option value="{{ other.key }}"{% if other.key == column.key %} selected{% endif %}>{{ other.title }}</option>{% endfor %}
+              </select>
+            </div>
+            <button class="btn btn-xs" type="submit">{{ _("Move") }}</button>
+          </form>
+          {% endif %}
+        </li>
+        {% else %}
+        <li class="rounded-box border border-dashed border-base-300 p-3 text-center text-sm" data-board-empty>{{ _("Nothing here") }}</li>
+        {% endfor %}
+      </ol>
+      {% if column.total > column.cards|length %}
+      <p class="mt-3 text-sm"><a class="link" href="{{ column.more }}">{{ ngettext("%(count)s more in the list", "%(count)s more in the list", column.total - column.cards|length, count=(column.total - column.cards|length)|decimal) }}</a></p>
+      {% endif %}
+    </section>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}

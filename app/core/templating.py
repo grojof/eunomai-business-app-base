@@ -44,6 +44,7 @@ cast(Any, environment).install_gettext_callables(
 environment.globals["chart_library"] = _script(
     _VENDORED["chart.js"]
 )  # charts.js loads it, only for a page with a chart
+environment.globals["board_library"] = _script(_VENDORED["sortablejs"])  # board.js loads it, only for a board
 environment.filters["decimal"] = formatters.format_decimal
 environment.filters["date"] = formatters.format_date
 environment.filters["percent"] = formatters.format_percent

@@ -14,6 +14,14 @@
     "on_demand": true,
     "sha384": "jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"
   },
+  "sortablejs": {
+    "version": "1.15.7",
+    "file": "Sortable.min.js",
+    "target": "app/ui/static/vendor/Sortable.min.js",
+    "script": true,
+    "on_demand": true,
+    "sha384": "DgmC6Xe2bSN2WjTDXzWYbUbxyhNP+NNkGDR/g78pCXV7E7rcVTGxVg0uIVCUUcBc"
+  },
   "axe-core": {
     "version": "4.14.0",
     "file": "axe.min.js",

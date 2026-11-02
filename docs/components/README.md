@@ -30,6 +30,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`accordion`](accordion.md) | available | Use the accordion to show and hide content. Only one item can be open at a time. |
 | [`avatar`](avatar.md) | available | Use an avatar to show a thumbnail image. |
 | [`badge`](badge.md) | available | Use a badge to show the status of data. |
+| [`board`](board.md) | available | Cards in columns, each with a form that moves it, and dragging for a pointer or a finger. |
 | [`card`](card.md) | approved | Use cards to group and show content. |
 | [`carousel`](carousel.md) | available | Use a carousel to show images or content in a scrollable area. |
 | [`chart`](chart.md) | available | A figure with its text summary and its data as a table, drawn with Chart.js. |

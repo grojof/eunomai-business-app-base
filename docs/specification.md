@@ -24,8 +24,8 @@ Success means three things, each testable:
 ```text
 app/
   core/      identity, roles, settings, database, exact column types, server lists, reading forms, languages, formatters, errors, health
-  ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, charts.js, vendored htmx and Chart.js,
-             Lucide's icons in templates/ui/icons/, illustrations in static/illustrations/
+  ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, charts.js, board.js, vendored htmx,
+             Chart.js and SortableJS, Lucide's icons in templates/ui/icons/, illustrations in static/illustrations/
   brand/     theme.css, logo.svg, the organization's own icons in icons/
   demo/      screens, their fixed values, models and generated data, the gallery with its generated examples/, translations
 locales/     the translations of core and ui
@@ -61,6 +61,7 @@ In use today:
 | Excel | XlsxWriter, on the server |
 | Charts | Chart.js, with a text summary and the data as a table |
 | Icons | Lucide, every icon, copied and pinned; no other collection. The organization may add its own |
+| Dragging | SortableJS, on a board only, over forms that work without it |
 | Support | python-multipart for posted forms and uploads; tzdata, because Windows has no time zone database |
 | Development | pytest, httpx2, Playwright for Python, axe-core, Ruff, mypy |
 
@@ -77,7 +78,7 @@ one account: a full stylesheet has not been generated there.
 
 `vendor.json` lists every third-party file that is not a Python package, with its version and hash. All are copied
 into the repository except Tailwind's executable. The ones pages load are served with Subresource Integrity: htmx on
-every page, and Chart.js, marked `on_demand`, only where a chart is.
+every page, and Chart.js and SortableJS, marked `on_demand`, only where a chart or a board is.
 
 ## Dependencies
 
@@ -258,6 +259,22 @@ daisyUI's colours pass the checks for colour blindness (neighbouring series stay
 themes. `accent` and `warning` are light, at 1.9:1 against white, under the 3:1 of A11Y-14. The base keeps the themes as
 they come, so the legend, the summary and the table carry what those marks cannot. An organization can solve it in its
 theme.
+
+### Boards
+
+`app/core/boards.py` and the macro `board` draw cards in columns on the server, as the board of work orders at `/board`
+does, with one column per state. The route gives a `Board` its columns, each with its first cards, how many there are in
+all and where the rest are; the caller of the macro writes a card's content.
+
+| What | How |
+|---|---|
+| Moving without a pointer | Each card a person may move carries a form: a select of columns and a Move button, a plain POST that puts it first in that column. It works by keyboard and without JavaScript, and the select is named with the card |
+| Dragging | `board.js` loads SortableJS, with its integrity, only for a board that can change. A pointer drags at once; a finger rests a moment first, so that a swipe still scrolls. A drop sends the same form, with `after`, the card it now follows. After htmx brings a board, its lists are wired again |
+| The server decides | `read_move` reads the card, the column and the card to follow against their lists. The route checks the role, that the card to follow is in that column, and the card's version, so a card someone else moved first is a [conflict](#two-people-on-one-row) that moves nothing and says where it is now |
+| Order | A whole number, `rank`, in each column, read with the primary key after it. A card takes the number half way between its neighbours in the whole column, not only in what the page showed; with no number left between them the column is numbered again through the table, which moves no other card's version |
+| After a move | With htmx the board comes back with focus on the card's select and the move announced; without JavaScript a redirect, and the address says what moved for that one page |
+| A phone | Columns stack, so the page never scrolls sideways |
+| Settled attributes | htmx settles `class`, `width` and `height` only. A `style` attribute set by htmx is inline style, which the policy refuses, and SortableJS moves cards through the CSSOM: a test keeps the setting |
 
 ### Groups and editing a row
 
@@ -451,7 +468,7 @@ daisyUI classes, so the look can change in one place. Each macro appears on the 
 `breadcrumbs`, `description_list`, `tabs`, `chart`, `dialog`, `dialog_buttons`, `input_field`, `field_error`,
 `error_summary`, `textarea_field`, `date_field`, `number_field`, `checkbox_field`, `radio_group`, `searchable_select`,
 `file_field`, `form_actions`, `confirmation`, `confirm_link`, `conflict_notice`, `grouped_table`, `dialog_action`, `filter_bar`, `filter_panel`,
-`list_with_filters`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions` and `pagination`.
+`list_with_filters`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`, `pagination` and `board`.
 
 Tabs come in two kinds. `tabs` are links, one address each, as on the equipment detail: they work without JavaScript and
 with the back button, so they are a navigation with `aria-current`. The server reads what every panel needs and sends them
@@ -473,7 +490,7 @@ leaves out backgrounds. The equipment detail prints both of its tabs.
 | Output | Excel export, print style | Milestone 2 |
 | Forms | Text, text area, select, checkbox, radio, date, number and decimal, searchable select, file upload, error summary, field error, form actions | Milestone 3 |
 | Feedback | Confirmation dialog, conflict notice | Milestone 3 |
-| Data | Dense and wide lists, filter panel, a chart that filters a list | Milestone 4 |
+| Data | Dense and wide lists, filter panel, a chart that filters a list, board | Milestone 4 |
 | Feedback | Loading state, progress of a long task | Milestone 5 |
 | Pages | Service unavailable | Milestone 5 |
 
@@ -531,6 +548,7 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Equipment detail, `/equipment/<id>` | Breadcrumbs, description list, tabs as links, history of work orders, status label, print style | Milestone 2 |
 | Planning, `/planning` | Rich table: groups on the server, and one row edited at a time in a dialog | Milestone 2 |
 | Planning's filters | In a side panel that can be hidden, with its state in the address | Milestone 4 |
+| Board, `/board` | Work orders by state: a form on each card, dragging, order and conflicts on the server | Milestone 4 |
 | Work order form, `/work-orders/new` and `/work-orders/<id>/edit` | All form fields, validation, decimals, dates, file upload, delete with a confirmation | Milestone 3 |
 | Import | Long task with progress, its result and its errors | Milestone 5 |
 

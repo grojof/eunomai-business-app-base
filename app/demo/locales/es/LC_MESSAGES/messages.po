@@ -136,6 +136,9 @@ msgstr "Todos los campos de la orden de trabajo %(number)s: %(work)s"
 msgid "Any date"
 msgstr "Cualquier fecha"
 
+msgid "Apply"
+msgstr "Aplicar"
+
 msgid ""
 "Arrow keys move through the list, Enter chooses, Escape closes it. "
 "Without JavaScript it is a plain select, which is why a list must fit in "
@@ -184,6 +187,9 @@ msgstr "Filtro obstruido"
 
 msgid "Blown fuse"
 msgstr "Fusible fundido"
+
+msgid "Board"
+msgstr "Tablero"
 
 msgid "Both sites score well on safety. The south site is weakest on records."
 msgstr "Las dos plantas puntúan bien en seguridad. La sur flojea en registros."
@@ -507,6 +513,15 @@ msgstr ""
 " sustituye solo los resultados."
 
 msgid ""
+"Here nobody may move a card. On the board of the demo each card has a "
+"form that moves it, by keyboard and without JavaScript, and a pointer or "
+"a finger can drag it."
+msgstr ""
+"Aquí nadie puede mover una tarjeta. En el tablero de la demo, cada "
+"tarjeta tiene un formulario que la mueve, con el teclado y sin "
+"JavaScript, y se puede arrastrar con el puntero o con el dedo."
+
+msgid ""
 "Here nothing is deleted. Focus starts on the way out, and comes back to "
 "the button when it closes. Without JavaScript the same address is a page "
 "of its own, with the same words: the work order form shows both."
@@ -693,6 +708,13 @@ msgstr ""
 "Aún no se ha guardado nada tuyo, y lo que has escrito sigue aquí. Esa "
 "persona guardó lo que aparece abajo. Guarda otra vez para sustituirlo por"
 " lo que has escrito, o cancela para conservar lo suyo."
+
+msgid ""
+"Nothing of yours was moved. The card is where they left it: move it again"
+" if you still want to."
+msgstr ""
+"No se ha movido nada tuyo. La tarjeta está donde la dejaron: muévela otra"
+" vez si aún quieres."
 
 msgid "Nothing overdue"
 msgstr "Nada vencido"
@@ -908,6 +930,9 @@ msgstr "Fallo de software"
 msgid "Someone else changed this work order"
 msgstr "Otra persona ha cambiado esta orden de trabajo"
 
+msgid "Someone else moved this work order first"
+msgstr "Otra persona movió antes esta orden de trabajo"
+
 msgid ""
 "Sorting, filtering and paging happen in the database, and the state lives"
 " in the address. The equipment list uses it with 50,000 rows."
@@ -958,6 +983,11 @@ msgstr "Por ejemplo EQ-000123. Está en la lista de equipos."
 
 msgid "Summary"
 msgstr "Resumen"
+
+msgid "That place on the board has changed. Here it is as it is now: try again."
+msgstr ""
+"Ese lugar del tablero ha cambiado. Aquí está como es ahora: vuelve a "
+"intentarlo."
 
 msgid "The backlog grew until April, then fell as more orders closed than opened."
 msgstr ""
@@ -1154,8 +1184,16 @@ msgid "Work order %(number)s deleted."
 msgstr "Orden de trabajo %(number)s eliminada."
 
 #, python-format
+msgid "Work order %(number)s is now in %(state)s."
+msgstr "La orden de trabajo %(number)s está ahora en %(state)s."
+
+#, python-format
 msgid "Work order %(number)s saved."
 msgstr "Orden de trabajo %(number)s guardada."
+
+#, python-format
+msgid "Work order %(number)s: %(work)s"
+msgstr "Orden de trabajo %(number)s: %(work)s"
 
 msgid "Work order for the cooling tower"
 msgstr "Orden de trabajo de la torre de refrigeración"
@@ -1180,6 +1218,16 @@ msgstr "Órdenes de trabajo por tipo"
 
 msgid "Work orders by month"
 msgstr "Órdenes de trabajo por mes"
+
+msgid "Work orders by state"
+msgstr "Órdenes de trabajo por estado"
+
+msgid ""
+"Work orders by state. Move a card with its own form, or drag it to "
+"another place."
+msgstr ""
+"Órdenes de trabajo por estado. Mueve una tarjeta con su propio "
+"formulario, o arrástrala a otro lugar."
 
 #, python-format
 msgid "Work orders of %(code)s"

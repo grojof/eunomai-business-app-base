@@ -1,8 +1,9 @@
 // After htmx replaces content, keep keyboard and screen-reader users in the right place.
 // New content marks where focus goes with data-focus, and what to announce with data-announce. htmx puts focus back on
 // an element that kept its id; if none did, as when the Next link is gone on the last page, data-focus-fallback takes it.
+// An outerHTML swap replaces its target, so what arrived is then the element the event comes from.
 document.addEventListener("htmx:afterSettle", (event) => {
-  const content = event.detail.target;
+  const content = event.detail.target.isConnected ? event.detail.target : event.target;
   const announcement = content.querySelector("[data-announce]");
   if (announcement) {
     announce(announcement.dataset.announce);

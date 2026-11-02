@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading, select_field, button %}
+{% block title %}{{ _("Board") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("Board"), _("Work orders by state. Move a card with its own form, or drag it to another place.")) }}
+{% if state == "ready" %}
+<form class="flex flex-wrap items-end gap-3 print:hidden" method="get" action="/board" data-autosubmit hx-get="/board" hx-target="#board" hx-swap="outerHTML">
+  <div class="w-56">{{ select_field("location", _("Location"), locations, location, "board-location", _("All locations"), small=true) }}</div>
+  {{ button(_("Apply"), type="submit", small=true, extra="hidden noscript:inline-flex") }}
+</form>
+{% include "demo/board/board.html" %}
+{% else %}
+{% include "demo/rows_missing.html" %}
+{% endif %}
+{% endblock %}

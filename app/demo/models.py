@@ -62,6 +62,8 @@ class WorkOrder(Base):
     crew: Mapped[int] = mapped_column(server_default="1")
     stop_needed: Mapped[bool] = mapped_column(server_default=false())
     version: Mapped[int] = mapped_column(server_default="1")
+    rank: Mapped[int] = mapped_column(server_default="0", index=True)
+    """Its place in its state's column on the board. See app/core/boards.py"""
 
     __mapper_args__ = {"version_id_col": version}  # noqa: RUF012  # how SQLAlchemy asks for it
 
