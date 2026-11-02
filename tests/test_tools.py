@@ -338,11 +338,165 @@ def test_a_change_in_how_the_site_builds_the_file_is_refused(monkeypatch):
 
 def test_git_never_changes_a_file_whose_hash_is_recorded():
     attributes = (ROOT / ".gitattributes").read_text(encoding="utf-8").splitlines()
-    folders = {"app/ui/static/vendor/** -text", "tests/vendor/** -text", "tools/tailwind/** -text"}
+    folders = {
+        "app/ui/static/vendor/** -text",
+        "tests/vendor/** -text",
+        "tools/tailwind/** -text",
+        "tools/lucide/** -text",
+        "app/ui/templates/ui/icons/** -text",
+    }
     assert folders | {"app/ui/static/app.css -text"} <= set(attributes)
     for entry in vendor.read_entries().values():
         if "target" in entry:
             assert f"{Path(entry['target']).parent.as_posix()}/** -text" in folders
+        if "folder" in entry:
+            assert f"{entry['folder']}/** -text" in folders
+
+
+# Lucide's icons: a folder pinned as a whole, and its index from the version's tag
+
+
+def archive_of(files: dict[str, bytes]) -> bytes:
+    buffer = io.BytesIO()
+    with tarfile.open(fileobj=buffer, mode="w:gz") as archive:
+        for name, content in files.items():
+            member = tarfile.TarInfo(name)
+            member.size = len(content)
+            archive.addfile(member, io.BytesIO(content))
+    return buffer.getvalue()
+
+
+def lucide_tarball(icons: dict[str, bytes], listed: list[str], licence: bytes = b"ISC") -> bytes:
+    """A package shaped like lucide-static: every file under icons/, and the names it lists in tags.json."""
+    files = {f"package/icons/{name}.svg": content for name, content in icons.items()}
+    files |= {"package/tags.json": json.dumps({name: [] for name in listed}).encode(), "package/LICENSE": licence}
+    return archive_of(files | {"package/font/lucide.woff2": b"not wanted"})
+
+
+@pytest.fixture
+def icon_folder(tmp_path, monkeypatch):
+    """A pinned icon folder in a temporary repository, and the package its version gives. `old-x` is an old name."""
+    icons = {"x": b"<svg>x</svg>", "plus": b"<svg>+</svg>", "old-x": b"<svg>x</svg>"}
+    package = lucide_tarball(icons, ["x", "plus"])
+    folder = tmp_path / "icons"
+    folder.mkdir()
+    files = {"x.svg": icons["x"], "plus.svg": icons["plus"], "LICENSE": b"ISC"}
+    for name, content in files.items():
+        (folder / name).write_bytes(content)
+    entry = {"version": "1.0.0", "folder": "icons", "sha384": vendor.folder_digest(files)}
+    (tmp_path / "vendor.json").write_text(json.dumps({"lucide-static": entry}), encoding="utf-8")
+    monkeypatch.setattr(vendor, "ROOT", tmp_path)
+    monkeypatch.setattr(vendor, "VENDOR", tmp_path / "vendor.json")
+    monkeypatch.setattr(vendor, "newest_allowed", lambda name, current: "1.0.0")
+    monkeypatch.setattr(vendor, "tarball", lambda name, version: package)
+    return folder
+
+
+def test_the_icon_folder_holds_the_listed_icons_and_the_licence(icon_folder):
+    assert vendor.lucide_icons("1.0.0") == {"x.svg": b"<svg>x</svg>", "plus.svg": b"<svg>+</svg>", "LICENSE": b"ISC"}
+
+
+@pytest.mark.rule("SEC-10")
+@pytest.mark.parametrize("change", ["added", "changed", "removed"])
+def test_an_icon_folder_that_differs_from_its_version_fails_the_check(icon_folder, change):
+    assert vendor.check() == []
+    if change == "added":
+        (icon_folder / "drawn-by-hand.svg").write_bytes(b"<svg/>")
+    elif change == "changed":
+        (icon_folder / "x.svg").write_bytes(b"<svg>y</svg>")
+    else:
+        (icon_folder / "plus.svg").unlink()
+    assert vendor.check() == ["lucide-static: icons does not match vendor.json"]
+
+
+def test_an_icon_folder_changed_by_hand_is_restored(icon_folder):
+    (icon_folder / "drawn-by-hand.svg").write_bytes(b"<svg/>")
+    (icon_folder / "x.svg").write_bytes(b"<svg>y</svg>")
+    assert vendor.update() == (["`lucide-static` 1.0.0 to 1.0.0"], [])
+    assert sorted(path.name for path in icon_folder.iterdir()) == ["LICENSE", "plus.svg", "x.svg"]
+    assert vendor.check() == []
+
+
+def test_a_listed_icon_with_no_drawing_is_refused(monkeypatch):
+    monkeypatch.setattr(vendor, "tarball", lambda name, version: lucide_tarball({"x": b"<svg/>"}, ["x", "missing"]))
+    with pytest.raises(vendor.Refused, match="missing"):
+        vendor.lucide_icons("1.0.0")
+
+
+def test_a_new_version_that_removes_an_icon_waits_for_a_person(icon_folder, monkeypatch):
+    monkeypatch.setattr(vendor, "newest_allowed", lambda name, current: "1.1.0")
+    monkeypatch.setattr(vendor, "tarball", lambda name, version: lucide_tarball({"x": b"<svg>x</svg>"}, ["x"]))
+    changes, refused = vendor.update()
+    assert changes == []
+    assert "plus" in refused[0][2]
+    assert (icon_folder / "plus.svg").exists()
+    assert vendor.read_entries()["lucide-static"]["version"] == "1.0.0"
+
+
+def test_a_new_version_of_the_icons_records_its_hash(icon_folder, monkeypatch):
+    icons = {"x": b"<svg>x2</svg>", "plus": b"<svg>+</svg>", "truck": b"<svg>t</svg>"}
+    monkeypatch.setattr(vendor, "newest_allowed", lambda name, current: "1.1.0")
+    monkeypatch.setattr(vendor, "tarball", lambda name, version: lucide_tarball(icons, list(icons)))
+    assert vendor.update() == (["`lucide-static` 1.0.0 to 1.1.0"], [])
+    assert (icon_folder / "truck.svg").read_bytes() == b"<svg>t</svg>"
+    assert vendor.check() == []
+
+
+def lucide_tag(version: str, categories: bool = True) -> bytes:
+    """Lucide's repository at a tag: each icon's metadata, the categories and the licence."""
+    truck = {"tags": ["delivery", "lorry"], "categories": ["transportation"], "contributors": ["someone"]}
+    x = {"tags": ["close"], "categories": ["shapes"], "aliases": [{"name": "x-old", "deprecated": True}]}
+    files = {
+        "LICENSE": b"ISC License",
+        "icons/truck.json": json.dumps(truck).encode(),
+        "icons/truck.svg": b"<svg/>",
+        "icons/x.json": json.dumps(x).encode(),
+        "icons/franc.json": json.dumps({"tags": [], "categories": ["shapes"], "deprecated": True}).encode(),
+        "docs/icons/other.json": b"{}",
+    }
+    if categories:
+        files |= {
+            "categories/transportation.json": b'{"title": "Transportation", "icon": "truck"}',
+            "categories/shapes.json": b'{"title": "Shapes", "icon": "x"}',
+        }
+    return archive_of({f"lucide-{version}/{name}": content for name, content in files.items()})
+
+
+def test_the_icon_index_comes_from_the_versions_tag_and_is_repeatable(monkeypatch):
+    urls = []
+
+    def download(url):
+        urls.append(url)
+        return lucide_tag("1.0.0")
+
+    monkeypatch.setattr(vendor, "download", download)
+    url = "https://codeload.github.com/lucide-icons/lucide/tar.gz/refs/tags/{version}"
+    content = vendor.lucide_index("1.0.0", url)
+    assert content == vendor.lucide_index("1.0.0", url)
+    assert urls[0] == "https://codeload.github.com/lucide-icons/lucide/tar.gz/refs/tags/1.0.0"
+    assert json.loads(content) == {
+        "version": "1.0.0",
+        "licence": "ISC License",
+        "categories": {"shapes": "Shapes", "transportation": "Transportation"},
+        "icons": {
+            "franc": {"categories": ["shapes"], "deprecated": True, "tags": []},
+            "truck": {"categories": ["transportation"], "tags": ["delivery", "lorry"]},
+            "x": {"aliases": ["x-old"], "categories": ["shapes"], "tags": ["close"]},
+        },
+    }
+    assert len(content.splitlines()) == 13, "one line per icon, so an update reads as a list of changed icons"
+
+
+def test_an_icon_index_without_its_categories_is_refused(monkeypatch):
+    monkeypatch.setattr(vendor, "download", lambda url: lucide_tag("1.0.0", categories=False))
+    with pytest.raises(vendor.Refused, match="not where they were"):
+        vendor.lucide_index("1.0.0", "https://x/{version}")
+
+
+def test_lucides_files_move_together():
+    entries = vendor.read_entries()
+    assert entries["lucide-index"]["package"] == "lucide-static"
+    assert entries["lucide-index"]["version"] == entries["lucide-static"]["version"]
 
 
 # The daily update
@@ -444,6 +598,40 @@ def test_every_daisyui_file_is_at_one_version():
 def test_the_gallerys_data_reaches_the_pull_request():
     assert "tools/gallery.py\n" in job("update")
     assert "app/demo/examples/" in job("propose")
+
+
+def test_an_icon_index_left_behind_holds_the_icons_back(repository, monkeypatch):
+    folder, _source = repository
+    tools_vendor = update_dependencies.vendor
+    (folder / "icons").mkdir()
+    (folder / "icons" / "x.svg").write_bytes(b"old x")
+    (folder / "index.json").write_bytes(b"old index")
+    entries = tools_vendor.read_entries()
+    entries["lucide-static"] = {"version": "1.0.0", "folder": "icons", "sha384": "d"}
+    entries["lucide-index"] = {"package": "lucide-static", "version": "1.0.0", "target": "index.json", "sha384": "e"}
+    tools_vendor.write_entries(entries)
+
+    def update():
+        (folder / "icons" / "x.svg").write_bytes(b"new x")
+        (folder / "icons" / "truck.svg").write_bytes(b"new truck")
+        moved = tools_vendor.read_entries()
+        moved["lucide-static"]["version"] = "1.1.0"
+        tools_vendor.write_entries(moved)
+        return ["`lucide-static` 1.0.0 to 1.1.0"], [("lucide-index", "1.0.0", "the tag is not there yet")]
+
+    monkeypatch.setattr(tools_vendor, "update", update)
+    problems = []
+    assert update_dependencies.update_vendored(problems) == []
+    assert tools_vendor.read_entries()["lucide-static"]["version"] == "1.0.0"
+    assert sorted(path.name for path in (folder / "icons").iterdir()) == ["x.svg"]
+    assert (folder / "icons" / "x.svg").read_bytes() == b"old x"
+    assert ("lucide-static", "1.0.0") in [(name, version) for name, version, _reason in problems]
+
+
+def test_the_icons_and_their_index_reach_the_pull_request():
+    propose = job("propose")
+    assert re.search(r"tools/lucide/\[\^/\]\+", propose)
+    assert "app/ui/templates/ui/icons/[^/]+" in propose
 
 
 def test_an_update_without_surprises_keeps_everything(repository, monkeypatch):

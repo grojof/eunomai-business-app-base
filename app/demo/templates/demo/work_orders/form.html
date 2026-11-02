@@ -52,7 +52,7 @@
         <a class="link font-medium" href="/work-orders/{{ order.id }}/files/{{ file.id }}" download>{{ file.name }}</a>
         <span class="text-sm whitespace-nowrap">{{ file.size|filesize }}</span>
       </span>
-      {{ confirm_link(_("Remove"), "/work-orders/" ~ order.id ~ "/files/" ~ file.id ~ "/delete?back=" ~ back|urlencode, "confirm", "trash-2", _("Remove %(name)s", name=file.name), "ghost", small=true) }}
+      {{ confirm_link(_("Remove"), "/work-orders/" ~ order.id ~ "/files/" ~ file.id ~ "/delete?back=" ~ back|urlencode, "confirm", "trash", _("Remove %(name)s", name=file.name), "ghost", small=true) }}
     </li>
     {% endfor %}
   </ul>
@@ -62,6 +62,6 @@
   <input type="hidden" name="back" value="{{ back }}">
   {% if order %}<input type="hidden" name="version" value="{{ values.version }}">{% endif %}
   {% call form_actions(_("Save"), back, _("Cancel"), loading=_("Saving…")) %}
-  {% if order %}{{ confirm_link(_("Delete"), "/work-orders/" ~ order.id ~ "/delete?back=" ~ back|urlencode, "confirm", "trash-2", _("Delete work order %(number)s", number=order.id)) }}{% endif %}
+  {% if order %}{{ confirm_link(_("Delete"), "/work-orders/" ~ order.id ~ "/delete?back=" ~ back|urlencode, "confirm", "trash", _("Delete work order %(number)s", number=order.id)) }}{% endif %}
   {% endcall %}
 </form>

@@ -136,26 +136,42 @@ def review(notes: list[str], current: dict[str, str]) -> list[tuple[str, str, st
     return problems
 
 
+def _saved(entry: dict[str, Any]) -> tuple[Path, dict[str, bytes] | bytes]:
+    if "folder" in entry:
+        return ROOT / entry["folder"], vendor.read_folder(ROOT / entry["folder"])
+    return ROOT / entry["target"], (ROOT / entry["target"]).read_bytes()
+
+
 def update_vendored(problems: list[tuple[str, str, str]]) -> list[str]:
-    """The copied files. If daisyUI's new files break docs/components/ or the gallery, such as a component that is not
-    in the catalogue or a documentation page that changed its structure, every daisyUI file stays where it was until a
-    person decides, and everything else goes ahead. So does one that moved without the others."""
-    daisyui = {name: e for name, e in vendor.read_entries().items() if e.get("package", name) == "daisyui"}
-    files = {ROOT / e["target"]: (ROOT / e["target"]).read_bytes() for e in daisyui.values()}
+    """The copied files. A package with several files, daisyUI's or Lucide's, moves all of them or none: one left behind
+    holds the others back, and an issue says why. If daisyUI's new files break docs/components/ or the gallery, such as
+    a component that is not in the catalogue or a documentation page that changed its structure, they stay where they
+    were too, until a person decides. Everything else goes ahead."""
+    packages: dict[str, dict[str, dict[str, Any]]] = {}
+    for name, entry in vendor.read_entries().items():
+        if "target" in entry or "folder" in entry:
+            packages.setdefault(entry.get("package", name), {})[name] = entry
+    together = {package: group for package, group in packages.items() if len(group) > 1 or package == "daisyui"}
+    saved = {package: [_saved(entry) for entry in group.values()] for package, group in together.items()}
     notes, refused = vendor.update()
     problems += refused
-    try:
-        components.generate()
-        gallery.generate()
-        moved = {entry["version"] for name, entry in vendor.read_entries().items() if name in daisyui}
-        if len(moved) > 1:
-            raise ValueError(f"its files would be at different versions: {sorted(moved)}")
-    except ValueError as error:
-        for path, content in files.items():
-            path.write_bytes(content)
-        vendor.write_entries(vendor.read_entries() | daisyui)
-        problems.append(("daisyui", daisyui["daisyui"]["version"], f"not updated: {error}"))
-        notes = [note for note in notes if not note.startswith("`daisyui")]
+    for package, group in together.items():
+        try:
+            if package == "daisyui":
+                components.generate()
+                gallery.generate()
+            moved = {entry["version"] for name, entry in vendor.read_entries().items() if name in group}
+            if len(moved) > 1:
+                raise ValueError(f"its files would be at different versions: {sorted(moved)}")
+        except ValueError as error:
+            for path, content in saved[package]:
+                if isinstance(content, bytes):
+                    path.write_bytes(content)
+                else:
+                    vendor.write_folder(path, content)
+            vendor.write_entries(vendor.read_entries() | group)
+            problems.append((package, next(iter(group.values()))["version"], f"not updated: {error}"))
+            notes = [note for note in notes if not any(note.startswith(f"`{name}`") for name in group)]
     return notes
 
 
