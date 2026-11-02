@@ -111,6 +111,9 @@
       slotMaxTime: config.hours[1],
       eventAllow: (drop, event) => drop.allDay === event.allDay,
       dayMaxEvents: 3,
+      // "+ more" opens the agenda of its week, which lists everything. FullCalendar's own box lay over the month and
+      // hid part of the events under it, by an amount that depended on the font: it failed WCAG 2.5.8 on Linux.
+      moreLinkClick: "listWeek",
       eventMinHeight: 24,
       navLinks: false,
       height: "auto",

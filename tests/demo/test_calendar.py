@@ -273,11 +273,17 @@ def test_the_calendar_passes_the_scan(open_filled, view, theme, language):
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.parametrize("theme", ["light", "dark"])
-def test_the_box_of_more_events_passes_the_scan(open_filled, theme):
+@pytest.mark.parametrize("font", ["", "Impact", "monospace"])
+def test_more_events_lead_to_the_agenda_of_their_week_and_pass_the_scan(open_filled, theme, font):
+    """A box over the month hid part of the events under it, and how much depended on the font: Linux's failed the
+    target-size check where Windows' did not. Impact here does the same on Windows. The agenda hides nothing."""
     page = open_filled("/calendar?view=month&date=2026-10-28", theme=theme, bypass_csp=True)
+    if font:
+        page.add_style_tag(content=f"*, *::before {{ font-family: {font} !important; }}")
     until(page, READY)
     page.locator(".calendar-more").first.click()
-    page.wait_for_selector(".calendar-popover")
+    until(page, "location.search.includes('view=agenda')")
+    assert page.locator(".calendar-popover").count() == 0
     assert run_axe(page) == []
 
 
