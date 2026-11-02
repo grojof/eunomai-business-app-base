@@ -69,6 +69,10 @@ msgid "%(group)s, continued"
 msgstr "%(group)s, continuación"
 
 #, python-format
+msgid "%(place)s holds the most equipment, %(count)s pieces."
+msgstr "%(place)s tiene más equipos que ninguna otra ubicación: %(count)s."
+
+#, python-format
 msgid ""
 "%(total)s work orders opened this year. The busiest month was %(month)s, "
 "with %(count)s."

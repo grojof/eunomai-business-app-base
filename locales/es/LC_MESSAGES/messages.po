@@ -108,6 +108,11 @@ msgstr "Gráfico"
 msgid "Check the address, or go back to the start."
 msgstr "Comprueba la dirección o vuelve al inicio."
 
+msgid "Choose a part of the chart, or a row of its data table, to see those rows."
+msgstr ""
+"Elige una parte del gráfico, o una fila de su tabla de datos, para ver "
+"esas filas."
+
 msgid "Clear all"
 msgstr "Quitar todos"
 

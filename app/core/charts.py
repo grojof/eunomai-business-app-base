@@ -4,10 +4,12 @@ A chart is a picture of numbers worked out here. They travel to the browser as t
 this side, and its table is written here too, with the locale's formatter, so it holds what a person reads.
 """
 
+import json
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Any
+from urllib.parse import parse_qsl, urlsplit
 
 from app.core.formatters import format_decimal
 
@@ -79,6 +81,25 @@ class ChartData:
     config: dict[str, Any]
     headers: list[str]
     rows: list[list[str]]
+    links: list[str] = field(default_factory=list)
+    """Where each label leads, if anywhere: a click on its part of the picture, or its link in the table."""
+
+    @property
+    def link_choices(self) -> list[tuple[str, str]]:
+        """What each link chooses, as (name, value), when the chart filters a list on the same page: the one value of
+        the address that differs from link to link, such as `location`."""
+        params = [dict(parse_qsl(urlsplit(link).query, keep_blank_values=True)) for link in self.links]
+        names = {name for one in params for name in one}
+        varying = [name for name in sorted(names) if len({one.get(name) for one in params}) > 1]
+        if len(varying) != 1 and not (len(params) == 1 and len(names) == 1):
+            raise ValueError("A chart that filters a list in place changes one value of the address from link to link")
+        name = varying[0] if varying else names.pop()
+        return [(name, one.get(name, "")) for one in params]
+
+    @property
+    def link_values(self) -> list[str]:
+        """The same, as the JSON that htmx sends with the list's form, in place of the form's own value."""
+        return [json.dumps({name: value}) for name, value in self.link_choices]
 
     def config_for(self, chart_type: str) -> dict[str, Any]:
         if chart_type not in CHART_TYPES:
@@ -99,10 +120,16 @@ def chart_data(
     x_axis: str = "",
     y_axis: str = "",
     colours: Sequence[str] = SLICE_COLOURS,
+    links: Sequence[str] = (),
 ) -> ChartData:
-    """Rows of labels with one or more series. `colours` are a pie's, one per label."""
+    """Rows of labels with one or more series. `colours` are a pie's, one per label. `links`, one per label, make the
+    chart a way to choose: each is an address of this application, such as a list with that label as its filter."""
     if any(len(line.values) != len(labels) for line in series):
         raise ValueError("Each series needs one value per label")
+    if links and len(links) != len(labels):
+        raise ValueError("One link per label, or none")
+    if any(not link.startswith("/") or link.startswith("//") for link in links):
+        raise ValueError("A chart's links stay in the application: each starts with a single /")
     if len(labels) > len(colours) and len(series) == 1 and colours is not SLICE_COLOURS:
         raise ValueError("One colour per slice")
     for colour in colours:
@@ -122,11 +149,12 @@ def chart_data(
         "axes": {"x": x_axis, "y": y_axis},
         "unit": unit,
         "places": 2 if places is None else places,
+        "links": bool(links),
     }
     rows = [
         [label, *(_cell(line.values[position], places) for line in series)] for position, label in enumerate(labels)
     ]
-    return ChartData(config, [row_header, *(line.label for line in series)], rows)
+    return ChartData(config, [row_header, *(line.label for line in series)], rows, list(links))
 
 
 def point_data(

@@ -118,6 +118,14 @@ def equipment_list(request: Request, session: DatabaseSession) -> Response:
         return render(request, "demo/equipment/list.html", state=state, command=GENERATE)
     view = equipment_view(request.query_params)
     view.load(session, select(Equipment))
+    figures = []
+    if not fragment_requested(request):  # the charts stay on the page while the list changes under them
+        from app.demo.charts import equipment_by_location, equipment_by_state  # charts.py imports this module
+
+        figures = [
+            equipment_by_state(session, lambda status: view.link(status=status)),
+            equipment_by_location(session, lambda place: view.link(location=place)),
+        ]
     return render_list(
         request,
         view,
@@ -126,6 +134,7 @@ def equipment_list(request: Request, session: DatabaseSession) -> Response:
         state=state,
         command=GENERATE,
         statuses=STATUS_LABELS,
+        figures=figures,
     )
 
 

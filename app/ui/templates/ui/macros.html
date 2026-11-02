@@ -104,12 +104,16 @@
 {% endmacro %}
 
 {#- A canvas says nothing to a screen reader or on a failed load, so a figure always brings its summary and its numbers as
-    a table. `data` comes from `chart_data` or `point_data` in app/core/charts.py; app/ui/static/charts.js draws it. -#}
-{% macro chart(title, summary, data, type="bar", identifier="chart") %}
+    a table. `data` comes from `chart_data` or `point_data` in app/core/charts.py; app/ui/static/charts.js draws it.
+    With `links` in its data, a click on a part of the picture follows the link of that row in the table, and those
+    links are the way in for a keyboard. `into`, a ListView on the same page, makes each link filter that list in its
+    place: htmx sends the list's form with the chart's one value instead of the form's own. -#}
+{% macro chart(title, summary, data, type="bar", identifier="chart", into=none) %}
 <figure class="min-w-0 rounded-box border border-base-300 bg-base-100 p-4 sm:p-6" data-chart data-chart-library="{{ chart_library.src }}" data-chart-integrity="{{ chart_library.integrity }}">
   <figcaption class="space-y-1">
     <span class="block font-semibold">{{ title }}</span>
     <span id="{{ identifier }}-summary" class="block text-sm">{{ summary }}</span>
+    {% if data.links %}<span class="block text-sm">{{ _("Choose a part of the chart, or a row of its data table, to see those rows.") }}</span>{% endif %}
   </figcaption>
   <div class="relative mt-4 h-72 noscript:hidden" data-chart-box>
     <canvas role="img" aria-label="{{ title }}" aria-describedby="{{ identifier }}-summary"></canvas>
@@ -124,7 +128,11 @@
     <tbody>
       {% for row in data.rows %}
       <tr>
-        <th scope="row" class="font-medium whitespace-nowrap">{{ row[0] }}</th>
+        <th scope="row" class="font-medium whitespace-nowrap">
+          {%- if data.links %}
+          <a id="{{ identifier }}-link-{{ loop.index }}" class="link inline-block min-h-6" href="{{ data.links[loop.index0] }}"{% if into %}{{ {"hx-get": into.path, "hx-target": "#" ~ into.name ~ "-results", "hx-include": "#" ~ into.form_id, "hx-vals": data.link_values[loop.index0], "hx-push-url": "true", "hx-indicator": "#" ~ into.name ~ "-results"}|xmlattr }}{% endif %}>{{ row[0] }}</a>
+          {%- else %}{{ row[0] }}{% endif -%}
+        </th>
         {% for value in row[1:] %}<td class="text-end tabular-nums">{{ value }}</td>{% endfor %}
       </tr>
       {% endfor %}

@@ -251,6 +251,7 @@ data = chart_data(months, [Series(_("Planned"), planned), Series(_("Worked"), wo
 | Motion | None if a person asks for `prefers-reduced-motion` |
 | Without the picture | Without JavaScript the canvas is hidden and the summary and table remain. If Chart.js fails to load, or one chart fails to draw, its table opens by itself, and no other chart stops |
 | What is refused | A colour outside the list and a negative value in a pie, a doughnut or a polar area are errors on the server, while the code is written. Chart.js would draw the negative as positive |
+| Choosing | Optional. `links` in `chart_data`, one address of the application per label, make the table's first column links, and a click on a bar or a slice follows the link of its row: the pointer and the keyboard go to the same place, through the same element. The cursor says a part can be chosen. With `into`, a list on the same page, htmx sends that list's form with the chart's one value in place of the form's own, so the other filters and the order stay and the list changes in its place. The dashboard's states lead to the equipment list, and the equipment page's two charts filter it |
 | On a phone | Every label that fits stays. When they do not all fit they spread evenly and the first and the last always stay, which Chart.js's own thinning does not promise: it left out October. A chart keeps its height |
 
 daisyUI's colours pass the checks for colour blindness (neighbouring series stay apart) and normal vision, on both
@@ -472,7 +473,7 @@ leaves out backgrounds. The equipment detail prints both of its tabs.
 | Output | Excel export, print style | Milestone 2 |
 | Forms | Text, text area, select, checkbox, radio, date, number and decimal, searchable select, file upload, error summary, field error, form actions | Milestone 3 |
 | Feedback | Confirmation dialog, conflict notice | Milestone 3 |
-| Data | Dense and wide lists, filter panel | Milestone 4 |
+| Data | Dense and wide lists, filter panel, a chart that filters a list | Milestone 4 |
 | Feedback | Loading state, progress of a long task | Milestone 5 |
 | Pages | Service unavailable | Milestone 5 |
 
@@ -526,6 +527,7 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Gallery | [Every component on offer](#gallery), by category, with its status, its macro and every official example | Milestone 1 |
 | Administration | Visible only to one role, proving permissions | Milestone 1 |
 | Equipment list, `/equipment` | Server table with 50,000 rows, search, filters, sorting, paging, row actions, its empty and no-results states, Excel export | Milestone 2 |
+| Equipment by state and by location | Two charts above the list, whose parts and table rows filter it in place | Milestone 4 |
 | Equipment detail, `/equipment/<id>` | Breadcrumbs, description list, tabs as links, history of work orders, status label, print style | Milestone 2 |
 | Planning, `/planning` | Rich table: groups on the server, and one row edited at a time in a dialog | Milestone 2 |
 | Planning's filters | In a side panel that can be hidden, with its state in the address | Milestone 4 |

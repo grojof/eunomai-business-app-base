@@ -202,11 +202,26 @@
     };
   }
 
-  function optionsOf(spec) {
+  // A chart that leads somewhere: a click on a part follows the link of its row in the table, so htmx, the address and
+  // the keyboard's way in are all the table's, and nothing here decides where to go.
+  function choosing(canvas) {
+    const links = canvas.closest("[data-chart]").querySelectorAll("tbody th a");
+    return {
+      onClick(_event, elements) {
+        links[elements[0]?.index]?.click();
+      },
+      onHover(_event, elements) {
+        canvas.style.cursor = elements.length ? "pointer" : "";
+      },
+    };
+  }
+
+  function optionsOf(spec, canvas) {
     const type = NAMES[spec.type] ?? spec.type;
     const round = ROUND.has(type);
     const byMark = round || POINTS.has(type);
     return {
+      ...(spec.links ? choosing(canvas) : {}),
       responsive: true,
       maintainAspectRatio: false,
       locale: language,
@@ -253,7 +268,7 @@
       const chart = new Chart(canvas, {
         type: NAMES[spec.type] ?? spec.type,
         data: { labels: spec.labels, datasets: spec.series.map((series, position) => dataset(spec, series, position)) },
-        options: optionsOf(spec),
+        options: optionsOf(spec, canvas),
       });
       drawn.set(canvas, { chart, spec });
     } catch (error) {
@@ -273,7 +288,7 @@
         continue;
       }
       try {
-        chart.options = optionsOf(spec);
+        chart.options = optionsOf(spec, canvas);
         spec.series.forEach((series, position) => {
           const style = ROUND.has(chart.config.type) ? sliceStyle(spec) : seriesStyle(spec, series, position);
           Object.assign(chart.data.datasets[position], style);

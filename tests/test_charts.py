@@ -8,6 +8,7 @@ from decimal import Decimal
 import pytest
 
 from app.core.charts import CHART_TYPES, SLICE_COLOURS, Point, Series, chart_data, point_data
+from app.core.tables import Column, ListView
 from app.core.templating import environment
 from tests.helpers import ROOT
 from tools import vendor
@@ -166,3 +167,51 @@ def test_a_value_that_is_not_a_number_is_refused(value):
 def test_a_negative_value_is_fine_on_bars():
     data = chart_data(["A", "B"], [Series("S", [Decimal(-5), Decimal(5)])], "L")
     assert data.config_for("bar")["series"][0]["values"] == ["-5", "5"]
+
+
+LINKED = chart_data(
+    ["Roof", "Workshop"],
+    [Series("Equipment", [3, 4])],
+    "Location",
+    links=["/things?sort=cost&location=Roof", "/things?sort=cost&location=Workshop"],
+)
+
+
+def test_a_chart_with_links_makes_its_table_the_way_in():
+    html = rendered(LINKED)
+    link = '<a id="chart-hours-link-1" class="link inline-block min-h-6" href="/things?sort=cost&amp;location=Roof">'
+    assert link in html
+    assert "to see those rows" in html
+    assert config_of(html)["links"] is True
+    assert "hx-get" not in html
+
+
+def test_a_chart_without_links_has_none():
+    html = rendered()
+    assert "<a " not in html
+    assert config_of(html)["links"] is False
+
+
+def test_a_chart_into_a_list_sends_the_lists_form_with_its_one_value():
+    columns = (Column("name", "Name", "name"),)
+    view = ListView.read("things", "/things", {}, columns, None, "name")
+    html = str(MACROS.chart("Equipment", "Summary", LINKED, "bar", "chart-places", into=view))
+    assert 'hx-get="/things" hx-target="#things-results" hx-include="#things-filters"' in html
+    assert 'hx-vals="{&#34;location&#34;: &#34;Roof&#34;}"' in html
+    assert 'hx-push-url="true"' in html
+
+
+@pytest.mark.parametrize(
+    "links",
+    [["/a"], ["https://elsewhere.example/a", "/b"], ["//elsewhere.example/a", "/b"]],
+)
+def test_links_are_one_per_label_and_stay_in_the_application(links):
+    with pytest.raises(ValueError, match="link"):
+        chart_data(["A", "B"], [Series("S", [1, 2])], "X", links=links)
+
+
+def test_a_chart_that_filters_in_place_changes_one_value():
+    data = chart_data(["A", "B"], [Series("S", [1, 2])], "X", links=["/t?a=1&b=1", "/t?a=2&b=2"])
+    with pytest.raises(ValueError, match="one value"):
+        data.link_choices  # noqa: B018  # reading it is the check
+    assert LINKED.link_choices == [("location", "Roof"), ("location", "Workshop")]

@@ -73,9 +73,10 @@ def test_a_dense_list_shows_more_rows_and_more_columns(open_filled):
     def seen(page):
         return page.evaluate("""() => {
             const box = document.querySelector('.table-scroll').getBoundingClientRect();
-            const rows = [...document.querySelectorAll('tbody tr')]
+            const rows = [...document.querySelectorAll('[data-results] tbody tr')]
                 .filter((row) => row.getBoundingClientRect().bottom <= box.bottom);
-            const columns = [...document.querySelectorAll('thead th')].filter((cell) => cell.offsetWidth > 0);
+            const columns = [...document.querySelectorAll('[data-results] thead th')]
+                .filter((cell) => cell.offsetWidth > 0);
             return [rows.length, columns.length];
         }""")
 
