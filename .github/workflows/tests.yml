@@ -19,7 +19,10 @@ jobs:
             postgres: postgres:18.4@sha256:a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636
             test_database_url: postgresql+psycopg://postgres@localhost:5432/postgres
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 25
+    # The Ubuntu job took 15.6 minutes before milestone 4 and 20.8 with it: its views brought about 700 tests, most of
+    # them a browser scan of one screen in one theme and language, and no single slow one. The limit keeps room for that
+    # and for Windows, which is slower; --durations shows in each log where the time goes.
+    timeout-minutes: 35
     services:
       postgres:
         image: ${{ matrix.postgres }}
@@ -52,4 +55,4 @@ jobs:
       - run: uv run --frozen python tools/gallery.py check
       - run: uv run --frozen python tools/icons.py check
       - run: uv run --frozen python tools/translations.py check
-      - run: uv run --frozen pytest -q
+      - run: uv run --frozen pytest -q --durations=25

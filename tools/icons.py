@@ -55,6 +55,11 @@ NOT_OURS = re.compile(r"(?:^|/)(?:vendor|__pycache__)/|^demo/examples/|^ui/stati
 INLINE = re.compile(r"<svg\b|svg\+xml", re.I)
 ICON_INCLUDE = re.compile(r"""["'](?:ui/icons/|brand-icons/)""")
 ICON_MACRO = re.compile(r"\{%-?\s*macro\s+icon\(.*?\{%-?\s*endmacro\s*-?%\}", re.S)
+DATA_PICTURE = "ui/templates/ui/macros.html"
+GANTT_MACRO = re.compile(r"\{%-?\s*macro\s+gantt\(.*?\{%-?\s*endmacro\s*-?%\}", re.S)
+"""The one exception to drawing no SVG inline: the `gantt` macro draws a timeline's picture from its rows, on the
+server, beside the table that holds the same rows, so that its colours follow the theme. It is a chart, not an icon or
+an illustration, and holds nothing that runs or loads: tests/test_icons.py renders one and checks it as an image is."""
 RASTER = re.compile(r"data:image/(?:png|jpeg|gif|webp|avif)[;,]", re.I)
 URL = re.compile(r"""url\(\s*(['"]?)(.*?)\1\s*\)""", re.I | re.S)
 COLOURS = {"fill", "stroke", "color", "stop-color", "flood-color", "lighting-color"}
@@ -411,6 +416,8 @@ def drawn_by_hand(app: Path = APP) -> list[str]:
                 )
         elif path.suffix in (".html", ".py", ".js", ".css"):
             text = path.read_text(encoding="utf-8")
+            if where == DATA_PICTURE:
+                text = GANTT_MACRO.sub("", text)
             if INLINE.search(text):
                 problems.append(f"{where}: an inline SVG: icons come through the icon macro, illustrations as files")
             if path.suffix == ".html" and ICON_INCLUDE.search(ICON_MACRO.sub("", text)):

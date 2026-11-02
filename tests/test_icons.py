@@ -5,6 +5,7 @@ import json
 import re
 import subprocess
 import sys
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,7 @@ from starlette.routing import Mount
 
 from app.core import templating
 from app.core.application import CONTENT_SECURITY_POLICY
+from app.core.gantt import Task, timeline
 from app.core.templating import environment
 from tests.helpers import ROOT
 from tools import icons, vendor
@@ -479,3 +481,40 @@ def test_vendor_check_covers_only_lucides_folder():
     folders = [entry["folder"] for entry in vendor.read_entries().values() if "folder" in entry]
     assert folders == ["app/ui/templates/ui/icons"]
     assert Path("app/brand/icons").as_posix() not in json.dumps(vendor.read_entries())
+
+
+TIMELINE = '{% macro gantt(identifier) %}<svg viewBox="0 0 10 10"><rect width="1" height="1"/></svg>{% endmacro %}'
+
+
+@pytest.mark.rule("COMP-05")
+def test_the_gantt_chart_is_the_one_picture_drawn_inline_and_only_in_its_macro(tmp_path):
+    macros = tmp_path / "ui" / "templates" / "ui" / "macros.html"
+    macros.parent.mkdir(parents=True)
+    macros.write_text(TIMELINE, encoding="utf-8")
+    assert icons.drawn_by_hand(tmp_path) == []
+    macros.write_text(TIMELINE + '{% macro badge() %}<svg viewBox="0 0 24 24"></svg>{% endmacro %}', encoding="utf-8")
+    assert len(icons.drawn_by_hand(tmp_path)) == 1
+    elsewhere = tmp_path / "ui" / "templates" / "page.html"
+    macros.write_text("", encoding="utf-8")
+    elsewhere.write_text(TIMELINE, encoding="utf-8")
+    assert icons.drawn_by_hand(tmp_path)[0].startswith("ui/templates/page.html")
+
+
+@pytest.mark.rule("SEC-16")
+def test_a_timelines_picture_holds_nothing_that_runs_or_loads():
+    plan = timeline(
+        [
+            None,
+            Task(1, "<script>", date(2026, 11, 2), date(2026, 11, 4)),
+            Task(2, "B", date(2026, 11, 6), date(2026, 11, 6), after=(1,)),
+        ],
+        "day",
+        date(2026, 11, 3),
+    )
+    macros = environment.get_template("ui/macros.html").module
+    html = str(macros.gantt("plan", "Plan", plan, [("Work", False)], "Summary", caller=lambda: ""))
+    picture = html[html.index('<svg id="plan-picture"') : html.rindex("</svg>") + 6].replace(
+        "<svg ", f'<svg xmlns="{icons.SVG}" ', 1
+    )
+    assert icons.unsafe(picture) == []
+    assert "&lt;script&gt;" in picture

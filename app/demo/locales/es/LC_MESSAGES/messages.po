@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-02 12:18+0100\n"
+"POT-Creation-Date: 2026-11-02 15:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -65,8 +65,16 @@ msgstr[0] "%(count)s orden de trabajo"
 msgstr[1] "%(count)s órdenes de trabajo"
 
 #, python-format
+msgid "%(event)s is now on %(when)s."
+msgstr "%(event)s queda para %(when)s."
+
+#, python-format
 msgid "%(group)s, continued"
 msgstr "%(group)s, continuación"
+
+#, python-format
+msgid "%(place)s holds the most equipment, %(count)s pieces."
+msgstr "%(place)s tiene más equipos que ninguna otra ubicación: %(count)s."
 
 #, python-format
 msgid ""
@@ -113,8 +121,17 @@ msgstr "Antigüedad y coste de reparación"
 msgid "Age, in years"
 msgstr "Antigüedad, en años"
 
+msgid "Agenda"
+msgstr "Agenda"
+
 msgid "Air compressor"
 msgstr "Compresor de aire"
+
+msgid "All dates"
+msgstr "Todas las fechas"
+
+msgid "All day"
+msgstr "Todo el día"
 
 msgid "All locations"
 msgstr "Todas las ubicaciones"
@@ -131,6 +148,9 @@ msgstr "Todos los campos de la orden de trabajo %(number)s: %(work)s"
 
 msgid "Any date"
 msgstr "Cualquier fecha"
+
+msgid "Apply"
+msgstr "Aplicar"
 
 msgid ""
 "Arrow keys move through the list, Enter chooses, Escape closes it. "
@@ -181,11 +201,20 @@ msgstr "Filtro obstruido"
 msgid "Blown fuse"
 msgstr "Fusible fundido"
 
+msgid "Board"
+msgstr "Tablero"
+
 msgid "Both sites score well on safety. The south site is weakest on records."
 msgstr "Las dos plantas puntúan bien en seguridad. La sur flojea en registros."
 
+msgid "Calendar"
+msgstr "Calendario"
+
 msgid "Cancel"
 msgstr "Cancelar"
+
+msgid "Change its day or its times. They are in the application's time zone."
+msgstr "Cambia su día o sus horas. Están en la zona horaria de la aplicación."
 
 msgid ""
 "Charts and live figures appear here once the demo's rows are generated. "
@@ -299,6 +328,12 @@ msgstr "Carcasa agrietada"
 msgid "Dashboard"
 msgstr "Panel"
 
+msgid "Day"
+msgstr "Día"
+
+msgid "Days"
+msgstr "Días"
+
 msgid "Decorative: not meant for management applications."
 msgstr "Decorativo: no pensado para aplicaciones de gestión."
 
@@ -350,12 +385,32 @@ msgstr ""
 "Cada línea es un enlace a su campo. El foco va al resumen cuando un "
 "formulario vuelve con errores, y un lector de pantalla lo lee."
 
+msgid ""
+"Each piece of equipment from its first day of work to its last. The "
+"cooling tower waits for the conveyor belt."
+msgstr ""
+"Cada equipo desde su primer día de trabajo hasta el último. La torre de "
+"refrigeración espera a la cinta transportadora."
+
+#, python-format
+msgid ""
+"Each work order from its planned day for as many days as its hours take "
+"its crew. The upright red line is today, %(today)s, and an arrow leads to"
+" a work order that waits for another."
+msgstr ""
+"Cada orden de trabajo desde su día planificado, durante los días que sus "
+"horas ocupan a su equipo. La línea roja vertical es hoy, %(today)s, y una"
+" flecha lleva a la orden de trabajo que espera a otra."
+
 msgid "Edit"
 msgstr "Editar"
 
 #, python-format
 msgid "Edit work order %(number)s"
 msgstr "Editar la orden de trabajo %(number)s"
+
+msgid "Ends"
+msgstr "Termina"
 
 msgid "Enter a date, or leave it empty if it is not planned yet."
 msgstr "Escribe una fecha, o déjala vacía si aún no está planificada."
@@ -370,6 +425,9 @@ msgstr "Escribe el código del equipo."
 msgid "Enter the cost as a number, such as 120.50."
 msgstr "Escribe el coste como un número, por ejemplo 120,50."
 
+msgid "Enter the day of the visit."
+msgstr "Escribe el día de la visita."
+
 #, python-format
 msgid "Enter the hours as a number, such as %(example)s."
 msgstr "Escribe las horas como un número, por ejemplo %(example)s."
@@ -383,11 +441,23 @@ msgstr "Escribe las horas con dos decimales como máximo."
 msgid "Enter what has to be done."
 msgstr "Escribe qué hay que hacer."
 
+msgid "Enter when it ends, such as 11:00."
+msgstr "Escribe cuándo termina, por ejemplo 11:00."
+
+msgid "Enter when it starts, such as 09:30."
+msgstr "Escribe cuándo empieza, por ejemplo 09:30."
+
 msgid "Equipment"
 msgstr "Equipos"
 
 msgid "Equipment and its state"
 msgstr "Equipos y su estado"
+
+msgid "Equipment and its work"
+msgstr "Equipos y su trabajo"
+
+msgid "Equipment and when its work is planned"
+msgstr "Equipos y cuándo está planificado su trabajo"
 
 msgid "Equipment by location"
 msgstr "Equipos por ubicación"
@@ -488,10 +558,35 @@ msgstr "Agrupar por"
 
 msgid ""
 "Here it is a plain form, and it reloads the page. In a screen htmx "
+"replaces only the results, and the panel's button shows and hides it "
+"without a reload."
+msgstr ""
+"Aquí es un formulario simple y recarga la página. En una pantalla, htmx "
+"sustituye solo los resultados, y el botón del panel lo muestra y lo "
+"oculta sin recargar."
+
+msgid ""
+"Here it is a plain form, and it reloads the page. In a screen htmx "
 "replaces only the results."
 msgstr ""
 "Aquí es un formulario sencillo y recarga la página. En una pantalla, htmx"
 " sustituye solo los resultados."
+
+msgid ""
+"Here nobody may move a card. On the board of the demo each card has a "
+"form that moves it, by keyboard and without JavaScript, and a pointer or "
+"a finger can drag it."
+msgstr ""
+"Aquí nadie puede mover una tarjeta. En el tablero de la demo, cada "
+"tarjeta tiene un formulario que la mueve, con el teclado y sin "
+"JavaScript, y se puede arrastrar con el puntero o con el dedo."
+
+msgid ""
+"Here nobody may move an event. On the calendar of the demo a pointer "
+"drags one, and each event is a link to the form that moves it."
+msgstr ""
+"Aquí nadie puede mover un evento. En el calendario de la demo se arrastra"
+" con el puntero, y cada evento es un enlace al formulario que lo mueve."
 
 msgid ""
 "Here nothing is deleted. Focus starts on the way out, and comes back to "
@@ -528,6 +623,9 @@ msgstr ""
 "Las horas trabajadas no se alejaron más de un 6 % de lo previsto en "
 "ningún mes."
 
+msgid "How the work is shown"
+msgstr "Cómo se muestra el trabajo"
+
 msgid "I have read the safety sheet"
 msgstr "He leído la ficha de seguridad"
 
@@ -547,6 +645,10 @@ msgstr "En curso"
 msgid "In service"
 msgstr "En servicio"
 
+#, python-format
+msgid "Inspection: %(equipment)s"
+msgstr "Inspección: %(equipment)s"
+
 msgid "Inspections"
 msgstr "Inspecciones"
 
@@ -556,6 +658,9 @@ msgid ""
 msgstr ""
 "Tiene su icono y sus palabras, así que no depende del color. Cada macro "
 "de campo lo escribe y lo vincula al control."
+
+msgid "It must end after it starts."
+msgstr "Tiene que terminar después de empezar."
 
 msgid ""
 "It uses Tailwind's own colours, which this base removes, so some colours "
@@ -605,6 +710,9 @@ msgstr "Mes"
 
 msgid "Month planned"
 msgstr "Mes previsto"
+
+msgid "Months"
+msgstr "Meses"
 
 msgid "Motor overload"
 msgstr "Sobrecarga del motor"
@@ -681,6 +789,13 @@ msgstr ""
 "persona guardó lo que aparece abajo. Guarda otra vez para sustituirlo por"
 " lo que has escrito, o cancela para conservar lo suyo."
 
+msgid ""
+"Nothing of yours was moved. The card is where they left it: move it again"
+" if you still want to."
+msgstr ""
+"No se ha movido nada tuyo. La tarjeta está donde la dejaron: muévela otra"
+" vez si aún quieres."
+
 msgid "Nothing overdue"
 msgstr "Nada vencido"
 
@@ -722,6 +837,13 @@ msgstr "Una acción principal, la salida al lado, y lo peligroso bien apartado."
 
 msgid "Only people with the administrator role can open this page."
 msgstr "Solo pueden abrir esta página las personas con el rol de administrador."
+
+msgid ""
+"Only planned work orders move on the calendar. Change its state in "
+"Planning."
+msgstr ""
+"En el calendario solo se mueven las órdenes de trabajo planificadas. "
+"Cambia su estado en Planificación."
 
 msgid "Open work orders"
 msgstr "Órdenes de trabajo abiertas"
@@ -850,6 +972,12 @@ msgstr "Guardar"
 msgid "Saving…"
 msgstr "Guardando…"
 
+msgid "Scale"
+msgstr "Escala"
+
+msgid "Scale of the timeline"
+msgstr "Escala de la línea de tiempo"
+
 msgid ""
 "Screens call this macro, with tests and a review behind it. Use it "
 "instead of the classes below."
@@ -876,6 +1004,9 @@ msgstr "Verlas en Planificación"
 msgid "Settings"
 msgstr "Ajustes"
 
+msgid "Show"
+msgstr "Mostrar"
+
 msgid "Show inspections"
 msgstr "Mostrar inspecciones"
 
@@ -892,8 +1023,21 @@ msgstr "Tamaño"
 msgid "Software fault"
 msgstr "Fallo de software"
 
+msgid ""
+"Someone else changed this first. It is back where it was: reload the page"
+" to see where it is now."
+msgstr ""
+"Otra persona lo cambió antes. Ha vuelto a donde estaba: recarga la página"
+" para ver dónde está ahora."
+
+msgid "Someone else changed this visit"
+msgstr "Otra persona cambió esta visita"
+
 msgid "Someone else changed this work order"
 msgstr "Otra persona ha cambiado esta orden de trabajo"
+
+msgid "Someone else moved this work order first"
+msgstr "Otra persona movió antes esta orden de trabajo"
 
 msgid ""
 "Sorting, filtering and paging happen in the database, and the state lives"
@@ -913,6 +1057,9 @@ msgstr "Repuestos en existencias"
 
 msgid "Standby generator"
 msgstr "Generador de reserva"
+
+msgid "Starts"
+msgstr "Empieza"
 
 msgid "State"
 msgstr "Estado"
@@ -945,6 +1092,24 @@ msgstr "Por ejemplo EQ-000123. Está en la lista de equipos."
 
 msgid "Summary"
 msgstr "Resumen"
+
+msgid "Table"
+msgstr "Tabla"
+
+msgid "That could not be moved. It is back where it was."
+msgstr "No se ha podido mover. Ha vuelto a donde estaba."
+
+msgid "That place on the board has changed. Here it is as it is now: try again."
+msgstr ""
+"Ese lugar del tablero ha cambiado. Aquí está como es ahora: vuelve a "
+"intentarlo."
+
+msgid ""
+"That time does not exist on that day: the clocks go forward. Choose a "
+"time after the change."
+msgstr ""
+"Esa hora no existe ese día: los relojes se adelantan. Elige una hora "
+"posterior al cambio."
 
 msgid "The backlog grew until April, then fell as more orders closed than opened."
 msgstr ""
@@ -981,6 +1146,14 @@ msgstr "El archivo está vacío. Elige uno que tenga contenido."
 
 msgid "The file was removed."
 msgstr "Se ha quitado el archivo."
+
+msgid ""
+"The inspection team's visits and the planned work orders. Drag one to "
+"another time, or open it to change it with a form."
+msgstr ""
+"Las visitas del equipo de inspección y las órdenes de trabajo "
+"planificadas. Arrastra una a otro momento, o ábrela para cambiarla con un"
+" formulario."
 
 msgid "The plan"
 msgstr "El plan"
@@ -1024,6 +1197,9 @@ msgstr "No se puede deshacer. Se va esto:"
 msgid "This equipment is due for inspection."
 msgstr "A este equipo le toca inspección."
 
+msgid "This is no longer here: someone may have removed it."
+msgstr "Esto ya no está aquí: puede que alguien lo haya quitado."
+
 msgid "This month"
 msgstr "Este mes"
 
@@ -1047,8 +1223,14 @@ msgstr "Este año"
 msgid "Tick this to go on."
 msgstr "Márcalo para continuar."
 
+msgid "Timeline"
+msgstr "Línea de tiempo"
+
 msgid "Title"
 msgstr "Título"
+
+msgid "Today"
+msgstr "Hoy"
 
 msgid "Total"
 msgstr "Total"
@@ -1074,6 +1256,10 @@ msgstr "Tipo"
 msgid "Type to narrow the list."
 msgstr "Escribe para acotar la lista."
 
+#, python-format
+msgid "Until %(day)s"
+msgstr "Hasta el %(day)s"
+
 msgid "Updated"
 msgstr "Actualizado"
 
@@ -1094,8 +1280,20 @@ msgstr "Ver"
 msgid "View %(code)s"
 msgstr "Ver %(code)s"
 
+msgid "Visits and work orders"
+msgstr "Visitas y órdenes de trabajo"
+
+msgid "Waits for"
+msgstr "Espera a"
+
 msgid "Warehouse"
 msgstr "Almacén"
+
+msgid "Week"
+msgstr "Semana"
+
+msgid "Weeks"
+msgstr "Semanas"
 
 msgid "What has to be done"
 msgstr "Qué hay que hacer"
@@ -1141,8 +1339,16 @@ msgid "Work order %(number)s deleted."
 msgstr "Orden de trabajo %(number)s eliminada."
 
 #, python-format
+msgid "Work order %(number)s is now in %(state)s."
+msgstr "La orden de trabajo %(number)s está ahora en %(state)s."
+
+#, python-format
 msgid "Work order %(number)s saved."
 msgstr "Orden de trabajo %(number)s guardada."
+
+#, python-format
+msgid "Work order %(number)s: %(work)s"
+msgstr "Orden de trabajo %(number)s: %(work)s"
 
 msgid "Work order for the cooling tower"
 msgstr "Orden de trabajo de la torre de refrigeración"
@@ -1168,12 +1374,29 @@ msgstr "Órdenes de trabajo por tipo"
 msgid "Work orders by month"
 msgstr "Órdenes de trabajo por mes"
 
+msgid "Work orders by state"
+msgstr "Órdenes de trabajo por estado"
+
+msgid ""
+"Work orders by state. Move a card with its own form, or drag it to "
+"another place."
+msgstr ""
+"Órdenes de trabajo por estado. Mueve una tarjeta con su propio "
+"formulario, o arrástrala a otro lugar."
+
 #, python-format
 msgid "Work orders of %(code)s"
 msgstr "Órdenes de trabajo de %(code)s"
 
 msgid "Work orders of this equipment, newest first"
 msgstr "Órdenes de trabajo de este equipo, las más recientes primero"
+
+msgid ""
+"Work orders on a timeline, with their start, their days and what they "
+"wait for"
+msgstr ""
+"Órdenes de trabajo en una línea de tiempo, con su inicio, sus días y lo "
+"que esperan"
 
 msgid "Work orders opened and backlog"
 msgstr "Órdenes abiertas y pendientes"

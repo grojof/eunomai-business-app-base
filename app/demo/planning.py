@@ -6,7 +6,7 @@ form it already knows, with nothing to learn in between. See docs/decisions.md.
 
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from typing import Annotated, Any
 
@@ -18,9 +18,19 @@ from sqlalchemy.orm import Session, contains_eager
 from app.core.database import DatabaseSession, exact_sum, saved, totals_by
 from app.core.formatters import format_date, format_decimal, format_month_and_year
 from app.core.forms import read_choice, read_date, read_decimal, read_fields
+from app.core.gantt import Task, Timeline, timeline
 from app.core.i18n import N_, _, ngettext
 from app.core.identity import Person, require_role
-from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list, whole_page
+from app.core.tables import (
+    Column,
+    Filter,
+    ListView,
+    arrange,
+    fragment_requested,
+    list_query,
+    render_list,
+    whole_page,
+)
 from app.core.templating import render
 from app.demo.data import GENERATE, READY, rows_state
 from app.demo.equipment import (
@@ -32,7 +42,7 @@ from app.demo.equipment import (
     ranked,
     saved_message,
 )
-from app.demo.models import LOCATIONS, WORK_ORDER_STATUSES, Equipment, WorkOrder, overdue
+from app.demo.models import LAST_DAY, LOCATIONS, WORK_ORDER_STATUSES, Equipment, WorkOrder, overdue, working_days
 
 OPEN = "open"
 FIELD_IDS = {"status": "field-status", "planned_on": "field-planned", "hours": "field-hours"}
@@ -42,6 +52,7 @@ EARLIEST = date(2000, 1, 1)
 LATEST = date(2099, 12, 31)
 """A planned day outside these is a year mistyped, such as 0026."""
 GROUPS = {"location": N_("Location"), "status": N_("State"), "month": N_("Month planned")}
+SCALE_LABELS = {"fit": N_("All dates"), "day": N_("Days"), "week": N_("Weeks"), "month": N_("Months")}
 _STATEMENT = select(WorkOrder).join(WorkOrder.equipment)
 _LOADED = (contains_eager(WorkOrder.equipment),)
 
@@ -101,9 +112,20 @@ def planning_view(params: Mapping[str, str]) -> ListView:
                 every=_("Any date"),
             ),
             Filter("group", _("Group by"), [(key, _(label)) for key, label in GROUPS.items()], default="location"),
+            Filter(
+                "show", _("Show"), [("table", _("Table")), ("timeline", _("Timeline"))], default="table", in_form=False
+            ),
+            Filter(
+                "scale",
+                _("Scale"),
+                [(key, _(label)) for key, label in SCALE_LABELS.items()],
+                default="fit",
+                in_form=False,
+            ),
         ),
         (Equipment.code, Equipment.name, WorkOrder.title),
         _("Equipment or work"),
+        panelled=True,
     )
 
 
@@ -184,8 +206,29 @@ def load_sections(view: ListView, session: Session) -> list[Section]:
     return sections
 
 
+def timeline_of(view: ListView, sections: Sequence[Section]) -> Timeline | None:
+    """The same page of rows as bars, when the timeline is what the address asks for. A group's heading is a row too,
+    so the picture keeps in line with the table."""
+    if view.chosen["show"] != "timeline":
+        return None
+    rows: list[Task | None] = []
+    for section in sections:
+        rows.append(None)
+        for order in section.rows:
+            end = (
+                order.planned_on + timedelta(days=working_days(order.hours, order.crew) - 1)
+                if order.planned_on
+                else None
+            )
+            after = (order.after_id,) if order.after_id else ()
+            rows.append(Task(order.id, order.title, order.planned_on, end, ORDER_LABELS[order.status][1], after))
+    return timeline(rows, view.chosen["scale"], LAST_DAY)
+
+
 def _list_context(request: Request, person: Person | None) -> dict[str, Any]:
     return {
+        "today": LAST_DAY,
+        "working_days": working_days,
         "order_statuses": ORDER_LABELS,
         "can_edit": can_edit(request),
         "saved": "",
@@ -204,8 +247,9 @@ def planning(request: Request, session: DatabaseSession) -> Response:
     sections = load_sections(view, session)
     context = _list_context(request, request.state.person)
     context["saved"] = outcome_message(session, request.query_params)
+    plan = timeline_of(view, sections)
     return render_list(
-        request, view, "demo/planning/list.html", "demo/planning/results.html", sections=sections, **context
+        request, view, "demo/planning/list.html", "demo/planning/results.html", sections=sections, plan=plan, **context
     )
 
 
@@ -376,8 +420,9 @@ def planning_save(
     return render(
         request,
         "demo/planning/saved.html",
-        view=view,
+        view=arrange(request, view),
         sections=sections,
+        plan=timeline_of(view, sections),
         order=order,
         refill_filters=False,
         **context,

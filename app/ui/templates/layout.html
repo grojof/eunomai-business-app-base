@@ -13,12 +13,19 @@
   <script src="/static/ui/app.js" defer></script>
   <script src="/static/ui/palette.js" defer></script>
   <script src="/static/ui/charts.js" defer></script>
+  <script src="/static/ui/board.js" defer></script>
+  <script src="/static/ui/calendar.js" defer></script>
   {% block scripts %}{% endblock %}
 </head>
 <body class="min-h-dvh bg-base-200 text-base-content print:bg-transparent">
   {% from "ui/macros.html" import icon %}
   {% set side = navigation and layout.navigation in ("side", "compact") %}
   {% set menu_button = "" if layout.navigation == "hidden" else "lg:hidden" %}
+  {#- The content is drawn first, so that its heading can go to the top bar when a person asks for that. -#}
+  {% set title_place = page_title() %}
+  {{- title_place.ask(layout.page_title == "header" and layout.navigation != "top") -}}
+  {% set content = self.content() %}
+  {%- if false %}{% block content %}{% endblock %}{% endif %}
   <a class="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:start-2 focus:top-2 focus:z-50 print:hidden" href="#main">{{ _("Skip to content") }}</a>
   <div class="flex min-h-dvh">
     {% if side %}<div class="contents lg:block lg:shrink-0 lg:border-e lg:border-base-300 lg:bg-base-100 print:hidden">{% include "ui/navigation.html" %}</div>{% endif %}
@@ -28,8 +35,9 @@
         <button class="btn btn-ghost btn-square {{ menu_button }}" type="button" popovertarget="navigation" aria-label="{{ _('Open menu') }}">{{ icon("menu") }}</button>
         {% endif %}
         {% if not side %}
-        <a class="flex items-center gap-2 font-semibold" href="/"><img class="size-8" src="/static/brand/logo.svg" alt=""> {{ app_name }}</a>
+        <a class="flex items-center gap-2 font-semibold" href="/"><img class="size-8" src="/static/brand/logo.svg" alt=""> <span{% if title_place.text %} class="sr-only md:not-sr-only"{% endif %}>{{ app_name }}</span></a>
         {% endif %}
+        {% if title_place.text %}<h1 class="page-title-bar min-w-0 flex-1 truncate">{{ title_place.text }}</h1>{% endif %}
         {% if navigation and not side %}{% include "ui/navigation.html" %}{% endif %}
         {% if person %}
         <div class="ms-auto flex items-center gap-1 sm:gap-2">
@@ -48,7 +56,7 @@
         {% endif %}
       </header>
       <main id="main" tabindex="-1" class="w-full grow space-y-6 p-4 lg:p-8 print:p-0{{ ' mx-auto max-w-7xl' if layout.width == 'centered' else '' }}">
-        {% block content %}{% endblock %}
+        {{ content }}
       </main>
     </div>
   </div>

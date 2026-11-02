@@ -60,7 +60,7 @@ def test_a_location_sorts_by_what_a_person_reads(filled):
 
 def test_a_state_sorts_by_what_needs_attention(filled):
     html = filled.get("/equipment?sort=status&size=100").text
-    body = html[html.index("<tbody") :]
+    body = html[html.index('id="equipment-results"') :]
     assert body.index("Stopped") < body.index("Due soon")
     assert "In service" not in body
 
@@ -82,7 +82,7 @@ def test_no_results_says_so_and_offers_a_way_out(filled):
     html = filled.get("/equipment?q=nothing+like+this").text
     assert "No equipment matches" in html
     assert 'href="/equipment"' in html
-    assert "<table" not in html
+    assert "<table" not in html[html.index('id="equipment-results"') :]
 
 
 def test_a_filter_on_the_page_can_be_removed(filled):
@@ -249,7 +249,7 @@ def test_it_fits_a_phone_with_longer_texts(open_filled):
 
 
 def first_code(page):
-    return page.locator("tbody th a").first.inner_text()
+    return page.locator("#equipment-results tbody th a").first.inner_text()
 
 
 @pytest.mark.browser
@@ -279,7 +279,7 @@ def test_typing_filters_keeps_the_box_and_the_text(open_filled):
     box.focus()
     page.keyboard.type("EQ-00001")
     page.wait_for_url("**/equipment?q=EQ-00001")
-    until(page, "document.querySelector('tbody th a').textContent === 'EQ-000010'")
+    until(page, "document.querySelector('#equipment-results tbody th a').textContent === 'EQ-000010'")
     assert page.evaluate("document.activeElement.id") == "equipment-search"
     assert box.input_value() == "EQ-00001"
     announced(page, "10 pieces of equipment")
@@ -383,7 +383,7 @@ def test_the_page_size_applies_at_once_and_goes_to_the_first_page(open_filled):
     page.locator("#equipment-size").focus()
     page.select_option("#equipment-size", "10")
     page.wait_for_url("**/equipment?size=10")
-    until(page, "document.querySelectorAll('tbody tr').length === 10")
+    until(page, "document.querySelectorAll('#equipment-results tbody tr').length === 10")
     assert page.evaluate("document.activeElement.id") == "equipment-size"
 
 
@@ -396,7 +396,7 @@ def test_the_keyboard_reaches_the_table_box_and_scrolls_it(open_filled):
     box.focus()
     page.keyboard.press("PageDown")
     until(page, "document.querySelector('.table-scroll').scrollTop > 0")
-    header = page.locator("thead tr").bounding_box()
+    header = page.locator("#equipment-results thead tr").bounding_box()
     assert header["y"] >= box.bounding_box()["y"] - 1
 
 
@@ -404,10 +404,11 @@ def test_the_keyboard_reaches_the_table_box_and_scrolls_it(open_filled):
 def test_every_header_cell_stays_on_top_while_the_rows_go_past(open_filled):
     """The first column is pinned sideways too, and its cells must pass under the header, not over it."""
     page = open_filled("/equipment")
+    page.locator(".table-scroll").evaluate("box => box.scrollIntoView()")
     page.evaluate("document.querySelector('.table-scroll').scrollTop = 400")
     until(page, "document.querySelector('.table-scroll').scrollTop >= 400")
     top = page.locator(".table-scroll").bounding_box()["y"]
-    cells = page.locator("thead tr > *")
+    cells = page.locator("#equipment-results thead tr > *")
     assert cells.count() > 1
     for index in range(cells.count()):
         box = cells.nth(index).bounding_box()
@@ -423,6 +424,10 @@ def test_the_table_box_stays_in_the_tab_order_of_the_page(open_filled):
     page.keyboard.press("Tab")
     assert page.evaluate("document.activeElement.textContent.trim()") == "Export to Excel"
     page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement.textContent.trim()") == "Whole width"
+    page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement.textContent.trim()") == "Dense rows"
+    page.keyboard.press("Tab")
     assert page.evaluate("document.activeElement.matches('.table-scroll')")
     page.keyboard.press("Tab")
     assert page.evaluate("document.activeElement.id") == "equipment-sort-code"
@@ -431,7 +436,7 @@ def test_the_table_box_stays_in_the_tab_order_of_the_page(open_filled):
 @pytest.mark.browser
 def test_without_javascript_it_all_still_works(open_filled):
     page = open_filled("/equipment", javascript=False)
-    assert page.locator("tbody tr").count() == 25
+    assert page.locator("#equipment-results tbody tr").count() == 25
     page.locator("#equipment-sort-cost").click()
     page.wait_for_url("**/equipment?sort=cost")
     apply = page.locator("#equipment-filters").get_by_role("button", name="Apply")
@@ -522,8 +527,8 @@ def test_focus_lands_on_the_empty_state_when_no_table_comes_back(open_filled):
 def test_the_actions_header_lines_up_with_what_is_under_it(open_filled, path, width):
     edges = open_filled(path, width=width).evaluate("""() => {
         const header = document.createRange();
-        header.selectNodeContents([...document.querySelectorAll('thead th')].at(-1));
-        const links = [...document.querySelectorAll('tbody td:last-child a')];
+        header.selectNodeContents([...document.querySelectorAll('[data-results] thead th')].at(-1));
+        const links = [...document.querySelectorAll('[data-results] tbody td:last-child a')];
         const parts = [...links.at(-1).children].filter((part) => part.getBoundingClientRect().width > 0);
         return [header.getBoundingClientRect().right, parts.at(-1).getBoundingClientRect().right];
     }""")

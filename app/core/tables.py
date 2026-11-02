@@ -19,11 +19,15 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from sqlalchemy import ColumnElement, Select, func, or_
 from sqlalchemy.orm import Session
 
-from app.core.templating import render
+from app.core.templating import layout_for, render
 
 PAGE_SIZES = (10, 25, 50, 100)
 DEFAULT_SIZE = 25
+PANEL_STATES = ("shown", "hidden")
+"""A filter panel's state in the address. Without one it shows on a wide screen, and waits for its button on a phone."""
 SEARCH_LENGTH = 80
+RESERVED = ("q", "sort", "dir", "size", "page", "panel")
+"""What a list's address holds besides its filters."""
 READ_IN_BLOCKS = 1_000
 """An export reads this many rows at a time, so a long list never sits in memory whole."""
 _CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
@@ -64,6 +68,12 @@ class Filter:
     condition: Callable[[str], ColumnElement[bool]] | None = None
     every: str = ""
     default: str = ""
+    in_form: bool = True
+    """False for a choice made elsewhere on the page, such as a tab or a scale: the form keeps it, hidden."""
+
+    def __post_init__(self) -> None:
+        if self.key in RESERVED:
+            raise ValueError(f"A filter cannot be called {self.key}: a list's address uses {', '.join(RESERVED)}")
 
 
 def _whole_number(text: str | None, default: int) -> int:
@@ -94,6 +104,12 @@ class ListView:
     rows: list[Any] = field(default_factory=list)
     total: int = 0
     sizes: tuple[int, ...] = PAGE_SIZES
+    panelled: bool = False
+    panel: str = ""
+    wide: bool = False
+    dense: bool = False
+    offered: tuple[str, ...] = ()
+    """How the person likes their lists, and which of those choices they may change from the list's own toolbar."""
 
     @classmethod
     def read(
@@ -107,9 +123,15 @@ class ListView:
         filters: Sequence[Filter] = (),
         searched: Sequence[Any] = (),
         search_label: str = "",
+        panelled: bool = False,
     ) -> "ListView":
-        """Every value is checked here, and only here: what passes is one of the listed options or a whole number."""
+        """Every value is checked here, and only here: what passes is one of the listed options or a whole number.
+
+        `panelled` puts the filters in a side panel that can be hidden, with its state in the address as `panel`."""
         view = cls(name, path, tuple(columns), tiebreak, default_sort, tuple(filters), tuple(searched), search_label)
+        view.panelled = panelled
+        panel = params.get("panel", "")
+        view.panel = panel if panelled and panel in PANEL_STATES else ""
         view.term = _CONTROL_CHARACTERS.sub("", params.get("q", "")).strip()[:SEARCH_LENGTH]
         for choice in filters:
             allowed = {value for value, _label in choice.options} | ({""} if choice.every else set())
@@ -208,6 +230,7 @@ class ListView:
             "dir": self.direction,
             "size": str(self.size),
             "page": str(self.page),
+            "panel": self.panel,
         }
 
     def _defaults(self, state: Mapping[str, str]) -> dict[str, str]:
@@ -218,6 +241,7 @@ class ListView:
             "dir": self._sortable[state["sort"]].first,
             "size": str(DEFAULT_SIZE),
             "page": "1",
+            "panel": "",
         }
 
     def _address(self, path: str, state: Mapping[str, str]) -> str:
@@ -249,7 +273,7 @@ class ListView:
 
     def elsewhere(self, path: str) -> str:
         """The same list at another address, such as its export: every filter and the order, without the page."""
-        return self._address(path, self._state() | {"page": "1"})
+        return self._address(path, self._state() | {"page": "1", "panel": ""})
 
     @property
     def active(self) -> list[tuple[str, str, str]]:
@@ -273,7 +297,12 @@ class ListView:
         """What the filter form must carry so that a plain submit keeps the order."""
         state = self._state()
         defaults = self._defaults(state)
-        return [(key, state[key]) for key in ("sort", "dir") if state[key] != defaults[key]]
+        kept = ["sort", "dir", "panel", *(choice.key for choice in self.filters if not choice.in_form)]
+        return [(key, state[key]) for key in kept if state[key] != defaults[key]]
+
+    def panel_link(self, state: str) -> str:
+        """This same page with its filter panel shown or hidden."""
+        return self._address(self.path, self._state() | {"panel": state})
 
     @property
     def form_id(self) -> str:
@@ -308,6 +337,19 @@ def whole_page(request: Request, address: str) -> Response:
     return RedirectResponse(address, status_code=303)
 
 
+LIST_CHOICES = ("list_width", "list_density")
+
+
+def arrange(request: Request, view: ListView) -> ListView:
+    """Applies the person's way of seeing lists, kept with their other layout choices. `render_list` calls it; a route
+    that draws a list another way, as a save that sends the list back, calls it too."""
+    layout = layout_for(request)
+    view.wide = layout["list_width"] == "wide"
+    view.dense = layout["list_density"] == "dense"
+    view.offered = tuple(name for name in LIST_CHOICES if name in request.app.state.settings.layout_choices)
+    return view
+
+
 def render_list(request: Request, view: ListView, page: str, results: str, **context: Any) -> HTMLResponse:
     """The whole page, or only its results for htmx, whichever was asked for at the same address.
 
@@ -315,7 +357,7 @@ def render_list(request: Request, view: ListView, page: str, results: str, **con
     unless it made the request: a link that sorts or clears a filter has to bring the form's controls in step, and a
     form that is being typed in must not be replaced.
     """
-    context["view"] = view
+    context["view"] = arrange(request, view)
     if not fragment_requested(request):
         response = render(request, page, refill_filters=False, **context)
     else:

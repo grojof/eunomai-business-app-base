@@ -7,14 +7,19 @@
 <span class="icon inline-flex shrink-0 {{ size }}" aria-hidden="true">{% include ["ui/icons/" ~ name ~ ".svg", "brand-icons/" ~ name ~ ".svg"] %}</span>
 {% endmacro %}
 
+{#- The page's one h1. When a person keeps the title in the top bar, the layout writes it there, still as the h1, and
+    this keeps the description and the actions. -#}
 {% macro page_heading(title, description="") %}
+{% set in_header = page_title().take(title) %}
+{% if not in_header or description or caller is defined %}
 <header class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
   <div class="min-w-0 space-y-1">
-    <h1>{{ title }}</h1>
+    {% if not in_header %}<h1>{{ title }}</h1>{% endif %}
     {% if description %}<p class="max-w-3xl">{{ description }}</p>{% endif %}
   </div>
   {% if caller is defined %}<div class="flex flex-wrap items-center gap-2 print:hidden">{{ caller() }}</div>{% endif %}
 </header>
+{% endif %}
 {% endmacro %}
 
 {% macro button(text, kind="default", type="button", small=false, attributes={}, loading="", extra="", name="") %}
@@ -99,12 +104,16 @@
 {% endmacro %}
 
 {#- A canvas says nothing to a screen reader or on a failed load, so a figure always brings its summary and its numbers as
-    a table. `data` comes from `chart_data` or `point_data` in app/core/charts.py; app/ui/static/charts.js draws it. -#}
-{% macro chart(title, summary, data, type="bar", identifier="chart") %}
+    a table. `data` comes from `chart_data` or `point_data` in app/core/charts.py; app/ui/static/charts.js draws it.
+    With `links` in its data, a click on a part of the picture follows the link of that row in the table, and those
+    links are the way in for a keyboard. `into`, a ListView on the same page, makes each link filter that list in its
+    place: htmx sends the list's form with the chart's one value instead of the form's own. -#}
+{% macro chart(title, summary, data, type="bar", identifier="chart", into=none) %}
 <figure class="min-w-0 rounded-box border border-base-300 bg-base-100 p-4 sm:p-6" data-chart data-chart-library="{{ chart_library.src }}" data-chart-integrity="{{ chart_library.integrity }}">
   <figcaption class="space-y-1">
     <span class="block font-semibold">{{ title }}</span>
     <span id="{{ identifier }}-summary" class="block text-sm">{{ summary }}</span>
+    {% if data.links %}<span class="block text-sm">{{ _("Choose a part of the chart, or a row of its data table, to see those rows.") }}</span>{% endif %}
   </figcaption>
   <div class="relative mt-4 h-72 noscript:hidden" data-chart-box>
     <canvas role="img" aria-label="{{ title }}" aria-describedby="{{ identifier }}-summary"></canvas>
@@ -119,7 +128,11 @@
     <tbody>
       {% for row in data.rows %}
       <tr>
-        <th scope="row" class="font-medium whitespace-nowrap">{{ row[0] }}</th>
+        <th scope="row" class="font-medium whitespace-nowrap">
+          {%- if data.links %}
+          <a id="{{ identifier }}-link-{{ loop.index }}" class="link inline-block min-h-6" href="{{ data.links[loop.index0] }}"{% if into %}{{ {"hx-get": into.path, "hx-target": "#" ~ into.name ~ "-results", "hx-include": "#" ~ into.form_id, "hx-vals": data.link_values[loop.index0], "hx-push-url": "true", "hx-indicator": "#" ~ into.name ~ "-results"}|xmlattr }}{% endif %}>{{ row[0] }}</a>
+          {%- else %}{{ row[0] }}{% endif -%}
+        </th>
         {% for value in row[1:] %}<td class="text-end tabular-nums">{{ value }}</td>{% endfor %}
       </tr>
       {% endfor %}
@@ -411,22 +424,21 @@
 {{ link_button(text, href, kind, small, name, {"aria-label": label or none, "aria-haspopup": "dialog", "hx-get": href, "hx-target": "#" ~ target ~ "-body"}) }}
 {% endmacro %}
 
-{#- A plain GET form: daisyUI's `filter` is a set of radio buttons, not this. With JavaScript, htmx sends it as it changes;
-    without it, the Apply button appears. -#}
-{% macro filter_bar(view, refill=false) %}
-<form id="{{ view.form_id }}" class="grid grid-cols-2 gap-3 border-b border-base-300 p-4 lg:flex lg:flex-wrap lg:items-end print:hidden" role="search" aria-label="{{ _('Filters') }}"
+{#- What a filter form holds, in a bar or in a side panel. -#}
+{% macro _filter_form(view, refill, classes, search_classes, choice_classes) %}
+<form id="{{ view.form_id }}" class="{{ classes }}" role="search" aria-label="{{ _('Filters') }}"
       method="get" action="{{ view.path }}" data-autosubmit
       hx-get="{{ view.path }}" hx-target="#{{ view.name }}-results" hx-push-url="true" hx-sync="this:replace" hx-indicator="#{{ view.name }}-results"
       hx-trigger="submit, input changed delay:300ms from:#{{ view.name }}-search"{% if refill %} hx-swap-oob="true"{% endif %}>
-  <div class="col-span-2 grid gap-1 lg:min-w-64 lg:flex-1">
+  <div class="{{ search_classes }}">
     <label class="text-sm font-medium" for="{{ view.name }}-search">{{ view.search_label }}</label>
     <div class="input input-sm w-full">
       {{ icon("search", "size-4") }}
       <input id="{{ view.name }}-search" type="search" name="q" value="{{ view.term }}" maxlength="80" autocomplete="off">
     </div>
   </div>
-  {% for choice in view.filters %}
-  <div class="min-w-0 lg:w-48">
+  {% for choice in view.filters if choice.in_form %}
+  <div class="{{ choice_classes }}">
     {{ select_field(choice.key, choice.label, choice.options, view.chosen[choice.key], view.name ~ "-" ~ choice.key, choice.every, small=true) }}
   </div>
   {% endfor %}
@@ -435,14 +447,61 @@
 </form>
 {% endmacro %}
 
+{#- A plain GET form: daisyUI's `filter` is a set of radio buttons, not this. With JavaScript, htmx sends it as it changes;
+    without it, the Apply button appears. -#}
+{% macro filter_bar(view, refill=false) %}
+{{ _filter_form(view, refill, "grid grid-cols-2 gap-3 border-b border-base-300 p-4 lg:flex lg:flex-wrap lg:items-end print:hidden", "col-span-2 grid gap-1 lg:min-w-64 lg:flex-1", "min-w-0 lg:w-48") }}
+{% endmacro %}
+
+{#- The same form in a side panel, for a list with many filters or that needs its width. It can be hidden, and its state
+    lives in the address as `panel`: without one it is beside the list on a wide screen and waits for its button on a
+    narrow one, so it never pushes the rows out of sight. The button is in `list_summary`. Use it with
+    `list_with_filters`, and a `ListView` read with `panelled=True`. -#}
+{% macro filter_panel(view, refill=false) %}
+<aside id="{{ view.name }}-filter-panel" class="border-b border-base-300 print:hidden xl:w-72 xl:shrink-0 xl:border-e xl:border-b-0{{ ' hidden xl:block' if not view.panel else '' }}" aria-labelledby="{{ view.name }}-filter-title"{% if view.panel == "hidden" %} hidden{% endif %}{% if refill %} hx-swap-oob="true"{% endif %}>
+  <h2 id="{{ view.name }}-filter-title" class="px-4 pt-4 text-base">{{ _("Filters") }}</h2>
+  {{ _filter_form(view, false, "grid grid-cols-2 gap-3 p-4 xl:grid-cols-1", "col-span-2 grid gap-1 xl:col-span-1", "min-w-0") }}
+</aside>
+{% endmacro %}
+
+{#- A list and its filter panel, side by side where there is room. The caller writes the results. -#}
+{% macro list_with_filters(view) %}
+<div class="xl:flex">
+  {{ filter_panel(view) }}
+  <div id="{{ view.name }}-results" class="min-w-0 flex-1" data-results>{{ caller() }}</div>
+</div>
+{% endmacro %}
+
+{#- Shows and hides the filter panel. With JavaScript a button, whose `aria-expanded` app.js keeps true to what is on
+    screen, asks for the other state; without it, a link does, one for each width while the address says nothing. -#}
+{% macro _filter_toggle(view) %}
+{% set count = view.active|length %}
+<button id="{{ view.name }}-filter-toggle" class="btn btn-xs noscript:hidden" type="button" aria-controls="{{ view.name }}-filter-panel" data-filter-toggle data-show="{{ view.panel_link('shown') }}" data-hide="{{ view.panel_link('hidden') }}" data-target="#{{ view.name }}-results">
+  {{- icon("funnel", "size-3.5") }}{{ _("Filters") }}{% if count %} <span class="badge badge-xs"><span class="sr-only">{{ _("in use:") }} </span>{{ count|decimal }}</span>{% endif -%}
+</button>
+{% if view.panel != "shown" %}<a class="btn btn-xs hidden noscript:inline-flex{{ ' xl:noscript:hidden' if not view.panel else '' }}" href="{{ view.panel_link('shown') }}">{{ icon("funnel", "size-3.5") }}{{ _("Show filters") }}</a>{% endif %}
+{% if view.panel != "hidden" %}<a class="btn btn-xs hidden {{ 'xl:noscript:inline-flex' if not view.panel else 'noscript:inline-flex' }}" href="{{ view.panel_link('hidden') }}">{{ icon("funnel", "size-3.5") }}{{ _("Hide filters") }}</a>{% endif %}
+{% endmacro %}
+
 {% macro _swaps(view, url) %}{{ {"hx-get": url, "hx-target": "#" ~ view.name ~ "-results", "hx-push-url": "true", "hx-indicator": "#" ~ view.name ~ "-results"}|xmlattr }}{% endmacro %}
 
+{#- One of the list's own choices, kept with the person's layout: a form to /preferences, which sends them back to this
+    same list. htmx brings the list again in its place, and focus stays on the button. -#}
+{% macro _list_choice(view, key, value, pressed, text, picture, classes="") %}
+<form id="{{ view.name }}-list-{{ key }}"{% if classes %} class="{{ classes }}"{% endif %} method="post" action="/preferences" hx-post="/preferences" hx-target="#{{ view.name }}-results" hx-indicator="#{{ view.name }}-results">
+  <input type="hidden" name="next" value="{{ view.here }}">
+  <button id="{{ view.name }}-list-{{ key }}-button" class="btn btn-xs {{ 'btn-active' if pressed else 'btn-ghost' }}" type="submit" name="layout_list_{{ key }}" value="{{ value }}" aria-pressed="{{ 'true' if pressed else 'false' }}">{{ icon(picture, "size-3.5") }}{{ text }}</button>
+</form>
+{% endmacro %}
+
 {#- How many rows there are and what narrows them. `data-announce` is read out after each change of the list; what the
-    macro's caller writes, such as an export link, goes at the end of the line. -#}
+    macro's caller writes, such as an export link, goes at the end of the line, before the list's own choices: the
+    whole width of the screen, offered where a screen is wide enough for it to matter, and dense rows. -#}
 {% macro list_summary(view, count) %}
 {% set direction = _("ascending") if view.direction == "asc" else _("descending") %}
-<div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
+<div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3"{% if view.wide %} data-list-wide{% endif %}>
   <div class="flex min-w-0 flex-wrap items-center gap-2">
+    {% if view.panelled %}{{ _filter_toggle(view) }}{% endif %}
     <p class="text-sm font-semibold" data-announce="{{ _('%(count)s. Showing %(first)s to %(last)s, sorted by %(column)s, %(direction)s.', count=count, first=view.first_row|decimal, last=view.last_row|decimal, column=view.sorted_label, direction=direction) if view.total else _('No results.') }}">{{ count }}</p>
     {% for name, value, link in view.active %}
     <a class="btn btn-xs btn-soft font-normal" href="{{ link }}"{{ _swaps(view, link) }} aria-label="{{ _('Remove filter %(name)s: %(value)s', name=name, value=value) }}">
@@ -451,7 +510,17 @@
     {% endfor %}
     {% if view.active %}<a class="btn btn-ghost btn-xs" href="{{ view.clear_link }}"{{ _swaps(view, view.clear_link) }}>{{ _("Clear all") }}</a>{% endif %}
   </div>
-  {% if caller is defined %}<div class="print:hidden">{{ caller() }}</div>{% endif %}
+  {% if caller is defined or view.offered %}
+  <div class="flex flex-wrap items-center gap-2 print:hidden">
+    {% if caller is defined %}{{ caller() }}{% endif %}
+    {% if view.offered %}
+    <div class="flex items-center gap-1" role="group" aria-label="{{ _('How the list is shown') }}">
+      {% if "list_width" in view.offered %}{{ _list_choice(view, "width", "page" if view.wide else "wide", view.wide, _("Whole width"), "move-horizontal", "hidden lg:block") }}{% endif %}
+      {% if "list_density" in view.offered %}{{ _list_choice(view, "density", "normal" if view.dense else "dense", view.dense, _("Dense rows"), "rows-4") }}{% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
 </div>
 {% endmacro %}
 
@@ -460,7 +529,7 @@
       <tr>
         {% for column in view.columns %}
         {% set state = view.sort_state(column) %}
-        <th scope="col" class="{{ 'text-end' if column.numeric else '' }}{{ ' hidden md:table-cell' if column.wide_only else '' }}"{% if state %} aria-sort="{{ state }}"{% endif %}>
+        <th scope="col" class="{{ 'text-end' if column.numeric else '' }}{{ ' wide-only hidden md:table-cell' if column.wide_only else '' }}"{% if state %} aria-sort="{{ state }}"{% endif %}>
           {% if column.sortable %}
           {% set link = view.sort_link(column) %}
           <a id="{{ view.name }}-sort-{{ column.key }}" class="sort-link" href="{{ link }}"{{ _swaps(view, link) }}>
@@ -476,10 +545,11 @@
 
 {#- A native table, sorted, paged and filtered on the server. Its box scrolls by itself, so the header stays in sight, and
     the keyboard can reach the box. W3C's sortable table: a link in the header, and `aria-sort` only on the sorted one.
-    The caller writes the cells of a row. -#}
+    The caller writes the cells of a row. Dense rows are smaller, the box is taller, and columns that wait for a wide
+    screen appear sooner. -#}
 {% macro server_table(view, caption, actions="") %}
 <div class="table-scroll" role="region" tabindex="0" aria-labelledby="{{ view.name }}-caption" data-focus-fallback>
-  <table class="table table-sm table-pin-rows table-pin-first">
+  <table class="table {{ 'table-xs table-dense' if view.dense else 'table-sm' }} table-pin-rows table-pin-first">
     <caption id="{{ view.name }}-caption" class="sr-only">{{ caption }}. {{ _("Links in the column headers sort the table.") }}</caption>
     {{ _table_head(view, actions, false) }}
     <tbody>
@@ -495,7 +565,7 @@
     for a screen reader. `sections` have a title, a note with the group's totals, and rows. -#}
 {% macro grouped_table(view, caption, sections, actions="") %}
 <div class="table-scroll" role="region" tabindex="0" aria-labelledby="{{ view.name }}-caption" data-focus-fallback>
-  <table class="table table-sm table-pin-rows table-groups">
+  <table class="table {{ 'table-xs table-dense' if view.dense else 'table-sm' }} table-pin-rows table-groups">
     <caption id="{{ view.name }}-caption" class="sr-only">{{ caption }}. {{ _("Links in the column headers sort the table inside each group.") }}</caption>
     {{ _table_head(view, actions, true) }}
     {% for section in sections %}
@@ -520,7 +590,7 @@
 {% endmacro %}
 
 {% macro cell(value, numeric=false, wide_only=false, href="", name="") %}
-<td class="{{ 'text-end tabular-nums ' if numeric else '' }}{{ 'hidden md:table-cell ' if wide_only else '' }}whitespace-nowrap">{% if href %}<a class="link link-hover" href="{{ href }}"{% if name %} aria-label="{{ name }}"{% endif %}>{{ value }}</a>{% else %}{{ value }}{% endif %}</td>
+<td class="{{ 'text-end tabular-nums ' if numeric else '' }}{{ 'wide-only hidden md:table-cell ' if wide_only else '' }}whitespace-nowrap">{% if href %}<a class="link link-hover" href="{{ href }}"{% if name %} aria-label="{{ name }}"{% endif %}>{{ value }}</a>{% else %}{{ value }}{% endif %}</td>
 {% endmacro %}
 
 {#- `items`: (label, name for a screen reader, address, icon). The name says which row: a list of ten "View" says nothing. -#}
@@ -581,4 +651,130 @@
     </div>
   </nav>
 </div>
+{% endmacro %}
+
+{#- A board: cards in columns, drawn on the server. `board` is a Board from app/core/boards.py, and the caller writes a
+    card's content. Each card a person may move carries, behind a small "Change column" disclosure, a form that moves
+    it: a plain POST, so it works without JavaScript, and by keyboard. board.js lets a pointer or a finger drag it, and sends that same form with the card it
+    now follows. The server answers with the board as it is, focus back on the card's control and the move announced.
+    Columns stack on a narrow screen, so the page never scrolls sideways. `message` goes at the top: what was moved, or
+    a conflict notice that takes focus. -#}
+{% macro board(board, message="") %}
+<div id="{{ board.identifier }}" class="space-y-4" data-board{% if board.can_move %} data-can-move data-ghost="board-ghost" data-board-library="{{ board_library.src }}" data-board-integrity="{{ board_library.integrity }}"{% endif %}>
+  {{ message }}
+  <div class="grid items-start gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+    {% for column in board.columns %}
+    <section class="rounded-box border border-base-300 bg-base-200 p-3" aria-labelledby="{{ board.identifier }}-{{ column.key }}-title">
+      <h2 id="{{ board.identifier }}-{{ column.key }}-title" class="mb-3 flex items-center justify-between gap-2 text-base">
+        <span>{{ column.title }}</span><span class="badge badge-sm">{{ column.total|decimal }}</span>
+      </h2>
+      <ol class="grid min-h-16 gap-2" data-board-list data-column="{{ column.key }}" aria-labelledby="{{ board.identifier }}-{{ column.key }}-title">
+        {% for card in column.cards %}
+        <li id="{{ board.identifier }}-card-{{ card.id }}" class="rounded-box border border-base-300 bg-base-100 p-3 text-sm{{ ' cursor-grab' if board.can_move else '' }}" data-card="{{ card.id }}">
+          {{ caller(card) }}
+          {% if board.can_move %}
+          <details class="mt-1 print:hidden" data-move-menu>
+            <summary id="{{ board.identifier }}-move-{{ card.id }}" class="btn btn-ghost btn-xs"{% if board.focus == card.id %} data-focus{% endif %}>{{ icon("arrow-right", "size-3.5") }}{{ _("Change column") }}<span class="sr-only">: {{ card.label }}</span></summary>
+            <form class="mt-2 flex items-end gap-2" method="post" action="{{ board.action }}" hx-post="{{ board.action }}" hx-target="#{{ board.identifier }}" hx-swap="outerHTML" data-move>
+              <input type="hidden" name="card" value="{{ card.id }}">
+              <input type="hidden" name="version" value="{{ card.version }}">
+              <input type="hidden" name="after" value="">
+              {% for name, value in board.hidden.items() %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+              <div class="min-w-0 grow">
+                <label class="block text-xs font-medium" for="{{ board.identifier }}-move-{{ card.id }}-to">{{ _("Move to") }}<span class="sr-only">: {{ card.label }}</span></label>
+                <select id="{{ board.identifier }}-move-{{ card.id }}-to" class="select select-xs w-full" name="to">
+                  {% for other in board.columns %}<option value="{{ other.key }}"{% if other.key == column.key %} selected{% endif %}>{{ other.title }}</option>{% endfor %}
+                </select>
+              </div>
+              <button class="btn btn-xs" type="submit">{{ _("Move") }}</button>
+            </form>
+          </details>
+          {% endif %}
+        </li>
+        {% else %}
+        <li class="rounded-box border border-dashed border-base-300 p-3 text-center text-sm" data-board-empty>{{ _("Nothing here") }}</li>
+        {% endfor %}
+      </ol>
+      {% if column.total > column.cards|length %}
+      <p class="mt-3 text-sm"><a class="link" href="{{ column.more }}">{{ ngettext("%(count)s more in the list", "%(count)s more in the list", column.total - column.cards|length, count=(column.total - column.cards|length)|decimal) }}</a></p>
+      {% endif %}
+    </section>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}
+
+{#- A Gantt chart: a native table and, beside it, the same rows as bars on a calendar, drawn on the server as SVG. `plan` is
+    a Timeline from app/core/gantt.py, whose rows are those of the table, in order. The caller writes the table's bodies,
+    one row per task and a `rowgroup` heading for a group, and every action, as editing, lives there: the picture is
+    a picture of the table, named for a screen reader, with nothing to reach. Rows are 2.5rem high in both, and the
+    picture is measured in rem too, so a larger text keeps them in line. Its box scrolls sideways by itself, and a
+    note says so whenever the picture is wider than its box. Columns marked wide-only wait for a very wide screen, so
+    the picture keeps its room. -#}
+{% macro gantt(identifier, caption, plan, headers, summary) %}
+{% set row = 40 %}{% set header = 48 %}
+<p id="{{ identifier }}-summary" class="px-4 pb-3 text-sm">{{ summary }}</p>
+<ul class="space-y-1 px-4 pb-3 text-sm" data-gantt-notes>
+  {% if plan.scale != plan.asked and plan.asked != "fit" %}<li>{{ icon("triangle-alert", "size-4 me-1 inline-block") }}{{ _("Shown at a coarser scale: the one asked for would be too wide.") }}</li>{% endif %}
+  {% if plan.outside %}<li>{{ icon("triangle-alert", "size-4 me-1 inline-block") }}{{ ngettext("%(count)s more starts past these dates: narrow what is shown to see it.", "%(count)s more start past these dates: narrow what is shown to see them.", plan.outside, count=plan.outside|decimal) }}</li>{% endif %}
+  <li{% if plan.width <= 800 %} hidden{% endif %} data-gantt-wider>{{ icon("move-horizontal", "size-4 me-1 inline-block") }}{{ _("The timeline is wider than its box: scroll it sideways, or choose a coarser scale.") }}</li>
+</ul>
+<div id="{{ identifier }}" class="gantt flex items-start border-t border-base-300">
+  <div class="gantt-table min-w-0 shrink">
+    <table class="table table-xs">
+      <caption id="{{ identifier }}-caption" class="sr-only">{{ caption }}</caption>
+      <thead><tr>{% for text, wide_only in headers %}<th scope="col"{% if wide_only %} class="hidden 2xl:table-cell"{% endif %}>{{ text }}</th>{% endfor %}</tr></thead>
+      {{ caller() }}
+    </table>
+  </div>
+  <div class="gantt-scroll min-w-0 flex-1 overflow-x-auto border-s border-base-300" data-gantt-box role="region" tabindex="0" aria-label="{{ _('Timeline') }}">
+    <svg id="{{ identifier }}-picture" class="gantt-picture" role="img" aria-labelledby="{{ identifier }}-summary" width="{{ plan.width / 16 }}rem" height="{{ plan.height / 16 }}rem" viewBox="0 0 {{ plan.width }} {{ plan.height }}">
+      <defs>
+        <marker id="{{ identifier }}-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="gantt-arrow" d="M0 0L6 3L0 6z"/></marker>
+      </defs>
+      {% for x in plan.weekends %}<rect class="gantt-weekend" x="{{ x }}" y="{{ header }}" width="{{ plan.unit }}" height="{{ plan.height - header }}"/>{% endfor %}
+      {% for number in range(plan.rows + 1) %}<line class="gantt-grid" x1="0" x2="{{ plan.width }}" y1="{{ header + number * row }}" y2="{{ header + number * row }}"/>{% endfor %}
+      {% for tick in plan.months %}<line class="gantt-grid" x1="{{ tick.x }}" x2="{{ tick.x }}" y1="0" y2="{{ plan.height }}"/><text class="gantt-month" x="{{ tick.x + 4 }}" y="18">{{ tick.label }}</text>{% endfor %}
+      {% for tick in plan.ticks %}<text class="gantt-tick" x="{{ tick.x + 4 }}" y="40">{{ tick.label }}</text>{% endfor %}
+      {% set fills = {"neutral": "gantt-bar-neutral", "info": "gantt-bar-info", "warning": "gantt-bar-warning", "success": "gantt-bar-success", "error": "gantt-bar-error"} %}
+      {% for bar in plan.bars %}
+      <rect id="{{ identifier }}-bar-{{ bar.key }}" class="gantt-bar {{ fills[bar.kind] }}" x="{{ bar.x }}" y="{{ bar.y }}" width="{{ bar.width }}" height="20" rx="4"/>
+      <text class="gantt-label" x="{{ bar.label_x }}" y="{{ bar.y + 14 }}"{% if bar.anchor == "end" %} text-anchor="end"{% endif %}>{{ bar.text }}</text>
+      {% endfor %}
+      {% for path in plan.links %}<path class="gantt-link" d="{{ path }}" marker-end="url(#{{ identifier }}-arrow)"/>{% endfor %}
+      {% if plan.today is not none %}
+      <line class="gantt-today" x1="{{ plan.today }}" x2="{{ plan.today }}" y1="{{ header - 4 }}" y2="{{ plan.height }}"/>
+      {% endif %}
+    </svg>
+  </div>
+</div>
+{% endmacro %}
+
+{#- A calendar: FullCalendar draws the events the server sends, in the application's time zone, with the server's words.
+    `config` comes from `calendar_config` in app/core/calendars.py. Each event is a link to its form, the keyboard's way
+    to move it; a pointer drags it, and the server decides. Without JavaScript, or if the library cannot load, the
+    agenda the server wrote stays: `agenda` is (day, [(time, event)]), and `steps` its links (label, address, current),
+    to other days and views. FullCalendar's styles are linked here, so a page without a calendar does not load them. -#}
+{% macro calendar(identifier, label, config, agenda, steps) %}
+{% for style in calendar_library.styles %}<link rel="stylesheet" href="{{ style.src }}" integrity="{{ style.integrity }}" crossorigin="anonymous">{% endfor %}
+<section id="{{ identifier }}" class="min-w-0 rounded-box border border-base-300 bg-base-100 p-3 sm:p-4" aria-label="{{ label }}" data-calendar
+         data-calendar-library="{{ calendar_library.library.src }}" data-calendar-integrity="{{ calendar_library.library.integrity }}"
+         data-calendar-theme="{{ calendar_library.theme.src }}" data-calendar-theme-integrity="{{ calendar_library.theme.integrity }}"
+         data-calendar-classes="calendar-frame calendar-button calendar-event calendar-more calendar-dot calendar-popover">
+  <script type="application/json">{{ config|tojson }}</script>
+  <div data-calendar-host></div>
+  <div data-calendar-fallback>
+    <nav class="mb-4 flex flex-wrap gap-2" aria-label="{{ _('Other days') }}">
+      {% for text, href, current in steps %}<a class="btn btn-sm{{ ' btn-active' if current else '' }}" href="{{ href }}"{% if current %} aria-current="page"{% endif %}>{{ text }}</a>{% endfor %}
+    </nav>
+    {% for day, items in agenda %}
+    <h3 class="mt-4 font-semibold">{{ day|date }}</h3>
+    <ul class="mt-1 divide-y divide-base-300">
+      {% for when, event in items %}<li class="py-2"><a class="link link-hover" href="{{ event.url }}">{{ when }} · {{ event.title }}</a></li>{% endfor %}
+    </ul>
+    {% else %}
+    {{ empty_state(_("Nothing in these days"), _("Try other days, or fewer filters."), "calendar", 3) }}
+    {% endfor %}
+  </div>
+</section>
 {% endmacro %}

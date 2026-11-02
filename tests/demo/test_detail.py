@@ -229,7 +229,7 @@ def test_a_strange_back_in_a_tab_is_read_like_any_other(filled, back):
 @pytest.mark.browser
 def test_without_javascript_the_breadcrumb_survives_a_tab(open_filled):
     page = open_filled("/equipment?status=stopped", javascript=False)
-    page.locator("tbody th a").first.click()
+    page.locator("#equipment-results tbody th a").first.click()
     page.wait_for_url(re.compile(r"/equipment/\d+"))
     assert page.locator("nav.breadcrumbs a").first.get_attribute("href") == "/equipment?status=stopped"
     page.locator("#tab-orders").click()
@@ -243,7 +243,7 @@ def test_without_javascript_the_breadcrumb_survives_a_tab(open_filled):
 @pytest.mark.browser
 def test_with_javascript_the_breadcrumb_survives_a_tab_and_a_reload(open_filled):
     page = open_filled("/equipment?status=stopped")
-    page.locator("tbody th a").first.click()
+    page.locator("#equipment-results tbody th a").first.click()
     page.wait_for_url(re.compile(r"/equipment/\d+"))
     page.locator("#tab-orders").click()
     page.wait_for_url(re.compile(r"tab=orders"))

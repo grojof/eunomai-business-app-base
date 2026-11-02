@@ -1,0 +1,6 @@
+{% from "ui/macros.html" import calendar %}
+{{ calendar("sample-calendar", _("Equipment and its work"), sample_calendar.config, sample_calendar.agenda, []) }}
+<p class="mt-3 text-sm">{{ _("Here nobody may move an event. On the calendar of the demo a pointer drags one, and each event is a link to the form that moves it.") }}</p>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}config = calendar_config("/calendar/events", "/calendar/move", zone, period, today, can_edit(request))
+
+{{ calendar("calendar", _("Visits and work orders"), config, agenda, steps) }}{% endraw %}</code></pre>

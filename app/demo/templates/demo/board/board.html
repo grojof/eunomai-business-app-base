@@ -1,0 +1,13 @@
+{#- The board itself: a whole page includes it, and htmx asks for it alone after a move or a change of location. -#}
+{% from "ui/macros.html" import board as draw_board, conflict_notice, message %}
+{% set top %}
+{% if conflict %}{{ conflict_notice(_("Someone else moved this work order first"), _("Nothing of yours was moved. The card is where they left it: move it again if you still want to."), conflict) }}{% endif %}
+{% if refused %}<div role="alert" tabindex="-1" data-focus>{{ message("warning", refused) }}</div>{% endif %}
+{% if moved %}<div role="status"{% if announce %} data-announce="{{ moved }}"{% endif %} data-once="moved">{{ message("success", moved) }}</div>{% endif %}
+{% endset %}
+{% call(card) draw_board(board, top) %}
+{% set order = card.item %}
+<h3 class="font-semibold"><a class="link link-hover" href="/equipment/{{ order.equipment_id }}?tab=orders">{{ order.title }}</a></h3>
+<p class="text-xs">{{ _("Work order %(number)s", number=order.id) }} · {{ order.equipment.name }}</p>
+<p class="text-xs">{{ order.planned_on|date if order.planned_on else _("Not planned yet") }}</p>
+{% endcall %}

@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import breadcrumbs, page_heading, date_field, input_field, error_summary, conflict_notice, form_actions %}
+{% block title %}{{ _("Inspection: %(equipment)s", equipment=visit.equipment.name) }}{% endblock %}
+{% block content %}
+{{ breadcrumbs([(_("Calendar"), back), (_("Inspection: %(equipment)s", equipment=visit.equipment.name), "")]) }}
+{{ page_heading(_("Inspection: %(equipment)s", equipment=visit.equipment.name), _("Change its day or its times. They are in the application's time zone.")) }}
+<form class="grid max-w-md gap-4" method="post" action="/inspections/{{ visit.id }}/edit" novalidate>
+  {% if errors %}{{ error_summary(_("Check what you entered"), summary) }}{% endif %}
+  {% if conflict %}{{ conflict_notice(_("Someone else changed this visit"), _("Nothing of yours is saved yet, and what you typed is still here. They saved what is listed below. Save again to replace it with what you typed, or cancel to keep theirs."), conflict) }}{% endif %}
+  {{ date_field("day", _("Day"), values.day, "field-day", error=errors.get("day", ""), required=true, attributes={} if errors or conflict else {"autofocus": ""}) }}
+  {{ input_field("starts", _("Starts"), values.starts, "field-starts", type="time", error=errors.get("starts", ""), required=true) }}
+  {{ input_field("ends", _("Ends"), values.ends, "field-ends", type="time", error=errors.get("ends", ""), required=true) }}
+  <input type="hidden" name="version" value="{{ values.version }}">
+  <input type="hidden" name="back" value="{{ back }}">
+  {{ form_actions(_("Save"), back, _("Cancel")) }}
+</form>
+{% endblock %}

@@ -1,9 +1,12 @@
 {% extends "layout.html" %}
-{% from "ui/macros.html" import page_heading, panel, filter_bar %}
+{% from "ui/macros.html" import page_heading, panel, filter_bar, chart %}
 {% block title %}{{ _("Equipment") }}{% endblock %}
 {% block content %}
 {{ page_heading(_("Equipment"), _("Every machine the company maintains: where it is, its state and when it is next inspected.")) }}
 {% if state == "ready" %}
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+  {% for item in figures %}{{ chart(item.title, item.summary, item.data, item.type, item.identifier, into=view) }}{% endfor %}
+</div>
 {% call panel(_("Equipment list")) %}
 {{ filter_bar(view) }}
 <div id="equipment-results" data-results>

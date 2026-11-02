@@ -21,3 +21,18 @@ data = chart_data(months, [Series(_("Planned"), planned), Series(_("Worked"), wo
 
 The summary is required, and says what the chart shows, not what it is. Every figure brings its table, so a person who
 cannot see the canvas misses nothing.
+
+A chart can be a way to choose. `links`, one address per label, make each row of its table a link, and a click on a
+part of the picture follows the link of its row, so the keyboard's way in and the pointer's lead to the same place. To
+filter a list on the same page in its place, pass the list's view as `into`: htmx then sends the list's own form with
+the chart's one value instead of the form's, so the other filters, the order and the panel stay.
+
+```python
+data = chart_data(
+    places, [Series(_("Equipment"), counts)], _("Location"), links=[view.link(location=p) for p in places]
+)
+```
+
+```jinja
+{{ chart(_("Equipment by location"), summary, data, "bar", "figure-locations", into=view) }}
+```

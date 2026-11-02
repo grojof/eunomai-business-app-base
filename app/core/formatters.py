@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 from babel.dates import format_date as babel_date
 from babel.dates import format_datetime as babel_datetime
 from babel.dates import format_skeleton
+from babel.dates import format_time as babel_time
 from babel.numbers import format_decimal as babel_decimal
 from babel.numbers import format_percent as babel_percent
 from babel.numbers import get_decimal_symbol, get_group_symbol, get_minus_sign_symbol
@@ -116,6 +117,11 @@ def format_month(value: date) -> str:
 
 def format_month_and_year(value: date) -> str:
     return format_skeleton("yMMMM", value, locale=current_language())
+
+
+def format_time(value: datetime, time_zone: str) -> str:
+    """The time of day of a moment, in the application's time zone, as the locale writes it."""
+    return babel_time(value, format="short", tzinfo=ZoneInfo(time_zone), locale=current_language())
 
 
 def format_datetime(value: datetime, time_zone: str) -> str:
