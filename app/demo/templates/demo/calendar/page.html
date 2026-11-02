@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading, select_field, button, calendar, message %}
+{% block title %}{{ _("Calendar") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("Calendar"), _("The inspection team's visits and the planned work orders. Drag one to another time, or open it to change it with a form.")) }}
+{% if state == "ready" %}
+{% if moved %}<div role="status" data-once="moved">{{ message("success", moved) }}</div>{% endif %}
+<form class="flex flex-wrap items-end gap-3 print:hidden" method="get" action="/calendar" data-autosubmit hx-get="/calendar" hx-target="#calendar" hx-select="#calendar" hx-swap="outerHTML" hx-push-url="true">
+  {% for name, value in [("view", config.view), ("date", config.date)] %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+  <div class="w-56">{{ select_field("location", _("Location"), locations, location, "calendar-location", _("All locations"), small=true) }}</div>
+  {{ button(_("Apply"), type="submit", small=true, extra="hidden noscript:inline-flex") }}
+</form>
+{{ calendar("calendar", _("Visits and work orders"), config, agenda, steps) }}
+{% else %}
+{% include "demo/rows_missing.html" %}
+{% endif %}
+{% endblock %}

@@ -30,15 +30,19 @@ THEME = N_(
 
 
 OWN_TITLES = (
+    N_("Board"),
     N_("Chart"),
     N_("Confirmation dialog"),
     N_("Conflict notice"),
     N_("Date field"),
     N_("Description list"),
     N_("Error summary"),
+    N_("Event calendar"),
     N_("Field error"),
     N_("Filter bar"),
+    N_("Filter panel"),
     N_("Form actions"),
+    N_("Gantt"),
     N_("Icon"),
     N_("Number field"),
     N_("Searchable select"),
@@ -79,6 +83,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("accordion"),
             Component("avatar"),
             Component("badge", macro="badge"),
+            Component(
+                "board",
+                note=N_("Cards in columns, each with a form that moves it, and dragging for a pointer or a finger."),
+                macro="board",
+                icon="clipboard-list",
+            ),
             Component("card", APPROVED, macro="card"),
             Component("carousel"),
             Component(
@@ -97,6 +107,18 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
                 icon="clipboard-list",
             ),
             Component("diff", DECORATIVE),
+            Component(
+                "event-calendar",
+                note=N_("Events by month, week or agenda, drawn by FullCalendar, each a link to its form."),
+                macro="calendar",
+                icon="calendar-days",
+            ),
+            Component(
+                "gantt",
+                note=N_("A table and, beside it, the same rows as bars on a calendar, drawn on the server."),
+                macro="gantt",
+                icon="chart-gantt",
+            ),
             Component("hover-3d", DECORATIVE),
             Component("hover-gallery", DECORATIVE),
             Component(
@@ -176,6 +198,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
                 note=N_("A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons."),
                 macro="filter_bar",
                 icon="search",
+            ),
+            Component(
+                "filter-panel",
+                note=N_("The same form in a side panel that can be hidden, for a list with many filters."),
+                macro="filter_panel",
+                icon="funnel",
             ),
             Component(
                 "form-actions",

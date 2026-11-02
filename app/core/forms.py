@@ -7,13 +7,14 @@ read. `read_fields` runs them all and keeps each problem with its field, so a pe
 import re
 import unicodedata
 from collections.abc import Callable, Collection, Mapping
-from datetime import date
+from datetime import date, time
 from decimal import Decimal, localcontext
 from typing import Any
 
 from app.core.formatters import format_date, format_decimal, parse_date, parse_decimal
 from app.core.i18n import _, ngettext
 
+_TIME = re.compile(r"[0-2][0-9]:[0-5][0-9]")
 LONGEST_NUMBER = 64
 """No number a form takes is longer, and reading a very long one takes time."""
 _HIDDEN_CATEGORIES = {"Cc", "Cf", "Cs", "Zl", "Zp"}
@@ -107,6 +108,16 @@ def read_whole(text: str, low: int, high: int, message: str = "") -> int:
         "high": format_decimal(high),
     }
     return int(read_decimal(text, low, high, 0, not_a_number=words, out_of_range=words, too_precise=words))
+
+
+def read_time(text: str, message: str) -> time:
+    """A time of day in its one form, HH:MM, which is what a time field sends. Anything else is refused."""
+    if not _TIME.fullmatch(text):
+        raise Refused(message)
+    try:
+        return time.fromisoformat(text)
+    except ValueError:
+        raise Refused(message) from None
 
 
 def read_date(text: str, earliest: date, latest: date, message: str, *, needed: bool = False) -> date | None:

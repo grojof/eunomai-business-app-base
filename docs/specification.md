@@ -24,8 +24,8 @@ Success means three things, each testable:
 ```text
 app/
   core/      identity, roles, settings, database, exact column types, server lists, reading forms, languages, formatters, errors, health
-  ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, charts.js, vendored htmx and Chart.js,
-             Lucide's icons in templates/ui/icons/, illustrations in static/illustrations/
+  ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, charts.js, board.js,
+             calendar.js, vendored htmx, Chart.js, SortableJS and FullCalendar, Lucide's icons in templates/ui/icons/, illustrations in static/illustrations/
   brand/     theme.css, logo.svg, the organization's own icons in icons/
   demo/      screens, their fixed values, models and generated data, the gallery with its generated examples/, translations
 locales/     the translations of core and ui
@@ -40,8 +40,8 @@ Planned, and not there today:
 
 | Folder | Contents | Arrives in |
 |---|---|---|
-| `deploy/` | Example service files and the [registration](#registration) file | Milestone 5 |
-| `app/brand/` | Fonts | Milestone 6 |
+| `deploy/` | Example service files and the [registration](#registration) file | Milestone 6 |
+| `app/brand/` | Fonts | Milestone 7 |
 
 ## Stack
 
@@ -61,6 +61,8 @@ In use today:
 | Excel | XlsxWriter, on the server |
 | Charts | Chart.js, with a text summary and the data as a table |
 | Icons | Lucide, every icon, copied and pinned; no other collection. The organization may add its own |
+| Dragging | SortableJS, on a board only, over forms that work without it |
+| Calendars | FullCalendar 7 with its classic theme, on a calendar only, over an agenda drawn on the server |
 | Support | python-multipart for posted forms and uploads; tzdata, because Windows has no time zone database |
 | Development | pytest, httpx2, Playwright for Python, axe-core, Ruff, mypy |
 
@@ -77,7 +79,8 @@ one account: a full stylesheet has not been generated there.
 
 `vendor.json` lists every third-party file that is not a Python package, with its version and hash. All are copied
 into the repository except Tailwind's executable. The ones pages load are served with Subresource Integrity: htmx on
-every page, and Chart.js, marked `on_demand`, only where a chart is.
+every page, and Chart.js, SortableJS and FullCalendar, marked `on_demand`, only where a chart, a board or a calendar is.
+FullCalendar's three stylesheets are linked by the `calendar` macro, with their integrity too.
 
 ## Dependencies
 
@@ -211,14 +214,16 @@ return render_list(request, view, "orders/list.html", "orders/results.html")
 | What | How |
 |---|---|
 | State | In the address: `q`, each filter, `sort`, `dir`, `size`, `page`. Defaults are left out, so one state has one address, and it can be bookmarked, reloaded and shared |
-| Input | Each value is checked against its list in `ListView.read`, and `list_query` reads the address a person came from, keeping blank values, which mean something, and ignoring what it cannot read. A value outside its list is ignored, so an old bookmark still opens. A sort name selects a `Column` by key, so nothing from the address reaches SQL as text, and the search term is a bound parameter with `%` and `_` escaped |
+| Input | `q`, `sort`, `dir`, `size`, `page` and `panel` belong to the list's address, so a `Filter` with one of those names is refused where it is written. Each value is checked against its list in `ListView.read`, and `list_query` reads the address a person came from, keeping blank values, which mean something, and ignoring what it cannot read. A value outside its list is ignored, so an old bookmark still opens. A sort name selects a `Column` by key, so nothing from the address reaches SQL as text, and the search term is a bound parameter with `%` and `_` escaped |
 | Order | A tiebreak on the primary key keeps rows from moving between pages. A column marked `nullable` puts empty values last on both databases, which by themselves disagree |
 | A label sorts as read | The database cannot sort what it does not hold. `case` gives each stored value its position, as the demo's locations do in the person's language and its states by what needs attention first. Such a column uses no index: about 10 milliseconds at 50,000 rows |
 | Without JavaScript | Headers and pages are links, and filters are a GET form with an Apply button |
+| Filters in a side panel | `filter_panel` puts the same form in an `aside` beside the list, for a list with many filters, as Planning has. `ListView.read(..., panelled=True)` reads its state from the address as `panel`, `shown` or `hidden`, and every link and the form carry it. Without one, it is beside the list on a wide screen and closed on a narrow one, so it never pushes the rows out of sight. The button at the start of the summary has `aria-expanded`, which `app.js` keeps true to what is on screen, and asks the server for the other state; without JavaScript a link does |
 | With htmx | The same address answers with its results alone, and `whole_page` sends a person to a whole page when there are no results to give, because htmx would put a redirected page inside the fragment. `Vary: HX-Request` keeps the two apart, and `HX-Push-Url` gives the address its one form. History is not kept in the browser: going back reloads the address, so a form can never show an older state than the table, and no row is left in `localStorage` |
 | Focus | htmx puts it back on an element that kept its id, as a sort header does. If none did, as the Next link on the last page, `data-focus-fallback` takes it. A link that arrives works at once: htmx wires it in the same step as the swap |
 | A request that fails | `app.js` shows a message for every htmx failure, on any screen, inside an open dialog if there is one, with `role="alert"`. A 404 says the thing is no longer there, and a row removed while it was being saved gets that same 404 |
 | Announcement | `data-announce` on the summary goes to the announcement region after each change: rows, order and direction |
+| Wide and dense | Dense rows sit in a taller box, so a default page of 25 fits a 1920 by 1080 screen, and a smaller screen scrolls it under its pinned header; a dense row's action buttons stay within its cell, so a table whose columns fit never scrolls sideways, which a test checks at 1280, 1440 and 1920 in both densities. Two toggles at the end of the summary, each a form to `/preferences` that comes back to the same address: the whole width of the screen, and dense rows. They are the person's `list_width` and `list_density`, kept as the other layout choices are and offered in the settings menu too, so every list looks the same way for one person. With htmx the list comes back alone, focus stays on the toggle and `aria-pressed` says its state. `render_list` reads them through `arrange`; an application that fixes them in its settings offers neither |
 
 Measured on one laptop, on SQLite with 50,000 rows and the demo's indexes: the first page takes 0.6 milliseconds whether
 it sorts by code or by cost, the last page 4, a search 27. A whole request, with its page drawn, takes 10 to 30.
@@ -249,12 +254,69 @@ data = chart_data(months, [Series(_("Planned"), planned), Series(_("Worked"), wo
 | Motion | None if a person asks for `prefers-reduced-motion` |
 | Without the picture | Without JavaScript the canvas is hidden and the summary and table remain. If Chart.js fails to load, or one chart fails to draw, its table opens by itself, and no other chart stops |
 | What is refused | A colour outside the list and a negative value in a pie, a doughnut or a polar area are errors on the server, while the code is written. Chart.js would draw the negative as positive |
+| Choosing | Optional. `links` in `chart_data`, one address of the application per label, make the table's first column links, and a click on a bar or a slice follows the link of its row: the pointer and the keyboard go to the same place, through the same element. The cursor says a part can be chosen. Each link is a path of the application, checked by the same rule as every other way back, so `//` and `/\` are refused. With `into`, a list on the same page, htmx sends that list's form with the values that change from link to link in place of the form's own, so the other filters and the order stay and the list changes in its place. The dashboard's states lead to the equipment list, and the equipment page's two charts filter it |
 | On a phone | Every label that fits stays. When they do not all fit they spread evenly and the first and the last always stay, which Chart.js's own thinning does not promise: it left out October. A chart keeps its height |
 
 daisyUI's colours pass the checks for colour blindness (neighbouring series stay apart) and normal vision, on both
 themes. `accent` and `warning` are light, at 1.9:1 against white, under the 3:1 of A11Y-14. The base keeps the themes as
 they come, so the legend, the summary and the table carry what those marks cannot. An organization can solve it in its
 theme.
+
+### Boards
+
+`app/core/boards.py` and the macro `board` draw cards in columns on the server, as the board of work orders at `/board`
+does, with one column per state. The route gives a `Board` its columns, each with its first cards, how many there are in
+all and where the rest are; the caller of the macro writes a card's content.
+
+| What | How |
+|---|---|
+| Moving without a pointer | Each card a person may move carries a form behind a small "Change column" disclosure, a native `details`, so a card stays light: a select of columns and a Move button, a plain POST that puts it first in that column. It works by keyboard and without JavaScript, the disclosure and the select are named with the card, and after a move focus is back on the card's disclosure |
+| Dragging | `board.js` loads SortableJS, with its integrity, only for a board that can change. A pointer drags at once; a finger rests a moment first, so that a swipe still scrolls. A drop sends the same form, with `after`, the card it now follows. After htmx brings a board, its lists are wired again |
+| The server decides | `read_move` reads the card, the column and the card to follow against their lists. The route checks the role, that the card to follow is in that column, and the card's version, so a card someone else moved first is a [conflict](#two-people-on-one-row) that moves nothing and says where it is now |
+| Order | A big integer, `rank`, in each column, read with the primary key after it. A card takes the number half way between its neighbours in the whole column, not only in what the page showed; with no number left between them, or one that would pass 2⁶², the column is numbered again through the table, which moves no other card's version |
+| Two moves at once | A move first locks the rows of the columns it reads and writes, in one order, where the database can: on PostgreSQL a second move waits, then reads the ranks the first left, and two moves cannot deadlock. SQLite has one writer at a time and takes no row locks. The test of the wait runs on PostgreSQL only |
+| After a move | With htmx the board comes back with focus on the card's select and the move announced; without JavaScript a redirect, and the address says what moved for that one page |
+| A phone | Columns stack, so the page never scrolls sideways |
+| Settled attributes | htmx settles `class`, `width` and `height` only. A `style` attribute set by htmx is inline style, which the policy refuses, and SortableJS moves cards through the CSSOM: a test keeps the setting |
+
+### Timelines
+
+`app/core/gantt.py` and the macro `gantt` show rows on a calendar: a native table and, beside it, the same rows as bars,
+drawn on the server as SVG. Planning's Timeline tab is it, on the same page of the same filtered and sorted rows as its
+table: `show=timeline` and `scale` live in the address as filters the form keeps hidden.
+
+| What | How |
+|---|---|
+| A task | `Task(key, label, start, end, kind, after)`: its first and last day, both included, a state's colour, and the tasks it waits for. A row with no dates has no bar, and `None` is a group's heading. A work order lasts its hours shared by its crew, in days of eight hours |
+| Scale | All dates, the default, or days, weeks or months, from the address. All dates takes the finest scale that shows every task in 800 units, about what a wide screen leaves beside the table and a filter panel. A day is 32, 12 or 4 units wide; a week starts on Monday and a month on its first. A one-day task is never narrower than 6 units |
+| Width | Never past 6,000 units: a scale that would be wider gives way to a coarser one, and past what months allow the picture is a window from the first task, with what starts after it counted and not drawn. A page of tasks from 2000 to 2099 at a scale of days was 2.8 MB, and is now well under 300 KB. Each of these is said above the picture, and so is a picture wider than its box, whatever the screen, so that nothing out of sight looks absent |
+| What is drawn | Each bar, the weekends shaded at the scales of days and weeks, today as an upright line, months and their days above, and an arrow from a task to one that waits for it when both are on the page. Geometry is SVG attributes, colours are classes from the theme, and a month label that the next would cover gives way. A task's label goes after its bar, and the picture grows up to 240 units past its last day so the last ones fit; where it still would not, it goes inside a bar wide enough or before it, and only when no place holds it whole is it shortened, while the table keeps it whole. A browser test checks that no label ends past the picture or covers another, at every scale, in both themes, in compact density and at twice the text |
+| Rows in line | Rows are 2.5rem in the table and in the picture, which is measured in rem, so a larger text, a compact density or 200 % zoom keeps each bar beside its row; a test measures it |
+| Accessibility | The table is what a keyboard and a screen reader use, and it holds every action. The picture is a named image, described by the summary above it, with nothing to reach. Its box scrolls sideways and takes the keyboard |
+| Editing | Through the row's Edit, the same dialog as the table's, and the timeline comes back in place |
+| Paper | The picture goes under its table, as wide as the page |
+| The one inline SVG | Icons and illustrations are never inline ([COMP-05 and SEC-16](standards.md#components)). This is a chart of data, so `tools/icons.py` allows an SVG in this macro alone, and a test checks that what it draws holds nothing that runs or loads |
+
+### Calendars
+
+`app/core/calendars.py`, the macro `calendar` and `calendar.js` show events by month, week or agenda, drawn by
+FullCalendar 7.1.3 over what the server sends. The demo's calendar, at `/calendar`, holds the inspection team's visits,
+at their times, and the planned work orders, over their days. The [component page](components/event-calendar.md) says
+what each part does.
+
+| What | How |
+|---|---|
+| Views | Month, with multi-day events as one bar and, past three, a "+ more" link to the agenda of that week, which lists everything: FullCalendar's own box lay over the month and hid part of the events under it, by an amount that depended on the font, so it failed WCAG 2.5.8 on Linux and passed on Windows; week, with events at the same time side by side and the working hours of `hours`; agenda |
+| Address | `view` and `date`, read on loading and written back with every change |
+| Time zone | Events travel as JSON with moments in UTC and show in `APP_TIME_ZONE`, whatever the browser's. A drop sends its moment with its offset, and `read_moment` reads it into UTC: a test drags an event in a browser set to New York on a server in Madrid. A visit's form reads wall-clock times: one the clocks skip is refused and says why, one that happens twice is its first, and the end is compared with the start in UTC. The feed looks back as far as the longest work order can last |
+| Moving | By dragging, which the server decides on: role, a moment it can read, and the version, so a move after someone else's is refused, put back and said. A drop moves a visit and keeps its length, whatever end it sends, and only a planned work order moves. An answer that is not the route's JSON, such as a proxy's error page, is said in the calendar's own words. By keyboard, through each event's link: a visit has a form of its own, a work order the planning editor. A timed event cannot become all-day, nor the reverse |
+| Words | Every word FullCalendar shows or announces is ours, through one locale object built from the catalogue; its own locale files are not used, because its Spanish said "Vista del semana" and its "Hoy" was named "Este mes". A hint holds its button's words, as WCAG 2.5.3 asks |
+| Accessibility | No failure of the scan in month, week, agenda and after "+ more", in both themes and three languages, also with a fallback font forced, which is how a Linux machine's fonts were reproduced on Windows. Events and "+ more" are 24 pixels high at least, and events are a soft fill with the page's text, so they pass in the dark theme too, without turning any check off |
+| Theme | FullCalendar's classic theme reads its own variables, set from daisyUI's colours, so it follows a change of theme with no reload. Its classes are hashed, so nothing else of it is styled here |
+| Without JavaScript | The agenda the route writes, by day, with links to other days and views. It stays if the library cannot load |
+| htmx | A calendar that htmx brings is drawn again, as the location filter does, and one it removes is taken down |
+| A phone | The toolbar wraps and the page never scrolls sideways |
+| Limits | `Limits`: the days a calendar accepts, by default 2000 to 2099, and the longest range of events asked for at once, 62 days. A view at the edge asks for a little past them, as January 2000's month asks from 27 December 1999, and gets it. An application whose dates go further passes its own |
 
 ### Groups and editing a row
 
@@ -365,7 +427,7 @@ return excel_response(_("Equipment"), columns, rows, settings.time_zone)
 The file is written to a temporary file that the system deletes when it closes, and that has no name on disk where the system allows that. The response closes it however the download ends, so a client that leaves, a send that fails or a server that stops leaves it behind nowhere. A background task would not: it runs only after a response that finished. While a file is being written, `constant_memory` keeps XlsxWriter's own temporary file under a name, in the system's temporary folder: a failed row clears it, and only a server killed in those seconds could leave it there.
 
 It runs in a worker thread, so other requests go on. Nobody sees progress: at 50,000 rows it takes about 2.2 seconds on one
-laptop before the download starts. Progress belongs to [milestone 4](#milestones).
+laptop before the download starts. Progress belongs to [milestone 5](#milestones).
 
 ## Identity
 
@@ -390,10 +452,18 @@ An application chooses its arrangement in its settings. The [settings menu](#set
 | `APP_LAYOUT_DENSITY` | `normal`, `compact` | Compact for data-heavy screens |
 | `APP_LAYOUT_THEME_CONTROL` | `dropdown`, `toggle`, `swap`, `radio` | How the header's theme control looks |
 | `APP_LAYOUT_LANGUAGE_CONTROL` | `dropdown`, `select`, `menu` | How the header's language control looks |
-| `APP_LAYOUT_CHOICES` | A list of `navigation`, `sticky_header`, `width`, `density`, `theme_control`, `language_control`; all by default | What each person may change. What is left out stays as set above; `[]` hides the menu |
+| `APP_LAYOUT_PAGE_TITLE` | `page`, `header` | `header` puts the page's title in the top bar, for more room. It stays the page's one `h1`, and with `top` navigation it stays in the page, where the bar has no room |
+| `APP_LAYOUT_LIST_WIDTH` | `page`, `wide` | `wide` lets every list use the whole width, whatever `APP_LAYOUT_WIDTH` says |
+| `APP_LAYOUT_LIST_DENSITY` | `normal`, `dense` | `dense` gives every list smaller rows, a taller box and its wide-screen columns sooner |
+| `APP_LAYOUT_CHOICES` | A list of `navigation`, `sticky_header`, `width`, `density`, `theme_control`, `language_control`, `page_title`, `list_width`, `list_density`; all by default | What each person may change. What is left out stays as set above; `[]` hides the menu |
 
 On a phone the navigation is always a panel opened from a button, and the theme and language controls move into the user
 menu.
+
+The title in the top bar is the `h1` that `page_heading` would have written: the layout draws the content first, so the
+macro can hand its title to the bar and keep its description and actions in the page. A page that writes its own `h1`,
+as an error page does, keeps it. On a phone the title shortens with an ellipsis and the application's name leaves the
+bar, and on paper the title is all that is left of it.
 
 ## Settings menu
 
@@ -404,7 +474,7 @@ sends the person back. No inline script or style is needed, and focus returns to
 
 | Section | Offers |
 |---|---|
-| Layout | Navigation, fixed header, width, density |
+| Layout | Navigation, fixed header, width, density, the page's title, and the width and rows of lists |
 | Theme and language | Theme: as the system, light, dark. Language |
 | How the theme control looks | daisyUI's `theme-controller` as a dropdown, toggle, swap or radio, each live on the page |
 | How the language control looks | A dropdown, a select with its own button, or a menu list, each live on the page |
@@ -439,8 +509,9 @@ daisyUI classes, so the look can change in one place. Each macro appears on the 
 `panel`, `stats`, `stat`, `badge`, `status_label`, `progress`, `steps`, `table`, `empty_state`, `command`, `select_field`, `item_list`,
 `breadcrumbs`, `description_list`, `tabs`, `chart`, `dialog`, `dialog_buttons`, `input_field`, `field_error`,
 `error_summary`, `textarea_field`, `date_field`, `number_field`, `checkbox_field`, `radio_group`, `searchable_select`,
-`file_field`, `form_actions`, `confirmation`, `confirm_link`, `conflict_notice`, `grouped_table`, `dialog_action`, `filter_bar`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`
-and `pagination`.
+`file_field`, `form_actions`, `confirmation`, `confirm_link`, `conflict_notice`, `grouped_table`, `dialog_action`, `filter_bar`, `filter_panel`,
+`list_with_filters`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`, `pagination`, `board`, `gantt` and
+`calendar`.
 
 Tabs come in two kinds. `tabs` are links, one address each, as on the equipment detail: they work without JavaScript and
 with the back button, so they are a navigation with `aria-current`. The server reads what every panel needs and sends them
@@ -462,8 +533,9 @@ leaves out backgrounds. The equipment detail prints both of its tabs.
 | Output | Excel export, print style | Milestone 2 |
 | Forms | Text, text area, select, checkbox, radio, date, number and decimal, searchable select, file upload, error summary, field error, form actions | Milestone 3 |
 | Feedback | Confirmation dialog, conflict notice | Milestone 3 |
-| Feedback | Loading state, progress of a long task | Milestone 4 |
-| Pages | Service unavailable | Milestone 4 |
+| Data | Dense and wide lists, filter panel, a chart that filters a list, board, Gantt, event calendar | Milestone 4 |
+| Feedback | Loading state, progress of a long task | Milestone 5 |
+| Pages | Service unavailable | Milestone 5 |
 
 A component is left out until a real need appears for it. The base stays small enough to read.
 
@@ -515,10 +587,15 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Gallery | [Every component on offer](#gallery), by category, with its status, its macro and every official example | Milestone 1 |
 | Administration | Visible only to one role, proving permissions | Milestone 1 |
 | Equipment list, `/equipment` | Server table with 50,000 rows, search, filters, sorting, paging, row actions, its empty and no-results states, Excel export | Milestone 2 |
+| Equipment by state and by location | Two charts above the list, whose parts and table rows filter it in place | Milestone 4 |
 | Equipment detail, `/equipment/<id>` | Breadcrumbs, description list, tabs as links, history of work orders, status label, print style | Milestone 2 |
 | Planning, `/planning` | Rich table: groups on the server, and one row edited at a time in a dialog | Milestone 2 |
+| Planning's filters | In a side panel that can be hidden, with its state in the address | Milestone 4 |
+| Board, `/board` | Work orders by state: a form on each card, dragging, order and conflicts on the server | Milestone 4 |
+| Planning's timeline, `/planning?show=timeline` | The page's work orders as bars beside their table, with what each waits for, at a scale of days, weeks or months | Milestone 4 |
+| Calendar, `/calendar` | Inspection visits and planned work orders by month, week and agenda: dragging, a form for each visit, the time zone, conflicts | Milestone 4 |
 | Work order form, `/work-orders/new` and `/work-orders/<id>/edit` | All form fields, validation, decimals, dates, file upload, delete with a confirmation | Milestone 3 |
-| Import | Long task with progress, its result and its errors | Milestone 4 |
+| Import | Long task with progress, its result and its errors | Milestone 5 |
 
 The demo's tables, `equipment` and `work_order`, with `work_order_file` for what people attach, hold what `app/demo/generate.py` makes: 50,000 pieces of equipment and
 10,000 work orders, from a seed, with no third-party package. Each row comes from a hash of the seed and its position, so
@@ -667,12 +744,13 @@ still runs.
 |---|---|
 | Unit and integration tests | Behaviour, including permissions per role |
 | Tests with `app/demo/` deleted | In a copy without the demo, the stylesheet builds, every tool check passes and the tests pass, browser tests included, run as a person runs them: nothing is set for it, and no test may stay out because the demo has gone. These tests live in `tests/demo/`: they go with the demo, as does everything else that only makes sense while it exists |
-| Accessibility scan, in both themes | No automatically detectable failure on real screens: the start, error, settings and administration pages, every layout, each look of the theme and language controls, the open palette, the equipment list and its detail, the dashboard with charts and an open data table, planning with the editor open, the work order form empty, filled, with errors, with files and with a conflict, its confirmations as a page and in a dialog, the searchable select with its list open, the gallery's index and the frame of its pages. Official examples are left out: see [Standards](standards.md#official-examples) |
+| Accessibility scan, in both themes | No automatically detectable failure on real screens: the start, error, settings and administration pages, every layout, each look of the theme and language controls, the open palette, the equipment list and its detail, the dashboard with charts and an open data table, planning with the editor open, the work order form empty, filled, with errors, with files and with a conflict, its confirmations as a page and in a dialog, the searchable select with its list open, the gallery's index and the frame of its pages; the page's title in the top bar in every navigation mode, with the sticky header on and off; dense and wide lists; Planning's filter panel shown and hidden, wide and on a phone; the equipment page with its charts; the board; Planning's timeline; the calendar in month, week, agenda and after its "+ more", in three languages. Official examples are left out: see [Standards](standards.md#official-examples) |
 | Brand contrast | Each text colour of a theme added to `theme.css` against its background |
-| Keyboard tests | Sorting, paging and changing tab keep focus, the table's box scrolls, and the editor opens, keeps the keyboard and gives focus back. Every control of the start page is reached with visible focus; focus stops clear of the sticky header; Escape closes the user menu, the phone menu, a dialog and the palette, and returns focus; each look of the theme and language controls, the Preview and Code switch and the copy button work with a keyboard |
+| Keyboard tests | Sorting, paging and changing tab keep focus, the table's box scrolls, and the editor opens, keeps the keyboard and gives focus back. Every control of the start page is reached with visible focus; focus stops clear of the sticky header; Escape closes the user menu, the phone menu, a dialog and the palette, and returns focus; each look of the theme and language controls, the Preview and Code switch and the copy button work with a keyboard. A list's own choices and the filter panel's button keep focus; a chart's table filters its list; a card moves by its form with focus following it; the timeline's box scrolls; an event is reached and moved through its form |
 | Tab order | The Tab key visits the visible controls in the order of the page, on the start page and on a page full of controls |
 | Language checks | See [Standards](standards.md#how-language-is-checked) |
-| Screens without JavaScript | A real browser with JavaScript off sorts, filters and pages the list, changes tab and reaches the editor, and creates, refuses, saves and deletes a work order, with a file and with a conflict |
+| Screens without JavaScript | A real browser with JavaScript off sorts, filters and pages the list, changes tab and reaches the editor, and creates, refuses, saves and deletes a work order, with a file and with a conflict. It changes a list's choices, opens and hides the filter panel, follows a chart's links, moves a card, switches to the timeline, and moves through the calendar's agenda |
+| Views at their limits | A card dragged by a pointer and by a finger, an event dragged across time zones, each bar of a timeline beside its row at a larger text and a compact density, each view at 320 pixels with longer texts and at 640, which is 1280 at 200 % zoom |
 | Uploads | A test for each refusal, on the checks alone and through the route. A real server refuses a body it has not read, and real Chrome was tried by hand past both limits |
 | Two people | The window between reading and writing is forced in a test, so the database's own check is what answers, and two real browsers meet the conflict |
 | Exports | Each file is unzipped and read as XML: order, rows, cell types, rounding and neutralised text |
@@ -691,7 +769,7 @@ Browser tests use Playwright for Python and a vendored axe-core. Both are develo
 
 ## Registration
 
-Planned for milestone 5. `deploy/registration.toml` will describe the application to the platform that hosts it:
+Planned for milestone 6. `deploy/registration.toml` will describe the application to the platform that hosts it:
 identifier, name, group, icon, port, limits, public paths, and each role with the directory group that grants it. A
 hosting platform can generate its web server and access configuration from this file. Its fields are fixed against a
 real platform.
@@ -708,9 +786,10 @@ real platform.
 | 2 | Data layer | PostgreSQL and SQLite, exact decimals, migrations on both, 50,000 generated rows | Done |
 | 2 | Data | Server table with 50,000 rows, filters, export, indicators, charts | Done |
 | 3 | Forms | Every field, with validation in three languages | In review |
-| 4 | Feedback and long tasks | Every state in the catalogue | Planned |
-| 5 | Registration | Deployed behind a real identity proxy | Planned |
-| 6 | Proof | One organization's copy made by changing only its brand and settings | Planned |
+| 4 | Views | Dense lists with a title in the top bar, filters in a side panel, charts that filter, a board, a Gantt and a calendar, each a macro an application can reuse | In progress |
+| 5 | Feedback and long tasks | Every state in the catalogue | Planned |
+| 6 | Registration | Deployed behind a real identity proxy | Planned |
+| 7 | Proof | One organization's copy made by changing only its brand and settings | Planned |
 
 The accessibility and language checks run from milestone 1, so nothing is built without them.
 

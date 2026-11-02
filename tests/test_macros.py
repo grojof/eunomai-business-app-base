@@ -90,3 +90,79 @@ def test_a_filter_bar_is_a_get_form_with_labels_that_works_alone():
 def test_an_empty_state_can_carry_an_action():
     html = str(MACROS.empty_state("Nothing", "Try again", caller=lambda: "ACTION"))
     assert "ACTION" in html
+
+
+def test_a_list_offers_its_own_choices_as_forms_that_say_their_state():
+    view = view_of()
+    view.offered, view.dense = ("list_width", "list_density"), True
+    html = str(MACROS.list_summary(view, "120 things"))
+    assert html.count('action="/preferences"') == 2
+    assert 'name="layout_list_width" value="wide" aria-pressed="false"' in html
+    assert 'name="layout_list_density" value="normal" aria-pressed="true"' in html
+    assert '<input type="hidden" name="next" value="/things">' in html
+    assert 'hx-post="/preferences" hx-target="#things-results"' in html
+
+
+def test_a_list_offers_nothing_an_application_fixed():
+    html = str(MACROS.list_summary(view_of(), "120 things"))
+    assert "/preferences" not in html
+    assert "data-list-wide" not in html
+
+
+def test_dense_rows_are_smaller_and_bring_wide_columns_sooner():
+    view = view_of()
+    columns = (Column("name", "Name", "name"), Column("cost", "Cost", "cost", wide_only=True))
+    view.columns, view.dense = columns, True
+    html = str(MACROS.server_table(view, "Things", caller=lambda row: MACROS.cell(row["name"], wide_only=True)))
+    assert "table-xs table-dense" in html
+    assert "table-sm" not in html
+    assert html.count("wide-only hidden md:table-cell") == 2
+
+
+def test_a_wide_list_marks_itself_for_the_page():
+    view = view_of()
+    view.wide = True
+    assert "data-list-wide" in str(MACROS.list_summary(view, "120 things"))
+
+
+def test_a_heading_stays_in_the_page_unless_the_top_bar_asked_for_it():
+    html = str(MACROS.page_heading("Things", "All of them"))
+    assert "<h1>Things</h1>" in html
+
+
+def panelled(**params: str) -> ListView:
+    columns = (Column("name", "Name", "name"),)
+    view = ListView.read("things", "/things", params, columns, None, "name", panelled=True)
+    view.rows, view.total = [{"name": "One"}], 1
+    return view
+
+
+def test_a_filter_panel_is_an_aside_named_by_its_heading():
+    html = str(MACROS.filter_panel(panelled()))
+    assert '<aside id="things-filter-panel"' in html
+    assert 'aria-labelledby="things-filter-title"' in html
+    assert 'method="get" action="/things"' in html
+    assert "hidden xl:block" in html
+    assert " hidden>" not in html
+
+
+def test_a_hidden_panel_is_hidden_everywhere_and_a_shown_one_nowhere():
+    assert "<aside" in str(MACROS.filter_panel(panelled(panel="hidden")))
+    assert '" hidden>' in str(MACROS.filter_panel(panelled(panel="hidden")))
+    shown = str(MACROS.filter_panel(panelled(panel="shown")))
+    assert "hidden xl:block" not in shown
+    assert '<input type="hidden" name="panel" value="shown">' in shown
+
+
+def test_the_panels_button_is_a_disclosure_and_links_stand_in_without_javascript():
+    html = str(MACROS.list_summary(panelled(), "1 thing"))
+    assert 'aria-controls="things-filter-panel"' in html
+    assert 'data-show="/things?panel=shown" data-hide="/things?panel=hidden"' in html
+    assert 'href="/things?panel=shown"' in html
+    assert 'href="/things?panel=hidden"' in html
+    hidden = str(MACROS.list_summary(panelled(panel="hidden"), "1 thing"))
+    assert 'href="/things?panel=hidden"' not in hidden
+
+
+def test_a_list_without_a_panel_has_no_button_for_one():
+    assert "data-filter-toggle" not in str(MACROS.list_summary(view_of(), "120 things"))

@@ -1,0 +1,9 @@
+{% from "ui/macros.html" import board %}
+{% call(card) board(sample_board) %}
+<h3 class="font-semibold">{{ card.item.name }}</h3>
+<p class="text-xs">{{ card.item.code }} · {{ card.item.label }}</p>
+{% endcall %}
+<p class="mt-3 text-sm">{{ _("Here nobody may move a card. On the board of the demo each card has a form that moves it, by keyboard and without JavaScript, and a pointer or a finger can drag it.") }}</p>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{% call(card) board(board) %}
+&lt;h3 class="font-semibold"&gt;{{ card.item.title }}&lt;/h3&gt;
+{% endcall %}{% endraw %}</code></pre>

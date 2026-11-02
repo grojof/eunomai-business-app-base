@@ -30,6 +30,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`accordion`](accordion.md) | available | Use the accordion to show and hide content. Only one item can be open at a time. |
 | [`avatar`](avatar.md) | available | Use an avatar to show a thumbnail image. |
 | [`badge`](badge.md) | available | Use a badge to show the status of data. |
+| [`board`](board.md) | available | Cards in columns, each with a form that moves it, and dragging for a pointer or a finger. |
 | [`card`](card.md) | approved | Use cards to group and show content. |
 | [`carousel`](carousel.md) | available | Use a carousel to show images or content in a scrollable area. |
 | [`chart`](chart.md) | available | A figure with its text summary and its data as a table, drawn with Chart.js. |
@@ -38,6 +39,8 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`countdown`](countdown.md) | available | A countdown gives a transition effect when a number changes from 0 through 999. |
 | [`description-list`](description-list.md) | available | A list of terms and their values, for one record's details. |
 | [`diff`](diff.md) | decorative | Use the diff component to show a side-by-side comparison of two items. |
+| [`event-calendar`](event-calendar.md) | available | Events by month, week or agenda, drawn by FullCalendar, each a link to its form. |
+| [`gantt`](gantt.md) | available | A table and, beside it, the same rows as bars on a calendar, drawn on the server. |
 | [`hover-3d`](hover-3d.md) | decorative | The hover 3D component is a wrapper that adds a 3D effect to its content. When the pointer is on the component, the component tilts and turns in relation to the pointer position. |
 | [`hover-gallery`](hover-gallery.md) | decorative | A hover gallery is a container for images. The first image is visible by default. When the pointer moves horizontally on it, the other images appear. Use a hover gallery for product cards, e-commerce sites, portfolios, or image galleries. A hover gallery can contain a maximum of 10 images. |
 | [`icon`](icon.md) | available | Any of Lucide's icons, or one of the organization's, hidden from screen readers. |
@@ -88,6 +91,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`file-input`](file-input.md) | available | Use a file input to upload files. |
 | [`filter`](filter.md) | available | A filter is a group of radio buttons. When the user selects an option, the filter hides the other options. It also shows a reset button next to the selected option. |
 | [`filter-bar`](filter-bar.md) | available | A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons. |
+| [`filter-panel`](filter-panel.md) | available | The same form in a side panel that can be hidden, for a list with many filters. |
 | [`form-actions`](form-actions.md) | available | The main action of a form, the way out, and anything else at the far end. |
 | [`input`](input.md) | available | Use a text input as a simple input field. |
 | [`label`](label.md) | available | Use a label to give a name or title to an input field. Put the label before or after the field. |

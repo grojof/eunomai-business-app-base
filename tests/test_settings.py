@@ -265,8 +265,8 @@ def test_a_person_can_try_each_arrangement(open_page, navigation):
     page = open_page("/settings", layout={"navigation": "side" if navigation != "side" else "top"})
     names = {"side": "Side", "compact": "Icons only", "top": "Top", "hidden": "Hidden"}
     with page.expect_navigation():
-        page.get_by_role("button", name=names[navigation]).click()
-    assert page.get_by_role("button", name=names[navigation]).get_attribute("aria-pressed") == "true"
+        page.get_by_role("button", name=names[navigation], exact=True).click()
+    assert page.get_by_role("button", name=names[navigation], exact=True).get_attribute("aria-pressed") == "true"
     assert not overflows_sideways(page)
 
 
@@ -290,3 +290,79 @@ def test_without_scripts_the_controls_that_need_them_change_places():
     assert r"noscript\:inline-flex{display:inline-flex}" in rules
     control = (ROOT / "app" / "ui" / "templates" / "ui" / "theme_control.html").read_text(encoding="utf-8")
     assert "hidden noscript:inline-flex" in control
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [("layout_page_title", "header"), ("layout_list_width", "wide"), ("layout_list_density", "dense")],
+)
+def test_the_title_and_the_lists_are_choices_too(client, person, field, value):
+    assert choose(client, person, **{field: value}).cookies[field] == value
+    assert field not in choose(client, person, **{field: "huge"}).cookies
+    assert f'name="{field}"' in client.get("/settings", headers=person).text
+
+
+def headings(client, person, navigation, title="header", path="/settings"):
+    client.cookies.set("layout_navigation", navigation)
+    client.cookies.set("layout_page_title", title)
+    html = client.get(path, headers=person).text
+    header, main = html.split("<main", 1)
+    return header.count("<h1"), main.count("<h1")
+
+
+@pytest.mark.parametrize("navigation", ["side", "compact", "hidden"])
+def test_the_title_can_go_to_the_top_bar_and_stays_the_one_h1(client, person, navigation):
+    assert headings(client, person, navigation) == (1, 0)
+    assert headings(client, person, navigation, "page") == (0, 1)
+
+
+def test_with_navigation_at_the_top_the_title_stays_in_the_page(client, person):
+    assert headings(client, person, "top") == (0, 1)
+
+
+def test_a_page_with_a_heading_of_its_own_keeps_it(client, person):
+    assert headings(client, person, "side", path="/nowhere") == (0, 1)
+
+
+def test_an_application_can_fix_where_the_title_goes():
+    client = with_settings(layout_choices=[], layout_page_title="header")
+    person = {"X-Remote-User": "someone"}
+    client.cookies.set("layout_page_title", "page")
+    assert '<h1 class="page-title-bar' in client.get("/", headers=person).text
+
+
+TITLE_LAYOUTS = [
+    {"navigation": navigation, "page_title": "header", "sticky_header": sticky}
+    for navigation in ("side", "compact", "top", "hidden")
+    for sticky in ("on", "off")
+]
+
+
+@pages
+@pytest.mark.rule("A11Y-01")
+@pytest.mark.rule("A11Y-05")
+@pytest.mark.parametrize("layout", TITLE_LAYOUTS)
+@pytest.mark.parametrize("theme", ["light", "dark"])
+def test_a_title_in_the_top_bar_passes_the_scan(open_page, layout, theme):
+    page = open_page("/settings", theme=theme, layout=layout, bypass_csp=True)
+    assert page.locator("h1").count() == 1
+    assert page.locator("h1").is_visible()
+    assert run_axe(page) == []
+
+
+@pages
+@pytest.mark.rule("A11Y-12")
+@pytest.mark.rule("LANG-11")
+@pytest.mark.parametrize("layout", TITLE_LAYOUTS)
+def test_a_title_in_the_top_bar_fits_a_phone(open_page, layout):
+    page = open_page("/settings", language=PSEUDO, layout=layout, width=320)
+    assert not overflows_sideways(page)
+    assert page.locator("h1").is_visible()
+
+
+@pages
+def test_a_title_in_the_top_bar_stays_on_paper(open_page):
+    page = open_page("/settings", layout={"page_title": "header"})
+    page.emulate_media(media="print")
+    assert page.locator("h1").is_visible()
+    assert not page.get_by_role("button", name="Open menu").is_visible()

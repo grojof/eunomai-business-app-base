@@ -1,8 +1,9 @@
 // After htmx replaces content, keep keyboard and screen-reader users in the right place.
 // New content marks where focus goes with data-focus, and what to announce with data-announce. htmx puts focus back on
 // an element that kept its id; if none did, as when the Next link is gone on the last page, data-focus-fallback takes it.
+// An outerHTML swap replaces its target, so what arrived is then the element the event comes from.
 document.addEventListener("htmx:afterSettle", (event) => {
-  const content = event.detail.target;
+  const content = event.detail.target.isConnected ? event.detail.target : event.target;
   const announcement = content.querySelector("[data-announce]");
   if (announcement) {
     announce(announcement.dataset.announce);
@@ -14,7 +15,21 @@ document.addEventListener("htmx:afterSettle", (event) => {
     content.querySelector("[data-focus-fallback]")?.focus();
   }
   applyStyles(content);
+  showFilterPanels();
+  noteWideTimelines();
 });
+
+// A timeline wider than its box says so, whatever the screen: what is out of sight must not look absent.
+function noteWideTimelines() {
+  document.querySelectorAll("[data-gantt-box]").forEach((box) => {
+    const note = box.closest("[data-results], main")?.querySelector("[data-gantt-wider]");
+    if (note) {
+      note.hidden = box.scrollWidth <= box.clientWidth + 1;
+    }
+  });
+}
+addEventListener("load", noteWideTimelines);
+addEventListener("resize", noteWideTimelines);
 
 // A dialog whose body arrives with htmx opens then. `data-close-dialog` in what arrives closes it, and names where focus
 // goes: the row that opened it was replaced, so the browser cannot return there by itself.
@@ -59,6 +74,28 @@ document.addEventListener("click", (event) => {
   }
 });
 document.addEventListener("close", hideProblem, true);
+
+// A list's filter panel. Its button says whether the panel is on screen, which on a narrow screen it is not until asked
+// for, and a press asks the server for the other state: the address and every link of the list then keep it.
+function showFilterPanels() {
+  document.querySelectorAll("[data-filter-toggle]").forEach((button) => {
+    const panel = document.getElementById(button.getAttribute("aria-controls"));
+    button.setAttribute("aria-expanded", String(Boolean(panel?.checkVisibility())));
+  });
+}
+showFilterPanels();
+matchMedia("(width >= 80rem)").addEventListener("change", showFilterPanels);
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-filter-toggle]");
+  if (button) {
+    const address = button.getAttribute("aria-expanded") === "true" ? button.dataset.hide : button.dataset.show;
+    if (button.closest("[hx-disable]")) {
+      location.assign(address); // where htmx is turned off, as in the gallery, the page itself goes there
+    } else {
+      htmx.ajax("GET", address, { source: button, target: button.dataset.target });
+    }
+  }
+});
 
 // A message that came in the address is said once: a reload, or a change of theme, must not say it again.
 // `data-once` names the parameters to take out. Without JavaScript they stay, and the message with them.

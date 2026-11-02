@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-02 12:18+0100\n"
+"POT-Creation-Date: 2026-11-02 15:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -21,12 +21,32 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #, python-format
+msgid "%(count)s more in the list"
+msgid_plural "%(count)s more in the list"
+msgstr[0] "%(count)s més a la llista"
+msgstr[1] "%(count)s més a la llista"
+
+#, python-format
+msgid "%(count)s more starts past these dates: narrow what is shown to see it."
+msgid_plural "%(count)s more start past these dates: narrow what is shown to see them."
+msgstr[0] ""
+"%(count)s més comença després d'aquestes dates: acota el que es mostra "
+"per veure-la."
+msgstr[1] ""
+"%(count)s més comencen després d'aquestes dates: acota el que es mostra "
+"per veure-les."
+
+#, python-format
 msgid ""
 "%(count)s. Showing %(first)s to %(last)s, sorted by %(column)s, "
 "%(direction)s."
 msgstr ""
 "%(count)s. Es mostren del %(first)s al %(last)s, ordenats per %(column)s,"
 " %(direction)s."
+
+#, python-format
+msgid "%(event)s is now on %(when)s."
+msgstr "%(event)s queda per a %(when)s."
 
 msgid "(optional)"
 msgstr "(opcional)"
@@ -53,8 +73,24 @@ msgstr ""
 "Un formulari senzill que filtra una llista al servidor. El filter de "
 "daisyUI és un grup de botons d'opció."
 
+msgid ""
+"A table and, beside it, the same rows as bars on a calendar, drawn on the"
+" server."
+msgstr ""
+"Una taula i, al costat, les mateixes files com a barres en un calendari, "
+"dibuixades al servidor."
+
 msgid "Actions"
 msgstr "Accions"
+
+msgid "Agenda"
+msgstr "Agenda"
+
+msgid "Agenda view"
+msgstr "Vista d'agenda"
+
+msgid "All day"
+msgstr "Tot el dia"
 
 msgid ""
 "Any of Lucide's icons, or one of the organization's, hidden from screen "
@@ -69,6 +105,9 @@ msgstr "Aplica"
 msgid "Approved"
 msgstr "Aprovat"
 
+msgid "As the page"
+msgstr "Com la pàgina"
+
 msgid "As the system"
 msgstr "Com el sistema"
 
@@ -78,17 +117,33 @@ msgstr "Si necessites accés, demana'l a qui gestiona aquesta aplicació."
 msgid "Asks before an action that cannot be undone, and names what will be lost."
 msgstr "Pregunta abans d'una acció que no es pot desfer i diu què es perdrà."
 
+msgid "At a time"
+msgstr "Amb hora"
+
 msgid "Available"
 msgstr "Disponible"
 
 msgid "Back to the start"
 msgstr "Torna a l'inici"
 
+msgid "Board"
+msgstr "Tauler"
+
 msgid "Breadcrumbs"
 msgstr "Fil d'Ariadna"
 
+msgid ""
+"Cards in columns, each with a form that moves it, and dragging for a "
+"pointer or a finger."
+msgstr ""
+"Targetes en columnes, cadascuna amb un formulari que la mou, i "
+"arrossegament amb el punter o amb el dit."
+
 msgid "Centred"
 msgstr "Centrat"
+
+msgid "Change column"
+msgstr "Canvia de columna"
 
 msgid ""
 "Change how this application looks for you. Each choice applies at once "
@@ -97,11 +152,19 @@ msgstr ""
 "Canvia com es veu aquesta aplicació per a tu. Cada opció s'aplica de "
 "seguida i es recorda en aquest navegador."
 
+msgid "Change the view"
+msgstr "Canvia la vista"
+
 msgid "Chart"
 msgstr "Gràfic"
 
 msgid "Check the address, or go back to the start."
 msgstr "Comprova l'adreça o torna a l'inici."
+
+msgid "Choose a part of the chart, or a row of its data table, to see those rows."
+msgstr ""
+"Tria una part del gràfic, o una fila de la taula de dades, per veure "
+"aquestes files."
 
 msgid "Clear all"
 msgstr "Treu-los tots"
@@ -145,8 +208,17 @@ msgstr "Taula de dades"
 msgid "Date field"
 msgstr "Camp de data"
 
+msgid "Day"
+msgstr "Dia"
+
 msgid "Decorative"
 msgstr "Decoratiu"
+
+msgid "Dense"
+msgstr "Denses"
+
+msgid "Dense rows"
+msgstr "Files denses"
 
 msgid "Density"
 msgstr "Densitat"
@@ -185,6 +257,22 @@ msgstr "Error"
 msgid "Error summary"
 msgstr "Resum d'errors"
 
+msgid "Event calendar"
+msgstr "Calendari d'esdeveniments"
+
+msgid "Events"
+msgstr "Esdeveniments"
+
+msgid ""
+"Events by month, week or agenda, drawn by FullCalendar, each a link to "
+"its form."
+msgstr ""
+"Esdeveniments per mes, setmana o agenda, dibuixats per FullCalendar, "
+"cadascun un enllaç al seu formulari."
+
+msgid "Every list offers this too, above its rows."
+msgstr "Cada llista també ho ofereix, damunt de les seves files."
+
 msgid "Every problem of a form in one place, each a link to its field."
 msgstr ""
 "Tots els problemes d'un formulari en un sol lloc, cadascun amb un enllaç "
@@ -199,6 +287,9 @@ msgstr "Error de camp"
 msgid "Filter bar"
 msgstr "Barra de filtres"
 
+msgid "Filter panel"
+msgstr "Tauler de filtres"
+
 msgid "Filters"
 msgstr "Filtres"
 
@@ -211,6 +302,9 @@ msgstr "Accions del formulari"
 msgid "Full"
 msgstr "Completa"
 
+msgid "Gantt"
+msgstr "Gantt"
+
 msgid "Go back and choose a smaller file."
 msgstr "Torna enrere i tria un fitxer més petit."
 
@@ -219,11 +313,21 @@ msgstr ""
 "Torna enrere i torna-ho a provar. Si torna a passar, avisa qui gestiona "
 "això."
 
+#, python-format
+msgid "Go to %(day)s"
+msgstr "Ves al %(day)s"
+
 msgid "Hidden"
 msgstr "Oculta"
 
+msgid "Hide filters"
+msgstr "Amaga els filtres"
+
 msgid "How the language control looks"
 msgstr "Com es veu el control d'idioma"
+
+msgid "How the list is shown"
+msgstr "Com es mostra la llista"
 
 msgid "How the theme control looks"
 msgstr "Com es veu el control de tema"
@@ -233,6 +337,12 @@ msgstr "Icona"
 
 msgid "Icons only"
 msgstr "Només icones"
+
+msgid "In the page"
+msgstr "A la pàgina"
+
+msgid "In the top bar"
+msgstr "A la barra superior"
 
 msgid "In use"
 msgstr "En ús"
@@ -266,6 +376,13 @@ msgstr "Estructura"
 msgid "Layout, theme, language and how their controls look."
 msgstr "Disposició, tema, idioma i com es veuen els seus controls."
 
+msgid ""
+"Leaves more room for the page. With the navigation at the top, the title "
+"stays in the page."
+msgstr ""
+"Deixa més espai a la pàgina. Amb la navegació a dalt, el títol es queda a"
+" la pàgina."
+
 msgid "Light"
 msgstr "Clar"
 
@@ -286,14 +403,38 @@ msgstr "Llista de menú"
 msgid "Mockups"
 msgstr "Maquetes"
 
+msgid "Month"
+msgstr "Mes"
+
+msgid "Month view"
+msgstr "Vista de mes"
+
+msgid "Move"
+msgstr "Mou"
+
+msgid "Move to"
+msgstr "Mou a"
+
 msgid "Moves on its own and only a pointer can pause it: WCAG 2.2.2."
 msgstr "Es mou sol i només un punter el pot aturar: WCAG 2.2.2."
 
 msgid "Navigation"
 msgstr "Navegació"
 
+msgid "Next"
+msgstr "Següent"
+
+msgid "Next month"
+msgstr "Mes següent"
+
 msgid "Next page"
 msgstr "Pàgina següent"
+
+msgid "Next week"
+msgstr "Setmana següent"
+
+msgid "Next year"
+msgstr "Any següent"
 
 msgid "No"
 msgstr "No"
@@ -309,6 +450,15 @@ msgstr "Normal"
 
 msgid "Not recommended"
 msgstr "No recomanat"
+
+msgid "Nothing here"
+msgstr "Res aquí"
+
+msgid "Nothing in these days"
+msgstr "Res en aquests dies"
+
+msgid "Nothing in these days."
+msgstr "Res en aquests dies."
 
 msgid "Nothing matches. Try another word."
 msgstr "Res no coincideix. Prova amb una altra paraula."
@@ -332,6 +482,9 @@ msgstr "Obre el menú"
 msgid "Options: %(count)s"
 msgstr "Opcions: %(count)s"
 
+msgid "Other days"
+msgstr "Altres dies"
+
 #, python-format
 msgid "Page %(page)s"
 msgstr "Pàgina %(page)s"
@@ -343,14 +496,29 @@ msgstr "Pàgina %(page)s de %(pages)s"
 msgid "Page not found"
 msgstr "No s'ha trobat la pàgina"
 
+msgid "Page title"
+msgstr "Títol de la pàgina"
+
 msgid "Pages"
 msgstr "Pàgines"
 
 msgid "Preferences"
 msgstr "Preferències"
 
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Previous month"
+msgstr "Mes anterior"
+
 msgid "Previous page"
 msgstr "Pàgina anterior"
+
+msgid "Previous week"
+msgstr "Setmana anterior"
+
+msgid "Previous year"
+msgstr "Any anterior"
 
 msgid "Radio"
 msgstr "Opció"
@@ -377,6 +545,9 @@ msgstr "Resultats"
 msgid "Results: %(count)s"
 msgstr "Resultats: %(count)s"
 
+msgid "Rows of lists"
+msgstr "Files de les llistes"
+
 msgid "Rows per page"
 msgstr "Files per pàgina"
 
@@ -402,8 +573,21 @@ msgstr "Llista"
 msgid "Settings"
 msgstr "Configuració"
 
+#, python-format
+msgid "Show %(count)s more events"
+msgstr "Mostra %(count)s esdeveniments més"
+
+msgid "Show 1 more event"
+msgstr "Mostra 1 esdeveniment més"
+
+msgid "Show filters"
+msgstr "Mostra els filtres"
+
 msgid "Show the options"
 msgstr "Mostra les opcions"
+
+msgid "Shown at a coarser scale: the one asked for would be too wide."
+msgstr "Es mostra en una escala més àmplia: la demanada seria massa ampla."
 
 msgid "Side"
 msgstr "Lateral"
@@ -428,8 +612,14 @@ msgstr ""
 "Text que cada persona escriu com el seu idioma escriu els nombres. Mai un"
 " float."
 
+msgid "That could not be moved. It is back where it was."
+msgstr "No s'ha pogut moure. Ha tornat on era."
+
 msgid "That could not be read"
 msgstr "No s'ha pogut llegir"
+
+msgid "That day could not be read."
+msgstr "No s'ha pogut llegir aquest dia."
 
 msgid "That did not work. Try again in a moment."
 msgstr "No ha funcionat. Torna-ho a provar d'aquí a un moment."
@@ -443,6 +633,9 @@ msgid ""
 msgstr ""
 "És massa gran per enviar-lo. Tria un fitxer més petit: el que has escrit "
 "continua aquí."
+
+msgid "That time could not be read."
+msgstr "No s'ha pogut llegir aquesta hora."
 
 msgid "The browser's own date field, read by the server in one strict form."
 msgstr ""
@@ -472,10 +665,24 @@ msgstr ""
 "El nom d'aquest fitxer no coincideix amb el que conté. Canvia'l o tria'n "
 "un altre."
 
+msgid ""
+"The same form in a side panel that can be hidden, for a list with many "
+"filters."
+msgstr ""
+"El mateix formulari en un tauler lateral que es pot amagar, per a una "
+"llista amb molts filtres."
+
 msgid "The server cannot be reached. Check your connection and try again."
 msgstr ""
 "No es pot contactar amb el servidor. Revisa la connexió i torna-ho a "
 "provar."
+
+msgid ""
+"The timeline is wider than its box: scroll it sideways, or choose a "
+"coarser scale."
+msgstr ""
+"La línia de temps és més ampla que el seu requadre: desplaça-la de "
+"costat, o tria una escala més àmplia."
 
 msgid "Theme"
 msgstr "Tema"
@@ -505,6 +712,12 @@ msgstr "En realitat no és un fitxer %(kind)s. Tria'n un altre."
 msgid "Tick the box or leave it empty."
 msgstr "Marca la casella o deixa-la buida."
 
+msgid "Timeline"
+msgstr "Línia de temps"
+
+msgid "Today"
+msgstr "Avui"
+
 msgid "Toggle"
 msgstr "Interruptor"
 
@@ -513,6 +726,9 @@ msgstr "Superior"
 
 msgid "Try another word, or a shorter one."
 msgstr "Prova amb una altra paraula, o amb una de més curta."
+
+msgid "Try other days, or fewer filters."
+msgstr "Prova amb altres dies, o amb menys filtres."
 
 msgid "Type to search"
 msgstr "Escriu per cercar"
@@ -540,11 +756,29 @@ msgstr "Avís"
 msgid "We could not tell who you are. Open the application from your portal."
 msgstr "No hem pogut saber qui ets. Obre l'aplicació des del teu portal."
 
+msgid "Week"
+msgstr "Setmana"
+
+msgid "Week view"
+msgstr "Vista de setmana"
+
 msgid "What is wrong with one field, and how to fix it, tied to that field."
 msgstr "Què falla en un camp i com arreglar-ho, vinculat a aquest camp."
 
+msgid "Whole width"
+msgstr "Tota l'amplada"
+
 msgid "Width"
 msgstr "Amplada"
+
+msgid "Width of lists"
+msgstr "Amplada de les llistes"
+
+msgid "Wk"
+msgstr "Setm."
+
+msgid "Year"
+msgstr "Any"
 
 msgid "Yes"
 msgstr "Sí"
@@ -560,6 +794,12 @@ msgstr "ascendent"
 
 msgid "descending"
 msgstr "descendent"
+
+msgid "in use:"
+msgstr "en ús:"
+
+msgid "more"
+msgstr "més"
 
 msgid "to close"
 msgstr "per tancar"

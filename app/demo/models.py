@@ -1,9 +1,10 @@
 """The demo's tables: the equipment a fictional company maintains, and the work done on it."""
 
+import math
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
-from sqlalchemy import CheckConstraint, ColumnElement, ForeignKey, String, Text, and_, false
+from sqlalchemy import BigInteger, CheckConstraint, ColumnElement, ForeignKey, String, Text, and_, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -62,6 +63,10 @@ class WorkOrder(Base):
     crew: Mapped[int] = mapped_column(server_default="1")
     stop_needed: Mapped[bool] = mapped_column(server_default=false())
     version: Mapped[int] = mapped_column(server_default="1")
+    rank: Mapped[int] = mapped_column(BigInteger, server_default="0", index=True)
+    """Its place in its state's column on the board. See app/core/boards.py"""
+    after_id: Mapped[int | None] = mapped_column(ForeignKey("work_order.id", ondelete="SET NULL"), index=True)
+    """The work order this one waits for, drawn as an arrow on the planning's timeline."""
 
     __mapper_args__ = {"version_id_col": version}  # noqa: RUF012  # how SQLAlchemy asks for it
 
@@ -69,6 +74,22 @@ class WorkOrder(Base):
     files: Mapped[list["WorkOrderFile"]] = relationship(
         back_populates="work_order", cascade="all, delete-orphan", passive_deletes=True, order_by="WorkOrderFile.id"
     )
+
+
+class Inspection(Base):
+    """A visit of the inspection team to one piece of equipment, at a time of day. The calendar shows and moves it."""
+
+    __tablename__ = "inspection"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    equipment_id: Mapped[int] = mapped_column(ForeignKey("equipment.id", ondelete="CASCADE"), index=True)
+    starts_at: Mapped[datetime] = mapped_column(index=True)
+    ends_at: Mapped[datetime]
+    version: Mapped[int] = mapped_column(server_default="1")
+
+    __mapper_args__ = {"version_id_col": version}  # noqa: RUF012  # how SQLAlchemy asks for it
+
+    equipment: Mapped[Equipment] = relationship()
 
 
 class WorkOrderFile(Base):
@@ -85,6 +106,15 @@ class WorkOrderFile(Base):
     added_at: Mapped[datetime]
 
     work_order: Mapped[WorkOrder] = relationship(back_populates="files")
+
+
+WORKING_DAY = 8
+"""Hours a crew works in a day: a work order lasts its hours shared by its crew, in whole days."""
+
+
+def working_days(hours: Decimal, crew: int) -> int:
+    """How many days a work order takes, from its planned day: at least one."""
+    return max(1, math.ceil(hours / (WORKING_DAY * max(crew, 1))))
 
 
 def overdue() -> ColumnElement[bool]:

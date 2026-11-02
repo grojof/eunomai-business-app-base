@@ -1,0 +1,14 @@
+{% from "ui/macros.html" import gantt %}
+<div class="rounded-box border border-base-300 bg-base-100 pt-3">
+  {% call gantt("sample-plan", _("Equipment and when its work is planned"), sample_plan, [(_("Equipment"), false)], _("Each piece of equipment from its first day of work to its last. The cooling tower waits for the conveyor belt.")) %}
+  <tbody>
+    <tr><th scope="rowgroup" class="bg-base-200 font-semibold">{{ _("Workshop") }}</th></tr>
+    {% for name in (_("Air compressor"), _("Conveyor belt"), _("Cooling tower")) %}<tr><th scope="row" class="font-medium">{{ name }}</th></tr>{% endfor %}
+  </tbody>
+  {% endcall %}
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}plan = timeline(rows, view.chosen["scale"], today)
+
+{% call gantt("planning-timeline", caption, plan, headers, summary) %}
+&lt;tbody&gt;...one row per task, and its actions...&lt;/tbody&gt;
+{% endcall %}{% endraw %}</code></pre>

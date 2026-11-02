@@ -1,6 +1,6 @@
 """The demo's charts: the dashboard's, from the generated rows, and the gallery's, with values fixed here."""
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, timedelta
 from decimal import Decimal
@@ -14,7 +14,7 @@ from app.core.charts import STATE_COLOURS, ChartData, Point, Series, chart_data,
 from app.core.database import exact_sum, total
 from app.core.formatters import format_date, format_decimal, format_month, format_percent, rounded
 from app.core.i18n import _
-from app.demo.equipment import STATUS_LABELS
+from app.demo.equipment import STATUS_LABELS, labels_in_order
 from app.demo.models import (
     EQUIPMENT_STATUSES,
     LAST_DAY,
@@ -46,19 +46,46 @@ def months(count: int = 12) -> list[str]:
     return [format_month(date(YEAR, month, 1)) for month in range(1, count + 1)]
 
 
-def equipment_by_state(session: Session) -> Figure:
+Link = Callable[[str], str]
+"""Where a part of a chart leads, from the value it stands for."""
+
+
+def equipment_by_state(session: Session, link: Link | None = None) -> Figure:
     counted = dict(session.execute(select(Equipment.status, func.count()).group_by(Equipment.status)).all())
     values = [counted.get(status, 0) for status in EQUIPMENT_STATUSES]
     everything = sum(values)
     labels = [_(STATUS_LABELS[status][0]) for status in EQUIPMENT_STATUSES]
     share = 100 * counted.get("in_service", 0) // everything if everything else 0
+    links = [link(status) for status in EQUIPMENT_STATUSES] if link else []
     return Figure(
         "figure-states",
         _("Equipment by state"),
         _("Of %(total)s pieces of equipment, %(share)s are in service.")
         % {"total": format_decimal(everything), "share": format_percent(share)},
-        chart_data(labels, [Series(_("Equipment"), values)], _("State"), colours=STATE_COLOURS),
+        chart_data(labels, [Series(_("Equipment"), values)], _("State"), colours=STATE_COLOURS, links=links),
         "doughnut",
+    )
+
+
+def equipment_by_location(session: Session, link: Link) -> Figure:
+    """Where the equipment is, in the order of the person's language, each place a way to see its equipment."""
+    counted = dict(session.execute(select(Equipment.location, func.count()).group_by(Equipment.location)).all())
+    places = labels_in_order(LOCATIONS)
+    values = [counted.get(place, 0) for place in places]
+    largest = max(range(len(places)), key=lambda position: values[position])
+    return Figure(
+        "figure-locations",
+        _("Equipment by location"),
+        _("%(place)s holds the most equipment, %(count)s pieces.")
+        % {"place": _(places[largest]), "count": format_decimal(values[largest])},
+        chart_data(
+            [_(place) for place in places],
+            [Series(_("Equipment"), values)],
+            _("Location"),
+            places=0,
+            links=[link(place) for place in places],
+        ),
+        "bar",
     )
 
 
@@ -153,7 +180,7 @@ def dashboard_figures(session: Session, zone: str) -> dict[str, Any]:
         "equipment": [(item.name, item.location, item.next_inspection, STATUS_LABELS[item.status]) for item in next_up],
         "orders_chart": orders,
         "cost_chart": cost,
-        "states_chart": equipment_by_state(session),
+        "states_chart": equipment_by_state(session, lambda status: f"/equipment?status={status}"),
         "overdue_count": session.scalar(select(func.count()).select_from(WorkOrder).where(overdue())) or 0,
         "overdue_items": [_overdue_item(order) for order in oldest],
         "updated": LAST_MOMENT,

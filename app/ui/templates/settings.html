@@ -54,6 +54,8 @@
       {{ choice("layout_" ~ field, value, label, layout[field] == value or (field == "sticky_header" and layout[field] == (value == "on")), "layout") }}
       {% endfor %}
     </div>
+    {% if field == "page_title" %}<p class="text-sm">{{ _("Leaves more room for the page. With the navigation at the top, the title stays in the page.") }}</p>{% endif %}
+    {% if field in ("list_width", "list_density") %}<p class="text-sm">{{ _("Every list offers this too, above its rows.") }}</p>{% endif %}
     {% endcall %}
     {% endif %}
     {% endfor %}

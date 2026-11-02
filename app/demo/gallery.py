@@ -3,6 +3,7 @@
 import json
 import re
 from collections.abc import Iterator, Mapping
+from datetime import UTC, date, datetime, time, timedelta
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, NamedTuple
@@ -11,6 +12,9 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import Response
 from markupsafe import Markup, escape
 
+from app.core.boards import Board, BoardCard, BoardColumn
+from app.core.calendars import CalendarEvent, Period, calendar_config
+from app.core.gantt import Task, Timeline, timeline
 from app.core.i18n import N_, _, current_language
 from app.core.tables import Column, Filter, ListView
 from app.core.templating import NavigationGroup, SearchItem, add_templates, environment, register_search, render
@@ -30,13 +34,14 @@ GROUPS = {
     "placement": N_("Placement"),
     "direction": N_("Direction"),
 }
-SAMPLE_MACROS = {"filter_bar", "pagination", "server_table"}
+SAMPLE_MACROS = {"filter_bar", "filter_panel", "pagination", "server_table"}
 """Macros whose specimen is a list. It keeps its state in the page's own address, on three fixed rows."""
 SAMPLE_ROWS = (
     ("A-100", N_("Air compressor"), "in_service", N_("In service"), "success"),
     ("B-200", N_("Conveyor belt"), "due_soon", N_("Due soon"), "warning"),
     ("C-300", N_("Cooling tower"), "stopped", N_("Stopped"), "danger"),
 )
+SAMPLE_START = date(2026, 11, 2)
 _TAG = re.compile(r"(<!--.*?-->|<[^>]+>)", re.S)
 _ATTRIBUTE = re.compile(r"""([^\s=/>]+)(=)("[^"]*"|'[^']*')""")
 
@@ -170,7 +175,7 @@ def example_view(example: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def sample_view(path: str, params: Mapping[str, str]) -> ListView:
+def sample_view(path: str, params: Mapping[str, str], panelled: bool = False) -> ListView:
     """A list without a database, so a macro can be tried here. The rows are filtered and sorted in Python, which a real
     screen must not do: see app/demo/equipment.py for that."""
     view = ListView.read(
@@ -195,6 +200,7 @@ def sample_view(path: str, params: Mapping[str, str]) -> ListView:
         ),
         ("name",),
         _("Code or name"),
+        panelled,
     )
     term = view.term.casefold()
     rows = [
@@ -205,6 +211,60 @@ def sample_view(path: str, params: Mapping[str, str]) -> ListView:
     rows.sort(key=lambda row: row[view.sort], reverse=view.direction == "desc")
     view.rows, view.total = rows, len(rows)
     return view
+
+
+def sample_board() -> Board:
+    """A board without a database: three fixed cards, which nobody may move here."""
+    cards = [
+        BoardCard(number, 1, _(name), {"code": code, "name": _(name), "label": _(label)})
+        for number, (code, name, _status, label, _kind) in enumerate(SAMPLE_ROWS, start=1)
+    ]
+    columns = [
+        BoardColumn("reported", _("Reported"), cards[:1], 1),
+        BoardColumn("planned", _("Planned"), cards[1:], 2),
+        BoardColumn("closed", _("Closed"), [], 0),
+    ]
+    return Board("sample-board", _("Work orders by state"), columns, "")
+
+
+def sample_plan() -> Timeline:
+    """A timeline without a database: three tasks in one group, the last waiting for the second, with a weekend."""
+    return timeline(
+        [
+            None,
+            Task(1, _("Air compressor"), SAMPLE_START, SAMPLE_START + timedelta(days=2), "info"),
+            Task(2, _("Conveyor belt"), SAMPLE_START + timedelta(days=1), SAMPLE_START + timedelta(days=1), "warning"),
+            Task(
+                3,
+                _("Cooling tower"),
+                SAMPLE_START + timedelta(days=4),
+                SAMPLE_START + timedelta(days=8),
+                "success",
+                (2,),
+            ),
+        ],
+        "day",
+        SAMPLE_START + timedelta(days=3),
+    )
+
+
+def sample_calendar(request: Request) -> dict[str, Any]:
+    """A calendar without a database: three fixed events in the week of the sample, which nobody may move."""
+    start = datetime.combine(SAMPLE_START, time(8), UTC)
+    events = [
+        CalendarEvent("one", _("Air compressor"), start, start + timedelta(hours=2), "#one"),
+        CalendarEvent(
+            "two", _("Conveyor belt"), start + timedelta(days=1, hours=1), start + timedelta(days=1, hours=3), "#two"
+        ),
+        CalendarEvent(
+            "three", _("Cooling tower"), SAMPLE_START + timedelta(days=2), SAMPLE_START + timedelta(days=4), "#three"
+        ),
+    ]
+    period = Period("week", SAMPLE_START)
+    zone = request.app.state.settings.time_zone
+    config = calendar_config([event.as_json() for event in events], "", zone, period, SAMPLE_START, False)
+    agenda = [(SAMPLE_START + timedelta(days=offset), [("", event)]) for offset, event in enumerate(events)]
+    return {"config": config, "agenda": agenda}
 
 
 async def gallery_component(request: Request, name: str) -> Response:
@@ -218,7 +278,8 @@ async def gallery_component(request: Request, name: str) -> Response:
     neighbours = [every[position - 1][1] if position else None, every[(position + 1) % len(every)][1]]
     neighbours[1] = neighbours[1] if position + 1 < len(every) else None
     examples = [example_view(example) for example in page.get("examples", [])]
-    sample = sample_view(request.url.path, request.query_params) if item.macro in SAMPLE_MACROS else None
+    panelled = item.macro == "filter_panel"
+    sample = sample_view(request.url.path, request.query_params, panelled) if item.macro in SAMPLE_MACROS else None
     return render(
         request,
         "demo/gallery/component.html",
@@ -239,6 +300,9 @@ async def gallery_component(request: Request, name: str) -> Response:
         examples=examples,
         sample=sample,
         chart_figures=chart_examples() if name == "chart" else [],
+        sample_board=sample_board() if name == "board" else None,
+        sample_plan=sample_plan() if name == "gantt" else None,
+        sample_calendar=sample_calendar(request) if name == "event-calendar" else None,
         previous=(neighbours[0].name, title_of(neighbours[0].name)) if neighbours[0] else None,
         following=(neighbours[1].name, title_of(neighbours[1].name)) if neighbours[1] else None,
     )

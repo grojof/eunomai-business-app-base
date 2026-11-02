@@ -80,6 +80,14 @@
     "page": "docs/components/badge.md"
   },
   {
+    "name": "board",
+    "category": "data-display",
+    "status": "available",
+    "note": "Cards in columns, each with a form that moves it, and dragging for a pointer or a finger.",
+    "use": "Cards in columns, each with a form that moves it, and dragging for a pointer or a finger.",
+    "page": "docs/components/board.md"
+  },
+  {
     "name": "card",
     "category": "data-display",
     "status": "approved",
@@ -142,6 +150,22 @@
     "note": "",
     "use": "Use the diff component to show a side-by-side comparison of two items.",
     "page": "docs/components/diff.md"
+  },
+  {
+    "name": "event-calendar",
+    "category": "data-display",
+    "status": "available",
+    "note": "Events by month, week or agenda, drawn by FullCalendar, each a link to its form.",
+    "use": "Events by month, week or agenda, drawn by FullCalendar, each a link to its form.",
+    "page": "docs/components/event-calendar.md"
+  },
+  {
+    "name": "gantt",
+    "category": "data-display",
+    "status": "available",
+    "note": "A table and, beside it, the same rows as bars on a calendar, drawn on the server.",
+    "use": "A table and, beside it, the same rows as bars on a calendar, drawn on the server.",
+    "page": "docs/components/gantt.md"
   },
   {
     "name": "hover-3d",
@@ -422,6 +446,14 @@
     "note": "A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons.",
     "use": "A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons.",
     "page": "docs/components/filter-bar.md"
+  },
+  {
+    "name": "filter-panel",
+    "category": "data-input",
+    "status": "available",
+    "note": "The same form in a side panel that can be hidden, for a list with many filters.",
+    "use": "The same form in a side panel that can be hidden, for a list with many filters.",
+    "page": "docs/components/filter-panel.md"
   },
   {
     "name": "form-actions",

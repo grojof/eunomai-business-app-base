@@ -18,6 +18,63 @@
   --color-*: initial;
 }
 
+/* FullCalendar's classic theme on the brand's colours. Declared where daisyUI declares its own, so they follow a change
+   of theme without a reload, and they reach the "+ more" box, which FullCalendar puts at the end of the page. Events are
+   a soft fill with the page's text, so they pass the contrast check in both themes. Doubled, so they win over
+   FullCalendar's own palette, which a page with a calendar links after this file. */
+:root:root,
+[data-theme][data-theme] {
+  --fc-classic-button: var(--color-base-200);
+  --fc-classic-button-border: var(--color-base-300);
+  --fc-classic-button-strong: var(--color-base-300);
+  --fc-classic-button-strong-border: var(--color-base-content);
+  --fc-classic-button-outline: var(--color-primary);
+  --fc-classic-button-foreground: var(--color-base-content);
+  --fc-classic-primary: var(--color-primary);
+  --fc-classic-primary-foreground: var(--color-primary-content);
+  --fc-classic-event: color-mix(in oklab, var(--color-primary) 22%, var(--color-base-100));
+  --fc-classic-event-contrast: var(--color-base-content);
+  --fc-classic-highlight: color-mix(in oklab, var(--color-primary) 15%, transparent);
+  --fc-classic-today: color-mix(in oklab, var(--color-warning) 14%, transparent);
+  --fc-classic-now: var(--color-error);
+  --fc-classic-background: var(--color-base-100);
+  --fc-classic-faint: color-mix(in oklab, var(--color-base-content) 4%, transparent);
+  --fc-classic-muted: color-mix(in oklab, var(--color-base-content) 8%, transparent);
+  --fc-classic-strong: color-mix(in oklab, var(--color-base-content) 14%, transparent);
+  --fc-classic-foreground: var(--color-base-content);
+  --fc-classic-muted-foreground: color-mix(in oklab, var(--color-base-content) 80%, var(--color-base-100));
+  --fc-classic-faint-foreground: color-mix(in oklab, var(--color-base-content) 70%, var(--color-base-100));
+  --fc-classic-border: var(--color-base-300);
+  --fc-classic-strong-border: color-mix(in oklab, var(--color-base-content) 35%, var(--color-base-100));
+}
+
+/* Outside any layer, as FullCalendar's own styles are, so these win. A calendar's frame, and what WCAG 2.5.8 asks of
+   each event and "+ more" link: 24 pixels high at least */
+.calendar-frame {
+  display: block;
+}
+
+a.calendar-event,
+div.calendar-event,
+div.calendar-more {
+  min-block-size: 24px;
+}
+
+div.calendar-dot {
+  border-color: var(--color-primary);
+}
+
+/* A long title, such as a week across two months in Spanish, wraps on a phone instead of pushing the page sideways */
+.calendar-frame :has(> [role="heading"]) {
+  min-inline-size: 0;
+  flex-shrink: 1;
+}
+
+.calendar-frame [role="heading"] {
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
 /* Outside any layer, so no component can hide it: daisyUI's menu marks focus only with a background */
 :where(a, button, summary, input, select, textarea):focus-visible {
   outline: 2px solid var(--color-primary);
@@ -95,6 +152,37 @@
   h1,
   h2 {
     break-after: avoid;
+  }
+
+  /* A title kept in the top bar stays on paper, where the rest of the bar does not */
+  header:has(> .page-title-bar) {
+    display: block;
+    border: 0;
+    padding: 0;
+  }
+
+  header:has(> .page-title-bar) > :not(.page-title-bar) {
+    display: none;
+  }
+
+  .page-title-bar {
+    font-size: var(--text-3xl);
+    white-space: normal;
+  }
+
+  /* A timeline's picture goes under its table, as wide as the paper */
+  .gantt {
+    display: block;
+  }
+
+  .gantt-scroll {
+    overflow: visible;
+    border: 0;
+  }
+
+  .gantt-picture {
+    inline-size: 100%;
+    block-size: auto;
   }
 }
 
@@ -188,6 +276,103 @@
     margin-inline-end: -0.5625rem;
   }
 
+  /* A timeline: its table's rows and the picture's are 2.5rem, and the picture is measured in rem too */
+  .gantt-table tr {
+    block-size: 2.5rem;
+  }
+
+  .gantt-table thead tr {
+    block-size: 3rem;
+  }
+
+  .gantt-table :where(th, td) {
+    padding-block: 0;
+    white-space: nowrap;
+  }
+
+  .gantt-picture {
+    display: block;
+    max-inline-size: none;
+  }
+
+  .gantt-weekend {
+    fill: var(--color-base-200);
+  }
+
+  .gantt-grid {
+    stroke: var(--color-base-300);
+    stroke-width: 1;
+  }
+
+  .gantt-month,
+  .gantt-tick,
+  .gantt-label {
+    fill: var(--color-base-content);
+    font-size: 12px;
+  }
+
+  .gantt-month {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .gantt-bar {
+    stroke: var(--color-base-content);
+    stroke-width: 1;
+  }
+
+  .gantt-bar-neutral {
+    fill: color-mix(in oklab, var(--color-neutral) 30%, var(--color-base-100));
+  }
+
+  .gantt-bar-info {
+    fill: color-mix(in oklab, var(--color-info) 45%, var(--color-base-100));
+  }
+
+  .gantt-bar-warning {
+    fill: color-mix(in oklab, var(--color-warning) 55%, var(--color-base-100));
+  }
+
+  .gantt-bar-success {
+    fill: color-mix(in oklab, var(--color-success) 45%, var(--color-base-100));
+  }
+
+  .gantt-bar-error {
+    fill: color-mix(in oklab, var(--color-error) 45%, var(--color-base-100));
+  }
+
+  .gantt-link {
+    fill: none;
+    stroke: var(--color-base-content);
+    stroke-width: 1.25;
+  }
+
+  .gantt-arrow {
+    fill: var(--color-base-content);
+  }
+
+  .gantt-today {
+    stroke: var(--color-error);
+    stroke-width: 2;
+  }
+
+  /* Where a dragged card would land */
+  .board-ghost {
+    opacity: 0.5;
+    outline: 2px dashed var(--color-primary);
+  }
+
+  /* The page's h1 in the top bar takes the bar's size, not a page's */
+  .page-title-bar {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: normal;
+  }
+
+  /* A pressed toggle has an edge as well as a fill, so its state does not rest on a shade alone */
+  .btn[aria-pressed="true"] {
+    border-color: color-mix(in oklab, var(--color-base-content) 45%, transparent);
+  }
+
   .sort-link {
     display: inline-flex;
     align-items: center;
@@ -255,5 +440,39 @@
 @layer utilities {
   .table.table-pin-rows thead {
     z-index: 2;
+  }
+
+  /* Dense rows leave room for columns that otherwise wait for a wide screen, and for more rows in the box */
+  @media (width >= 40rem) {
+    .table-dense .wide-only {
+      display: table-cell;
+    }
+  }
+
+  /* Taller than a normal box, so that a default page of dense rows fits a large screen: the 25 rows of 1920 by 1080
+     missed by 65 pixels with 18rem. Its header stays pinned when a smaller screen still scrolls it */
+  .table-scroll:has(> .table-dense) {
+    max-block-size: max(24rem, calc(100dvh - 12rem));
+  }
+
+  /* A dense cell's padding is 0.5rem, so a ghost button can reach past its label by that much and no more: with the
+     normal 0.5625rem it passed the table by one pixel, and the box scrolled sideways for it */
+  .table-dense .row-actions .btn:last-child {
+    margin-inline-end: -0.5rem;
+  }
+
+  .table-dense.table-groups th[scope="rowgroup"] {
+    inset-block-start: 2rem;
+  }
+
+  /* A list shown across the whole width: the page's width setting does not hold it, and the page's edges narrow */
+  main:has([data-list-wide]) {
+    max-width: none;
+  }
+
+  @media (width >= 64rem) {
+    main:has([data-list-wide]) {
+      padding-inline: 1rem;
+    }
   }
 }
