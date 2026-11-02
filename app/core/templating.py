@@ -2,6 +2,7 @@
 
 import json
 from collections.abc import Callable, Iterable, Sequence
+from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -47,6 +48,30 @@ environment.filters["decimal"] = formatters.format_decimal
 environment.filters["date"] = formatters.format_date
 environment.filters["percent"] = formatters.format_percent
 environment.filters["filesize"] = formatters.format_file_size
+
+
+@dataclass
+class PageTitle:
+    """Where a page's h1 goes. The layout asks for the top bar before it draws the content, `page_heading` then leaves
+    its title here instead of in the page, and the top bar writes it, still as the page's one h1."""
+
+    in_header: bool = False
+    text: str = ""
+
+    def ask(self, in_header: bool) -> str:
+        self.in_header = in_header
+        return ""
+
+    def take(self, text: str) -> bool:
+        if self.in_header and not self.text:
+            self.text = text
+            return True
+        return False
+
+
+_page_title: ContextVar[PageTitle | None] = ContextVar("page_title", default=None)
+environment.globals["page_title"] = lambda: _page_title.get() or PageTitle()
+"""Each render has its own: a fragment never asks for the top bar, so its heading stays where it is."""
 
 
 @dataclass(frozen=True)
@@ -132,29 +157,33 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
     def local_date(value: datetime) -> str:
         return formatters.format_date(value.astimezone(ZoneInfo(state.settings.time_zone)).date())
 
-    html = environment.get_template(name).render(
-        app_name=state.settings.name,
-        version=__version__,
-        language=current_language(),
-        language_tag=current_language().replace("_", "-"),
-        languages=state.languages.options(),
-        theme=getattr(request.state, "theme", "system"),
-        layout=layout_for(request),
-        person=person,
-        navigation=visible_navigation(request),
-        settings_menu=bool(state.settings.layout_choices),
-        theme_options=[
-            ("system", i18n._("As the system"), "monitor"),
-            ("light", i18n._("Light"), "sun"),
-            ("dark", i18n._("Dark"), "moon"),
-        ],
-        current_path=request.url.path,
-        here=request.url.path + query,
-        vendor_scripts=_VENDOR_SCRIPTS,
-        local_datetime=local_datetime,
-        local_date=local_date,
-        **context,
-    )
+    token = _page_title.set(PageTitle())
+    try:
+        html = environment.get_template(name).render(
+            app_name=state.settings.name,
+            version=__version__,
+            language=current_language(),
+            language_tag=current_language().replace("_", "-"),
+            languages=state.languages.options(),
+            theme=getattr(request.state, "theme", "system"),
+            layout=layout_for(request),
+            person=person,
+            navigation=visible_navigation(request),
+            settings_menu=bool(state.settings.layout_choices),
+            theme_options=[
+                ("system", i18n._("As the system"), "monitor"),
+                ("light", i18n._("Light"), "sun"),
+                ("dark", i18n._("Dark"), "moon"),
+            ],
+            current_path=request.url.path,
+            here=request.url.path + query,
+            vendor_scripts=_VENDOR_SCRIPTS,
+            local_datetime=local_datetime,
+            local_date=local_date,
+            **context,
+        )
+    finally:
+        _page_title.reset(token)
     return HTMLResponse(html, status_code=status_code)
 
 

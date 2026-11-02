@@ -69,6 +69,9 @@ msgstr "Aplica"
 msgid "Approved"
 msgstr "Aprovat"
 
+msgid "As the page"
+msgstr "Com la pàgina"
+
 msgid "As the system"
 msgstr "Com el sistema"
 
@@ -148,6 +151,12 @@ msgstr "Camp de data"
 msgid "Decorative"
 msgstr "Decoratiu"
 
+msgid "Dense"
+msgstr "Denses"
+
+msgid "Dense rows"
+msgstr "Files denses"
+
 msgid "Density"
 msgstr "Densitat"
 
@@ -184,6 +193,9 @@ msgstr "Error"
 
 msgid "Error summary"
 msgstr "Resum d'errors"
+
+msgid "Every list offers this too, above its rows."
+msgstr "Cada llista també ho ofereix, damunt de les seves files."
 
 msgid "Every problem of a form in one place, each a link to its field."
 msgstr ""
@@ -225,6 +237,9 @@ msgstr "Oculta"
 msgid "How the language control looks"
 msgstr "Com es veu el control d'idioma"
 
+msgid "How the list is shown"
+msgstr "Com es mostra la llista"
+
 msgid "How the theme control looks"
 msgstr "Com es veu el control de tema"
 
@@ -233,6 +248,12 @@ msgstr "Icona"
 
 msgid "Icons only"
 msgstr "Només icones"
+
+msgid "In the page"
+msgstr "A la pàgina"
+
+msgid "In the top bar"
+msgstr "A la barra superior"
 
 msgid "In use"
 msgstr "En ús"
@@ -265,6 +286,13 @@ msgstr "Estructura"
 
 msgid "Layout, theme, language and how their controls look."
 msgstr "Disposició, tema, idioma i com es veuen els seus controls."
+
+msgid ""
+"Leaves more room for the page. With the navigation at the top, the title "
+"stays in the page."
+msgstr ""
+"Deixa més espai a la pàgina. Amb la navegació a dalt, el títol es queda a"
+" la pàgina."
 
 msgid "Light"
 msgstr "Clar"
@@ -343,6 +371,9 @@ msgstr "Pàgina %(page)s de %(pages)s"
 msgid "Page not found"
 msgstr "No s'ha trobat la pàgina"
 
+msgid "Page title"
+msgstr "Títol de la pàgina"
+
 msgid "Pages"
 msgstr "Pàgines"
 
@@ -376,6 +407,9 @@ msgstr "Resultats"
 #, python-format
 msgid "Results: %(count)s"
 msgstr "Resultats: %(count)s"
+
+msgid "Rows of lists"
+msgstr "Files de les llistes"
 
 msgid "Rows per page"
 msgstr "Files per pàgina"
@@ -543,8 +577,14 @@ msgstr "No hem pogut saber qui ets. Obre l'aplicació des del teu portal."
 msgid "What is wrong with one field, and how to fix it, tied to that field."
 msgstr "Què falla en un camp i com arreglar-ho, vinculat a aquest camp."
 
+msgid "Whole width"
+msgstr "Tota l'amplada"
+
 msgid "Width"
 msgstr "Amplada"
+
+msgid "Width of lists"
+msgstr "Amplada de les llistes"
 
 msgid "Yes"
 msgstr "Sí"

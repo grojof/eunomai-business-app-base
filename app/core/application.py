@@ -169,6 +169,9 @@ async def _save_preferences(
     layout_density: Annotated[str, Form()] = "",
     layout_theme_control: Annotated[str, Form()] = "",
     layout_language_control: Annotated[str, Form()] = "",
+    layout_page_title: Annotated[str, Form()] = "",
+    layout_list_width: Annotated[str, Form()] = "",
+    layout_list_density: Annotated[str, Form()] = "",
 ) -> Response:
     response = RedirectResponse(_safe_path(next_path), status_code=303)
     secure = request.app.state.settings.environment == "production"
@@ -184,6 +187,9 @@ async def _save_preferences(
         "density": layout_density,
         "theme_control": layout_theme_control,
         "language_control": layout_language_control,
+        "page_title": layout_page_title,
+        "list_width": layout_list_width,
+        "list_density": layout_list_density,
     }
     for field in request.app.state.settings.layout_choices:
         if chosen[field] in LAYOUTS[field]:
@@ -213,6 +219,9 @@ async def _settings_page(request: Request) -> Response:
         "sticky_header": (_("Fixed header"), {"on": _("Yes"), "off": _("No")}),
         "width": (_("Width"), {"full": _("Full"), "centered": _("Centred")}),
         "density": (_("Density"), {"normal": _("Normal"), "compact": _("Compact")}),
+        "page_title": (_("Page title"), {"page": _("In the page"), "header": _("In the top bar")}),
+        "list_width": (_("Width of lists"), {"page": _("As the page"), "wide": _("Whole width")}),
+        "list_density": (_("Rows of lists"), {"normal": _("Normal"), "dense": _("Dense")}),
     }
     choices = request.app.state.settings.layout_choices
     options = [

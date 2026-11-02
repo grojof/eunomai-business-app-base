@@ -90,3 +90,41 @@ def test_a_filter_bar_is_a_get_form_with_labels_that_works_alone():
 def test_an_empty_state_can_carry_an_action():
     html = str(MACROS.empty_state("Nothing", "Try again", caller=lambda: "ACTION"))
     assert "ACTION" in html
+
+
+def test_a_list_offers_its_own_choices_as_forms_that_say_their_state():
+    view = view_of()
+    view.offered, view.dense = ("list_width", "list_density"), True
+    html = str(MACROS.list_summary(view, "120 things"))
+    assert html.count('action="/preferences"') == 2
+    assert 'name="layout_list_width" value="wide" aria-pressed="false"' in html
+    assert 'name="layout_list_density" value="normal" aria-pressed="true"' in html
+    assert '<input type="hidden" name="next" value="/things">' in html
+    assert 'hx-post="/preferences" hx-target="#things-results"' in html
+
+
+def test_a_list_offers_nothing_an_application_fixed():
+    html = str(MACROS.list_summary(view_of(), "120 things"))
+    assert "/preferences" not in html
+    assert "data-list-wide" not in html
+
+
+def test_dense_rows_are_smaller_and_bring_wide_columns_sooner():
+    view = view_of()
+    columns = (Column("name", "Name", "name"), Column("cost", "Cost", "cost", wide_only=True))
+    view.columns, view.dense = columns, True
+    html = str(MACROS.server_table(view, "Things", caller=lambda row: MACROS.cell(row["name"], wide_only=True)))
+    assert "table-xs table-dense" in html
+    assert "table-sm" not in html
+    assert html.count("wide-only hidden md:table-cell") == 2
+
+
+def test_a_wide_list_marks_itself_for_the_page():
+    view = view_of()
+    view.wide = True
+    assert "data-list-wide" in str(MACROS.list_summary(view, "120 things"))
+
+
+def test_a_heading_stays_in_the_page_unless_the_top_bar_asked_for_it():
+    html = str(MACROS.page_heading("Things", "All of them"))
+    assert "<h1>Things</h1>" in html

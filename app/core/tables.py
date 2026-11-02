@@ -19,7 +19,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from sqlalchemy import ColumnElement, Select, func, or_
 from sqlalchemy.orm import Session
 
-from app.core.templating import render
+from app.core.templating import layout_for, render
 
 PAGE_SIZES = (10, 25, 50, 100)
 DEFAULT_SIZE = 25
@@ -94,6 +94,10 @@ class ListView:
     rows: list[Any] = field(default_factory=list)
     total: int = 0
     sizes: tuple[int, ...] = PAGE_SIZES
+    wide: bool = False
+    dense: bool = False
+    offered: tuple[str, ...] = ()
+    """How the person likes their lists, and which of those choices they may change from the list's own toolbar."""
 
     @classmethod
     def read(
@@ -308,6 +312,19 @@ def whole_page(request: Request, address: str) -> Response:
     return RedirectResponse(address, status_code=303)
 
 
+LIST_CHOICES = ("list_width", "list_density")
+
+
+def arrange(request: Request, view: ListView) -> ListView:
+    """Applies the person's way of seeing lists, kept with their other layout choices. `render_list` calls it; a route
+    that draws a list another way, as a save that sends the list back, calls it too."""
+    layout = layout_for(request)
+    view.wide = layout["list_width"] == "wide"
+    view.dense = layout["list_density"] == "dense"
+    view.offered = tuple(name for name in LIST_CHOICES if name in request.app.state.settings.layout_choices)
+    return view
+
+
 def render_list(request: Request, view: ListView, page: str, results: str, **context: Any) -> HTMLResponse:
     """The whole page, or only its results for htmx, whichever was asked for at the same address.
 
@@ -315,7 +332,7 @@ def render_list(request: Request, view: ListView, page: str, results: str, **con
     unless it made the request: a link that sorts or clears a filter has to bring the form's controls in step, and a
     form that is being typed in must not be replaced.
     """
-    context["view"] = view
+    context["view"] = arrange(request, view)
     if not fragment_requested(request):
         response = render(request, page, refill_filters=False, **context)
     else:

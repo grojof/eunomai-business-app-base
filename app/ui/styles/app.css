@@ -96,6 +96,22 @@
   h2 {
     break-after: avoid;
   }
+
+  /* A title kept in the top bar stays on paper, where the rest of the bar does not */
+  header:has(> .page-title-bar) {
+    display: block;
+    border: 0;
+    padding: 0;
+  }
+
+  header:has(> .page-title-bar) > :not(.page-title-bar) {
+    display: none;
+  }
+
+  .page-title-bar {
+    font-size: var(--text-3xl);
+    white-space: normal;
+  }
 }
 
 @layer base {
@@ -188,6 +204,18 @@
     margin-inline-end: -0.5625rem;
   }
 
+  /* The page's h1 in the top bar takes the bar's size, not a page's */
+  .page-title-bar {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: normal;
+  }
+
+  /* A pressed toggle has an edge as well as a fill, so its state does not rest on a shade alone */
+  .btn[aria-pressed="true"] {
+    border-color: color-mix(in oklab, var(--color-base-content) 45%, transparent);
+  }
+
   .sort-link {
     display: inline-flex;
     align-items: center;
@@ -255,5 +283,31 @@
 @layer utilities {
   .table.table-pin-rows thead {
     z-index: 2;
+  }
+
+  /* Dense rows leave room for columns that otherwise wait for a wide screen, and for more rows in the box */
+  @media (width >= 40rem) {
+    .table-dense .wide-only {
+      display: table-cell;
+    }
+  }
+
+  .table-scroll:has(> .table-dense) {
+    max-block-size: max(24rem, calc(100dvh - 18rem));
+  }
+
+  .table-dense.table-groups th[scope="rowgroup"] {
+    inset-block-start: 2rem;
+  }
+
+  /* A list shown across the whole width: the page's width setting does not hold it, and the page's edges narrow */
+  main:has([data-list-wide]) {
+    max-width: none;
+  }
+
+  @media (width >= 64rem) {
+    main:has([data-list-wide]) {
+      padding-inline: 1rem;
+    }
   }
 }

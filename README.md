@@ -26,7 +26,8 @@ flowchart LR
 > decimals, a server table on 50,000 rows with Excel export, an equipment detail with tabs and a print style, charts with
 > their tables, and a planning screen that groups rows and edits one at a time. Milestone 3, in review: every form field,
 > a work order form with validation at the edge, file upload, a confirmation dialog, and two people on one row finding
-> out. The rest is in the [milestones](docs/specification.md#milestones).
+> out. Milestone 4, in progress: lists that a person can make dense and as wide as the screen, and the page's title in
+> the top bar. The rest is in the [milestones](docs/specification.md#milestones).
 
 ## Try it
 

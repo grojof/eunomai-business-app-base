@@ -20,7 +20,16 @@ from app.core.formatters import format_date, format_decimal, format_month_and_ye
 from app.core.forms import read_choice, read_date, read_decimal, read_fields
 from app.core.i18n import N_, _, ngettext
 from app.core.identity import Person, require_role
-from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list, whole_page
+from app.core.tables import (
+    Column,
+    Filter,
+    ListView,
+    arrange,
+    fragment_requested,
+    list_query,
+    render_list,
+    whole_page,
+)
 from app.core.templating import render
 from app.demo.data import GENERATE, READY, rows_state
 from app.demo.equipment import (
@@ -376,7 +385,7 @@ def planning_save(
     return render(
         request,
         "demo/planning/saved.html",
-        view=view,
+        view=arrange(request, view),
         sections=sections,
         order=order,
         refill_filters=False,

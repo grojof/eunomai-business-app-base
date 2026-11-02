@@ -16,6 +16,9 @@ LAYOUTS: dict[str, tuple[str, ...]] = {
     "density": ("normal", "compact"),
     "theme_control": ("dropdown", "toggle", "swap", "radio"),
     "language_control": ("dropdown", "select", "menu"),
+    "page_title": ("page", "header"),
+    "list_width": ("page", "wide"),
+    "list_density": ("normal", "dense"),
 }
 """What the settings menu offers, and the only values the server accepts. See docs/specification.md#layouts"""
 SERVED = Path(__file__).resolve().parent.parent
@@ -51,6 +54,11 @@ class Settings(BaseSettings):
     layout_density: Literal["normal", "compact"] = "normal"
     layout_theme_control: Literal["dropdown", "toggle", "swap", "radio"] = "dropdown"
     layout_language_control: Literal["dropdown", "select", "menu"] = "dropdown"
+    # Where the page's title goes: in the page, or in the top bar for more room. Top navigation keeps it in the page.
+    layout_page_title: Literal["page", "header"] = "page"
+    # How a list is shown: within the page's width or across all of it, and with normal or dense rows.
+    layout_list_width: Literal["page", "wide"] = "page"
+    layout_list_density: Literal["normal", "dense"] = "normal"
     # What each person may change in the settings menu. What is left out stays as set above; empty hides the menu.
     layout_choices: list[str] = list(LAYOUTS)
 

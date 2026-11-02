@@ -69,6 +69,9 @@ msgstr "Aplicar"
 msgid "Approved"
 msgstr "Aprobado"
 
+msgid "As the page"
+msgstr "Como la página"
+
 msgid "As the system"
 msgstr "Como el sistema"
 
@@ -150,6 +153,12 @@ msgstr "Campo de fecha"
 msgid "Decorative"
 msgstr "Decorativo"
 
+msgid "Dense"
+msgstr "Densas"
+
+msgid "Dense rows"
+msgstr "Filas densas"
+
 msgid "Density"
 msgstr "Densidad"
 
@@ -186,6 +195,9 @@ msgstr "Error"
 
 msgid "Error summary"
 msgstr "Resumen de errores"
+
+msgid "Every list offers this too, above its rows."
+msgstr "Cada lista lo ofrece también, encima de sus filas."
 
 msgid "Every problem of a form in one place, each a link to its field."
 msgstr ""
@@ -227,6 +239,9 @@ msgstr "Oculta"
 msgid "How the language control looks"
 msgstr "Cómo se ve el control de idioma"
 
+msgid "How the list is shown"
+msgstr "Cómo se muestra la lista"
+
 msgid "How the theme control looks"
 msgstr "Cómo se ve el control de tema"
 
@@ -235,6 +250,12 @@ msgstr "Icono"
 
 msgid "Icons only"
 msgstr "Solo iconos"
+
+msgid "In the page"
+msgstr "En la página"
+
+msgid "In the top bar"
+msgstr "En la barra superior"
 
 msgid "In use"
 msgstr "En uso"
@@ -267,6 +288,13 @@ msgstr "Estructura"
 
 msgid "Layout, theme, language and how their controls look."
 msgstr "Disposición, tema, idioma y cómo se ven sus controles."
+
+msgid ""
+"Leaves more room for the page. With the navigation at the top, the title "
+"stays in the page."
+msgstr ""
+"Deja más espacio a la página. Con la navegación arriba, el título se "
+"queda en la página."
 
 msgid "Light"
 msgstr "Claro"
@@ -345,6 +373,9 @@ msgstr "Página %(page)s de %(pages)s"
 msgid "Page not found"
 msgstr "Página no encontrada"
 
+msgid "Page title"
+msgstr "Título de la página"
+
 msgid "Pages"
 msgstr "Páginas"
 
@@ -380,6 +411,9 @@ msgstr "Resultados"
 #, python-format
 msgid "Results: %(count)s"
 msgstr "Resultados: %(count)s"
+
+msgid "Rows of lists"
+msgstr "Filas de las listas"
 
 msgid "Rows per page"
 msgstr "Filas por página"
@@ -543,8 +577,14 @@ msgstr "No hemos podido saber quién eres. Abre la aplicación desde tu portal."
 msgid "What is wrong with one field, and how to fix it, tied to that field."
 msgstr "Qué falla en un campo y cómo arreglarlo, vinculado a ese campo."
 
+msgid "Whole width"
+msgstr "Todo el ancho"
+
 msgid "Width"
 msgstr "Anchura"
+
+msgid "Width of lists"
+msgstr "Ancho de las listas"
 
 msgid "Yes"
 msgstr "Sí"

@@ -7,14 +7,19 @@
 <span class="icon inline-flex shrink-0 {{ size }}" aria-hidden="true">{% include ["ui/icons/" ~ name ~ ".svg", "brand-icons/" ~ name ~ ".svg"] %}</span>
 {% endmacro %}
 
+{#- The page's one h1. When a person keeps the title in the top bar, the layout writes it there, still as the h1, and
+    this keeps the description and the actions. -#}
 {% macro page_heading(title, description="") %}
+{% set in_header = page_title().take(title) %}
+{% if not in_header or description or caller is defined %}
 <header class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
   <div class="min-w-0 space-y-1">
-    <h1>{{ title }}</h1>
+    {% if not in_header %}<h1>{{ title }}</h1>{% endif %}
     {% if description %}<p class="max-w-3xl">{{ description }}</p>{% endif %}
   </div>
   {% if caller is defined %}<div class="flex flex-wrap items-center gap-2 print:hidden">{{ caller() }}</div>{% endif %}
 </header>
+{% endif %}
 {% endmacro %}
 
 {% macro button(text, kind="default", type="button", small=false, attributes={}, loading="", extra="", name="") %}
@@ -437,11 +442,21 @@
 
 {% macro _swaps(view, url) %}{{ {"hx-get": url, "hx-target": "#" ~ view.name ~ "-results", "hx-push-url": "true", "hx-indicator": "#" ~ view.name ~ "-results"}|xmlattr }}{% endmacro %}
 
+{#- One of the list's own choices, kept with the person's layout: a form to /preferences, which sends them back to this
+    same list. htmx brings the list again in its place, and focus stays on the button. -#}
+{% macro _list_choice(view, key, value, pressed, text, picture, classes="") %}
+<form id="{{ view.name }}-list-{{ key }}"{% if classes %} class="{{ classes }}"{% endif %} method="post" action="/preferences" hx-post="/preferences" hx-target="#{{ view.name }}-results" hx-indicator="#{{ view.name }}-results">
+  <input type="hidden" name="next" value="{{ view.here }}">
+  <button id="{{ view.name }}-list-{{ key }}-button" class="btn btn-xs {{ 'btn-active' if pressed else 'btn-ghost' }}" type="submit" name="layout_list_{{ key }}" value="{{ value }}" aria-pressed="{{ 'true' if pressed else 'false' }}">{{ icon(picture, "size-3.5") }}{{ text }}</button>
+</form>
+{% endmacro %}
+
 {#- How many rows there are and what narrows them. `data-announce` is read out after each change of the list; what the
-    macro's caller writes, such as an export link, goes at the end of the line. -#}
+    macro's caller writes, such as an export link, goes at the end of the line, before the list's own choices: the
+    whole width of the screen, offered where a screen is wide enough for it to matter, and dense rows. -#}
 {% macro list_summary(view, count) %}
 {% set direction = _("ascending") if view.direction == "asc" else _("descending") %}
-<div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
+<div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3"{% if view.wide %} data-list-wide{% endif %}>
   <div class="flex min-w-0 flex-wrap items-center gap-2">
     <p class="text-sm font-semibold" data-announce="{{ _('%(count)s. Showing %(first)s to %(last)s, sorted by %(column)s, %(direction)s.', count=count, first=view.first_row|decimal, last=view.last_row|decimal, column=view.sorted_label, direction=direction) if view.total else _('No results.') }}">{{ count }}</p>
     {% for name, value, link in view.active %}
@@ -451,7 +466,17 @@
     {% endfor %}
     {% if view.active %}<a class="btn btn-ghost btn-xs" href="{{ view.clear_link }}"{{ _swaps(view, view.clear_link) }}>{{ _("Clear all") }}</a>{% endif %}
   </div>
-  {% if caller is defined %}<div class="print:hidden">{{ caller() }}</div>{% endif %}
+  {% if caller is defined or view.offered %}
+  <div class="flex flex-wrap items-center gap-2 print:hidden">
+    {% if caller is defined %}{{ caller() }}{% endif %}
+    {% if view.offered %}
+    <div class="flex items-center gap-1" role="group" aria-label="{{ _('How the list is shown') }}">
+      {% if "list_width" in view.offered %}{{ _list_choice(view, "width", "page" if view.wide else "wide", view.wide, _("Whole width"), "move-horizontal", "hidden lg:block") }}{% endif %}
+      {% if "list_density" in view.offered %}{{ _list_choice(view, "density", "normal" if view.dense else "dense", view.dense, _("Dense rows"), "rows-4") }}{% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
 </div>
 {% endmacro %}
 
@@ -460,7 +485,7 @@
       <tr>
         {% for column in view.columns %}
         {% set state = view.sort_state(column) %}
-        <th scope="col" class="{{ 'text-end' if column.numeric else '' }}{{ ' hidden md:table-cell' if column.wide_only else '' }}"{% if state %} aria-sort="{{ state }}"{% endif %}>
+        <th scope="col" class="{{ 'text-end' if column.numeric else '' }}{{ ' wide-only hidden md:table-cell' if column.wide_only else '' }}"{% if state %} aria-sort="{{ state }}"{% endif %}>
           {% if column.sortable %}
           {% set link = view.sort_link(column) %}
           <a id="{{ view.name }}-sort-{{ column.key }}" class="sort-link" href="{{ link }}"{{ _swaps(view, link) }}>
@@ -476,10 +501,11 @@
 
 {#- A native table, sorted, paged and filtered on the server. Its box scrolls by itself, so the header stays in sight, and
     the keyboard can reach the box. W3C's sortable table: a link in the header, and `aria-sort` only on the sorted one.
-    The caller writes the cells of a row. -#}
+    The caller writes the cells of a row. Dense rows are smaller, the box is taller, and columns that wait for a wide
+    screen appear sooner. -#}
 {% macro server_table(view, caption, actions="") %}
 <div class="table-scroll" role="region" tabindex="0" aria-labelledby="{{ view.name }}-caption" data-focus-fallback>
-  <table class="table table-sm table-pin-rows table-pin-first">
+  <table class="table {{ 'table-xs table-dense' if view.dense else 'table-sm' }} table-pin-rows table-pin-first">
     <caption id="{{ view.name }}-caption" class="sr-only">{{ caption }}. {{ _("Links in the column headers sort the table.") }}</caption>
     {{ _table_head(view, actions, false) }}
     <tbody>
@@ -495,7 +521,7 @@
     for a screen reader. `sections` have a title, a note with the group's totals, and rows. -#}
 {% macro grouped_table(view, caption, sections, actions="") %}
 <div class="table-scroll" role="region" tabindex="0" aria-labelledby="{{ view.name }}-caption" data-focus-fallback>
-  <table class="table table-sm table-pin-rows table-groups">
+  <table class="table {{ 'table-xs table-dense' if view.dense else 'table-sm' }} table-pin-rows table-groups">
     <caption id="{{ view.name }}-caption" class="sr-only">{{ caption }}. {{ _("Links in the column headers sort the table inside each group.") }}</caption>
     {{ _table_head(view, actions, true) }}
     {% for section in sections %}
@@ -520,7 +546,7 @@
 {% endmacro %}
 
 {% macro cell(value, numeric=false, wide_only=false, href="", name="") %}
-<td class="{{ 'text-end tabular-nums ' if numeric else '' }}{{ 'hidden md:table-cell ' if wide_only else '' }}whitespace-nowrap">{% if href %}<a class="link link-hover" href="{{ href }}"{% if name %} aria-label="{{ name }}"{% endif %}>{{ value }}</a>{% else %}{{ value }}{% endif %}</td>
+<td class="{{ 'text-end tabular-nums ' if numeric else '' }}{{ 'wide-only hidden md:table-cell ' if wide_only else '' }}whitespace-nowrap">{% if href %}<a class="link link-hover" href="{{ href }}"{% if name %} aria-label="{{ name }}"{% endif %}>{{ value }}</a>{% else %}{{ value }}{% endif %}</td>
 {% endmacro %}
 
 {#- `items`: (label, name for a screen reader, address, icon). The name says which row: a list of ten "View" says nothing. -#}

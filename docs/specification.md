@@ -40,8 +40,8 @@ Planned, and not there today:
 
 | Folder | Contents | Arrives in |
 |---|---|---|
-| `deploy/` | Example service files and the [registration](#registration) file | Milestone 5 |
-| `app/brand/` | Fonts | Milestone 6 |
+| `deploy/` | Example service files and the [registration](#registration) file | Milestone 6 |
+| `app/brand/` | Fonts | Milestone 7 |
 
 ## Stack
 
@@ -219,6 +219,7 @@ return render_list(request, view, "orders/list.html", "orders/results.html")
 | Focus | htmx puts it back on an element that kept its id, as a sort header does. If none did, as the Next link on the last page, `data-focus-fallback` takes it. A link that arrives works at once: htmx wires it in the same step as the swap |
 | A request that fails | `app.js` shows a message for every htmx failure, on any screen, inside an open dialog if there is one, with `role="alert"`. A 404 says the thing is no longer there, and a row removed while it was being saved gets that same 404 |
 | Announcement | `data-announce` on the summary goes to the announcement region after each change: rows, order and direction |
+| Wide and dense | Two toggles at the end of the summary, each a form to `/preferences` that comes back to the same address: the whole width of the screen, and dense rows. They are the person's `list_width` and `list_density`, kept as the other layout choices are and offered in the settings menu too, so every list looks the same way for one person. With htmx the list comes back alone, focus stays on the toggle and `aria-pressed` says its state. `render_list` reads them through `arrange`; an application that fixes them in its settings offers neither |
 
 Measured on one laptop, on SQLite with 50,000 rows and the demo's indexes: the first page takes 0.6 milliseconds whether
 it sorts by code or by cost, the last page 4, a search 27. A whole request, with its page drawn, takes 10 to 30.
@@ -365,7 +366,7 @@ return excel_response(_("Equipment"), columns, rows, settings.time_zone)
 The file is written to a temporary file that the system deletes when it closes, and that has no name on disk where the system allows that. The response closes it however the download ends, so a client that leaves, a send that fails or a server that stops leaves it behind nowhere. A background task would not: it runs only after a response that finished. While a file is being written, `constant_memory` keeps XlsxWriter's own temporary file under a name, in the system's temporary folder: a failed row clears it, and only a server killed in those seconds could leave it there.
 
 It runs in a worker thread, so other requests go on. Nobody sees progress: at 50,000 rows it takes about 2.2 seconds on one
-laptop before the download starts. Progress belongs to [milestone 4](#milestones).
+laptop before the download starts. Progress belongs to [milestone 5](#milestones).
 
 ## Identity
 
@@ -390,10 +391,18 @@ An application chooses its arrangement in its settings. The [settings menu](#set
 | `APP_LAYOUT_DENSITY` | `normal`, `compact` | Compact for data-heavy screens |
 | `APP_LAYOUT_THEME_CONTROL` | `dropdown`, `toggle`, `swap`, `radio` | How the header's theme control looks |
 | `APP_LAYOUT_LANGUAGE_CONTROL` | `dropdown`, `select`, `menu` | How the header's language control looks |
-| `APP_LAYOUT_CHOICES` | A list of `navigation`, `sticky_header`, `width`, `density`, `theme_control`, `language_control`; all by default | What each person may change. What is left out stays as set above; `[]` hides the menu |
+| `APP_LAYOUT_PAGE_TITLE` | `page`, `header` | `header` puts the page's title in the top bar, for more room. It stays the page's one `h1`, and with `top` navigation it stays in the page, where the bar has no room |
+| `APP_LAYOUT_LIST_WIDTH` | `page`, `wide` | `wide` lets every list use the whole width, whatever `APP_LAYOUT_WIDTH` says |
+| `APP_LAYOUT_LIST_DENSITY` | `normal`, `dense` | `dense` gives every list smaller rows, a taller box and its wide-screen columns sooner |
+| `APP_LAYOUT_CHOICES` | A list of `navigation`, `sticky_header`, `width`, `density`, `theme_control`, `language_control`, `page_title`, `list_width`, `list_density`; all by default | What each person may change. What is left out stays as set above; `[]` hides the menu |
 
 On a phone the navigation is always a panel opened from a button, and the theme and language controls move into the user
 menu.
+
+The title in the top bar is the `h1` that `page_heading` would have written: the layout draws the content first, so the
+macro can hand its title to the bar and keep its description and actions in the page. A page that writes its own `h1`,
+as an error page does, keeps it. On a phone the title shortens with an ellipsis and the application's name leaves the
+bar, and on paper the title is all that is left of it.
 
 ## Settings menu
 
@@ -404,7 +413,7 @@ sends the person back. No inline script or style is needed, and focus returns to
 
 | Section | Offers |
 |---|---|
-| Layout | Navigation, fixed header, width, density |
+| Layout | Navigation, fixed header, width, density, the page's title, and the width and rows of lists |
 | Theme and language | Theme: as the system, light, dark. Language |
 | How the theme control looks | daisyUI's `theme-controller` as a dropdown, toggle, swap or radio, each live on the page |
 | How the language control looks | A dropdown, a select with its own button, or a menu list, each live on the page |
@@ -462,8 +471,8 @@ leaves out backgrounds. The equipment detail prints both of its tabs.
 | Output | Excel export, print style | Milestone 2 |
 | Forms | Text, text area, select, checkbox, radio, date, number and decimal, searchable select, file upload, error summary, field error, form actions | Milestone 3 |
 | Feedback | Confirmation dialog, conflict notice | Milestone 3 |
-| Feedback | Loading state, progress of a long task | Milestone 4 |
-| Pages | Service unavailable | Milestone 4 |
+| Feedback | Loading state, progress of a long task | Milestone 5 |
+| Pages | Service unavailable | Milestone 5 |
 
 A component is left out until a real need appears for it. The base stays small enough to read.
 
@@ -518,7 +527,7 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Equipment detail, `/equipment/<id>` | Breadcrumbs, description list, tabs as links, history of work orders, status label, print style | Milestone 2 |
 | Planning, `/planning` | Rich table: groups on the server, and one row edited at a time in a dialog | Milestone 2 |
 | Work order form, `/work-orders/new` and `/work-orders/<id>/edit` | All form fields, validation, decimals, dates, file upload, delete with a confirmation | Milestone 3 |
-| Import | Long task with progress, its result and its errors | Milestone 4 |
+| Import | Long task with progress, its result and its errors | Milestone 5 |
 
 The demo's tables, `equipment` and `work_order`, with `work_order_file` for what people attach, hold what `app/demo/generate.py` makes: 50,000 pieces of equipment and
 10,000 work orders, from a seed, with no third-party package. Each row comes from a hash of the seed and its position, so
@@ -691,7 +700,7 @@ Browser tests use Playwright for Python and a vendored axe-core. Both are develo
 
 ## Registration
 
-Planned for milestone 5. `deploy/registration.toml` will describe the application to the platform that hosts it:
+Planned for milestone 6. `deploy/registration.toml` will describe the application to the platform that hosts it:
 identifier, name, group, icon, port, limits, public paths, and each role with the directory group that grants it. A
 hosting platform can generate its web server and access configuration from this file. Its fields are fixed against a
 real platform.
@@ -708,9 +717,10 @@ real platform.
 | 2 | Data layer | PostgreSQL and SQLite, exact decimals, migrations on both, 50,000 generated rows | Done |
 | 2 | Data | Server table with 50,000 rows, filters, export, indicators, charts | Done |
 | 3 | Forms | Every field, with validation in three languages | In review |
-| 4 | Feedback and long tasks | Every state in the catalogue | Planned |
-| 5 | Registration | Deployed behind a real identity proxy | Planned |
-| 6 | Proof | One organization's copy made by changing only its brand and settings | Planned |
+| 4 | Views | Dense lists with a title in the top bar, filters in a side panel, charts that filter, a board, a Gantt and a calendar, each a macro an application can reuse | In progress |
+| 5 | Feedback and long tasks | Every state in the catalogue | Planned |
+| 6 | Registration | Deployed behind a real identity proxy | Planned |
+| 7 | Proof | One organization's copy made by changing only its brand and settings | Planned |
 
 The accessibility and language checks run from milestone 1, so nothing is built without them.
 

@@ -423,6 +423,10 @@ def test_the_table_box_stays_in_the_tab_order_of_the_page(open_filled):
     page.keyboard.press("Tab")
     assert page.evaluate("document.activeElement.textContent.trim()") == "Export to Excel"
     page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement.textContent.trim()") == "Whole width"
+    page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement.textContent.trim()") == "Dense rows"
+    page.keyboard.press("Tab")
     assert page.evaluate("document.activeElement.matches('.table-scroll')")
     page.keyboard.press("Tab")
     assert page.evaluate("document.activeElement.id") == "equipment-sort-code"
