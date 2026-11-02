@@ -26,6 +26,9 @@ plan = timeline([None, Task(order.id, order.title, start, end, "info", (order.af
 {% endcall %}
 ```
 
+Each label goes after its bar, inside it when there is no room after and the bar is wide enough, or before it, and
+the picture leaves room past its last day for the last labels. Only a label no place can hold is shortened.
+
 The table is what a keyboard and a screen reader use, and it holds every action, as editing. The picture is named by
 the summary written above it, and holds nothing to reach. Rows are 2.5rem in both, and the picture is measured in rem,
 so a larger text or a compact density keeps them in line. Its box scrolls sideways by itself, and on paper the picture

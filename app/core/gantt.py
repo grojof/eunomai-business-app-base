@@ -7,7 +7,7 @@ docs/specification.md#timelines
 """
 
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date, timedelta
 
 from app.core.formatters import format_month, format_month_and_year
@@ -45,14 +45,58 @@ class Task:
     after: tuple[int, ...] = ()
 
 
+LABEL_GAP = 6
+LABEL_CHARACTER = 7
+"""A character of a 12 unit label is narrower than this in the fonts a browser offers: a label measured by it fits."""
+LABEL_ROOM = 240
+"""How far the picture grows past its last day, so that the last bars' labels fit after them."""
+
+
+def label_width(text: str) -> int:
+    return len(text) * LABEL_CHARACTER
+
+
 @dataclass(frozen=True)
 class Bar:
+    """A task's bar, and where its label goes: after it while there is room, inside it when it is wide enough,
+    before it otherwise, and shortened only when no place holds it whole. `label` stays whole for a screen reader's
+    table; `text` is what the picture shows."""
+
     key: int
     x: int
     y: int
     width: int
     kind: str
     label: str
+    text: str = ""
+    label_x: int = 0
+    anchor: str = "start"
+    inside: bool = False
+
+
+def _shortened(text: str, room: int) -> str:
+    fits = max(room // LABEL_CHARACTER - 1, 0)
+    return text if len(text) <= fits + 1 else text[:fits].rstrip() + "…"
+
+
+def _labelled(bar: Bar, width: int) -> Bar:
+    """Places a bar's label so that it ends inside the picture and leaves its neighbours alone."""
+    needed = label_width(bar.label)
+    after = bar.x + bar.width + LABEL_GAP
+    if after + needed <= width:
+        return replace(bar, text=bar.label, label_x=after)
+    if bar.width - 2 * LABEL_GAP >= needed:
+        return replace(bar, text=bar.label, label_x=bar.x + LABEL_GAP, inside=True)
+    if bar.x - LABEL_GAP - needed >= 0:
+        return replace(bar, text=bar.label, label_x=bar.x - LABEL_GAP, anchor="end")
+    rooms = {"after": width - after, "inside": bar.width - 2 * LABEL_GAP, "before": bar.x - LABEL_GAP}
+    place = max(rooms, key=lambda name: rooms[name])
+    text = _shortened(bar.label, rooms[place])
+    if place == "after":
+        return replace(bar, text=text, label_x=after)
+    if place == "inside":
+        return replace(bar, text=text, label_x=bar.x + LABEL_GAP, inside=True)
+    return replace(bar, text=text, label_x=bar.x - LABEL_GAP, anchor="end")
 
 
 @dataclass(frozen=True)
@@ -179,6 +223,11 @@ def timeline(rows: Sequence[Task | None], scale: str, today: date, margin: int =
                 row.label,
             )
         )
+    span = (last - first).days + 1
+    days_width = span * unit
+    wanted = max((bar.x + bar.width + LABEL_GAP + label_width(bar.label) for bar in bars), default=0)
+    width = days_width + min(max(wanted - days_width, 0), LABEL_ROOM)
+    bars = [_labelled(bar, width) for bar in bars]
     placed = {bar.key: bar for bar in bars}
     links = [
         _link(placed[before], placed[task.key])
@@ -186,7 +235,6 @@ def timeline(rows: Sequence[Task | None], scale: str, today: date, margin: int =
         for before in task.after
         if before in placed and task.key in placed
     ]
-    span = (last - first).days + 1
     weekends = [
         x_of(first + timedelta(days=offset))
         for offset in range(span)
@@ -197,7 +245,7 @@ def timeline(rows: Sequence[Task | None], scale: str, today: date, margin: int =
         scale,
         asked,
         outside,
-        span * unit,
+        width,
         HEADER + len(rows) * ROW,
         bars,
         links,

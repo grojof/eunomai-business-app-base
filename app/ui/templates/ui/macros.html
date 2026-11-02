@@ -739,7 +739,7 @@
       {% set fills = {"neutral": "gantt-bar-neutral", "info": "gantt-bar-info", "warning": "gantt-bar-warning", "success": "gantt-bar-success", "error": "gantt-bar-error"} %}
       {% for bar in plan.bars %}
       <rect id="{{ identifier }}-bar-{{ bar.key }}" class="gantt-bar {{ fills[bar.kind] }}" x="{{ bar.x }}" y="{{ bar.y }}" width="{{ bar.width }}" height="20" rx="4"/>
-      <text class="gantt-label" x="{{ bar.x + bar.width + 6 }}" y="{{ bar.y + 14 }}">{{ bar.label }}</text>
+      <text class="gantt-label" x="{{ bar.label_x }}" y="{{ bar.y + 14 }}"{% if bar.anchor == "end" %} text-anchor="end"{% endif %}>{{ bar.text }}</text>
       {% endfor %}
       {% for path in plan.links %}<path class="gantt-link" d="{{ path }}" marker-end="url(#{{ identifier }}-arrow)"/>{% endfor %}
       {% if plan.today is not none %}

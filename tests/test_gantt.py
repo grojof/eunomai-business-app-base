@@ -5,7 +5,19 @@ from datetime import date, timedelta
 
 import pytest
 
-from app.core.gantt import BAR, DAY_WIDTH, FIT_WIDTH, HEADER, MAX_WIDTH, ROW, SHORTEST_BAR, Task, timeline
+from app.core.gantt import (
+    BAR,
+    DAY_WIDTH,
+    FIT_WIDTH,
+    HEADER,
+    LABEL_GAP,
+    MAX_WIDTH,
+    ROW,
+    SHORTEST_BAR,
+    Task,
+    label_width,
+    timeline,
+)
 from app.core.templating import environment
 
 MACROS = environment.get_template("ui/macros.html").module
@@ -131,3 +143,55 @@ def test_fit_takes_the_finest_scale_that_shows_every_task_without_scrolling(days
     plan = timeline([task], "fit", TODAY)
     assert plan.scale == expected
     assert plan.width <= FIT_WIDTH or expected == "month"
+
+
+def label_end(bar):
+    """Where a label's text ends, as the layout reckons it."""
+    return bar.label_x + label_width(bar.text) if bar.anchor == "start" else bar.label_x
+
+
+def test_a_label_after_its_bar_has_room_in_the_picture():
+    task = Task(1, "Electrical inspection", date(2026, 11, 2), date(2026, 11, 20))
+    plan = timeline([task], "day", TODAY, margin=0)
+    bar = plan.bars[0]
+    assert (bar.anchor, bar.label_x) == ("start", bar.x + bar.width + LABEL_GAP)
+    assert label_end(bar) <= plan.width
+
+
+def test_a_label_that_would_pass_the_room_goes_inside_a_wide_bar_or_before_it():
+    long_name = "A very long name for a piece of work " * 4
+    wide = Task(1, long_name, date(2026, 11, 2), date(2027, 4, 30))
+    late = Task(2, long_name, date(2027, 4, 29), date(2027, 4, 30))
+    plan = timeline([wide, late], "day", TODAY, margin=0)
+    inside, before = plan.bars
+    assert inside.anchor == "start" and inside.inside
+    assert inside.label_x >= inside.x
+    assert before.anchor == "end" and before.label_x <= before.x
+    for bar in plan.bars:
+        assert 0 <= (bar.label_x - label_width(bar.text) if bar.anchor == "end" else bar.label_x)
+        assert label_end(bar) <= plan.width
+
+
+@pytest.mark.parametrize("scale", ["fit", "day", "week", "month"])
+def test_no_label_ends_past_the_picture_at_any_scale(scale):
+    rows = [
+        Task(
+            n,
+            f"Preventive plan {n}",
+            date(2026, 1, 5) + timedelta(days=9 * n),
+            date(2026, 1, 9) + timedelta(days=9 * n),
+        )
+        for n in range(12)
+    ]
+    plan = timeline(rows, scale, TODAY)
+    assert all(label_end(bar) <= plan.width for bar in plan.bars)
+    assert all(bar.label_x >= 0 for bar in plan.bars)
+
+
+def test_a_label_too_long_for_any_place_is_shortened_and_kept_whole_for_a_screen_reader():
+    task = Task(1, "x" * 400, date(2026, 11, 2), date(2026, 11, 2))
+    plan = timeline([task], "day", TODAY, margin=0)
+    bar = plan.bars[0]
+    assert bar.text.endswith("…")
+    assert label_end(bar) <= plan.width
+    assert bar.label == "x" * 400

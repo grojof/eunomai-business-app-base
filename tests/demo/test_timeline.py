@@ -2,6 +2,7 @@
 
 import re
 from datetime import date
+from decimal import Decimal
 
 import pytest
 from fastapi.testclient import TestClient
@@ -12,7 +13,7 @@ from app.core.database import create_database_engine
 from app.core.i18n import PSEUDO
 from app.demo.models import Equipment, WorkOrder
 from app.main import create_app
-from tests.conftest import PERSON, build_settings
+from tests.conftest import PERSON, build_settings, page_opener, running_server
 from tests.demo.support import announced, fill, until
 from tests.helpers import overflows_sideways, run_axe, untranslated
 
@@ -202,3 +203,69 @@ def test_a_timeline_wider_than_its_box_says_so_and_one_that_fits_does_not(open_f
     page.wait_for_load_state("load")
     wider = page.locator("[data-gantt-box]").evaluate("box => box.scrollWidth > box.clientWidth + 1")
     assert page.locator("[data-gantt-wider]").is_visible() is wider
+
+
+@pytest.fixture(scope="module")
+def long_job(browser, tmp_path_factory):
+    """Planning on rows of its own, with one work order so long that it ends on the last day of any window."""
+    folder = tmp_path_factory.mktemp("labels")
+    url = f"sqlite:///{(folder / 'labels.db').as_posix()}"
+    fill(url, 500)
+    engine = create_database_engine(url)
+    with Session(engine) as session:
+        order = session.scalars(select(WorkOrder).where(WorkOrder.status == "planned").order_by(WorkOrder.id)).first()
+        order.planned_on, order.hours, order.crew = date(2026, 12, 30), Decimal(9999), 1
+        session.commit()
+        number, place = order.id, order.equipment.location
+    engine.dispose()
+    settings = build_settings(database_url=url, fake_identity=True, fake_groups=["admins"], trusted_proxies=[])
+    with running_server(create_app(settings)) as port, page_opener(browser, f"http://127.0.0.1:{port}") as opener:
+        yield opener, number, place
+
+
+LABELS_IN_PLACE = """() => {
+    const picture = document.querySelector('.gantt-picture').getBoundingClientRect();
+    const labels = [...document.querySelectorAll('.gantt-label')].map((label) => label.getBoundingClientRect());
+    const past = labels.filter((box) => box.right > picture.right + 0.5 || box.left < picture.left - 0.5).length;
+    let overlapping = 0;
+    labels.forEach((box, index) => labels.slice(index + 1).forEach((other) => {
+        const across = Math.min(box.right, other.right) - Math.max(box.left, other.left);
+        const down = Math.min(box.bottom, other.bottom) - Math.max(box.top, other.top);
+        if (across > 0.5 && down > 0.5) overlapping += 1;
+    }));
+    return { count: labels.length, past, overlapping };
+}"""
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize("scale", ["fit", "day", "week", "month"])
+@pytest.mark.parametrize("theme", ["light", "dark"])
+@pytest.mark.parametrize("layout", [{}, {"density": "compact"}])
+def test_every_label_ends_inside_the_picture_and_clear_of_the_others(long_job, scale, theme, layout):
+    opener, number, place = long_job
+    address = f"/planning?show=timeline&status=&location={place}&sort=planned&dir=desc&size=100&scale={scale}"
+    page = opener(address, theme=theme, layout=layout)
+    reaches_the_end = page.evaluate(
+        """(number) => {
+            const rights = [...document.querySelectorAll('.gantt-bar')].map((bar) => bar.getBoundingClientRect().right);
+            const long = document.querySelector(`#planning-timeline-bar-${number}`).getBoundingClientRect();
+            return long.right >= Math.max(...rights) - 0.5;
+        }""",
+        number,
+    )
+    assert reaches_the_end
+    found = page.evaluate(LABELS_IN_PLACE)
+    assert found["count"] > 10
+    assert found["past"] == 0
+    assert found["overlapping"] == 0
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize("scale", ["fit", "day", "month"])
+def test_every_label_ends_inside_the_picture_at_twice_the_text(long_job, scale):
+    opener, _number, place = long_job
+    page = opener(f"/planning?show=timeline&status=&location={place}&sort=planned&dir=desc&size=100&scale={scale}")
+    page.evaluate("document.documentElement.style.fontSize = '200%'")
+    found = page.evaluate(LABELS_IN_PLACE)
+    assert found["past"] == 0
+    assert found["overlapping"] == 0
