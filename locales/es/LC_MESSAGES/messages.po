@@ -213,6 +213,9 @@ msgstr "Error de campo"
 msgid "Filter bar"
 msgstr "Barra de filtros"
 
+msgid "Filter panel"
+msgstr "Panel de filtros"
+
 msgid "Filters"
 msgstr "Filtros"
 
@@ -235,6 +238,9 @@ msgstr ""
 
 msgid "Hidden"
 msgstr "Oculta"
+
+msgid "Hide filters"
+msgstr "Ocultar los filtros"
 
 msgid "How the language control looks"
 msgstr "Cómo se ve el control de idioma"
@@ -438,6 +444,9 @@ msgstr "Lista"
 msgid "Settings"
 msgstr "Ajustes"
 
+msgid "Show filters"
+msgstr "Mostrar los filtros"
+
 msgid "Show the options"
 msgstr "Mostrar las opciones"
 
@@ -507,6 +516,13 @@ msgid ""
 msgstr ""
 "El nombre de este archivo no coincide con lo que contiene. Cámbialo o "
 "elige otro."
+
+msgid ""
+"The same form in a side panel that can be hidden, for a list with many "
+"filters."
+msgstr ""
+"El mismo formulario en un panel lateral que se puede ocultar, para una "
+"lista con muchos filtros."
 
 msgid "The server cannot be reached. Check your connection and try again."
 msgstr ""
@@ -600,6 +616,9 @@ msgstr "ascendente"
 
 msgid "descending"
 msgstr "descendente"
+
+msgid "in use:"
+msgstr "en uso:"
 
 msgid "to close"
 msgstr "para cerrar"

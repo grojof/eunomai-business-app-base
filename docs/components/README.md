@@ -88,6 +88,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`file-input`](file-input.md) | available | Use a file input to upload files. |
 | [`filter`](filter.md) | available | A filter is a group of radio buttons. When the user selects an option, the filter hides the other options. It also shows a reset button next to the selected option. |
 | [`filter-bar`](filter-bar.md) | available | A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons. |
+| [`filter-panel`](filter-panel.md) | available | The same form in a side panel that can be hidden, for a list with many filters. |
 | [`form-actions`](form-actions.md) | available | The main action of a form, the way out, and anything else at the far end. |
 | [`input`](input.md) | available | Use a text input as a simple input field. |
 | [`label`](label.md) | available | Use a label to give a name or title to an input field. Put the label before or after the field. |

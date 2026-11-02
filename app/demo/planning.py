@@ -113,6 +113,7 @@ def planning_view(params: Mapping[str, str]) -> ListView:
         ),
         (Equipment.code, Equipment.name, WorkOrder.title),
         _("Equipment or work"),
+        panelled=True,
     )
 
 

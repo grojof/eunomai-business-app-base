@@ -14,6 +14,7 @@ document.addEventListener("htmx:afterSettle", (event) => {
     content.querySelector("[data-focus-fallback]")?.focus();
   }
   applyStyles(content);
+  showFilterPanels();
 });
 
 // A dialog whose body arrives with htmx opens then. `data-close-dialog` in what arrives closes it, and names where focus
@@ -59,6 +60,28 @@ document.addEventListener("click", (event) => {
   }
 });
 document.addEventListener("close", hideProblem, true);
+
+// A list's filter panel. Its button says whether the panel is on screen, which on a narrow screen it is not until asked
+// for, and a press asks the server for the other state: the address and every link of the list then keep it.
+function showFilterPanels() {
+  document.querySelectorAll("[data-filter-toggle]").forEach((button) => {
+    const panel = document.getElementById(button.getAttribute("aria-controls"));
+    button.setAttribute("aria-expanded", String(Boolean(panel?.checkVisibility())));
+  });
+}
+showFilterPanels();
+matchMedia("(width >= 80rem)").addEventListener("change", showFilterPanels);
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-filter-toggle]");
+  if (button) {
+    const address = button.getAttribute("aria-expanded") === "true" ? button.dataset.hide : button.dataset.show;
+    if (button.closest("[hx-disable]")) {
+      location.assign(address); // where htmx is turned off, as in the gallery, the page itself goes there
+    } else {
+      htmx.ajax("GET", address, { source: button, target: button.dataset.target });
+    }
+  }
+});
 
 // A message that came in the address is said once: a reload, or a change of theme, must not say it again.
 // `data-once` names the parameters to take out. Without JavaScript they stay, and the message with them.

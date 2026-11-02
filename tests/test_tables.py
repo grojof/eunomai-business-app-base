@@ -257,3 +257,33 @@ def test_an_address_of_another_list_gives_nothing(address):
 
 def test_the_address_of_the_same_list_on_any_host_gives_its_query():
     assert list_query("http://testserver/things?kind=a", "/things") == {"kind": "a"}
+
+
+def panelled(params: dict[str, str]) -> ListView:
+    columns = (Column("name", "Name", THING.c.name),)
+    return ListView.read("things", "/things", params, columns, THING.c.id, "name", panelled=True)
+
+
+@pytest.mark.rule("USE-05")
+def test_a_filter_panel_keeps_its_state_in_the_address():
+    view = panelled({"panel": "hidden", "sort": "name", "dir": "desc"})
+    assert view.panel == "hidden"
+    assert view.here == "/things?dir=desc&panel=hidden"
+    assert view.link(page=2) == "/things?dir=desc&page=2&panel=hidden"
+    assert ("panel", "hidden") in view.hidden_fields
+    assert view.panel_link("shown") == "/things?dir=desc&panel=shown"
+    assert view.elsewhere("/things/export") == "/things/export?dir=desc"
+
+
+@pytest.mark.parametrize("value", ["open", "<b>", "", "hidden "])
+def test_a_panel_state_off_its_list_means_the_default(value):
+    assert panelled({"panel": value}).panel == ""
+
+
+def test_a_list_without_a_panel_ignores_the_word():
+    assert view_of({"panel": "hidden"}).here == "/things"
+
+
+def test_a_filter_cannot_take_a_name_the_address_uses():
+    with pytest.raises(ValueError, match="cannot be called"):
+        ListView.read("t", "/t", {}, (Column("n", "N", THING.c.name),), THING.c.id, "n", (Filter("panel", "P", []),))

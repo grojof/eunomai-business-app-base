@@ -416,14 +416,13 @@
 {{ link_button(text, href, kind, small, name, {"aria-label": label or none, "aria-haspopup": "dialog", "hx-get": href, "hx-target": "#" ~ target ~ "-body"}) }}
 {% endmacro %}
 
-{#- A plain GET form: daisyUI's `filter` is a set of radio buttons, not this. With JavaScript, htmx sends it as it changes;
-    without it, the Apply button appears. -#}
-{% macro filter_bar(view, refill=false) %}
-<form id="{{ view.form_id }}" class="grid grid-cols-2 gap-3 border-b border-base-300 p-4 lg:flex lg:flex-wrap lg:items-end print:hidden" role="search" aria-label="{{ _('Filters') }}"
+{#- What a filter form holds, in a bar or in a side panel. -#}
+{% macro _filter_form(view, refill, classes, search_classes, choice_classes) %}
+<form id="{{ view.form_id }}" class="{{ classes }}" role="search" aria-label="{{ _('Filters') }}"
       method="get" action="{{ view.path }}" data-autosubmit
       hx-get="{{ view.path }}" hx-target="#{{ view.name }}-results" hx-push-url="true" hx-sync="this:replace" hx-indicator="#{{ view.name }}-results"
       hx-trigger="submit, input changed delay:300ms from:#{{ view.name }}-search"{% if refill %} hx-swap-oob="true"{% endif %}>
-  <div class="col-span-2 grid gap-1 lg:min-w-64 lg:flex-1">
+  <div class="{{ search_classes }}">
     <label class="text-sm font-medium" for="{{ view.name }}-search">{{ view.search_label }}</label>
     <div class="input input-sm w-full">
       {{ icon("search", "size-4") }}
@@ -431,13 +430,49 @@
     </div>
   </div>
   {% for choice in view.filters %}
-  <div class="min-w-0 lg:w-48">
+  <div class="{{ choice_classes }}">
     {{ select_field(choice.key, choice.label, choice.options, view.chosen[choice.key], view.name ~ "-" ~ choice.key, choice.every, small=true) }}
   </div>
   {% endfor %}
   {% for name, value in view.hidden_fields %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
   <button class="btn btn-sm hidden noscript:inline-flex" type="submit">{{ _("Apply") }}</button>
 </form>
+{% endmacro %}
+
+{#- A plain GET form: daisyUI's `filter` is a set of radio buttons, not this. With JavaScript, htmx sends it as it changes;
+    without it, the Apply button appears. -#}
+{% macro filter_bar(view, refill=false) %}
+{{ _filter_form(view, refill, "grid grid-cols-2 gap-3 border-b border-base-300 p-4 lg:flex lg:flex-wrap lg:items-end print:hidden", "col-span-2 grid gap-1 lg:min-w-64 lg:flex-1", "min-w-0 lg:w-48") }}
+{% endmacro %}
+
+{#- The same form in a side panel, for a list with many filters or that needs its width. It can be hidden, and its state
+    lives in the address as `panel`: without one it is beside the list on a wide screen and waits for its button on a
+    narrow one, so it never pushes the rows out of sight. The button is in `list_summary`. Use it with
+    `list_with_filters`, and a `ListView` read with `panelled=True`. -#}
+{% macro filter_panel(view, refill=false) %}
+<aside id="{{ view.name }}-filter-panel" class="border-b border-base-300 print:hidden xl:w-72 xl:shrink-0 xl:border-e xl:border-b-0{{ ' hidden xl:block' if not view.panel else '' }}" aria-labelledby="{{ view.name }}-filter-title"{% if view.panel == "hidden" %} hidden{% endif %}{% if refill %} hx-swap-oob="true"{% endif %}>
+  <h2 id="{{ view.name }}-filter-title" class="px-4 pt-4 text-base">{{ _("Filters") }}</h2>
+  {{ _filter_form(view, false, "grid grid-cols-2 gap-3 p-4 xl:grid-cols-1", "col-span-2 grid gap-1 xl:col-span-1", "min-w-0") }}
+</aside>
+{% endmacro %}
+
+{#- A list and its filter panel, side by side where there is room. The caller writes the results. -#}
+{% macro list_with_filters(view) %}
+<div class="xl:flex">
+  {{ filter_panel(view) }}
+  <div id="{{ view.name }}-results" class="min-w-0 flex-1" data-results>{{ caller() }}</div>
+</div>
+{% endmacro %}
+
+{#- Shows and hides the filter panel. With JavaScript a button, whose `aria-expanded` app.js keeps true to what is on
+    screen, asks for the other state; without it, a link does, one for each width while the address says nothing. -#}
+{% macro _filter_toggle(view) %}
+{% set count = view.active|length %}
+<button id="{{ view.name }}-filter-toggle" class="btn btn-xs noscript:hidden" type="button" aria-controls="{{ view.name }}-filter-panel" data-filter-toggle data-show="{{ view.panel_link('shown') }}" data-hide="{{ view.panel_link('hidden') }}" data-target="#{{ view.name }}-results">
+  {{- icon("funnel", "size-3.5") }}{{ _("Filters") }}{% if count %} <span class="badge badge-xs"><span class="sr-only">{{ _("in use:") }} </span>{{ count|decimal }}</span>{% endif -%}
+</button>
+{% if view.panel != "shown" %}<a class="btn btn-xs hidden noscript:inline-flex{{ ' xl:noscript:hidden' if not view.panel else '' }}" href="{{ view.panel_link('shown') }}">{{ icon("funnel", "size-3.5") }}{{ _("Show filters") }}</a>{% endif %}
+{% if view.panel != "hidden" %}<a class="btn btn-xs hidden {{ 'xl:noscript:inline-flex' if not view.panel else 'noscript:inline-flex' }}" href="{{ view.panel_link('hidden') }}">{{ icon("funnel", "size-3.5") }}{{ _("Hide filters") }}</a>{% endif %}
 {% endmacro %}
 
 {% macro _swaps(view, url) %}{{ {"hx-get": url, "hx-target": "#" ~ view.name ~ "-results", "hx-push-url": "true", "hx-indicator": "#" ~ view.name ~ "-results"}|xmlattr }}{% endmacro %}
@@ -458,6 +493,7 @@
 {% set direction = _("ascending") if view.direction == "asc" else _("descending") %}
 <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3"{% if view.wide %} data-list-wide{% endif %}>
   <div class="flex min-w-0 flex-wrap items-center gap-2">
+    {% if view.panelled %}{{ _filter_toggle(view) }}{% endif %}
     <p class="text-sm font-semibold" data-announce="{{ _('%(count)s. Showing %(first)s to %(last)s, sorted by %(column)s, %(direction)s.', count=count, first=view.first_row|decimal, last=view.last_row|decimal, column=view.sorted_label, direction=direction) if view.total else _('No results.') }}">{{ count }}</p>
     {% for name, value, link in view.active %}
     <a class="btn btn-xs btn-soft font-normal" href="{{ link }}"{{ _swaps(view, link) }} aria-label="{{ _('Remove filter %(name)s: %(value)s', name=name, value=value) }}">

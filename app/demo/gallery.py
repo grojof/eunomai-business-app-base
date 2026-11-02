@@ -30,7 +30,7 @@ GROUPS = {
     "placement": N_("Placement"),
     "direction": N_("Direction"),
 }
-SAMPLE_MACROS = {"filter_bar", "pagination", "server_table"}
+SAMPLE_MACROS = {"filter_bar", "filter_panel", "pagination", "server_table"}
 """Macros whose specimen is a list. It keeps its state in the page's own address, on three fixed rows."""
 SAMPLE_ROWS = (
     ("A-100", N_("Air compressor"), "in_service", N_("In service"), "success"),
@@ -170,7 +170,7 @@ def example_view(example: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def sample_view(path: str, params: Mapping[str, str]) -> ListView:
+def sample_view(path: str, params: Mapping[str, str], panelled: bool = False) -> ListView:
     """A list without a database, so a macro can be tried here. The rows are filtered and sorted in Python, which a real
     screen must not do: see app/demo/equipment.py for that."""
     view = ListView.read(
@@ -195,6 +195,7 @@ def sample_view(path: str, params: Mapping[str, str]) -> ListView:
         ),
         ("name",),
         _("Code or name"),
+        panelled,
     )
     term = view.term.casefold()
     rows = [
@@ -218,7 +219,8 @@ async def gallery_component(request: Request, name: str) -> Response:
     neighbours = [every[position - 1][1] if position else None, every[(position + 1) % len(every)][1]]
     neighbours[1] = neighbours[1] if position + 1 < len(every) else None
     examples = [example_view(example) for example in page.get("examples", [])]
-    sample = sample_view(request.url.path, request.query_params) if item.macro in SAMPLE_MACROS else None
+    panelled = item.macro == "filter_panel"
+    sample = sample_view(request.url.path, request.query_params, panelled) if item.macro in SAMPLE_MACROS else None
     return render(
         request,
         "demo/gallery/component.html",

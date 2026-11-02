@@ -23,7 +23,11 @@ from app.core.templating import layout_for, render
 
 PAGE_SIZES = (10, 25, 50, 100)
 DEFAULT_SIZE = 25
+PANEL_STATES = ("shown", "hidden")
+"""A filter panel's state in the address. Without one it shows on a wide screen, and waits for its button on a phone."""
 SEARCH_LENGTH = 80
+RESERVED = ("q", "sort", "dir", "size", "page", "panel")
+"""What a list's address holds besides its filters."""
 READ_IN_BLOCKS = 1_000
 """An export reads this many rows at a time, so a long list never sits in memory whole."""
 _CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
@@ -94,6 +98,8 @@ class ListView:
     rows: list[Any] = field(default_factory=list)
     total: int = 0
     sizes: tuple[int, ...] = PAGE_SIZES
+    panelled: bool = False
+    panel: str = ""
     wide: bool = False
     dense: bool = False
     offered: tuple[str, ...] = ()
@@ -111,9 +117,17 @@ class ListView:
         filters: Sequence[Filter] = (),
         searched: Sequence[Any] = (),
         search_label: str = "",
+        panelled: bool = False,
     ) -> "ListView":
-        """Every value is checked here, and only here: what passes is one of the listed options or a whole number."""
+        """Every value is checked here, and only here: what passes is one of the listed options or a whole number.
+
+        `panelled` puts the filters in a side panel that can be hidden, with its state in the address as `panel`."""
         view = cls(name, path, tuple(columns), tiebreak, default_sort, tuple(filters), tuple(searched), search_label)
+        if any(choice.key in RESERVED for choice in filters):
+            raise ValueError(f"A filter cannot be called {', '.join(RESERVED)}: the address already uses them")
+        view.panelled = panelled
+        panel = params.get("panel", "")
+        view.panel = panel if panelled and panel in PANEL_STATES else ""
         view.term = _CONTROL_CHARACTERS.sub("", params.get("q", "")).strip()[:SEARCH_LENGTH]
         for choice in filters:
             allowed = {value for value, _label in choice.options} | ({""} if choice.every else set())
@@ -212,6 +226,7 @@ class ListView:
             "dir": self.direction,
             "size": str(self.size),
             "page": str(self.page),
+            "panel": self.panel,
         }
 
     def _defaults(self, state: Mapping[str, str]) -> dict[str, str]:
@@ -222,6 +237,7 @@ class ListView:
             "dir": self._sortable[state["sort"]].first,
             "size": str(DEFAULT_SIZE),
             "page": "1",
+            "panel": "",
         }
 
     def _address(self, path: str, state: Mapping[str, str]) -> str:
@@ -253,7 +269,7 @@ class ListView:
 
     def elsewhere(self, path: str) -> str:
         """The same list at another address, such as its export: every filter and the order, without the page."""
-        return self._address(path, self._state() | {"page": "1"})
+        return self._address(path, self._state() | {"page": "1", "panel": ""})
 
     @property
     def active(self) -> list[tuple[str, str, str]]:
@@ -277,7 +293,11 @@ class ListView:
         """What the filter form must carry so that a plain submit keeps the order."""
         state = self._state()
         defaults = self._defaults(state)
-        return [(key, state[key]) for key in ("sort", "dir") if state[key] != defaults[key]]
+        return [(key, state[key]) for key in ("sort", "dir", "panel") if state[key] != defaults[key]]
+
+    def panel_link(self, state: str) -> str:
+        """This same page with its filter panel shown or hidden."""
+        return self._address(self.path, self._state() | {"panel": state})
 
     @property
     def form_id(self) -> str:

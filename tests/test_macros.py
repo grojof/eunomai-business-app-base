@@ -128,3 +128,41 @@ def test_a_wide_list_marks_itself_for_the_page():
 def test_a_heading_stays_in_the_page_unless_the_top_bar_asked_for_it():
     html = str(MACROS.page_heading("Things", "All of them"))
     assert "<h1>Things</h1>" in html
+
+
+def panelled(**params: str) -> ListView:
+    columns = (Column("name", "Name", "name"),)
+    view = ListView.read("things", "/things", params, columns, None, "name", panelled=True)
+    view.rows, view.total = [{"name": "One"}], 1
+    return view
+
+
+def test_a_filter_panel_is_an_aside_named_by_its_heading():
+    html = str(MACROS.filter_panel(panelled()))
+    assert '<aside id="things-filter-panel"' in html
+    assert 'aria-labelledby="things-filter-title"' in html
+    assert 'method="get" action="/things"' in html
+    assert "hidden xl:block" in html
+    assert " hidden>" not in html
+
+
+def test_a_hidden_panel_is_hidden_everywhere_and_a_shown_one_nowhere():
+    assert "<aside" in str(MACROS.filter_panel(panelled(panel="hidden")))
+    assert '" hidden>' in str(MACROS.filter_panel(panelled(panel="hidden")))
+    shown = str(MACROS.filter_panel(panelled(panel="shown")))
+    assert "hidden xl:block" not in shown
+    assert '<input type="hidden" name="panel" value="shown">' in shown
+
+
+def test_the_panels_button_is_a_disclosure_and_links_stand_in_without_javascript():
+    html = str(MACROS.list_summary(panelled(), "1 thing"))
+    assert 'aria-controls="things-filter-panel"' in html
+    assert 'data-show="/things?panel=shown" data-hide="/things?panel=hidden"' in html
+    assert 'href="/things?panel=shown"' in html
+    assert 'href="/things?panel=hidden"' in html
+    hidden = str(MACROS.list_summary(panelled(panel="hidden"), "1 thing"))
+    assert 'href="/things?panel=hidden"' not in hidden
+
+
+def test_a_list_without_a_panel_has_no_button_for_one():
+    assert "data-filter-toggle" not in str(MACROS.list_summary(view_of(), "120 things"))

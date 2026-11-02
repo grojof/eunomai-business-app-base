@@ -215,6 +215,7 @@ return render_list(request, view, "orders/list.html", "orders/results.html")
 | Order | A tiebreak on the primary key keeps rows from moving between pages. A column marked `nullable` puts empty values last on both databases, which by themselves disagree |
 | A label sorts as read | The database cannot sort what it does not hold. `case` gives each stored value its position, as the demo's locations do in the person's language and its states by what needs attention first. Such a column uses no index: about 10 milliseconds at 50,000 rows |
 | Without JavaScript | Headers and pages are links, and filters are a GET form with an Apply button |
+| Filters in a side panel | `filter_panel` puts the same form in an `aside` beside the list, for a list with many filters, as Planning has. `ListView.read(..., panelled=True)` reads its state from the address as `panel`, `shown` or `hidden`, and every link and the form carry it. Without one, it is beside the list on a wide screen and closed on a narrow one, so it never pushes the rows out of sight. The button at the start of the summary has `aria-expanded`, which `app.js` keeps true to what is on screen, and asks the server for the other state; without JavaScript a link does |
 | With htmx | The same address answers with its results alone, and `whole_page` sends a person to a whole page when there are no results to give, because htmx would put a redirected page inside the fragment. `Vary: HX-Request` keeps the two apart, and `HX-Push-Url` gives the address its one form. History is not kept in the browser: going back reloads the address, so a form can never show an older state than the table, and no row is left in `localStorage` |
 | Focus | htmx puts it back on an element that kept its id, as a sort header does. If none did, as the Next link on the last page, `data-focus-fallback` takes it. A link that arrives works at once: htmx wires it in the same step as the swap |
 | A request that fails | `app.js` shows a message for every htmx failure, on any screen, inside an open dialog if there is one, with `role="alert"`. A 404 says the thing is no longer there, and a row removed while it was being saved gets that same 404 |
@@ -448,8 +449,8 @@ daisyUI classes, so the look can change in one place. Each macro appears on the 
 `panel`, `stats`, `stat`, `badge`, `status_label`, `progress`, `steps`, `table`, `empty_state`, `command`, `select_field`, `item_list`,
 `breadcrumbs`, `description_list`, `tabs`, `chart`, `dialog`, `dialog_buttons`, `input_field`, `field_error`,
 `error_summary`, `textarea_field`, `date_field`, `number_field`, `checkbox_field`, `radio_group`, `searchable_select`,
-`file_field`, `form_actions`, `confirmation`, `confirm_link`, `conflict_notice`, `grouped_table`, `dialog_action`, `filter_bar`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`
-and `pagination`.
+`file_field`, `form_actions`, `confirmation`, `confirm_link`, `conflict_notice`, `grouped_table`, `dialog_action`, `filter_bar`, `filter_panel`,
+`list_with_filters`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions` and `pagination`.
 
 Tabs come in two kinds. `tabs` are links, one address each, as on the equipment detail: they work without JavaScript and
 with the back button, so they are a navigation with `aria-current`. The server reads what every panel needs and sends them
@@ -471,6 +472,7 @@ leaves out backgrounds. The equipment detail prints both of its tabs.
 | Output | Excel export, print style | Milestone 2 |
 | Forms | Text, text area, select, checkbox, radio, date, number and decimal, searchable select, file upload, error summary, field error, form actions | Milestone 3 |
 | Feedback | Confirmation dialog, conflict notice | Milestone 3 |
+| Data | Dense and wide lists, filter panel | Milestone 4 |
 | Feedback | Loading state, progress of a long task | Milestone 5 |
 | Pages | Service unavailable | Milestone 5 |
 
@@ -526,6 +528,7 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Equipment list, `/equipment` | Server table with 50,000 rows, search, filters, sorting, paging, row actions, its empty and no-results states, Excel export | Milestone 2 |
 | Equipment detail, `/equipment/<id>` | Breadcrumbs, description list, tabs as links, history of work orders, status label, print style | Milestone 2 |
 | Planning, `/planning` | Rich table: groups on the server, and one row edited at a time in a dialog | Milestone 2 |
+| Planning's filters | In a side panel that can be hidden, with its state in the address | Milestone 4 |
 | Work order form, `/work-orders/new` and `/work-orders/<id>/edit` | All form fields, validation, decimals, dates, file upload, delete with a confirmation | Milestone 3 |
 | Import | Long task with progress, its result and its errors | Milestone 5 |
 

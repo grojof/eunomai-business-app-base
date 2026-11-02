@@ -424,6 +424,14 @@
     "page": "docs/components/filter-bar.md"
   },
   {
+    "name": "filter-panel",
+    "category": "data-input",
+    "status": "available",
+    "note": "The same form in a side panel that can be hidden, for a list with many filters.",
+    "use": "The same form in a side panel that can be hidden, for a list with many filters.",
+    "page": "docs/components/filter-panel.md"
+  },
+  {
     "name": "form-actions",
     "category": "data-input",
     "status": "available",

@@ -38,6 +38,7 @@ OWN_TITLES = (
     N_("Error summary"),
     N_("Field error"),
     N_("Filter bar"),
+    N_("Filter panel"),
     N_("Form actions"),
     N_("Icon"),
     N_("Number field"),
@@ -176,6 +177,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
                 note=N_("A plain form that filters a list on the server. daisyUI's filter is a set of radio buttons."),
                 macro="filter_bar",
                 icon="search",
+            ),
+            Component(
+                "filter-panel",
+                note=N_("The same form in a side panel that can be hidden, for a list with many filters."),
+                macro="filter_panel",
+                icon="funnel",
             ),
             Component(
                 "form-actions",
