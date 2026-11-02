@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-02 13:26+0100\n"
+"POT-Creation-Date: 2026-11-02 14:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -33,6 +33,10 @@ msgid ""
 msgstr ""
 "%(count)s. Se muestran del %(first)s al %(last)s, ordenados por "
 "%(column)s, %(direction)s."
+
+#, python-format
+msgid "%(event)s is now on %(when)s."
+msgstr "%(event)s queda para %(when)s."
 
 msgid "(optional)"
 msgstr "(opcional)"
@@ -69,6 +73,15 @@ msgstr ""
 msgid "Actions"
 msgstr "Acciones"
 
+msgid "Agenda"
+msgstr "Agenda"
+
+msgid "Agenda view"
+msgstr "Vista de agenda"
+
+msgid "All day"
+msgstr "Todo el día"
+
 msgid ""
 "Any of Lucide's icons, or one of the organization's, hidden from screen "
 "readers."
@@ -95,6 +108,9 @@ msgid "Asks before an action that cannot be undone, and names what will be lost.
 msgstr ""
 "Pregunta antes de una acción que no se puede deshacer y dice qué se "
 "perderá."
+
+msgid "At a time"
+msgstr "Con hora"
 
 msgid "Available"
 msgstr "Disponible"
@@ -124,6 +140,9 @@ msgid ""
 msgstr ""
 "Cambia cómo se ve esta aplicación para ti. Cada opción se aplica al "
 "momento y se recuerda en este navegador."
+
+msgid "Change the view"
+msgstr "Cambiar la vista"
 
 msgid "Chart"
 msgstr "Gráfico"
@@ -178,6 +197,9 @@ msgstr "Tabla de datos"
 msgid "Date field"
 msgstr "Campo de fecha"
 
+msgid "Day"
+msgstr "Día"
+
 msgid "Decorative"
 msgstr "Decorativo"
 
@@ -224,6 +246,19 @@ msgstr "Error"
 msgid "Error summary"
 msgstr "Resumen de errores"
 
+msgid "Event calendar"
+msgstr "Calendario de eventos"
+
+msgid "Events"
+msgstr "Eventos"
+
+msgid ""
+"Events by month, week or agenda, drawn by FullCalendar, each a link to "
+"its form."
+msgstr ""
+"Eventos por mes, semana o agenda, dibujados por FullCalendar, cada uno un"
+" enlace a su formulario."
+
 msgid "Every list offers this too, above its rows."
 msgstr "Cada lista lo ofrece también, encima de sus filas."
 
@@ -266,6 +301,10 @@ msgid "Go back and try again. If it happens again, tell whoever runs this."
 msgstr ""
 "Vuelve atrás e inténtalo de nuevo. Si vuelve a pasar, avisa a quien "
 "gestiona esto."
+
+#, python-format
+msgid "Go to %(day)s"
+msgstr "Ir al %(day)s"
 
 msgid "Hidden"
 msgstr "Oculta"
@@ -353,6 +392,12 @@ msgstr "Lista de menú"
 msgid "Mockups"
 msgstr "Maquetas"
 
+msgid "Month"
+msgstr "Mes"
+
+msgid "Month view"
+msgstr "Vista de mes"
+
 msgid "Move"
 msgstr "Mover"
 
@@ -365,8 +410,20 @@ msgstr "Se mueve solo y solo un puntero puede pausarlo: WCAG 2.2.2."
 msgid "Navigation"
 msgstr "Navegación"
 
+msgid "Next"
+msgstr "Siguiente"
+
+msgid "Next month"
+msgstr "Mes siguiente"
+
 msgid "Next page"
 msgstr "Página siguiente"
+
+msgid "Next week"
+msgstr "Semana siguiente"
+
+msgid "Next year"
+msgstr "Año siguiente"
 
 msgid "No"
 msgstr "No"
@@ -385,6 +442,12 @@ msgstr "No recomendado"
 
 msgid "Nothing here"
 msgstr "Nada aquí"
+
+msgid "Nothing in these days"
+msgstr "Nada en estos días"
+
+msgid "Nothing in these days."
+msgstr "Nada en estos días."
 
 msgid "Nothing matches. Try another word."
 msgstr "Nada coincide. Prueba con otra palabra."
@@ -408,6 +471,9 @@ msgstr "Abrir el menú"
 msgid "Options: %(count)s"
 msgstr "Opciones: %(count)s"
 
+msgid "Other days"
+msgstr "Otros días"
+
 #, python-format
 msgid "Page %(page)s"
 msgstr "Página %(page)s"
@@ -428,8 +494,20 @@ msgstr "Páginas"
 msgid "Preferences"
 msgstr "Preferencias"
 
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Previous month"
+msgstr "Mes anterior"
+
 msgid "Previous page"
 msgstr "Página anterior"
+
+msgid "Previous week"
+msgstr "Semana anterior"
+
+msgid "Previous year"
+msgstr "Año anterior"
 
 msgid "Radio"
 msgstr "Opción"
@@ -484,6 +562,13 @@ msgstr "Lista"
 msgid "Settings"
 msgstr "Ajustes"
 
+#, python-format
+msgid "Show %(count)s more events"
+msgstr "Mostrar %(count)s eventos más"
+
+msgid "Show 1 more event"
+msgstr "Mostrar 1 evento más"
+
 msgid "Show filters"
 msgstr "Mostrar los filtros"
 
@@ -513,8 +598,14 @@ msgstr ""
 "Texto que cada persona escribe como su idioma escribe los números. Nunca "
 "un float."
 
+msgid "That could not be moved. It is back where it was."
+msgstr "No se ha podido mover. Ha vuelto a donde estaba."
+
 msgid "That could not be read"
 msgstr "No se ha podido leer"
+
+msgid "That day could not be read."
+msgstr "No se ha podido leer ese día."
 
 msgid "That did not work. Try again in a moment."
 msgstr "No ha funcionado. Vuelve a intentarlo en un momento."
@@ -528,6 +619,9 @@ msgid ""
 msgstr ""
 "Es demasiado grande para enviarlo. Elige un archivo más pequeño: lo que "
 "has escrito sigue aquí."
+
+msgid "That time could not be read."
+msgstr "No se ha podido leer esa hora."
 
 msgid "The browser's own date field, read by the server in one strict form."
 msgstr ""
@@ -598,6 +692,9 @@ msgstr "Marca la casilla o déjala vacía."
 msgid "Timeline"
 msgstr "Línea de tiempo"
 
+msgid "Today"
+msgstr "Hoy"
+
 msgid "Toggle"
 msgstr "Interruptor"
 
@@ -606,6 +703,9 @@ msgstr "Superior"
 
 msgid "Try another word, or a shorter one."
 msgstr "Prueba con otra palabra, o con una más corta."
+
+msgid "Try other days, or fewer filters."
+msgstr "Prueba con otros días, o con menos filtros."
 
 msgid "Type to search"
 msgstr "Escribe para buscar"
@@ -633,6 +733,12 @@ msgstr "Aviso"
 msgid "We could not tell who you are. Open the application from your portal."
 msgstr "No hemos podido saber quién eres. Abre la aplicación desde tu portal."
 
+msgid "Week"
+msgstr "Semana"
+
+msgid "Week view"
+msgstr "Vista de semana"
+
 msgid "What is wrong with one field, and how to fix it, tied to that field."
 msgstr "Qué falla en un campo y cómo arreglarlo, vinculado a ese campo."
 
@@ -644,6 +750,12 @@ msgstr "Anchura"
 
 msgid "Width of lists"
 msgstr "Ancho de las listas"
+
+msgid "Wk"
+msgstr "Sem."
+
+msgid "Year"
+msgstr "Año"
 
 msgid "Yes"
 msgstr "Sí"
@@ -662,6 +774,9 @@ msgstr "descendente"
 
 msgid "in use:"
 msgstr "en uso:"
+
+msgid "more"
+msgstr "más"
 
 msgid "to close"
 msgstr "para cerrar"

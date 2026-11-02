@@ -37,6 +37,7 @@ OWN_TITLES = (
     N_("Date field"),
     N_("Description list"),
     N_("Error summary"),
+    N_("Event calendar"),
     N_("Field error"),
     N_("Filter bar"),
     N_("Filter panel"),
@@ -106,6 +107,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
                 icon="clipboard-list",
             ),
             Component("diff", DECORATIVE),
+            Component(
+                "event-calendar",
+                note=N_("Events by month, week or agenda, drawn by FullCalendar, each a link to its form."),
+                macro="calendar",
+                icon="calendar-days",
+            ),
             Component(
                 "gantt",
                 note=N_("A table and, beside it, the same rows as bars on a calendar, drawn on the server."),

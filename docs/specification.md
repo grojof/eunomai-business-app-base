@@ -24,8 +24,8 @@ Success means three things, each testable:
 ```text
 app/
   core/      identity, roles, settings, database, exact column types, server lists, reading forms, languages, formatters, errors, health
-  ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, charts.js, board.js, vendored htmx,
-             Chart.js and SortableJS, Lucide's icons in templates/ui/icons/, illustrations in static/illustrations/
+  ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, charts.js, board.js,
+             calendar.js, vendored htmx, Chart.js, SortableJS and FullCalendar, Lucide's icons in templates/ui/icons/, illustrations in static/illustrations/
   brand/     theme.css, logo.svg, the organization's own icons in icons/
   demo/      screens, their fixed values, models and generated data, the gallery with its generated examples/, translations
 locales/     the translations of core and ui
@@ -62,6 +62,7 @@ In use today:
 | Charts | Chart.js, with a text summary and the data as a table |
 | Icons | Lucide, every icon, copied and pinned; no other collection. The organization may add its own |
 | Dragging | SortableJS, on a board only, over forms that work without it |
+| Calendars | FullCalendar 7 with its classic theme, on a calendar only, over an agenda drawn on the server |
 | Support | python-multipart for posted forms and uploads; tzdata, because Windows has no time zone database |
 | Development | pytest, httpx2, Playwright for Python, axe-core, Ruff, mypy |
 
@@ -78,7 +79,8 @@ one account: a full stylesheet has not been generated there.
 
 `vendor.json` lists every third-party file that is not a Python package, with its version and hash. All are copied
 into the repository except Tailwind's executable. The ones pages load are served with Subresource Integrity: htmx on
-every page, and Chart.js and SortableJS, marked `on_demand`, only where a chart or a board is.
+every page, and Chart.js, SortableJS and FullCalendar, marked `on_demand`, only where a chart, a board or a calendar is.
+FullCalendar's three stylesheets are linked by the `calendar` macro, with their integrity too.
 
 ## Dependencies
 
@@ -293,6 +295,26 @@ table: `show=timeline` and `scale` live in the address as filters the form keeps
 | Paper | The picture goes under its table, as wide as the page |
 | The one inline SVG | Icons and illustrations are never inline ([COMP-05 and SEC-16](standards.md#components)). This is a chart of data, so `tools/icons.py` allows an SVG in this macro alone, and a test checks that what it draws holds nothing that runs or loads |
 
+### Calendars
+
+`app/core/calendars.py`, the macro `calendar` and `calendar.js` show events by month, week or agenda, drawn by
+FullCalendar 7.1.3 over what the server sends. The demo's calendar, at `/calendar`, holds the inspection team's visits,
+at their times, and the planned work orders, over their days. The [component page](components/event-calendar.md) says
+what each part does.
+
+| What | How |
+|---|---|
+| Views | Month, with multi-day events as one bar and a "+ more" box past three; week, with events at the same time side by side and the working hours of `hours`; agenda |
+| Address | `view` and `date`, read on loading and written back with every change |
+| Time zone | Events travel as JSON with moments in UTC and show in `APP_TIME_ZONE`, whatever the browser's. A drop sends its moment with its offset, and `read_moment` reads it into UTC: a test drags an event in a browser set to New York on a server in Madrid |
+| Moving | By dragging, which the server decides on: role, a moment it can read, and the version, so a move after someone else's is refused, put back and said. By keyboard, through each event's link: a visit has a form of its own, a work order the planning editor. A timed event cannot become all-day, nor the reverse |
+| Words | Every word FullCalendar shows or announces is ours, through one locale object built from the catalogue; its own locale files are not used, because its Spanish said "Vista del semana" and its "Hoy" was named "Este mes". A hint holds its button's words, as WCAG 2.5.3 asks |
+| Accessibility | No failure of the scan in month, week, agenda and the "+ more" box, in both themes and three languages. Events and "+ more" are 24 pixels high at least, and events are a soft fill with the page's text, so they pass in the dark theme too, without turning any check off |
+| Theme | FullCalendar's classic theme reads its own variables, set from daisyUI's colours, so it follows a change of theme with no reload. Its classes are hashed, so nothing else of it is styled here |
+| Without JavaScript | The agenda the route writes, by day, with links to other days and views. It stays if the library cannot load |
+| htmx | A calendar that htmx brings is drawn again, as the location filter does, and one it removes is taken down |
+| A phone | The toolbar wraps and the page never scrolls sideways |
+
 ### Groups and editing a row
 
 The planning screen is what a spreadsheet-like grid would be asked for, without one. People who need to change one work
@@ -485,7 +507,8 @@ daisyUI classes, so the look can change in one place. Each macro appears on the 
 `breadcrumbs`, `description_list`, `tabs`, `chart`, `dialog`, `dialog_buttons`, `input_field`, `field_error`,
 `error_summary`, `textarea_field`, `date_field`, `number_field`, `checkbox_field`, `radio_group`, `searchable_select`,
 `file_field`, `form_actions`, `confirmation`, `confirm_link`, `conflict_notice`, `grouped_table`, `dialog_action`, `filter_bar`, `filter_panel`,
-`list_with_filters`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`, `pagination`, `board` and `gantt`.
+`list_with_filters`, `list_summary`, `server_table`, `row_header`, `cell`, `row_actions`, `pagination`, `board`, `gantt` and
+`calendar`.
 
 Tabs come in two kinds. `tabs` are links, one address each, as on the equipment detail: they work without JavaScript and
 with the back button, so they are a navigation with `aria-current`. The server reads what every panel needs and sends them
@@ -507,7 +530,7 @@ leaves out backgrounds. The equipment detail prints both of its tabs.
 | Output | Excel export, print style | Milestone 2 |
 | Forms | Text, text area, select, checkbox, radio, date, number and decimal, searchable select, file upload, error summary, field error, form actions | Milestone 3 |
 | Feedback | Confirmation dialog, conflict notice | Milestone 3 |
-| Data | Dense and wide lists, filter panel, a chart that filters a list, board, Gantt | Milestone 4 |
+| Data | Dense and wide lists, filter panel, a chart that filters a list, board, Gantt, event calendar | Milestone 4 |
 | Feedback | Loading state, progress of a long task | Milestone 5 |
 | Pages | Service unavailable | Milestone 5 |
 
@@ -567,6 +590,7 @@ A fictional company maintains its equipment. The scenario needs no real data:
 | Planning's filters | In a side panel that can be hidden, with its state in the address | Milestone 4 |
 | Board, `/board` | Work orders by state: a form on each card, dragging, order and conflicts on the server | Milestone 4 |
 | Planning's timeline, `/planning?show=timeline` | The page's work orders as bars beside their table, with what each waits for, at a scale of days, weeks or months | Milestone 4 |
+| Calendar, `/calendar` | Inspection visits and planned work orders by month, week and agenda: dragging, a form for each visit, the time zone, conflicts | Milestone 4 |
 | Work order form, `/work-orders/new` and `/work-orders/<id>/edit` | All form fields, validation, decimals, dates, file upload, delete with a confirmation | Milestone 3 |
 | Import | Long task with progress, its result and its errors | Milestone 5 |
 

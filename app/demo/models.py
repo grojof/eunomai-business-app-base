@@ -76,6 +76,22 @@ class WorkOrder(Base):
     )
 
 
+class Inspection(Base):
+    """A visit of the inspection team to one piece of equipment, at a time of day. The calendar shows and moves it."""
+
+    __tablename__ = "inspection"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    equipment_id: Mapped[int] = mapped_column(ForeignKey("equipment.id", ondelete="CASCADE"), index=True)
+    starts_at: Mapped[datetime] = mapped_column(index=True)
+    ends_at: Mapped[datetime]
+    version: Mapped[int] = mapped_column(server_default="1")
+
+    __mapper_args__ = {"version_id_col": version}  # noqa: RUF012  # how SQLAlchemy asks for it
+
+    equipment: Mapped[Equipment] = relationship()
+
+
 class WorkOrderFile(Base):
     """A file attached to a work order. `name` is what a person called it, for showing; `stored_name` is ours."""
 

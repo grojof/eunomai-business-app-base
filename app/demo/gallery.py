@@ -3,7 +3,7 @@
 import json
 import re
 from collections.abc import Iterator, Mapping
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, NamedTuple
@@ -13,6 +13,7 @@ from fastapi.responses import Response
 from markupsafe import Markup, escape
 
 from app.core.boards import Board, BoardCard, BoardColumn
+from app.core.calendars import CalendarEvent, Period, calendar_config
 from app.core.gantt import Task, Timeline, timeline
 from app.core.i18n import N_, _, current_language
 from app.core.tables import Column, Filter, ListView
@@ -247,6 +248,25 @@ def sample_plan() -> Timeline:
     )
 
 
+def sample_calendar(request: Request) -> dict[str, Any]:
+    """A calendar without a database: three fixed events in the week of the sample, which nobody may move."""
+    start = datetime.combine(SAMPLE_START, time(8), UTC)
+    events = [
+        CalendarEvent("one", _("Air compressor"), start, start + timedelta(hours=2), "#one"),
+        CalendarEvent(
+            "two", _("Conveyor belt"), start + timedelta(days=1, hours=1), start + timedelta(days=1, hours=3), "#two"
+        ),
+        CalendarEvent(
+            "three", _("Cooling tower"), SAMPLE_START + timedelta(days=2), SAMPLE_START + timedelta(days=4), "#three"
+        ),
+    ]
+    period = Period("week", SAMPLE_START)
+    zone = request.app.state.settings.time_zone
+    config = calendar_config([event.as_json() for event in events], "", zone, period, SAMPLE_START, False)
+    agenda = [(SAMPLE_START + timedelta(days=offset), [("", event)]) for offset, event in enumerate(events)]
+    return {"config": config, "agenda": agenda}
+
+
 async def gallery_component(request: Request, name: str) -> Response:
     every = list(ordered())
     position = next((number for number, (_category, item) in enumerate(every) if item.name == name), None)
@@ -282,6 +302,7 @@ async def gallery_component(request: Request, name: str) -> Response:
         chart_figures=chart_examples() if name == "chart" else [],
         sample_board=sample_board() if name == "board" else None,
         sample_plan=sample_plan() if name == "gantt" else None,
+        sample_calendar=sample_calendar(request) if name == "event-calendar" else None,
         previous=(neighbours[0].name, title_of(neighbours[0].name)) if neighbours[0] else None,
         following=(neighbours[1].name, title_of(neighbours[1].name)) if neighbours[1] else None,
     )

@@ -18,6 +18,63 @@
   --color-*: initial;
 }
 
+/* FullCalendar's classic theme on the brand's colours. Declared where daisyUI declares its own, so they follow a change
+   of theme without a reload, and they reach the "+ more" box, which FullCalendar puts at the end of the page. Events are
+   a soft fill with the page's text, so they pass the contrast check in both themes. Doubled, so they win over
+   FullCalendar's own palette, which a page with a calendar links after this file. */
+:root:root,
+[data-theme][data-theme] {
+  --fc-classic-button: var(--color-base-200);
+  --fc-classic-button-border: var(--color-base-300);
+  --fc-classic-button-strong: var(--color-base-300);
+  --fc-classic-button-strong-border: var(--color-base-content);
+  --fc-classic-button-outline: var(--color-primary);
+  --fc-classic-button-foreground: var(--color-base-content);
+  --fc-classic-primary: var(--color-primary);
+  --fc-classic-primary-foreground: var(--color-primary-content);
+  --fc-classic-event: color-mix(in oklab, var(--color-primary) 22%, var(--color-base-100));
+  --fc-classic-event-contrast: var(--color-base-content);
+  --fc-classic-highlight: color-mix(in oklab, var(--color-primary) 15%, transparent);
+  --fc-classic-today: color-mix(in oklab, var(--color-warning) 14%, transparent);
+  --fc-classic-now: var(--color-error);
+  --fc-classic-background: var(--color-base-100);
+  --fc-classic-faint: color-mix(in oklab, var(--color-base-content) 4%, transparent);
+  --fc-classic-muted: color-mix(in oklab, var(--color-base-content) 8%, transparent);
+  --fc-classic-strong: color-mix(in oklab, var(--color-base-content) 14%, transparent);
+  --fc-classic-foreground: var(--color-base-content);
+  --fc-classic-muted-foreground: color-mix(in oklab, var(--color-base-content) 80%, var(--color-base-100));
+  --fc-classic-faint-foreground: color-mix(in oklab, var(--color-base-content) 70%, var(--color-base-100));
+  --fc-classic-border: var(--color-base-300);
+  --fc-classic-strong-border: color-mix(in oklab, var(--color-base-content) 35%, var(--color-base-100));
+}
+
+/* Outside any layer, as FullCalendar's own styles are, so these win. A calendar's frame, and what WCAG 2.5.8 asks of
+   each event and "+ more" link: 24 pixels high at least */
+.calendar-frame {
+  display: block;
+}
+
+a.calendar-event,
+div.calendar-event,
+div.calendar-more {
+  min-block-size: 24px;
+}
+
+div.calendar-dot {
+  border-color: var(--color-primary);
+}
+
+/* A long title, such as a week across two months in Spanish, wraps on a phone instead of pushing the page sideways */
+.calendar-frame :has(> [role="heading"]) {
+  min-inline-size: 0;
+  flex-shrink: 1;
+}
+
+.calendar-frame [role="heading"] {
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
 /* Outside any layer, so no component can hide it: daisyUI's menu marks focus only with a background */
 :where(a, button, summary, input, select, textarea):focus-visible {
   outline: 2px solid var(--color-primary);

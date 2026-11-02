@@ -152,6 +152,14 @@
     "page": "docs/components/diff.md"
   },
   {
+    "name": "event-calendar",
+    "category": "data-display",
+    "status": "available",
+    "note": "Events by month, week or agenda, drawn by FullCalendar, each a link to its form.",
+    "use": "Events by month, week or agenda, drawn by FullCalendar, each a link to its form.",
+    "page": "docs/components/event-calendar.md"
+  },
+  {
     "name": "gantt",
     "category": "data-display",
     "status": "available",

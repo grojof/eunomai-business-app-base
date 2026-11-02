@@ -726,8 +726,9 @@
       {% for number in range(plan.rows + 1) %}<line class="gantt-grid" x1="0" x2="{{ plan.width }}" y1="{{ header + number * row }}" y2="{{ header + number * row }}"/>{% endfor %}
       {% for tick in plan.months %}<line class="gantt-grid" x1="{{ tick.x }}" x2="{{ tick.x }}" y1="0" y2="{{ plan.height }}"/><text class="gantt-month" x="{{ tick.x + 4 }}" y="18">{{ tick.label }}</text>{% endfor %}
       {% for tick in plan.ticks %}<text class="gantt-tick" x="{{ tick.x + 4 }}" y="40">{{ tick.label }}</text>{% endfor %}
+      {% set fills = {"neutral": "gantt-bar-neutral", "info": "gantt-bar-info", "warning": "gantt-bar-warning", "success": "gantt-bar-success", "error": "gantt-bar-error"} %}
       {% for bar in plan.bars %}
-      <rect id="{{ identifier }}-bar-{{ bar.key }}" class="gantt-bar gantt-bar-{{ bar.kind }}" x="{{ bar.x }}" y="{{ bar.y }}" width="{{ bar.width }}" height="20" rx="4"/>
+      <rect id="{{ identifier }}-bar-{{ bar.key }}" class="gantt-bar {{ fills[bar.kind] }}" x="{{ bar.x }}" y="{{ bar.y }}" width="{{ bar.width }}" height="20" rx="4"/>
       <text class="gantt-label" x="{{ bar.x + bar.width + 6 }}" y="{{ bar.y + 14 }}">{{ bar.label }}</text>
       {% endfor %}
       {% for path in plan.links %}<path class="gantt-link" d="{{ path }}" marker-end="url(#{{ identifier }}-arrow)"/>{% endfor %}
@@ -737,4 +738,33 @@
     </svg>
   </div>
 </div>
+{% endmacro %}
+
+{#- A calendar: FullCalendar draws the events the server sends, in the application's time zone, with the server's words.
+    `config` comes from `calendar_config` in app/core/calendars.py. Each event is a link to its form, the keyboard's way
+    to move it; a pointer drags it, and the server decides. Without JavaScript, or if the library cannot load, the
+    agenda the server wrote stays: `agenda` is (day, [(time, event)]), and `steps` its links (label, address, current),
+    to other days and views. FullCalendar's styles are linked here, so a page without a calendar does not load them. -#}
+{% macro calendar(identifier, label, config, agenda, steps) %}
+{% for style in calendar_library.styles %}<link rel="stylesheet" href="{{ style.src }}" integrity="{{ style.integrity }}" crossorigin="anonymous">{% endfor %}
+<section id="{{ identifier }}" class="min-w-0 rounded-box border border-base-300 bg-base-100 p-3 sm:p-4" aria-label="{{ label }}" data-calendar
+         data-calendar-library="{{ calendar_library.library.src }}" data-calendar-integrity="{{ calendar_library.library.integrity }}"
+         data-calendar-theme="{{ calendar_library.theme.src }}" data-calendar-theme-integrity="{{ calendar_library.theme.integrity }}"
+         data-calendar-classes="calendar-frame calendar-button calendar-event calendar-more calendar-dot calendar-popover">
+  <script type="application/json">{{ config|tojson }}</script>
+  <div data-calendar-host></div>
+  <div data-calendar-fallback>
+    <nav class="mb-4 flex flex-wrap gap-2" aria-label="{{ _('Other days') }}">
+      {% for text, href, current in steps %}<a class="btn btn-sm{{ ' btn-active' if current else '' }}" href="{{ href }}"{% if current %} aria-current="page"{% endif %}>{{ text }}</a>{% endfor %}
+    </nav>
+    {% for day, items in agenda %}
+    <h3 class="mt-4 font-semibold">{{ day|date }}</h3>
+    <ul class="mt-1 divide-y divide-base-300">
+      {% for when, event in items %}<li class="py-2"><a class="link link-hover" href="{{ event.url }}">{{ when }} · {{ event.title }}</a></li>{% endfor %}
+    </ul>
+    {% else %}
+    {{ empty_state(_("Nothing in these days"), _("Try other days, or fewer filters."), "calendar", 3) }}
+    {% endfor %}
+  </div>
+</section>
 {% endmacro %}

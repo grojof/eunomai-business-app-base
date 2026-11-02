@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-02 13:26+0100\n"
+"POT-Creation-Date: 2026-11-02 14:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -33,6 +33,10 @@ msgid ""
 msgstr ""
 "%(count)s. Es mostren del %(first)s al %(last)s, ordenats per %(column)s,"
 " %(direction)s."
+
+#, python-format
+msgid "%(event)s is now on %(when)s."
+msgstr "%(event)s queda per a %(when)s."
 
 msgid "(optional)"
 msgstr "(opcional)"
@@ -69,6 +73,15 @@ msgstr ""
 msgid "Actions"
 msgstr "Accions"
 
+msgid "Agenda"
+msgstr "Agenda"
+
+msgid "Agenda view"
+msgstr "Vista d'agenda"
+
+msgid "All day"
+msgstr "Tot el dia"
+
 msgid ""
 "Any of Lucide's icons, or one of the organization's, hidden from screen "
 "readers."
@@ -93,6 +106,9 @@ msgstr "Si necessites accés, demana'l a qui gestiona aquesta aplicació."
 
 msgid "Asks before an action that cannot be undone, and names what will be lost."
 msgstr "Pregunta abans d'una acció que no es pot desfer i diu què es perdrà."
+
+msgid "At a time"
+msgstr "Amb hora"
 
 msgid "Available"
 msgstr "Disponible"
@@ -122,6 +138,9 @@ msgid ""
 msgstr ""
 "Canvia com es veu aquesta aplicació per a tu. Cada opció s'aplica de "
 "seguida i es recorda en aquest navegador."
+
+msgid "Change the view"
+msgstr "Canvia la vista"
 
 msgid "Chart"
 msgstr "Gràfic"
@@ -176,6 +195,9 @@ msgstr "Taula de dades"
 msgid "Date field"
 msgstr "Camp de data"
 
+msgid "Day"
+msgstr "Dia"
+
 msgid "Decorative"
 msgstr "Decoratiu"
 
@@ -222,6 +244,19 @@ msgstr "Error"
 msgid "Error summary"
 msgstr "Resum d'errors"
 
+msgid "Event calendar"
+msgstr "Calendari d'esdeveniments"
+
+msgid "Events"
+msgstr "Esdeveniments"
+
+msgid ""
+"Events by month, week or agenda, drawn by FullCalendar, each a link to "
+"its form."
+msgstr ""
+"Esdeveniments per mes, setmana o agenda, dibuixats per FullCalendar, "
+"cadascun un enllaç al seu formulari."
+
 msgid "Every list offers this too, above its rows."
 msgstr "Cada llista també ho ofereix, damunt de les seves files."
 
@@ -264,6 +299,10 @@ msgid "Go back and try again. If it happens again, tell whoever runs this."
 msgstr ""
 "Torna enrere i torna-ho a provar. Si torna a passar, avisa qui gestiona "
 "això."
+
+#, python-format
+msgid "Go to %(day)s"
+msgstr "Ves al %(day)s"
 
 msgid "Hidden"
 msgstr "Oculta"
@@ -351,6 +390,12 @@ msgstr "Llista de menú"
 msgid "Mockups"
 msgstr "Maquetes"
 
+msgid "Month"
+msgstr "Mes"
+
+msgid "Month view"
+msgstr "Vista de mes"
+
 msgid "Move"
 msgstr "Mou"
 
@@ -363,8 +408,20 @@ msgstr "Es mou sol i només un punter el pot aturar: WCAG 2.2.2."
 msgid "Navigation"
 msgstr "Navegació"
 
+msgid "Next"
+msgstr "Següent"
+
+msgid "Next month"
+msgstr "Mes següent"
+
 msgid "Next page"
 msgstr "Pàgina següent"
+
+msgid "Next week"
+msgstr "Setmana següent"
+
+msgid "Next year"
+msgstr "Any següent"
 
 msgid "No"
 msgstr "No"
@@ -383,6 +440,12 @@ msgstr "No recomanat"
 
 msgid "Nothing here"
 msgstr "Res aquí"
+
+msgid "Nothing in these days"
+msgstr "Res en aquests dies"
+
+msgid "Nothing in these days."
+msgstr "Res en aquests dies."
 
 msgid "Nothing matches. Try another word."
 msgstr "Res no coincideix. Prova amb una altra paraula."
@@ -406,6 +469,9 @@ msgstr "Obre el menú"
 msgid "Options: %(count)s"
 msgstr "Opcions: %(count)s"
 
+msgid "Other days"
+msgstr "Altres dies"
+
 #, python-format
 msgid "Page %(page)s"
 msgstr "Pàgina %(page)s"
@@ -426,8 +492,20 @@ msgstr "Pàgines"
 msgid "Preferences"
 msgstr "Preferències"
 
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Previous month"
+msgstr "Mes anterior"
+
 msgid "Previous page"
 msgstr "Pàgina anterior"
+
+msgid "Previous week"
+msgstr "Setmana anterior"
+
+msgid "Previous year"
+msgstr "Any anterior"
 
 msgid "Radio"
 msgstr "Opció"
@@ -482,6 +560,13 @@ msgstr "Llista"
 msgid "Settings"
 msgstr "Configuració"
 
+#, python-format
+msgid "Show %(count)s more events"
+msgstr "Mostra %(count)s esdeveniments més"
+
+msgid "Show 1 more event"
+msgstr "Mostra 1 esdeveniment més"
+
 msgid "Show filters"
 msgstr "Mostra els filtres"
 
@@ -511,8 +596,14 @@ msgstr ""
 "Text que cada persona escriu com el seu idioma escriu els nombres. Mai un"
 " float."
 
+msgid "That could not be moved. It is back where it was."
+msgstr "No s'ha pogut moure. Ha tornat on era."
+
 msgid "That could not be read"
 msgstr "No s'ha pogut llegir"
+
+msgid "That day could not be read."
+msgstr "No s'ha pogut llegir aquest dia."
 
 msgid "That did not work. Try again in a moment."
 msgstr "No ha funcionat. Torna-ho a provar d'aquí a un moment."
@@ -526,6 +617,9 @@ msgid ""
 msgstr ""
 "És massa gran per enviar-lo. Tria un fitxer més petit: el que has escrit "
 "continua aquí."
+
+msgid "That time could not be read."
+msgstr "No s'ha pogut llegir aquesta hora."
 
 msgid "The browser's own date field, read by the server in one strict form."
 msgstr ""
@@ -598,6 +692,9 @@ msgstr "Marca la casella o deixa-la buida."
 msgid "Timeline"
 msgstr "Línia de temps"
 
+msgid "Today"
+msgstr "Avui"
+
 msgid "Toggle"
 msgstr "Interruptor"
 
@@ -606,6 +703,9 @@ msgstr "Superior"
 
 msgid "Try another word, or a shorter one."
 msgstr "Prova amb una altra paraula, o amb una de més curta."
+
+msgid "Try other days, or fewer filters."
+msgstr "Prova amb altres dies, o amb menys filtres."
 
 msgid "Type to search"
 msgstr "Escriu per cercar"
@@ -633,6 +733,12 @@ msgstr "Avís"
 msgid "We could not tell who you are. Open the application from your portal."
 msgstr "No hem pogut saber qui ets. Obre l'aplicació des del teu portal."
 
+msgid "Week"
+msgstr "Setmana"
+
+msgid "Week view"
+msgstr "Vista de setmana"
+
 msgid "What is wrong with one field, and how to fix it, tied to that field."
 msgstr "Què falla en un camp i com arreglar-ho, vinculat a aquest camp."
 
@@ -644,6 +750,12 @@ msgstr "Amplada"
 
 msgid "Width of lists"
 msgstr "Amplada de les llistes"
+
+msgid "Wk"
+msgstr "Setm."
+
+msgid "Year"
+msgstr "Any"
 
 msgid "Yes"
 msgstr "Sí"
@@ -662,6 +774,9 @@ msgstr "descendent"
 
 msgid "in use:"
 msgstr "en ús:"
+
+msgid "more"
+msgstr "més"
 
 msgid "to close"
 msgstr "per tancar"

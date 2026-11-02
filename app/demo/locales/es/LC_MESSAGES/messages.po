@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-02 13:26+0100\n"
+"POT-Creation-Date: 2026-11-02 14:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -65,6 +65,10 @@ msgstr[0] "%(count)s orden de trabajo"
 msgstr[1] "%(count)s órdenes de trabajo"
 
 #, python-format
+msgid "%(event)s is now on %(when)s."
+msgstr "%(event)s queda para %(when)s."
+
+#, python-format
 msgid "%(group)s, continued"
 msgstr "%(group)s, continuación"
 
@@ -117,8 +121,14 @@ msgstr "Antigüedad y coste de reparación"
 msgid "Age, in years"
 msgstr "Antigüedad, en años"
 
+msgid "Agenda"
+msgstr "Agenda"
+
 msgid "Air compressor"
 msgstr "Compresor de aire"
+
+msgid "All day"
+msgstr "Todo el día"
 
 msgid "All locations"
 msgstr "Todas las ubicaciones"
@@ -194,8 +204,14 @@ msgstr "Tablero"
 msgid "Both sites score well on safety. The south site is weakest on records."
 msgstr "Las dos plantas puntúan bien en seguridad. La sur flojea en registros."
 
+msgid "Calendar"
+msgstr "Calendario"
+
 msgid "Cancel"
 msgstr "Cancelar"
+
+msgid "Change its day or its times. They are in the application's time zone."
+msgstr "Cambia su día o sus horas. Están en la zona horaria de la aplicación."
 
 msgid ""
 "Charts and live figures appear here once the demo's rows are generated. "
@@ -309,6 +325,9 @@ msgstr "Carcasa agrietada"
 msgid "Dashboard"
 msgstr "Panel"
 
+msgid "Day"
+msgstr "Día"
+
 msgid "Days"
 msgstr "Días"
 
@@ -387,6 +406,9 @@ msgstr "Editar"
 msgid "Edit work order %(number)s"
 msgstr "Editar la orden de trabajo %(number)s"
 
+msgid "Ends"
+msgstr "Termina"
+
 msgid "Enter a date, or leave it empty if it is not planned yet."
 msgstr "Escribe una fecha, o déjala vacía si aún no está planificada."
 
@@ -399,6 +421,9 @@ msgstr "Escribe el código del equipo."
 
 msgid "Enter the cost as a number, such as 120.50."
 msgstr "Escribe el coste como un número, por ejemplo 120,50."
+
+msgid "Enter the day of the visit."
+msgstr "Escribe el día de la visita."
 
 #, python-format
 msgid "Enter the hours as a number, such as %(example)s."
@@ -413,11 +438,20 @@ msgstr "Escribe las horas con dos decimales como máximo."
 msgid "Enter what has to be done."
 msgstr "Escribe qué hay que hacer."
 
+msgid "Enter when it ends, such as 11:00."
+msgstr "Escribe cuándo termina, por ejemplo 11:00."
+
+msgid "Enter when it starts, such as 09:30."
+msgstr "Escribe cuándo empieza, por ejemplo 09:30."
+
 msgid "Equipment"
 msgstr "Equipos"
 
 msgid "Equipment and its state"
 msgstr "Equipos y su estado"
+
+msgid "Equipment and its work"
+msgstr "Equipos y su trabajo"
 
 msgid "Equipment and when its work is planned"
 msgstr "Equipos y cuándo está planificado su trabajo"
@@ -545,6 +579,13 @@ msgstr ""
 "JavaScript, y se puede arrastrar con el puntero o con el dedo."
 
 msgid ""
+"Here nobody may move an event. On the calendar of the demo a pointer "
+"drags one, and each event is a link to the form that moves it."
+msgstr ""
+"Aquí nadie puede mover un evento. En el calendario de la demo se arrastra"
+" con el puntero, y cada evento es un enlace al formulario que lo mueve."
+
+msgid ""
 "Here nothing is deleted. Focus starts on the way out, and comes back to "
 "the button when it closes. Without JavaScript the same address is a page "
 "of its own, with the same words: the work order form shows both."
@@ -601,6 +642,10 @@ msgstr "En curso"
 msgid "In service"
 msgstr "En servicio"
 
+#, python-format
+msgid "Inspection: %(equipment)s"
+msgstr "Inspección: %(equipment)s"
+
 msgid "Inspections"
 msgstr "Inspecciones"
 
@@ -610,6 +655,9 @@ msgid ""
 msgstr ""
 "Tiene su icono y sus palabras, así que no depende del color. Cada macro "
 "de campo lo escribe y lo vincula al control."
+
+msgid "It must end after it starts."
+msgstr "Tiene que terminar después de empezar."
 
 msgid ""
 "It uses Tailwind's own colours, which this base removes, so some colours "
@@ -965,6 +1013,16 @@ msgstr "Tamaño"
 msgid "Software fault"
 msgstr "Fallo de software"
 
+msgid ""
+"Someone else changed this first. It is back where it was: reload the page"
+" to see where it is now."
+msgstr ""
+"Otra persona lo cambió antes. Ha vuelto a donde estaba: recarga la página"
+" para ver dónde está ahora."
+
+msgid "Someone else changed this visit"
+msgstr "Otra persona cambió esta visita"
+
 msgid "Someone else changed this work order"
 msgstr "Otra persona ha cambiado esta orden de trabajo"
 
@@ -1028,6 +1086,9 @@ msgstr "Resumen"
 msgid "Table"
 msgstr "Tabla"
 
+msgid "That could not be moved. It is back where it was."
+msgstr "No se ha podido mover. Ha vuelto a donde estaba."
+
 msgid "That place on the board has changed. Here it is as it is now: try again."
 msgstr ""
 "Ese lugar del tablero ha cambiado. Aquí está como es ahora: vuelve a "
@@ -1068,6 +1129,14 @@ msgstr "El archivo está vacío. Elige uno que tenga contenido."
 
 msgid "The file was removed."
 msgstr "Se ha quitado el archivo."
+
+msgid ""
+"The inspection team's visits and the planned work orders. Drag one to "
+"another time, or open it to change it with a form."
+msgstr ""
+"Las visitas del equipo de inspección y las órdenes de trabajo "
+"planificadas. Arrastra una a otro momento, o ábrela para cambiarla con un"
+" formulario."
 
 msgid "The plan"
 msgstr "El plan"
@@ -1111,6 +1180,9 @@ msgstr "No se puede deshacer. Se va esto:"
 msgid "This equipment is due for inspection."
 msgstr "A este equipo le toca inspección."
 
+msgid "This is no longer here: someone may have removed it."
+msgstr "Esto ya no está aquí: puede que alguien lo haya quitado."
+
 msgid "This month"
 msgstr "Este mes"
 
@@ -1140,6 +1212,9 @@ msgstr "Línea de tiempo"
 msgid "Title"
 msgstr "Título"
 
+msgid "Today"
+msgstr "Hoy"
+
 msgid "Total"
 msgstr "Total"
 
@@ -1164,6 +1239,10 @@ msgstr "Tipo"
 msgid "Type to narrow the list."
 msgstr "Escribe para acotar la lista."
 
+#, python-format
+msgid "Until %(day)s"
+msgstr "Hasta el %(day)s"
+
 msgid "Updated"
 msgstr "Actualizado"
 
@@ -1184,11 +1263,17 @@ msgstr "Ver"
 msgid "View %(code)s"
 msgstr "Ver %(code)s"
 
+msgid "Visits and work orders"
+msgstr "Visitas y órdenes de trabajo"
+
 msgid "Waits for"
 msgstr "Espera a"
 
 msgid "Warehouse"
 msgstr "Almacén"
+
+msgid "Week"
+msgstr "Semana"
 
 msgid "Weeks"
 msgstr "Semanas"

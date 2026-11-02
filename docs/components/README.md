@@ -39,6 +39,7 @@ Read [the general rules](rules.md) once, then only the page of each component yo
 | [`countdown`](countdown.md) | available | A countdown gives a transition effect when a number changes from 0 through 999. |
 | [`description-list`](description-list.md) | available | A list of terms and their values, for one record's details. |
 | [`diff`](diff.md) | decorative | Use the diff component to show a side-by-side comparison of two items. |
+| [`event-calendar`](event-calendar.md) | available | Events by month, week or agenda, drawn by FullCalendar, each a link to its form. |
 | [`gantt`](gantt.md) | available | A table and, beside it, the same rows as bars on a calendar, drawn on the server. |
 | [`hover-3d`](hover-3d.md) | decorative | The hover 3D component is a wrapper that adds a 3D effect to its content. When the pointer is on the component, the component tilts and turns in relation to the pointer position. |
 | [`hover-gallery`](hover-gallery.md) | decorative | A hover gallery is a container for images. The first image is visible by default. When the pointer moves horizontally on it, the other images appear. Use a hover gallery for product cards, e-commerce sites, portfolios, or image galleries. A hover gallery can contain a maximum of 10 images. |

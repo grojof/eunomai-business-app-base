@@ -45,6 +45,14 @@ environment.globals["chart_library"] = _script(
     _VENDORED["chart.js"]
 )  # charts.js loads it, only for a page with a chart
 environment.globals["board_library"] = _script(_VENDORED["sortablejs"])  # board.js loads it, only for a board
+environment.globals["calendar_library"] = {  # calendar.js loads the scripts, and the macro links the styles
+    "library": _script(_VENDORED["fullcalendar"]),
+    "theme": _script(_VENDORED["fullcalendar-classic"]),
+    "styles": [
+        _script(_VENDORED[name])
+        for name in ("fullcalendar-css", "fullcalendar-classic-css", "fullcalendar-palette-css")
+    ],
+}
 environment.filters["decimal"] = formatters.format_decimal
 environment.filters["date"] = formatters.format_date
 environment.filters["percent"] = formatters.format_percent
