@@ -284,6 +284,7 @@ def test_a_list_without_a_panel_ignores_the_word():
     assert view_of({"panel": "hidden"}).here == "/things"
 
 
-def test_a_filter_cannot_take_a_name_the_address_uses():
-    with pytest.raises(ValueError, match="cannot be called"):
-        ListView.read("t", "/t", {}, (Column("n", "N", THING.c.name),), THING.c.id, "n", (Filter("panel", "P", []),))
+@pytest.mark.parametrize("name", ["q", "sort", "dir", "size", "page", "panel"])
+def test_a_filter_cannot_take_a_name_the_address_uses_and_says_so_where_it_is_defined(name):
+    with pytest.raises(ValueError, match=f"cannot be called {name}"):
+        Filter(name, "P", [])

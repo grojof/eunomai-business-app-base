@@ -34,3 +34,4 @@ config = calendar_config(
 | Theme | FullCalendar's classic theme on daisyUI's colours, through its own variables, following a change of theme without a reload. Events are a soft fill with the page's text, which passes the contrast check in both themes |
 | Without JavaScript | The `agenda` the route writes, by day, with `steps` to other days and views. It stays if the library cannot load |
 | htmx | A calendar that htmx brings is drawn again, and one it removes is taken down |
+| Limits | `Limits(earliest, latest, longest)`, 2000 to 2099 and 62 days unless an application passes its own; a view at the edge may ask a little past them |

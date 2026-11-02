@@ -71,6 +71,10 @@ class Filter:
     in_form: bool = True
     """False for a choice made elsewhere on the page, such as a tab or a scale: the form keeps it, hidden."""
 
+    def __post_init__(self) -> None:
+        if self.key in RESERVED:
+            raise ValueError(f"A filter cannot be called {self.key}: a list's address uses {', '.join(RESERVED)}")
+
 
 def _whole_number(text: str | None, default: int) -> int:
     try:
@@ -125,8 +129,6 @@ class ListView:
 
         `panelled` puts the filters in a side panel that can be hidden, with its state in the address as `panel`."""
         view = cls(name, path, tuple(columns), tiebreak, default_sort, tuple(filters), tuple(searched), search_label)
-        if any(choice.key in RESERVED for choice in filters):
-            raise ValueError(f"A filter cannot be called {', '.join(RESERVED)}: the address already uses them")
         view.panelled = panelled
         panel = params.get("panel", "")
         view.panel = panel if panelled and panel in PANEL_STATES else ""

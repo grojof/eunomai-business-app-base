@@ -16,6 +16,7 @@ from starlette.convertors import IntegerConvertor, register_url_convertor
 from starlette.exceptions import HTTPException
 
 from app.core import identity
+from app.core.addresses import is_local
 from app.core.database import create_database_engine
 from app.core.i18n import Languages, _
 from app.core.settings import LAYOUTS, Settings
@@ -155,7 +156,7 @@ async def _on_http_error(request: Request, error: Exception) -> Response:
 
 def _safe_path(next_path: str) -> str:
     """Goes back to where the person was, and never to another site."""
-    return next_path if next_path.startswith("/") and not next_path.startswith(("//", "/\\")) else "/"
+    return next_path if is_local(next_path) else "/"
 
 
 async def _save_preferences(

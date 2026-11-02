@@ -214,7 +214,7 @@ return render_list(request, view, "orders/list.html", "orders/results.html")
 | What | How |
 |---|---|
 | State | In the address: `q`, each filter, `sort`, `dir`, `size`, `page`. Defaults are left out, so one state has one address, and it can be bookmarked, reloaded and shared |
-| Input | Each value is checked against its list in `ListView.read`, and `list_query` reads the address a person came from, keeping blank values, which mean something, and ignoring what it cannot read. A value outside its list is ignored, so an old bookmark still opens. A sort name selects a `Column` by key, so nothing from the address reaches SQL as text, and the search term is a bound parameter with `%` and `_` escaped |
+| Input | `q`, `sort`, `dir`, `size`, `page` and `panel` belong to the list's address, so a `Filter` with one of those names is refused where it is written. Each value is checked against its list in `ListView.read`, and `list_query` reads the address a person came from, keeping blank values, which mean something, and ignoring what it cannot read. A value outside its list is ignored, so an old bookmark still opens. A sort name selects a `Column` by key, so nothing from the address reaches SQL as text, and the search term is a bound parameter with `%` and `_` escaped |
 | Order | A tiebreak on the primary key keeps rows from moving between pages. A column marked `nullable` puts empty values last on both databases, which by themselves disagree |
 | A label sorts as read | The database cannot sort what it does not hold. `case` gives each stored value its position, as the demo's locations do in the person's language and its states by what needs attention first. Such a column uses no index: about 10 milliseconds at 50,000 rows |
 | Without JavaScript | Headers and pages are links, and filters are a GET form with an Apply button |
@@ -254,7 +254,7 @@ data = chart_data(months, [Series(_("Planned"), planned), Series(_("Worked"), wo
 | Motion | None if a person asks for `prefers-reduced-motion` |
 | Without the picture | Without JavaScript the canvas is hidden and the summary and table remain. If Chart.js fails to load, or one chart fails to draw, its table opens by itself, and no other chart stops |
 | What is refused | A colour outside the list and a negative value in a pie, a doughnut or a polar area are errors on the server, while the code is written. Chart.js would draw the negative as positive |
-| Choosing | Optional. `links` in `chart_data`, one address of the application per label, make the table's first column links, and a click on a bar or a slice follows the link of its row: the pointer and the keyboard go to the same place, through the same element. The cursor says a part can be chosen. With `into`, a list on the same page, htmx sends that list's form with the chart's one value in place of the form's own, so the other filters and the order stay and the list changes in its place. The dashboard's states lead to the equipment list, and the equipment page's two charts filter it |
+| Choosing | Optional. `links` in `chart_data`, one address of the application per label, make the table's first column links, and a click on a bar or a slice follows the link of its row: the pointer and the keyboard go to the same place, through the same element. The cursor says a part can be chosen. Each link is a path of the application, checked by the same rule as every other way back, so `//` and `/\` are refused. With `into`, a list on the same page, htmx sends that list's form with the values that change from link to link in place of the form's own, so the other filters and the order stay and the list changes in its place. The dashboard's states lead to the equipment list, and the equipment page's two charts filter it |
 | On a phone | Every label that fits stays. When they do not all fit they spread evenly and the first and the last always stay, which Chart.js's own thinning does not promise: it left out October. A chart keeps its height |
 
 daisyUI's colours pass the checks for colour blindness (neighbouring series stay apart) and normal vision, on both
@@ -314,6 +314,7 @@ what each part does.
 | Without JavaScript | The agenda the route writes, by day, with links to other days and views. It stays if the library cannot load |
 | htmx | A calendar that htmx brings is drawn again, as the location filter does, and one it removes is taken down |
 | A phone | The toolbar wraps and the page never scrolls sideways |
+| Limits | `Limits`: the days a calendar accepts, by default 2000 to 2099, and the longest range of events asked for at once, 62 days. A view at the edge asks for a little past them, as January 2000's month asks from 27 December 1999, and gets it. An application whose dates go further passes its own |
 
 ### Groups and editing a row
 

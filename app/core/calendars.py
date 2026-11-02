@@ -20,8 +20,21 @@ from app.core.i18n import _, current_language
 VIEWS = ("month", "week", "agenda")
 _MOMENT = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?(Z|[+-]\d{2}:\d{2})")
 _DAY = re.compile(r"\d{4}-\d{2}-\d{2}")
-EARLIEST = date(2000, 1, 1)
-LATEST = date(2099, 12, 31)
+PADDING = timedelta(days=15)
+"""What a view shows past its period: a month view starts on the Monday before the 1st and runs six weeks."""
+
+
+@dataclass(frozen=True)
+class Limits:
+    """The days a calendar accepts, and the longest range it gives events for at once. An application whose dates go
+    further passes its own to `Period.read`, `read_range`, `read_moment` and `read_day`."""
+
+    earliest: date = date(2000, 1, 1)
+    latest: date = date(2099, 12, 31)
+    longest: int = 62
+
+
+LIMITS = Limits()
 
 
 @dataclass(frozen=True)
@@ -72,11 +85,11 @@ class Period:
     day: date
 
     @classmethod
-    def read(cls, params: Any, today: date) -> "Period":
+    def read(cls, params: Any, today: date, limits: Limits = LIMITS) -> "Period":
         view = params.get("view", "")
         text = params.get("date", "")
         day = date.fromisoformat(text) if _DAY.fullmatch(text) and _valid(text) else today
-        return cls(view if view in VIEWS else "month", min(max(day, EARLIEST), LATEST))
+        return cls(view if view in VIEWS else "month", min(max(day, limits.earliest), limits.latest))
 
     @property
     def first(self) -> date:
@@ -124,18 +137,20 @@ def _valid(text: str) -> bool:
     return True
 
 
-def read_range(start: str, end: str) -> tuple[date, date]:
-    """The days FullCalendar asks events for: its first, and the day after its last. Only the day part is read."""
+def read_range(start: str, end: str, limits: Limits = LIMITS) -> tuple[date, date]:
+    """The days FullCalendar asks events for: its first, and the day after its last. Only the day part is read. A view
+    at the edge of the limits asks for a little past them, and gets it."""
     days = [text[:10] for text in (start, end)]
     if not all(_DAY.fullmatch(day) and _valid(day) for day in days):
         raise Refused("range")
     first, after = (date.fromisoformat(day) for day in days)
-    if not (EARLIEST <= first < after <= LATEST + timedelta(days=1)) or (after - first).days > 62:
+    within = limits.earliest - PADDING <= first < after <= limits.latest + timedelta(days=1) + PADDING
+    if not within or (after - first).days > limits.longest:
         raise Refused("range")
     return first, after
 
 
-def read_moment(text: str) -> datetime:
+def read_moment(text: str, limits: Limits = LIMITS) -> datetime:
     """A moment as a drop sends it, with its offset, in UTC. Anything else is refused: a moment without a time zone
     means nothing."""
     if not _MOMENT.fullmatch(text):
@@ -144,16 +159,19 @@ def read_moment(text: str) -> datetime:
         value = datetime.fromisoformat(text.replace("Z", "+00:00"))
     except ValueError:
         raise Refused(_("That time could not be read.")) from None
-    if not EARLIEST <= value.date() <= LATEST:
+    if not limits.earliest <= value.date() <= limits.latest:
         raise Refused(_("That time could not be read."))
     return value.astimezone(UTC)
 
 
-def read_day(text: str) -> date:
+def read_day(text: str, limits: Limits = LIMITS) -> date:
     """A day as a drop of an all-day event sends it."""
-    if not (_DAY.fullmatch(text) and _valid(text)) or not EARLIEST <= date.fromisoformat(text) <= LATEST:
+    if not (_DAY.fullmatch(text) and _valid(text)):
         raise Refused(_("That day could not be read."))
-    return date.fromisoformat(text)
+    day = date.fromisoformat(text)
+    if not limits.earliest <= day <= limits.latest:
+        raise Refused(_("That day could not be read."))
+    return day
 
 
 def calendar_words() -> dict[str, Any]:

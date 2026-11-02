@@ -203,15 +203,16 @@ def test_a_chart_into_a_list_sends_the_lists_form_with_its_one_value():
 
 @pytest.mark.parametrize(
     "links",
-    [["/a"], ["https://elsewhere.example/a", "/b"], ["//elsewhere.example/a", "/b"]],
+    [["/a"], ["https://elsewhere.example/a", "/b"], ["//elsewhere.example/a", "/b"], ["/\elsewhere.example/a", "/b"]],
 )
 def test_links_are_one_per_label_and_stay_in_the_application(links):
     with pytest.raises(ValueError, match="link"):
         chart_data(["A", "B"], [Series("S", [1, 2])], "X", links=links)
 
 
-def test_a_chart_that_filters_in_place_changes_one_value():
-    data = chart_data(["A", "B"], [Series("S", [1, 2])], "X", links=["/t?a=1&b=1", "/t?a=2&b=2"])
-    with pytest.raises(ValueError, match="one value"):
-        data.link_choices  # noqa: B018  # reading it is the check
-    assert LINKED.link_choices == [("location", "Roof"), ("location", "Workshop")]
+def test_a_chart_that_filters_in_place_sends_every_value_that_changes_from_link_to_link():
+    data = chart_data(["A", "B"], [Series("S", [1, 2])], "X", links=["/t?a=1&b=1&c=k", "/t?a=2&b=2&c=k"])
+    assert data.link_values == ['{"a": "1", "b": "1"}', '{"a": "2", "b": "2"}']
+    assert LINKED.link_values == ['{"location": "Roof"}', '{"location": "Workshop"}']
+    one = chart_data(["A"], [Series("S", [1])], "X", links=["/t?a=1"])
+    assert one.link_values == ['{"a": "1"}']

@@ -11,6 +11,7 @@ from decimal import Decimal
 from typing import Any
 from urllib.parse import parse_qsl, urlsplit
 
+from app.core.addresses import is_local
 from app.core.formatters import format_decimal
 
 CHART_TYPES = {"bar", "stacked", "line", "area", "pie", "doughnut", "radar", "polar", "scatter", "bubble", "mixed"}
@@ -85,21 +86,14 @@ class ChartData:
     """Where each label leads, if anywhere: a click on its part of the picture, or its link in the table."""
 
     @property
-    def link_choices(self) -> list[tuple[str, str]]:
-        """What each link chooses, as (name, value), when the chart filters a list on the same page: the one value of
-        the address that differs from link to link, such as `location`."""
-        params = [dict(parse_qsl(urlsplit(link).query, keep_blank_values=True)) for link in self.links]
-        names = {name for one in params for name in one}
-        varying = [name for name in sorted(names) if len({one.get(name) for one in params}) > 1]
-        if len(varying) != 1 and not (len(params) == 1 and len(names) == 1):
-            raise ValueError("A chart that filters a list in place changes one value of the address from link to link")
-        name = varying[0] if varying else names.pop()
-        return [(name, one.get(name, "")) for one in params]
-
-    @property
     def link_values(self) -> list[str]:
-        """The same, as the JSON that htmx sends with the list's form, in place of the form's own value."""
-        return [json.dumps({name: value}) for name, value in self.link_choices]
+        """What each link chooses, as the JSON htmx sends with a list's form on the same page, in place of the form's
+        own values: every value of the address that changes from link to link, such as `location`. A single link
+        chooses all of its values."""
+        params = [dict(parse_qsl(urlsplit(link).query, keep_blank_values=True)) for link in self.links]
+        names = sorted({name for one in params for name in one})
+        varying = [name for name in names if len({one.get(name) for one in params}) > 1] or names
+        return [json.dumps({name: one.get(name, "") for name in varying}) for one in params]
 
     def config_for(self, chart_type: str) -> dict[str, Any]:
         if chart_type not in CHART_TYPES:
@@ -128,7 +122,7 @@ def chart_data(
         raise ValueError("Each series needs one value per label")
     if links and len(links) != len(labels):
         raise ValueError("One link per label, or none")
-    if any(not link.startswith("/") or link.startswith("//") for link in links):
+    if not all(is_local(link) for link in links):
         raise ValueError("A chart's links stay in the application: each starts with a single /")
     if len(labels) > len(colours) and len(series) == 1 and colours is not SLICE_COLOURS:
         raise ValueError("One colour per slice")
