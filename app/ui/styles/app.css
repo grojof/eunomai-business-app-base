@@ -249,3 +249,11 @@
     text-decoration: underline;
   }
 }
+
+/* daisyUI's table rules land in the utilities layer, which wins over components. The header is a layer of its own at
+   z-index 1, as the pinned first column is: its cells passed over the header's first cell. */
+@layer utilities {
+  .table.table-pin-rows thead {
+    z-index: 2;
+  }
+}

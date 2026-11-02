@@ -401,6 +401,22 @@ def test_the_keyboard_reaches_the_table_box_and_scrolls_it(open_filled):
 
 
 @pytest.mark.browser
+def test_every_header_cell_stays_on_top_while_the_rows_go_past(open_filled):
+    """The first column is pinned sideways too, and its cells must pass under the header, not over it."""
+    page = open_filled("/equipment")
+    page.evaluate("document.querySelector('.table-scroll').scrollTop = 400")
+    until(page, "document.querySelector('.table-scroll').scrollTop >= 400")
+    top = page.locator(".table-scroll").bounding_box()["y"]
+    cells = page.locator("thead tr > *")
+    assert cells.count() > 1
+    for index in range(cells.count()):
+        box = cells.nth(index).bounding_box()
+        assert abs(box["y"] - top) <= 1, cells.nth(index).inner_text()
+        middle = (box["x"] + min(box["width"], 40) / 2, box["y"] + box["height"] / 2)
+        assert page.evaluate("([x, y]) => !!document.elementFromPoint(x, y).closest('thead')", middle), index
+
+
+@pytest.mark.browser
 def test_the_table_box_stays_in_the_tab_order_of_the_page(open_filled):
     page = open_filled("/equipment")
     page.locator("#equipment-location").focus()

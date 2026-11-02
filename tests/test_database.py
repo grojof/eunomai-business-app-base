@@ -492,7 +492,9 @@ def test_a_linux_job_cannot_pass_without_postgresql_by_accident(environment, ref
 
 
 def test_the_run_fails_when_it_is_missing():
-    environment = {name: value for name, value in os.environ.items() if name != "TEST_DATABASE_URL"}
+    # Only the Dependencies workflow sets TESTS_ON_SQLITE_ALONE; this run must look like any other Linux job
+    left_out = {"TEST_DATABASE_URL", "TESTS_ON_SQLITE_ALONE"}
+    environment = {name: value for name, value in os.environ.items() if name not in left_out}
     environment |= CI_ON_LINUX
     arguments = [sys.executable, "-m", "pytest", "--collect-only", "-q", "tests/test_brand.py"]
     done = subprocess.run(arguments, cwd=ROOT, env=environment, capture_output=True, text=True, errors="replace")
