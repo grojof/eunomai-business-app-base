@@ -121,3 +121,47 @@ def test_a_choice_works_without_javascript(open_filled):
     page.wait_for_load_state()
     assert page.locator(".table-dense").count() == 1
     assert page.url.endswith("/equipment?status=stopped")
+
+
+SIZES = [(1280, 720), (1440, 900), (1920, 1080)]
+BOX = """() => {
+    const box = document.querySelector('[data-results] .table-scroll');
+    const table = box.querySelector('table').getBoundingClientRect().width;
+    return { sideways: box.scrollWidth - box.clientWidth, fits: table <= box.clientWidth + 0.5,
+             downwards: box.scrollHeight - box.clientHeight, rows: box.querySelectorAll('tbody tr').length };
+}"""
+
+
+def opened(browser, base, path, width, height, density):
+    context = browser.new_context(viewport={"width": width, "height": height})
+    context.add_cookies(
+        [
+            {"name": "language", "value": "en", "url": base},
+            {"name": "layout_list_density", "value": density, "url": base},
+        ]
+    )
+    page = context.new_page()
+    page.goto(base + path)
+    return context, page
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-12")
+@pytest.mark.parametrize(("width", "height"), SIZES)
+@pytest.mark.parametrize("density", ["normal", "dense"])
+@pytest.mark.parametrize("path", ["/equipment", "/planning?panel=hidden"])
+def test_a_table_whose_columns_fit_does_not_scroll_sideways(browser, filled_base_url, path, density, width, height):
+    context, page = opened(browser, filled_base_url, path, width, height, density)
+    box = page.evaluate(BOX)
+    context.close()
+    if box["fits"]:
+        assert box["sideways"] == 0
+
+
+@pytest.mark.browser
+def test_a_dense_page_of_rows_fits_its_box_on_a_large_screen(browser, filled_base_url):
+    context, page = opened(browser, filled_base_url, "/equipment", 1920, 1080, "dense")
+    box = page.evaluate(BOX)
+    context.close()
+    assert box["rows"] == 25
+    assert box["downwards"] <= 0

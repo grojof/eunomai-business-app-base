@@ -449,8 +449,16 @@ div.calendar-dot {
     }
   }
 
+  /* Taller than a normal box, so that a default page of dense rows fits a large screen: the 25 rows of 1920 by 1080
+     missed by 65 pixels with 18rem. Its header stays pinned when a smaller screen still scrolls it */
   .table-scroll:has(> .table-dense) {
-    max-block-size: max(24rem, calc(100dvh - 18rem));
+    max-block-size: max(24rem, calc(100dvh - 12rem));
+  }
+
+  /* A dense cell's padding is 0.5rem, so a ghost button can reach past its label by that much and no more: with the
+     normal 0.5625rem it passed the table by one pixel, and the box scrolled sideways for it */
+  .table-dense .row-actions .btn:last-child {
+    margin-inline-end: -0.5rem;
   }
 
   .table-dense.table-groups th[scope="rowgroup"] {
