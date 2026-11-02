@@ -9,7 +9,7 @@ after someone else's is refused and the event goes back.
 from collections import defaultdict
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Annotated, Any
-from urllib.parse import urlencode, urlsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit
 from zoneinfo import ZoneInfo
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
@@ -28,6 +28,7 @@ from app.core.templating import render
 from app.demo.data import GENERATE, READY, rows_state
 from app.demo.equipment import LARGEST_ID, can_edit, labels_in_order
 from app.demo.models import LAST_DAY, LOCATIONS, Equipment, Inspection, WorkOrder, working_days
+from app.demo.planning import LONGEST_JOB
 
 PATH = "/calendar"
 Admin = Annotated[Person, Depends(require_role("admin"))]
@@ -45,7 +46,7 @@ def _back(address: str) -> str:
         return PATH
     if parts.path != PATH:
         return PATH
-    params = dict(item.split("=", 1) for item in parts.query.split("&") if "=" in item)
+    params = dict(parse_qsl(parts.query))
     period = Period.read(params, LAST_DAY)
     return period.address(PATH, location=_location(params.get("location", "")))
 
@@ -81,7 +82,7 @@ def events_between(
         .where(Inspection.starts_at < end, Inspection.ends_at > start, *where)
         .order_by(Inspection.starts_at, Inspection.id)
     ).all()
-    longest = timedelta(days=60)  # a work order of 99.75 hours and one person is 13 days: this is far past it
+    longest = timedelta(days=working_days(LONGEST_JOB, 1))  # the longest a work order can last
     orders = session.scalars(
         select(WorkOrder)
         .join(WorkOrder.equipment)
@@ -207,11 +208,13 @@ def move_event(
             visit = session.get(Inspection, number) if number <= LARGEST_ID else None
             if visit is None:
                 return _refused(_("This is no longer here: someone may have removed it."), 404)
-            starts, ends = read_moment(start), read_moment(end) if end else None
+            starts = read_moment(start)  # a drop moves a visit and keeps its length: whatever end it sends is ignored
             if sent != visit.version:
                 return _refused(late)
             length = visit.ends_at - visit.starts_at
-            visit.starts_at, visit.ends_at = starts, ends or starts + length
+            if length <= timedelta(0):
+                return _refused(_("That could not be moved. It is back where it was."), 409)
+            visit.starts_at, visit.ends_at = starts, starts + length
             if not saved(session):
                 return _refused(late)
             when = format_datetime(visit.starts_at, zone)
@@ -224,6 +227,8 @@ def move_event(
             day = read_day(start)
             if sent != order.version:
                 return _refused(late)
+            if order.status != "planned":
+                return _refused(_("Only planned work orders move on the calendar. Change its state in Planning."))
             order.planned_on = day
             if not saved(session):
                 return _refused(late)
@@ -272,6 +277,19 @@ def _visit_form(
     )
 
 
+def local_moment(day: date, at: time, local: ZoneInfo) -> tuple[datetime, bool]:
+    """A wall-clock time on a day in the application's time zone, in UTC, and whether that time does not exist there.
+
+    When the clocks go forward an hour is skipped: a time in it does not come back the same from UTC, and is refused.
+    When they go back an hour happens twice: it is read as its first time, before the change, which is what a person
+    who writes 02:30 on that day most often means, and the end is compared with the start in UTC.
+    """
+    moment = datetime.combine(day, at, local)
+    utc = moment.astimezone(UTC)
+    again = utc.astimezone(local)
+    return utc, (again.date(), again.time()) != (day, at)
+
+
 def visit_edit(request: Request, visit_id: int, session: DatabaseSession, _person: Admin) -> Response:
     if rows_state(session) != READY:
         return whole_page(request, PATH)
@@ -314,13 +332,20 @@ def visit_save(
             "ends": lambda: read_time(ends, _("Enter when it ends, such as 11:00.")),
         }
     )
-    if not errors and clean["ends"] <= clean["starts"]:
-        errors["ends"] = _("It must end after it starts.")
+    local = ZoneInfo(zone)
+    new_start = new_end = datetime.min.replace(tzinfo=UTC)
+    if not errors:
+        new_start, missing_start = local_moment(clean["day"], clean["starts"], local)
+        new_end, missing_end = local_moment(clean["day"], clean["ends"], local)
+        skipped = _("That time does not exist on that day: the clocks go forward. Choose a time after the change.")
+        if missing_start:
+            errors["starts"] = skipped
+        if missing_end:
+            errors["ends"] = skipped
+        if not errors and new_end <= new_start:
+            errors["ends"] = _("It must end after it starts.")
     if errors:
         return _visit_form(request, visit, way_back, values, errors, 422)
-    local = ZoneInfo(zone)
-    new_start = datetime.combine(clean["day"], clean["starts"], local).astimezone(UTC)
-    new_end = datetime.combine(clean["day"], clean["ends"], local).astimezone(UTC)
     late = not (version.isascii() and version.isdigit() and int(version) == visit.version)
     if late and (visit.starts_at, visit.ends_at) != (new_start, new_end):
         now = [(_("Starts"), format_datetime(visit.starts_at, zone)), (_("Ends"), format_datetime(visit.ends_at, zone))]
@@ -331,7 +356,7 @@ def visit_save(
         now = [(_("Starts"), format_datetime(visit.starts_at, zone)), (_("Ends"), format_datetime(visit.ends_at, zone))]
         return _visit_form(request, visit, way_back, values | {"version": visit.version}, {}, 409, now)
     period = Period("week", new_start.astimezone(local).date())
-    params = dict(item.split("=", 1) for item in urlsplit(way_back).query.split("&") if "=" in item)
+    params = dict(parse_qsl(urlsplit(way_back).query))
     return RedirectResponse(
         period.address(PATH, location=_location(params.get("location", ""))) + f"&moved={visit.id}", status_code=303
     )

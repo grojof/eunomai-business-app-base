@@ -3,6 +3,7 @@
 import json
 import re
 from datetime import UTC, datetime, timedelta
+from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -427,3 +428,107 @@ def test_without_the_library_the_agenda_stays(open_filled):
     page.goto(page.url.rstrip("/") + WEEK)
     page.wait_for_load_state("networkidle")
     assert page.locator("[data-calendar-fallback]").is_visible()
+
+
+def planned_order(url):
+    engine = create_database_engine(url)
+    with Session(engine) as session:
+        order = session.scalars(select(WorkOrder).where(WorkOrder.status == "planned").order_by(WorkOrder.id)).first()
+    engine.dispose()
+    return order
+
+
+@pytest.mark.rule("SEC-03")
+@pytest.mark.parametrize("end", ["2026-11-03T09:00:00Z", "2099-12-31T09:00:00Z", "nonsense"])
+def test_a_drop_keeps_the_visits_length_whatever_end_it_sends(writable, end):
+    client, url = writable
+    visit = visits(url)[0]
+    length = visit.ends_at - visit.starts_at
+    form = {"event": f"visit-{visit.id}", "start": "2026-11-04T09:30:00Z", "end": end, "version": str(visit.version)}
+    assert client.post("/calendar/move", data=form).status_code == 200
+    saved = read(url, Inspection, visit.id)
+    assert saved.ends_at - saved.starts_at == length
+
+
+def test_only_a_planned_work_order_moves_on_the_calendar(writable):
+    client, url = writable
+    engine = create_database_engine(url)
+    with Session(engine) as session:
+        closed = session.scalars(select(WorkOrder).where(WorkOrder.status == "closed")).first()
+    engine.dispose()
+    answer = client.post(
+        "/calendar/move", data={"event": f"order-{closed.id}", "start": "2026-11-09", "version": str(closed.version)}
+    )
+    assert answer.status_code == 409
+    assert "Only planned work" in answer.json()["message"]
+    assert read(url, WorkOrder, closed.id).planned_on == closed.planned_on
+
+
+def test_a_work_order_of_many_months_is_in_the_feed_of_its_last_days(writable):
+    client, url = writable
+    order = planned_order(url)
+    engine = create_database_engine(url)
+    with engine.begin() as connection:
+        connection.execute(
+            WorkOrder.__table__.update()
+            .where(WorkOrder.id == order.id)
+            .values(planned_on=datetime(2026, 1, 5).date(), hours=Decimal(9999), crew=1)
+        )
+    engine.dispose()
+    events = client.get("/calendar/events?start=2029-06-04&end=2029-06-11").json()
+    assert f"order-{order.id}" in [event["id"] for event in events]
+
+
+def test_the_way_back_reads_its_address_as_an_address(writable):
+    client, url = writable
+    visit = visits(url)[0]
+    back = "/calendar?view=week&date=2026-10-28&location=Plant+room"
+    html = client.get(f"/inspections/{visit.id}/edit", params={"back": back}).text
+    assert 'name="back" value="/calendar?view=week&amp;date=2026-10-28&amp;location=Plant+room"' in html
+    form = {"day": "2026-11-10", "starts": "10:00", "ends": "11:00", "version": str(visit.version), "back": back}
+    location = client.post(f"/inspections/{visit.id}/edit", data=form, follow_redirects=False).headers["location"]
+    assert "location=Plant+room" in location
+
+
+@pytest.mark.rule("LANG-09")
+def test_a_time_the_clocks_skip_is_refused_and_says_why(writable):
+    client, url = writable
+    visit = visits(url)[0]
+    form = {"day": "2026-03-29", "starts": "02:30", "ends": "03:30", "version": str(visit.version), "back": WEEK}
+    response = client.post(f"/inspections/{visit.id}/edit", data=form)
+    assert response.status_code == 422
+    assert "does not exist" in response.text
+    assert read(url, Inspection, visit.id).starts_at == visit.starts_at
+
+
+@pytest.mark.rule("LANG-09")
+def test_a_time_that_happens_twice_is_its_first_and_the_end_comes_after_it_in_utc(writable):
+    client, url = writable
+    visit = visits(url)[0]
+    form = {"day": "2026-10-25", "starts": "02:30", "ends": "02:45", "version": str(visit.version), "back": WEEK}
+    assert client.post(f"/inspections/{visit.id}/edit", data=form, follow_redirects=False).status_code == 303
+    saved = read(url, Inspection, visit.id)
+    assert saved.starts_at == datetime(2026, 10, 25, 0, 30, tzinfo=UTC)
+    assert saved.ends_at == datetime(2026, 10, 25, 0, 45, tzinfo=UTC)
+
+
+@pytest.mark.browser
+def test_a_refusal_that_is_not_json_says_the_calendars_own_words(madrid):
+    context, base, _url = madrid
+    page = context.new_page()
+    page.route(
+        "**/calendar/move", lambda route: route.fulfill(status=500, body="<html>Oops</html>", content_type="text/html")
+    )
+    page.goto(f"{base}/calendar?view=week&date=2026-10-26")
+    until(page, READY)
+    event = page.locator("a.calendar-event[href^='/inspections/']").first
+    box = event.bounding_box()
+    slot = page.locator(".calendar-frame [data-time='09:00:00']").first.bounding_box()["height"]
+    page.mouse.move(box["x"] + box["width"] / 2, box["y"] + 6)
+    page.mouse.down()
+    for step in range(1, 11):
+        page.mouse.move(box["x"] + box["width"] / 2, box["y"] + 6 + slot * 2 * step / 10)
+        page.wait_for_timeout(30)
+    page.mouse.up()
+    until(page, "document.querySelector('#announcements').textContent.includes('It is back where it was')")
+    assert "JSON" not in page.locator("#announcements").text_content()

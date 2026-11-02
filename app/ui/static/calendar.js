@@ -78,9 +78,10 @@
     });
     try {
       const response = await fetch(config.move, { method: "POST", body: form, headers: { Accept: "application/json" } });
-      const answer = await response.json();
-      if (!response.ok) {
-        throw new Error(answer.message);
+      // A page in place of the answer, such as a proxy's error, says nothing a person should hear: our words do.
+      const answer = response.headers.get("content-type")?.includes("application/json") ? await response.json() : {};
+      if (!response.ok || answer.version === undefined) {
+        throw new Error(answer.message ?? "");
       }
       event.setExtendedProp("version", answer.version);
       announce(answer.message);
