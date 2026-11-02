@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 21:48+0100\n"
+"POT-Creation-Date: 2026-11-02 12:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -322,6 +322,9 @@ msgstr "Elimina l'ordre de treball %(number)s"
 msgid "Delete work order %(number)s?"
 msgstr "Vols eliminar l'ordre de treball %(number)s?"
 
+msgid "Delivered"
+msgstr "Lliurat"
+
 msgid "Description"
 msgstr "Descripció"
 
@@ -409,6 +412,13 @@ msgstr "Equips, on són, el seu estat, la seva propera inspecció i el seu cost"
 
 msgid "Error"
 msgstr "Error"
+
+msgid ""
+"Every Lucide icon is here. Search them by name or tag, in English, "
+"Spanish or Catalan, with the command above."
+msgstr ""
+"Hi són totes les icones de Lucide. Cerca-les pel nom o l'etiqueta, en "
+"anglès, castellà o català, amb l'ordre de dalt."
 
 msgid ""
 "Every component on offer, with an honest status, and every official "

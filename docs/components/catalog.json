@@ -160,6 +160,14 @@
     "page": "docs/components/hover-gallery.md"
   },
   {
+    "name": "icon",
+    "category": "data-display",
+    "status": "available",
+    "note": "Any of Lucide's icons, or one of the organization's, hidden from screen readers.",
+    "use": "Any of Lucide's icons, or one of the organization's, hidden from screen readers.",
+    "page": "docs/components/icon.md"
+  },
+  {
     "name": "kbd",
     "category": "data-display",
     "status": "available",

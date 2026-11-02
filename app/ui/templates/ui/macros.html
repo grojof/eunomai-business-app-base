@@ -1,8 +1,10 @@
 {#- Components: one macro each. Applications call these, so the look can change here without touching a screen.
     Each one appears on its component's page in the gallery. -#}
 
+{#- The only way to show an icon: one of Lucide's, or one of the organization's in app/brand/icons/. A name is in only
+    one of them, and `uv run --frozen python tools/icons.py search <words>` finds it. -#}
 {% macro icon(name, size="size-5") %}
-<span class="icon inline-flex shrink-0 {{ size }}" aria-hidden="true">{% include "ui/icons/" ~ name ~ ".svg" %}</span>
+<span class="icon inline-flex shrink-0 {{ size }}" aria-hidden="true">{% include ["ui/icons/" ~ name ~ ".svg", "brand-icons/" ~ name ~ ".svg"] %}</span>
 {% endmacro %}
 
 {% macro page_heading(title, description="") %}

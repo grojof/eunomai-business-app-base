@@ -1,0 +1,11 @@
+{% from "ui/macros.html" import icon %}
+<div class="flex flex-wrap items-center gap-6">
+  {{ icon("truck", "size-4") }}
+  {{ icon("truck") }}
+  {{ icon("truck", "size-8") }}
+  <span class="flex items-center gap-2 text-success">{{ icon("circle-check") }}{{ _("Delivered") }}</span>
+</div>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ icon("truck") }}
+{{ icon("truck", "size-8") }}{% endraw %}</code></pre>
+<pre class="example-code mt-4 rounded-box"><code>uv run --frozen python tools/icons.py search camión</code></pre>
+<p class="mt-3 text-sm">{{ _("Every Lucide icon is here. Search them by name or tag, in English, Spanish or Catalan, with the command above.") }}</p>

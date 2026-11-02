@@ -39,6 +39,7 @@ OWN_TITLES = (
     N_("Field error"),
     N_("Filter bar"),
     N_("Form actions"),
+    N_("Icon"),
     N_("Number field"),
     N_("Searchable select"),
 )
@@ -98,6 +99,12 @@ CATEGORIES: dict[str, tuple[str, tuple[Component, ...]]] = {
             Component("diff", DECORATIVE),
             Component("hover-3d", DECORATIVE),
             Component("hover-gallery", DECORATIVE),
+            Component(
+                "icon",
+                note=N_("Any of Lucide's icons, or one of the organization's, hidden from screen readers."),
+                macro="icon",
+                icon="shapes",
+            ),
             Component("kbd"),
             Component("list"),
             Component("stat", macro="stat"),

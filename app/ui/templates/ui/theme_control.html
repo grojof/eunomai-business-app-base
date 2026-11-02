@@ -11,8 +11,8 @@
   {% if variant == "toggle" %}
   <label class="toggle text-base-content">
     <input class="theme-controller" type="checkbox" name="theme" value="dark" autocomplete="off" aria-label="{{ _('Dark theme') }}" data-follows-system{% if theme == "dark" %} checked{% endif %}>
-    {% include "ui/icons/sun.svg" %}
-    {% include "ui/icons/moon.svg" %}
+    {{ icon("sun", "size-6") }}
+    {{ icon("moon", "size-6") }}
   </label>
   {% elif variant == "swap" %}
   <label class="swap swap-rotate btn btn-ghost btn-square btn-sm">

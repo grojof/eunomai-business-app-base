@@ -50,5 +50,6 @@ jobs:
       - run: uv run --frozen python tools/css.py check
       - run: uv run --frozen python tools/components.py check
       - run: uv run --frozen python tools/gallery.py check
+      - run: uv run --frozen python tools/icons.py check
       - run: uv run --frozen python tools/translations.py check
       - run: uv run --frozen pytest -q

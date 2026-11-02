@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-31 21:48+0100\n"
+"POT-Creation-Date: 2026-11-02 12:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -55,6 +55,13 @@ msgstr ""
 
 msgid "Actions"
 msgstr "Acciones"
+
+msgid ""
+"Any of Lucide's icons, or one of the organization's, hidden from screen "
+"readers."
+msgstr ""
+"Cualquier icono de Lucide, o uno de la organización, oculto para los "
+"lectores de pantalla."
 
 msgid "Apply"
 msgstr "Aplicar"
@@ -222,6 +229,9 @@ msgstr "Cómo se ve el control de idioma"
 
 msgid "How the theme control looks"
 msgstr "Cómo se ve el control de tema"
+
+msgid "Icon"
+msgstr "Icono"
 
 msgid "Icons only"
 msgstr "Solo iconos"

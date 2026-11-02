@@ -13,7 +13,7 @@ import pytest
 from tests.helpers import ROOT, preview_section, repository_copy, run_in
 from tests.test_components import add_a_component, check_the_added_component
 from tests.test_standards import ROW, traced
-from tools import remove_demo
+from tools import icons, remove_demo
 
 
 def succeeded(result: subprocess.CompletedProcess[str], what: object) -> None:
@@ -71,11 +71,15 @@ def test_a_rule_only_the_demo_proved_says_it_is_checked_by_hand(application):
     assert {rows[rule] for rule in remove_demo.ONLY_ON_DEMO} == {"By hand"}
 
 
-def test_every_icon_left_is_used(application):
-    sources = [*(application / "app").rglob("*.html"), *(application / "app").rglob("*.py")]
-    shell = "".join(path.read_text(encoding="utf-8") for path in sources)
-    icons = application / "app" / "ui" / "templates" / "ui" / "icons"
-    assert [icon.stem for icon in icons.glob("*.svg") if f'"{icon.stem}"' not in shell] == []
+def test_the_icon_set_stays_whole(application):
+    """An application keeps every icon, so a new screen can use any of them: tools/vendor.py check proves the folder is
+    the pinned version, and the organization's icons and the illustrations keep their places."""
+    folder = application / "app" / "ui" / "templates" / "ui" / "icons"
+    assert {icon.stem for icon in folder.glob("*.svg")} == icons.lucide_names()
+    assert (folder / "LICENSE").exists()
+    assert (application / "tools" / "lucide" / "index.json").exists()
+    assert (application / "app" / "brand" / "icons" / "tags.json").exists()
+    assert (application / "app" / "ui" / "static" / "illustrations").is_dir()
 
 
 def test_agents_md_describes_an_application(application):
@@ -113,7 +117,7 @@ def test_the_stylesheet_shrinks(application):
     assert "example-preview" not in built.read_text(encoding="utf-8")
 
 
-@pytest.mark.parametrize("check", ["css", "components", "gallery", "translations", "vendor"])
+@pytest.mark.parametrize("check", ["css", "components", "gallery", "icons", "translations", "vendor"])
 def test_every_tool_check_passes(application, check):
     succeeded(run_in(application, f"tools/{check}.py", "check"), check)
 

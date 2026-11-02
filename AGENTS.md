@@ -8,8 +8,8 @@ person or real system: it stays neutral so anyone can clone it.
 | Folder | Contents | Rule |
 |---|---|---|
 | `app/core/` | Identity, roles, settings, the database and its column types, lists on the server, reading forms, uploads, languages, formatters, errors, health | Never imports from `app/demo/` |
-| `app/ui/` | Components as macros, the settings menu, the command palette, the stylesheet's source, the few JavaScript files | Screens call macros; daisyUI classes stay here where possible |
-| `app/brand/` | The theme, logos | The only folder an organization must change |
+| `app/ui/` | Components as macros, the settings menu, the command palette, the stylesheet's source, the few JavaScript files, Lucide's icons, the illustrations | Screens call macros; daisyUI classes stay here where possible |
+| `app/brand/` | The theme, logos, the organization's own icons | The only folder an organization must change |
 | `app/demo/` | Demo screens, models, generated data, the gallery and their translations | Deleting it leaves a working application |
 | `migrations/` | Alembic's setup, and one file per change of the models | A model that changes needs its migration: a test compares them on both databases |
 
@@ -35,6 +35,12 @@ Add your own components as [the specification](docs/specification.md#adapting-it
 - Use the existing macros before writing anything new: screens call `button`, not a raw `.btn`. daisyUI's examples in
   the gallery are reference material, not a model for a screen. After changing templates, run
   `uv run --frozen python tools/css.py`.
+- An icon comes from Lucide's set or the organization's own icons in `app/brand/icons/`, and only through the `icon`
+  macro or a macro that takes an icon's name. Find one with `uv run --frozen python tools/icons.py search <words>`, in
+  English, Spanish or Catalan. Never draw an SVG inline, never bring another collection, never edit Lucide's folder:
+  `tools/vendor.py` keeps it, as [Icons and illustrations](docs/specification.md#icons-and-illustrations) says.
+- An illustration is a file in `app/ui/static/illustrations/`, made with the organization's own tools if it has them,
+  and shown with `<img src>` or as a CSS background, never inline.
 - Each screen handles its empty, loading, error and no-permission states.
 - A new component needs its page in the demo and its tests, in the same change.
 - Money and quantities are `Mapped[Decimal]`, moments `Mapped[datetime]` with their time zone. Never a float. On SQLite,
@@ -62,6 +68,7 @@ uv run --frozen python tools/vendor.py check
 uv run --frozen python tools/css.py check
 uv run --frozen python tools/components.py check     # after changing the catalogue: tools/components.py
 uv run --frozen python tools/gallery.py check        # generated from daisyUI's documentation: tools/gallery.py
+uv run --frozen python tools/icons.py check          # icons, their names, and every SVG shown as an image
 uv run --frozen python tools/translations.py check   # after changing texts: tools/translations.py update
 uv run --frozen pytest -q                            # with TEST_DATABASE_URL, the database tests run on PostgreSQL too
 ```
