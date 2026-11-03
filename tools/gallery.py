@@ -7,7 +7,7 @@ The source is tools/tailwind/daisyui-docs.json, pinned in vendor.json to the sam
 component it takes the title, description, class tables and every example, with the Spanish and Catalan that daisyUI
 publishes. `transform` is the only place an example changes, so that it runs under this application's Content Security
 Policy. A page whose structure has changed stops the generator rather than give a gallery with holes:
-tools/update_dependencies.py then holds daisyUI back, as it does for docs/components/.
+tools/update_dependencies.py then holds daisyUI back, as it does for docs/base/components/.
 
 With the demo deleted there is no gallery, and this tool has nothing to do.
 """
@@ -48,7 +48,7 @@ PALETTE = re.compile(
     r"|var\(--color-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue"
     r"|indigo|violet|purple|fuchsia|pink|rose)-\d+\)"
 )
-"""Tailwind's own colours, which this base removes: docs/decisions.md says why."""
+"""Tailwind's own colours, which this base removes: docs/base/decisions.md says why."""
 TOKEN = re.compile(
     r"<!--.*?-->"
     r"|<(?P<tag>[a-zA-Z][\w-]*)(?P<attributes>(?:\s+[^\s=>/]+(?:\s*=\s*(?:\"[^\"]*\"|'[^']*'|[^\s>\"']+))?)*)\s*(?P<end>/?)>",

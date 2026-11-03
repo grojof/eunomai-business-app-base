@@ -1,7 +1,7 @@
 """Planning: work orders grouped on the server, and one row edited at a time in a dialog.
 
 It is what a spreadsheet-like grid would be asked for, without one: a native table a screen reader already knows, and a
-form it already knows, with nothing to learn in between. See docs/decisions.md.
+form it already knows, with nothing to learn in between. See docs/base/decisions.md.
 """
 
 from collections.abc import Callable, Mapping, Sequence

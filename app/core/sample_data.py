@@ -9,7 +9,7 @@ own in `app/<module>/sample_data.py`, with two functions, and nothing to registe
     def holds_rows(session: Session) -> bool: ...   # whether the module's tables hold any row
     def fill(session: Session) -> None: ...         # replaces the module's rows with the made-up ones
 
-The caller commits. The rows are invented: no real people or companies. See docs/specification.md#adapting-it
+The caller commits. The rows are invented: no real people or companies. See docs/base/specification.md#adapting-it
 """
 
 import argparse

@@ -525,7 +525,7 @@ def repository(tmp_path, monkeypatch):
     monkeypatch.setattr(update_dependencies, "ROOT", tmp_path)
     monkeypatch.setattr(tools_vendor, "VENDOR", tmp_path / "vendor.json")
     monkeypatch.setattr(update_dependencies.components, "SOURCE", tmp_path / "llms.txt")
-    monkeypatch.setattr(update_dependencies.components, "TARGET", ROOT / "docs" / "components")
+    monkeypatch.setattr(update_dependencies.components, "TARGET", ROOT / "docs" / "base" / "components")
     return tmp_path, source
 
 

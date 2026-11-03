@@ -1,4 +1,4 @@
-"""Boards: cards in columns, moved on the server. See docs/specification.md#boards
+"""Boards: cards in columns, moved on the server. See docs/base/specification.md#boards
 
 A board is drawn on the server, and each card carries a form that moves it: a plain POST that works without JavaScript.
 Dragging, where the browser can, sends that same form with the card's new neighbour. The server decides: it reads what

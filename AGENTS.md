@@ -15,17 +15,17 @@ person or real system: it stays neutral so anyone can clone it.
 
 ## Components
 
-Before using a component, read [`docs/components/README.md`](docs/components/README.md), then
-[`rules.md`](docs/components/rules.md) once, and only the page of each component you use: never the whole official file.
-Prefer `approved` components; an approved component needs a macro. Those pages are generated: change
+Before using a component, read [`docs/base/components/README.md`](docs/base/components/README.md), then
+[`rules.md`](docs/base/components/rules.md) once, and only the page of each component you use: never the whole official
+file. Prefer `approved` components; an approved component needs a macro. Those pages are generated: change
 `app/ui/catalog.py`, then run `tools/components.py`. `app/demo/examples/` is generated too, from daisyUI's documentation:
 never edit it, run `tools/gallery.py`. To see a component live, open `/gallery/<name>` in the demo.
-Add your own components as [the specification](docs/specification.md#adapting-it) says.
+Add your own components as [the specification](docs/base/specification.md#adapting-it) says.
 
 ## Rules
 
-- Read [Standards](docs/standards.md) before writing a screen or a component. It is the only home of the rules: each
-  has an identifier, an official source and a check. A change that breaks one is not finished, whatever else it does.
+- Read [Standards](docs/base/standards.md) before writing a screen or a component. It is the only home of the rules:
+  each has an identifier, an official source and a check. A change that breaks one is not finished, whatever else it does.
 - Base decisions on those sources, not on what seems right. A new rule needs its source and its test, or it says
   *Project decision*. A test names the rule it proves: `@pytest.mark.rule("A11Y-05")`.
 - Build the plain HTML first: it must work with a keyboard and a screen reader before any behaviour is added on top.
@@ -38,22 +38,23 @@ Add your own components as [the specification](docs/specification.md#adapting-it
 - An icon comes from Lucide's set or the organization's own icons in `app/brand/icons/`, and only through the `icon`
   macro or a macro that takes an icon's name. Find one with `uv run --frozen python tools/icons.py search <words>`, in
   English, Spanish or Catalan. Never draw an SVG inline, never bring another collection, never edit Lucide's folder:
-  `tools/vendor.py` keeps it, as [Icons and illustrations](docs/specification.md#icons-and-illustrations) says.
+  `tools/vendor.py` keeps it, as [Icons and illustrations](docs/base/specification.md#icons-and-illustrations) says.
 - An illustration is a file in `app/ui/static/illustrations/`, made with the organization's own tools if it has them,
   and shown with `<img src>` or as a CSS background, never inline.
 - Each screen handles its empty, loading, error and no-permission states.
 - A new component needs its page in the demo and its tests, in the same change.
 - Money and quantities are `Mapped[Decimal]`, moments `Mapped[datetime]` with their time zone. Never a float. On SQLite,
-  a sum in SQL raises `InexactQuery`: use `total()`. [Data](docs/specification.md#data) says how the two databases differ.
+  a sum in SQL raises `InexactQuery`: use `total()`. [Data](docs/base/specification.md#data) says how the two databases
+  differ.
 - A route that uses the database takes `DatabaseSession`, is declared with `def`, and commits itself.
 - A long list uses `ListView` from `app/core/tables.py`, whose values are checked against lists, never text from the
-  address in SQL: read [Lists on the server](docs/specification.md#lists-on-the-server). Charts come from
+  address in SQL: read [Lists on the server](docs/base/specification.md#lists-on-the-server). Charts come from
   `app/core/charts.py` and the `chart` macro, always with a summary. Excel comes from `app/core/excel.py`. A board
   comes from `app/core/boards.py`, a timeline from `app/core/gantt.py` and a calendar from `app/core/calendars.py`,
   each with its macro: the server decides every move.
 - A form uses the field macros and reads every value with `app/core/forms.py`, at the edge: read
-  [Forms](docs/specification.md#forms). It is `novalidate`, and a failed save keeps what was typed.
-- Add a dependency only if the [stack](docs/specification.md#stack) needs it. Pin it and check it for known
+  [Forms](docs/base/specification.md#forms). It is `novalidate`, and a failed save keeps what was typed.
+- Add a dependency only if the [stack](docs/base/specification.md#stack) needs it. Pin it and check it for known
   vulnerabilities.
 - No secrets in the repository, and no real people or companies in demo data.
 - Made-up rows to try a module's screens go in `app/<module>/sample_data.py`, with `holds_rows(session)` and

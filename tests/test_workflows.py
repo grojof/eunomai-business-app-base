@@ -1,7 +1,7 @@
 """The base's own CI: what its workflows run, on which systems, and how the dependency update reaches a pull request.
 
 They maintain this base on GitHub. An organization's template leaves them out, with this file, and brings its own CI:
-see docs/specification.md#an-organizations-template
+see docs/base/specification.md#an-organizations-template
 """
 
 import json
