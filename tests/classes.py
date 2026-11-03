@@ -16,7 +16,7 @@ NO_CSS_OF_THEIR_OWN = {"drawer-button", "theme-controller"}
 """Real names in daisyUI's documentation that only mark an element: no rule needs them in this stylesheet."""
 DAISYUI_CLASSES = {
     name
-    for page in (ROOT / "docs" / "components").glob("*.md")
+    for page in (ROOT / "docs" / "base" / "components").glob("*.md")
     for name in re.findall(r"`([a-z0-9-]+)`", page.read_text(encoding="utf-8"))
 }
 ICONS = {

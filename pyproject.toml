@@ -52,7 +52,7 @@ filterwarnings = ["error::DeprecationWarning"]
 addopts = "--strict-markers"
 markers = [
     "browser: needs a real browser",
-    "rule(identifier): the rule of docs/standards.md this test proves",
+    "rule(identifier): the rule of docs/base/standards.md this test proves",
 ]
 
 [tool.ruff]

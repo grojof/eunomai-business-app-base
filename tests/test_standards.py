@@ -18,7 +18,7 @@ from tests.conftest import build_settings
 from tests.helpers import ROOT
 from tools import vendor
 
-STANDARDS = ROOT / "docs" / "standards.md"
+STANDARDS = ROOT / "docs" / "base" / "standards.md"
 ROW = re.compile(r"^\| (?P<id>[A-Z0-9]+-\d{2}) \| (?P<rule>.+?) \| (?P<source>.+?) \| (?P<check>.+?) \|$", re.M)
 ROW_START = re.compile(r"^\|\s*[A-Z][A-Z0-9]*-\d+\s*\|")
 WITH_DEMO = (ROOT / "tests" / "demo").exists()

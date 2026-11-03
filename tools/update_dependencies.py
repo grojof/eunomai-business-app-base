@@ -1,4 +1,5 @@
-"""Daily dependency maintenance: the newest versions the rules allow (docs/specification.md#dependencies), nothing else.
+"""Weekly dependency maintenance: the newest versions the rules allow, nothing else.
+See docs/base/specification.md#dependencies
 
     uv run --frozen python tools/update_dependencies.py --summary summary.md --problems problems.md
 
@@ -144,9 +145,9 @@ def _saved(entry: dict[str, Any]) -> tuple[Path, dict[str, bytes] | bytes]:
 
 def update_vendored(problems: list[tuple[str, str, str]]) -> list[str]:
     """The copied files. A package with several files, daisyUI's or Lucide's, moves all of them or none: one left behind
-    holds the others back, and an issue says why. If daisyUI's new files break docs/components/ or the gallery, such as
-    a component that is not in the catalogue or a documentation page that changed its structure, they stay where they
-    were too, until a person decides. Everything else goes ahead."""
+    holds the others back, and an issue says why. If daisyUI's new files break docs/base/components/ or the gallery,
+    such as a component that is not in the catalogue or a documentation page that changed its structure, they stay
+    where they were too, until a person decides. Everything else goes ahead."""
     packages: dict[str, dict[str, dict[str, Any]]] = {}
     for name, entry in vendor.read_entries().items():
         if "target" in entry or "folder" in entry:

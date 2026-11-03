@@ -1,4 +1,4 @@
-"""Charts: what a figure shows, made on the server. See docs/specification.md#charts
+"""Charts: what a figure shows, made on the server. See docs/base/specification.md#charts
 
 A chart is a picture of numbers worked out here. They travel to the browser as text, so no Decimal becomes a float on
 this side, and its table is written here too, with the locale's formatter, so it holds what a person reads.

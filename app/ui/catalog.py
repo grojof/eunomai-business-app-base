@@ -1,6 +1,6 @@
-"""Every component on offer, with an honest status. The gallery and docs/components/ are built from this list.
+"""Every component on offer, with an honest status. The gallery and docs/base/components/ are built from this list.
 
-An organization adds its own components here, with their page in docs/components/ and, in its base, a specimen in
+An organization adds its own components here, with their page in docs/base/components/ and, in its base, a specimen in
 app/demo/templates/demo/gallery/specimens/.
 """
 

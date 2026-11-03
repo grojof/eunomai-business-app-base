@@ -1,5 +1,6 @@
-"""Turns a clone into a clean application, once: deletes the demo and what only the demo needs, and makes AGENTS.md
-describe an application. Then run tools/css.py, and write what the application is at the top of AGENTS.md.
+"""Turns a clone into a clean application, once: deletes the demo and what only the demo needs, makes AGENTS.md describe
+an application, and gives it a README of its own, while the base's documentation stays in docs/base/. Then run
+tools/css.py, and write what the application is at the top of AGENTS.md and README.md.
 
 uv run --frozen python tools/remove_demo.py
 uv run --frozen python tools/remove_demo.py --languages es          # keeps Spanish alone; English is always there
@@ -36,6 +37,18 @@ For anyone working in this repository, person or AI assistant.
 
 Not written yet. Whoever owns this application says here, in a few lines, what it does, for whom, and which real systems
 it reads or writes. It belongs to its organization: its names, its systems and its real work belong in it.
+
+## Documentation
+
+- This application's documentation is [README.md](README.md) and its own pages in `docs/`, outside `docs/base/`, in
+  the application's documentation language. The README is a map: what the application is, for whom and why, how to
+  run it, and a link to every page.
+- `docs/base/` is how the base works: read it to build, never edit it, since an update of the template replaces it. Link
+  to it instead of restating it: one fact, one home.
+- When behaviour changes, update the README and the page it affects in the same change. A new page gets its link in
+  the README's index.
+- Each page of the application's own starts with frontmatter: `type` (`tutorial`, `how-to`, `reference`,
+  `explanation` or `decision`), `title` and `description`. `tests/test_docs.py` checks it, and every link.
 """,
     ),
     ("| Never imports from `app/demo/` |", "| Never imports from the application's own folders |"),
@@ -89,6 +102,48 @@ uv run --frozen pytest -q -m "not browser"
     ),
 )
 """What changes in AGENTS.md: the base describes a neutral demo, and an application is neither of those."""
+APPLICATION_README = """# Not named yet
+
+Not written yet: what this application does, in one or two sentences a person who has never seen it understands.
+
+**For whom:** not written yet.
+
+**Why:** not written yet: what it replaces or makes possible.
+
+<!-- A diagram helps when a picture tells it better: the people, the application and the systems it reads or writes,
+as a Mermaid flowchart. -->
+
+## Try it
+
+Needs [uv](https://docs.astral.sh/uv/). A copy of `.env.example` gives a fake identity for local work.
+
+```bash
+cp .env.example .env
+uv run --frozen python -m app.core.sample_data --if-empty   # the migrations, then each module's made-up rows
+uv run --frozen uvicorn app.main:app --reload --no-proxy-headers
+```
+
+Keep `--no-proxy-headers`: without it, Uvicorn replaces the proxy's address with the one in `X-Forwarded-For`, the
+address stops being trusted, and everyone gets 401. Without `.env` the application refuses to start, because production
+is the default and production never runs on SQLite.
+
+The tests, and every other check, are in [AGENTS.md](AGENTS.md#checks):
+
+```bash
+uv run --frozen pytest -q
+```
+
+## Documentation
+
+| Page | What it contains |
+|---|---|
+| [How the base works](docs/base/specification.md) | The base this application is built on: its data, components, \
+layouts and how it is adapted. A reference, kept as it is |
+
+How to work in this repository: [AGENTS.md](AGENTS.md).
+"""
+"""An application's README, replacing the base's: a map of the application, with places to fill in. Each page the
+application adds to docs/ gets a row in its table."""
 DEMO_TESTS = '["pytest", "-q", "--ignore=tests/demo/test_clean_application.py", "--ignore=tests/demo/test_template.py"]'
 DEMO_TESTS_WHY = "those download Tailwind, so CI runs them"
 PREVIEW_CHANGES = (
@@ -196,7 +251,7 @@ def main(arguments: list[str] | None = None) -> None:
     example = ROOT / ".env.example"
     rewrite(example, example.read_text(encoding="utf-8").replace("demo-admins", "admins"))
 
-    standards = ROOT / "docs" / "standards.md"
+    standards = ROOT / "docs" / "base" / "standards.md"
     if standards.exists():
         text = standards.read_text(encoding="utf-8")
         for rule in sorted(ONLY_ON_DEMO):
@@ -205,6 +260,8 @@ def main(arguments: list[str] | None = None) -> None:
 
     changed(ROOT / "AGENTS.md", AGENTS_CHANGES)
     changed(ROOT / ".eunomai" / "project.toml", PREVIEW_CHANGES)
+    # The base's README describes the base; docs/base/ keeps that, and the application starts its own map.
+    rewrite(ROOT / "README.md", APPLICATION_README)
 
 
 if __name__ == "__main__":

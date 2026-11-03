@@ -1,7 +1,7 @@
 """The work order form: every kind of field on one screen, reached from Planning and from the equipment detail.
 
 The equipment is asked for by its code. There are 50,000: a searchable select must hold its options in the page, because
-without JavaScript it is a plain select, so that field is the list of faults. See docs/decisions.md.
+without JavaScript it is a plain select, so that field is the list of faults. See docs/base/decisions.md.
 """
 
 import re

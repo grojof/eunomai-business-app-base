@@ -1,4 +1,4 @@
-"""Column types that keep a value exact on both databases. See docs/specification.md#data"""
+"""Column types that keep a value exact on both databases. See docs/base/specification.md#data"""
 
 from datetime import UTC, datetime
 from decimal import Decimal

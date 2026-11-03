@@ -13,7 +13,7 @@ from app.ui.catalog import Component
 from tests.helpers import ROOT, repository_copy, run_in
 from tools import components
 
-PAGES = ROOT / "docs" / "components"
+PAGES = ROOT / "docs" / "base" / "components"
 OFFICIAL = set(components.sections(components.SOURCE.read_text(encoding="utf-8")))
 GENERATED_FRONTMATTER = (
     r'---\ntype: reference\ntitle: ".+"\ndescription: ".+"\ntags: \[component, [a-z-]+, [a-z]+\]\n---\n'
@@ -249,7 +249,7 @@ def add_a_component(copy: Path) -> None:
     text = list_file.read_text(encoding="utf-8")
     entry = '    "own": (N_("Own"), (Component("signature"),)),\n    "mockups": ('
     list_file.write_text(text.replace('    "mockups": (', entry), encoding="utf-8", newline="\n")
-    (copy / "docs" / "components" / "signature.md").write_text(OWN_PAGE, encoding="utf-8", newline="\n")
+    (copy / "docs" / "base" / "components" / "signature.md").write_text(OWN_PAGE, encoding="utf-8", newline="\n")
 
 
 def check_the_added_component(copy: Path, *tests: str) -> None:
@@ -260,7 +260,7 @@ def check_the_added_component(copy: Path, *tests: str) -> None:
     arguments = ("-m", "pytest", "-q", "-x", "-m", "not browser", "-k", "not promised_way", *tests)
     result = run_in(copy, *arguments)
     assert result.returncode == 0, result.stdout[-2000:]
-    assert "signature" in (copy / "docs" / "components" / "README.md").read_text(encoding="utf-8")
+    assert "signature" in (copy / "docs" / "base" / "components" / "README.md").read_text(encoding="utf-8")
 
 
 def test_the_promised_way_to_add_a_component_passes_the_checks(tmp_path):

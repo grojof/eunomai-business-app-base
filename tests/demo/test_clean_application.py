@@ -68,12 +68,20 @@ def test_the_tests_run_whole_on_a_persons_computer(application):
 
 
 def test_the_files_it_changes_keep_their_line_endings(application):
-    for changed in ("app/main.py", "migrations/env.py", ".env.example", "docs/standards.md", ".eunomai/project.toml"):
+    changed_files = (
+        "app/main.py",
+        "migrations/env.py",
+        ".env.example",
+        "docs/base/standards.md",
+        ".eunomai/project.toml",
+        "README.md",
+    )
+    for changed in changed_files:
         assert b"\r\n" not in (application / changed).read_bytes(), changed
 
 
 def test_a_rule_only_the_demo_proved_says_it_is_checked_by_hand(application):
-    text = (application / "docs" / "standards.md").read_text(encoding="utf-8")
+    text = (application / "docs" / "base" / "standards.md").read_text(encoding="utf-8")
     rows = {row["id"]: row["check"] for row in ROW.finditer(text)}
     assert {rows[rule] for rule in remove_demo.ONLY_ON_DEMO} == {"By hand"}
 
@@ -96,6 +104,17 @@ def test_agents_md_describes_an_application(application):
     assert b"\r\n" not in (application / "AGENTS.md").read_bytes()
     for link in re.findall(r"\]\((?!http)([^)#]+)", text):
         assert (application / link).exists(), link
+    assert "## Documentation" in text and "`docs/base/`" in text and "never edit it" in text
+
+
+def test_the_readme_is_the_applications_map_and_the_bases_documentation_stays_apart(application):
+    """A Cowork test on 2026-11-03: an application kept the base's README and its pages, and wrote none of its own."""
+    readme = (application / "README.md").read_text(encoding="utf-8")
+    assert readme == remove_demo.APPLICATION_README
+    assert not re.search(r"\bdemo\b|gallery|business-app-base|milestone", readme, re.I)
+    assert "](docs/base/specification.md)" in readme and "app.core.sample_data --if-empty" in readme
+    assert sorted(path.name for path in (application / "docs").iterdir()) == ["base"]
+    assert (application / "docs" / "base" / "standards.md").is_file()
 
 
 def test_it_changes_all_of_agents_md_and_a_base_that_edited_it_hears_what_it_missed(tmp_path, capsys):

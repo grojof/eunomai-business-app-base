@@ -14,7 +14,7 @@ The layer is a small folder the organization keeps, and the only thing it edits:
 Each run makes the whole template again: the same base and the same layer give the same files. The base's own
 workflows, which maintain it on GitHub, are left out, so the layer brings the organization's CI if it wants one. The
 result is checked, then it is left in --out for a person: it never commits or pushes. Review it there, commit it to the
-template's repository, and merge it through a pull request. See docs/specification.md#an-organizations-template
+template's repository, and merge it through a pull request. See docs/base/specification.md#an-organizations-template
 """
 
 import argparse

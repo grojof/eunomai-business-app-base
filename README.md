@@ -27,7 +27,7 @@ flowchart LR
 > their tables, and a planning screen that groups rows and edits one at a time. Milestone 3, in review: every form field,
 > a work order form with validation at the edge, file upload, a confirmation dialog, and two people on one row finding
 > out. Milestone 4, in progress: lists that a person can make dense and as wide as the screen, the page's title in
-> the top bar, filters in a side panel that can be hidden, charts whose parts filter a list, a board of work orders, a timeline in Planning, and a calendar of visits and work orders. The rest is in the [milestones](docs/specification.md#milestones).
+> the top bar, filters in a side panel that can be hidden, charts whose parts filter a list, a board of work orders, a timeline in Planning, and a calendar of visits and work orders. The rest is in the [milestones](docs/base/specification.md#milestones).
 
 ## Try it
 
@@ -53,29 +53,32 @@ uv run --frozen python -m app.demo.generate
 ```
 
 For PostgreSQL, set `APP_DATABASE_URL` and apply the migrations, then generate if you want the rows. The database tests
-run on it too if `TEST_DATABASE_URL` gives one. [Data](docs/specification.md#data) says how the two differ.
+run on it too if `TEST_DATABASE_URL` gives one. [Data](docs/base/specification.md#data) says how the two differ.
 
 ```bash
 uv run --frozen alembic upgrade head
 ```
 
-On GitHub, a pull request runs the tests on Ubuntu, with SQLite and PostgreSQL. To run them on Windows too, start the
-workflow by hand: *Actions*, *Tests*, *Run workflow*, or `gh workflow run tests.yml --ref <branch>`. Do it before
-publishing, and after a change to paths or tools.
+The whole suite runs on a computer before each push. On GitHub the tests run on Ubuntu, with SQLite and PostgreSQL,
+when started by hand: *Actions*, *Tests*, *Run workflow*, or `gh workflow run tests.yml --ref <branch>`. Do it before
+publishing, and after a change to the database layer.
 
 To start an application of your own, clone this, then run `uv run --frozen python tools/remove_demo.py` and
 `uv run --frozen python tools/css.py`. The first is what turns the clone into an application: the demo goes, and
-`AGENTS.md` stops describing a neutral base and describes an application, so real work belongs there. Fill in *What this
-application is* at the top of it before anything else: every assistant reads it first. The step runs once, and a second
+`AGENTS.md` stops describing a neutral base and describes an application, so real work belongs there. `README.md` becomes
+the application's own map, and this documentation stays in `docs/base/`. Fill in *What this application is* at the top
+of `AGENTS.md` before anything else: every assistant reads it first. The step runs once, and a second
 run changes nothing, so what you wrote stays.
 
 ## Documentation
 
+The base's documentation is in `docs/base/`, where every application keeps it as its reference.
+
 | Page | What it contains |
 |---|---|
-| [Specification](docs/specification.md) | What the base contains, its data, its components, its icons and illustrations, the demo, how it is adapted, an organization's template, and the milestones |
-| [Standards](docs/standards.md) | Every rule of accessibility, usability, language, components, data and security, with its official source and its check |
-| [Components](docs/components/README.md) | Every component on offer, one page each, with its status |
-| [Decisions](docs/decisions.md) | Why it is built this way, and what is still open |
+| [Specification](docs/base/specification.md) | What the base contains, its data, its components, its icons and illustrations, the demo, how it is adapted, an organization's template, and the milestones |
+| [Standards](docs/base/standards.md) | Every rule of accessibility, usability, language, components, data and security, with its official source and its check |
+| [Components](docs/base/components/README.md) | Every component on offer, one page each, with its status |
+| [Decisions](docs/base/decisions.md) | Why it is built this way, and what is still open |
 
 How to work in this repository: [AGENTS.md](AGENTS.md).
