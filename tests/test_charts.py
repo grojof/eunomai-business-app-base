@@ -203,7 +203,7 @@ def test_a_chart_into_a_list_sends_the_lists_form_with_its_one_value():
 
 @pytest.mark.parametrize(
     "links",
-    [["/a"], ["https://elsewhere.example/a", "/b"], ["//elsewhere.example/a", "/b"], ["/\elsewhere.example/a", "/b"]],
+    [["/a"], ["https://elsewhere.example/a", "/b"], ["//elsewhere.example/a", "/b"], ["/\\elsewhere.example/a", "/b"]],
 )
 def test_links_are_one_per_label_and_stay_in_the_application(links):
     with pytest.raises(ValueError, match="link"):
