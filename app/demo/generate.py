@@ -1,8 +1,10 @@
 """The demo's data, made from a seed: the same seed and the same number of rows give the same rows, anywhere.
 
-uv run --frozen python -m app.demo.generate
+uv run --frozen python -m app.demo.generate              # replaces whatever the demo's tables hold
+uv run --frozen python -m app.demo.generate --if-empty   # leaves them as they are when they hold rows
 
-Applies the migrations, then replaces whatever the demo's tables hold. Only in development.
+Applies the migrations first, either way. Only in development. A preview runs it with `--if-empty` on every version,
+so what a person saved stays, and only the first version takes the seconds the rows need.
 
 Each row comes from a SHA-512 of the seed and its position, not from `random`: across Python versions, only
 `random.random()` promises the same sequence, and a row should not change because the number of rows did.
@@ -15,7 +17,7 @@ from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from typing import Any
 
-from sqlalchemy import delete, insert, text
+from sqlalchemy import delete, insert, select, text
 from sqlalchemy.orm import Session
 
 from app.core.boards import RANK_STEP
@@ -205,6 +207,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Fills the demo's tables with generated rows.")
     parser.add_argument("--rows", type=int, default=EQUIPMENT_ROWS, help="how much equipment")
     parser.add_argument("--seed", type=int, default=SEED, help="the same seed gives the same rows")
+    parser.add_argument("--if-empty", action="store_true", help="leave the tables as they are when they hold rows")
     arguments = parser.parse_args()
     settings = get_settings()
     if settings.environment != "development":
@@ -214,6 +217,10 @@ def main() -> None:
     migrate(url)
     engine = create_database_engine(url)
     with Session(engine) as session:
+        if arguments.if_empty and session.scalar(select(Equipment.id).limit(1)) is not None:
+            engine.dispose()
+            print("The demo's tables hold rows already: left as they are")
+            return
         orders = replace_rows(session, arguments.rows, arguments.seed)
         session.commit()
     engine.dispose()

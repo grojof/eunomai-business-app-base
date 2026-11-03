@@ -258,6 +258,31 @@ def test_every_folder_in_locales_is_a_required_language(tmp_path):
     assert translations.languages_in(tmp_path) == ["de", "fr"]
 
 
+def test_the_bases_texts_come_first_and_each_package_keeps_its_own():
+    catalogues = [domain.catalogues for domain in translations.DOMAINS]
+    assert catalogues[0] == ROOT / "locales"
+    assert all(path.name == "locales" and path.parent.parent == ROOT / "app" for path in catalogues[1:])
+
+
+def test_a_new_folder_of_screens_has_its_texts_found_with_nothing_to_register(tmp_path):
+    app = tmp_path / "app"
+    for folder in ("core", "ui/templates", "orders/templates", "notes"):
+        (app / folder).mkdir(parents=True)
+    for package in ("core", "ui", "orders", "notes"):
+        (app / package / "__init__.py").write_text("", encoding="utf-8")
+    (app / "orders" / "routes.py").write_text('_("Order saved")\n', encoding="utf-8")
+    (app / "orders" / "templates" / "list.html").write_text('{{ _("Open orders") }}\n', encoding="utf-8")
+    (app / "notes" / "routes.py").write_text('_("Note kept")\n', encoding="utf-8")
+    found = translations.domains(app)
+    assert [domain.catalogues for domain in found] == [
+        tmp_path / "locales",
+        app / "notes" / "locales",
+        app / "orders" / "locales",
+    ]
+    assert {message.id for message in translations.extract(found[2]) if message.id} == {"Order saved", "Open orders"}
+    assert {message.id for message in translations.extract(found[1]) if message.id} == {"Note kept"}
+
+
 def test_every_default_language_has_its_folder_or_is_the_source_language():
     assert set(Settings.model_fields["languages"].default) - set(translations.REQUIRED) == {SOURCE_LANGUAGE}
 

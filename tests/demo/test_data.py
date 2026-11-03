@@ -145,6 +145,25 @@ def test_the_command_generates_from_nothing(monkeypatch, tmp_path, capsys):
     engine.dispose()
 
 
+def test_if_empty_fills_an_empty_database_and_leaves_one_with_rows(monkeypatch, tmp_path, capsys):
+    url = f"sqlite:///{(tmp_path / 'kept' / 'app.db').as_posix()}"
+    monkeypatch.setattr(generate, "get_settings", lambda: build_settings(database_url=url))
+    monkeypatch.setattr("sys.argv", ["generate", "--rows", "20", "--if-empty"])
+    generate.main()
+    assert "20 equipment rows" in capsys.readouterr().out
+    engine = create_database_engine(url)
+    with Session(engine) as session:
+        session.get(Equipment, 1).name = "Changed by a person"
+        session.commit()
+    monkeypatch.setattr("sys.argv", ["generate", "--rows", "30", "--if-empty"])
+    generate.main()
+    assert "left as they are" in capsys.readouterr().out
+    with Session(engine) as session:
+        assert session.get(Equipment, 1).name == "Changed by a person"
+        assert session.scalar(select(func.count()).select_from(Equipment)) == 20
+    engine.dispose()
+
+
 def test_the_first_migration_gives_postgresql_its_exact_types():
     """Written by Alembic, with no server: the columns a real PostgreSQL would get."""
     config = Config(toml_file=str(ROOT / "pyproject.toml"), output_buffer=(output := StringIO()))

@@ -1,6 +1,7 @@
 """`[preview]` in `.eunomai/project.toml`: what a connector reads to start the application on a person's computer."""
 
 import re
+import tomllib
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -60,6 +61,17 @@ def test_the_shell_works(started):
     assert fetch(port, "/static/ui/app.css")[0] == 200
 
 
-def test_its_data_stays_in_the_run_folder(started):
+def test_its_data_goes_to_the_folder_kept_between_versions(started):
     copy, _port = started
-    assert (copy / ".data" / "preview.db").is_file()
+    assert (copy.parent / "kept" / "preview.db").is_file()
+    assert not (copy / ".data").exists()
+
+
+def test_files_people_attach_go_there_too():
+    assert SECTION["environment"]["APP_UPLOAD_FOLDER"].startswith("{data}/")
+
+
+def test_the_tests_name_a_browser_the_computer_has():
+    tests = tomllib.loads((ROOT / ".eunomai" / "project.toml").read_text(encoding="utf-8"))["tests"]
+    assert tests["run"][0] == "pytest"
+    assert tests["environment"] == {"APP_BROWSER_CHANNEL": "msedge"}

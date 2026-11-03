@@ -83,11 +83,15 @@ uv run --frozen pytest -q -m "not browser"
     ),
 )
 """What changes in AGENTS.md: the base describes a neutral demo, and an application is neither of those."""
+DEMO_TESTS = '["pytest", "-q", "--ignore=tests/demo/test_clean_application.py"]'
+DEMO_TESTS_WHY = "that one downloads Tailwind, so CI runs it"
 PREVIEW_CHANGES = (
-    ('setup = [["python", "-m", "app.demo.generate"]]', 'setup = [["alembic", "upgrade", "head"]]'),
+    ('setup = [["python", "-m", "app.demo.generate", "--if-empty"]]', 'setup = [["alembic", "upgrade", "head"]]'),
     ("demo-admins", "admins"),
+    (f"run = {DEMO_TESTS}  # {DEMO_TESTS_WHY}", 'run = ["pytest", "-q"]'),
 )
-"""There are no generated rows to make, and the migrations are all an application's first run needs."""
+"""There are no generated rows to make, and the migrations are all an application's first run needs. Nor is there a
+demo test that downloads."""
 
 
 def rewrite(path: Path, content: str) -> None:
