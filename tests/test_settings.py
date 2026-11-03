@@ -3,6 +3,7 @@
 import re
 
 import pytest
+from babel import Locale
 from fastapi.testclient import TestClient
 
 from app.core.i18n import PSEUDO
@@ -10,6 +11,7 @@ from app.core.settings import LAYOUTS, Settings
 from app.main import create_app
 from tests.conftest import build_settings
 from tests.helpers import ROOT, focus_order, overflows_sideways, run_axe, untranslated
+from tools import translations
 
 THEME_CONTROLS = LAYOUTS["theme_control"]
 LANGUAGE_CONTROLS = LAYOUTS["language_control"]
@@ -218,11 +220,13 @@ def test_a_language_control_of_buttons_works_with_the_keyboard(open_page, contro
     page = open_page("/", layout={"language_control": control})
     if control == "dropdown":
         header(page, "language").locator("summary").press("Enter")
-    choice = header(page, "language").get_by_role("button", name="Català")
+    language = translations.REQUIRED[-1]  # whichever languages the application kept
+    name = Locale.parse(language).get_display_name(language) or language
+    choice = header(page, "language").get_by_role("button", name=name[:1].upper() + name[1:])
     with page.expect_navigation():
         choice.press("Enter")
-    assert page.locator("html").get_attribute("lang") == "ca"
-    assert page.evaluate("document.activeElement.value") == "ca"
+    assert page.locator("html").get_attribute("lang") == language
+    assert page.evaluate("document.activeElement.value") == language
 
 
 @pages
@@ -230,12 +234,12 @@ def test_a_language_control_of_buttons_works_with_the_keyboard(open_page, contro
 def test_the_language_select_waits_for_its_button(open_page):
     page = open_page("/", layout={"language_control": "select"})
     select = header(page, "language").get_by_role("combobox", name="Language")
-    select.select_option("es")
+    select.select_option(translations.REQUIRED[0])
     page.wait_for_timeout(100)
     assert page.locator("html").get_attribute("lang") == "en"
     with page.expect_navigation():
         header(page, "language").get_by_role("button", name="Apply").press("Enter")
-    assert page.locator("html").get_attribute("lang") == "es"
+    assert page.locator("html").get_attribute("lang") == translations.REQUIRED[0]
 
 
 @pages

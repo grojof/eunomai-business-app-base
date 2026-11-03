@@ -1,6 +1,7 @@
 """The application's core: request context, safety headers, preferences, errors and health."""
 
 import logging
+import mimetypes
 from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Annotated
@@ -22,6 +23,12 @@ from app.core.i18n import Languages, _
 from app.core.settings import LAYOUTS, Settings
 from app.core.templating import UI, SearchItem, register_search, render, search_items
 from app.core.uploads import BODY_TOO_LARGE, RequestLimit, UploadStore
+
+FONT_TYPES = {".woff2": "font/woff2", ".woff": "font/woff", ".ttf": "font/ttf", ".otf": "font/otf"}
+"""A font's media type by its extension (RFC 8081), for the organization's fonts in app/brand/fonts/. Python reads these
+from the system, and Windows has none: without them a font goes out as application/octet-stream."""
+for _extension, _kind in FONT_TYPES.items():
+    mimetypes.add_type(_kind, _extension)
 
 logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent.parent

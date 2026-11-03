@@ -1,5 +1,7 @@
 /* The brand. The base uses daisyUI's own light and dark themes as they come, so this file is empty.
-   To use your colours, make a theme with https://daisyui.com/theme-generator/ , paste it below, and run tools/css.py:
+   To use your colours, make a theme with https://daisyui.com/theme-generator/ , paste it below, and run tools/css.py.
+   Name it "light" or "dark" to replace that theme: daisyUI keeps every value you leave out. Define both, so a person
+   who works in the dark theme sees your colours too.
 
    @plugin "../../tools/tailwind/daisyui-theme.mjs" {
      name: "light";
@@ -7,4 +9,22 @@
      --color-primary: #2d5fa8;
    }
 
-   Name it "light" or "dark" to replace that theme: daisyUI keeps every value you leave out. */
+   @plugin "../../tools/tailwind/daisyui-theme.mjs" {
+     name: "dark";
+     prefersdark: true;
+     --color-primary: #7aa7e6;
+   }
+
+   Your fonts: put the files in app/brand/fonts/, which the application serves itself (nothing is loaded from another
+   server), declare each one, and make it the text's font, with a fallback after it.
+
+   @font-face {
+     font-family: "Example Sans";
+     src: url("/static/brand/fonts/example-sans.woff2") format("woff2");
+     font-weight: 400 700;
+     font-display: swap;
+   }
+
+   @theme {
+     --font-sans: "Example Sans", ui-sans-serif, system-ui, sans-serif;
+   } */

@@ -210,7 +210,7 @@ def test_a_form_that_is_not_what_it_should_be_is_a_page_and_echoes_nothing():
 
 @pytest.mark.rule("SEC-03")
 def test_a_part_too_long_for_any_field_is_a_page_too():
-    application: FastAPI = create_app(build_settings())
+    application: FastAPI = create_app(build_settings(default_language="en"))
 
     def route(title: str = Form()) -> str:
         return title

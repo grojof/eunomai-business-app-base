@@ -53,11 +53,12 @@ def test_nothing_of_the_demo_stays(application):
     assert not (application / "tools" / "tailwind" / "daisyui-docs.json").exists()
     assert "daisyui-docs" not in (application / "vendor.json").read_text(encoding="utf-8")
     assert not (application / "app" / "ui" / "static" / "placeholders").exists()
+    assert not (application / "tools" / "make_template.py").exists()
     assert "/* demo */" not in (application / "app" / "ui" / "styles" / "app.css").read_text(encoding="utf-8")
 
 
-def test_the_preview_needs_only_the_migrations(application):
-    assert preview_section(application)["setup"] == [["alembic", "upgrade", "head"]]
+def test_the_preview_needs_the_migrations_and_each_modules_sample_data(application):
+    assert preview_section(application)["setup"] == [["python", "-m", "app.core.sample_data", "--if-empty"]]
 
 
 def test_the_tests_run_whole_on_a_persons_computer(application):
