@@ -108,7 +108,7 @@ def test_agents_md_describes_an_application(application):
 
 
 def test_the_readme_is_the_applications_map_and_the_bases_documentation_stays_apart(application):
-    """A Cowork test on 2026-11-03: an application kept the base's README and its pages, and wrote none of its own."""
+    """An application once kept the base's README and its pages, and wrote none of its own."""
     readme = (application / "README.md").read_text(encoding="utf-8")
     assert readme == remove_demo.APPLICATION_README
     assert not re.search(r"\bdemo\b|gallery|business-app-base|milestone", readme, re.I)
