@@ -687,7 +687,7 @@ def test_the_database_tests_run_on_a_postgresql_pinned_by_digest():
     assert "TEST_DATABASE_URL: ${{ matrix.test_database_url }}" in tests
     ubuntu = re.search(r"- os: (\S+)\n\s+postgres: \S+\n\s+test_database_url: postgresql\S+", tests)
     assert ubuntu, "the Ubuntu run must get its database from `include`"
-    assert ubuntu[1] in systems_for("pull_request"), "`include` adds to a run only if its name is the same"
+    assert ubuntu[1] in systems(), "`include` adds to a run only if its name is the same"
 
 
 def test_the_one_linux_job_without_a_database_says_so():
@@ -722,20 +722,22 @@ def test_only_a_tested_update_is_proposed():
     assert tested.index("pytest") < tested.index("update.tar")
 
 
-def systems_for(event: str) -> list[str]:
-    """What the workflow's one expression gives for an event, read as GitHub reads `a == b && c || d`."""
-    pattern = r"os: \$\{\{ fromJSON\(github\.event_name == '(\w+)' && '(\[.*?\])' \|\| '(\[.*?\])'\) \}\}"
-    found = re.search(pattern, TESTS_WORKFLOW)
-    assert found, "the matrix should be built from the event"
-    return json.loads(found[2] if event == found[1] else found[3])
+def systems() -> list[str]:
+    found = re.search(r"^\s+os: (\[.*?\])$", TESTS_WORKFLOW, re.M)
+    assert found, "the matrix lists its systems"
+    return list(json.loads(found[1]))
 
 
-def test_a_pull_request_runs_on_ubuntu_alone():
-    assert systems_for("pull_request") == ["ubuntu-latest"]
+def test_the_tests_run_by_hand_on_ubuntu_and_a_newer_run_cancels_an_older_one():
+    """The whole suite runs on a computer before each push; GitHub's minutes confirm now and then."""
+    triggers = TESTS_WORKFLOW[TESTS_WORKFLOW.index("\non:\n") : TESTS_WORKFLOW.index("\nconcurrency:")]
+    assert "workflow_dispatch:" in triggers and "pull_request" not in triggers
+    assert "cancel-in-progress: true" in TESTS_WORKFLOW
+    assert systems() == ["ubuntu-latest"]
 
 
-def test_a_run_started_by_hand_adds_windows():
-    assert systems_for("workflow_dispatch") == ["ubuntu-latest", "windows-latest"]
+def test_dependencies_are_brought_up_to_date_once_a_week():
+    assert re.search(r'cron: "\d+ \d+ \* \* 1"', WORKFLOW)
 
 
 def test_the_tests_workflow_keeps_its_rules():

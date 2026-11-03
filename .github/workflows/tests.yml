@@ -1,8 +1,13 @@
 name: Tests
 
+# Started by hand, and by the Dependencies workflow on its own pull requests: the whole suite runs on a computer before
+# each push, and here now and then, to confirm Ubuntu and PostgreSQL. Not on every pull request, to spend few minutes.
 on:
-  pull_request:
-  workflow_dispatch:  # started by the Dependencies workflow on its own pull requests
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -12,8 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Ubuntu on every pull request; Windows too when started by hand, as the Dependencies workflow does.
-        os: ${{ fromJSON(github.event_name == 'workflow_dispatch' && '["ubuntu-latest", "windows-latest"]' || '["ubuntu-latest"]') }}
+        # Ubuntu with PostgreSQL. Windows is where the suite runs before each push.
+        os: ["ubuntu-latest"]
         include:  # adds to the Ubuntu run. Windows runners have no service containers: an empty image starts none
           - os: ubuntu-latest
             postgres: postgres:18.4@sha256:a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636

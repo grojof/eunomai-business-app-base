@@ -84,7 +84,7 @@ FullCalendar's three stylesheets are linked by the `calendar` macro, with their 
 
 ## Dependencies
 
-A daily workflow keeps dependencies current, and every clone inherits it. It updates to the newest version the rules
+A weekly workflow keeps dependencies current, and every clone inherits it. It updates to the newest version the rules
 allow, runs the tests and proposes one pull request, which a person merges. While a problem remains, an issue stays
 open. *Reported* below means exactly that: the problem goes to the issue, the version stays and the update goes on.
 
@@ -555,7 +555,7 @@ An icon is a small symbol beside words; an illustration is a picture that stands
 Lucide accepts no brand logos. The package's folder also holds each old name as a copy of the new one: those stay out,
 and the index keeps them, so `tools/icons.py search trash-2` answers `trash`. A page grows only by the icons it shows.
 `tools/lucide/index.json` holds, for each icon, Lucide's tags and categories from its repository at the same version,
-one line per icon. Both are [copied files](#dependencies), updated by the same daily workflow.
+one line per icon. Both are [copied files](#dependencies), updated by the same weekly workflow.
 
 **Search.** `uv run --frozen python tools/icons.py search <words>` reads names, tags, categories, old names, the
 organization's tags, and `tools/icon-synonyms.json`: about a hundred common business words in Spanish and in Catalan,
@@ -757,7 +757,7 @@ still runs.
 | Uploads | A test for each refusal, on the checks alone and through the route. A real server refuses a body it has not read, and real Chrome was tried by hand past both limits |
 | Two people | The window between reading and writing is forced in a test, so the database's own check is what answers, and two real browsers meet the conflict |
 | Exports | Each file is unzipped and read as XML: order, rows, cell types, rounding and neutralised text |
-| Database tests | The [data rules](standards.md#data), the lists and the screens on generated rows: on SQLite on every system, and on PostgreSQL in the Ubuntu job, with `TEST_DATABASE_URL` set. Each test gets a schema of its own, so nothing in that database is touched. On GitHub Actions on Linux an empty `TEST_DATABASE_URL` fails the run, so a job cannot pass on SQLite by accident; the Dependencies job, which has no database, says so with `TESTS_ON_SQLITE_ALONE`. A pull request runs Ubuntu alone, with both databases. A run started by hand adds Windows, on SQLite alone, because its runners have no service containers: start it before publishing, and after a change to paths or tools |
+| Database tests | The [data rules](standards.md#data), the lists and the screens on generated rows: on SQLite on every system, and on PostgreSQL in the Ubuntu job, with `TEST_DATABASE_URL` set. Each test gets a schema of its own, so nothing in that database is touched. On GitHub Actions on Linux an empty `TEST_DATABASE_URL` fails the run, so a job cannot pass on SQLite by accident; the Dependencies job, which has no database, says so with `TESTS_ON_SQLITE_ALONE`. The whole suite runs on a computer before each push, on SQLite; GitHub runs Ubuntu, with both databases, when started by hand and for each dependency update: start it before publishing, and after a change to the database layer |
 | Rule tracing | Every rule has a source and a check. Tests are read from pytest's collection, so a comment or a string cannot pass as one, and no *Automatic* rule lacks its test |
 | Invented values | No invented colours or sizes in templates, including `[color:#ff0000]`, and Tailwind's palette removed |
 | Invented classes | Every class in use generates CSS, as [COMP-04](standards.md#components) says |
