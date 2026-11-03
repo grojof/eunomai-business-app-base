@@ -4,6 +4,7 @@ import pytest
 
 from app.core.i18n import PSEUDO
 from tests.helpers import focus_order, overflows_sideways, run_axe
+from tools import translations
 
 pytestmark = pytest.mark.browser
 PAGES = ["/", "/missing"]
@@ -67,7 +68,7 @@ def test_focus_follows_the_order_of_the_page(open_page):
 @pytest.mark.rule("A11Y-12")
 @pytest.mark.rule("LANG-11")
 @pytest.mark.parametrize("path", PAGES)
-@pytest.mark.parametrize("language", ["en", "ca", PSEUDO])
+@pytest.mark.parametrize("language", ["en", translations.REQUIRED[-1], PSEUDO])
 def test_no_sideways_scrolling_at_320_pixels_even_with_longer_texts(open_page, path, language):
     assert not overflows_sideways(open_page(path, language=language, width=320))
 

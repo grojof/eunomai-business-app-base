@@ -62,8 +62,8 @@ def test_the_page_declares_its_language(client, person, language):
 @pytest.mark.rule("LANG-10")
 def test_each_language_option_declares_its_own(client, person):
     html = client.get("/", headers=person).text
-    assert 'lang="ca"' in html
-    assert 'lang="es"' in html
+    for language in translations.REQUIRED:  # an application may keep fewer: tools/remove_demo.py --languages
+        assert f'lang="{language}"' in html
 
 
 @pytest.mark.parametrize(
@@ -85,8 +85,9 @@ def test_the_language_is_chosen_in_order(saved, accept, expected):
 @pytest.mark.rule("LANG-12")
 def test_the_selector_names_each_language_in_itself_without_flags(client, person):
     html = client.get("/", headers=person).text
-    for name in ("English", "Español", "Català"):
-        assert name in html
+    names = {"en": "English", "es": "Español", "ca": "Català"}
+    for language in OFFERED:
+        assert names.get(language, "") in html
     assert not any(0x1F1E6 <= ord(character) <= 0x1F1FF for character in html)
 
 
@@ -299,7 +300,7 @@ def test_a_language_name_keeps_its_own_capitals():
 
 @pytest.mark.rule("LANG-10")
 def test_a_regional_language_uses_a_valid_tag(person):
-    client = TestClient(create_app(build_settings(languages=["en", "pt_BR"])))
+    client = TestClient(create_app(build_settings(languages=["en", "pt_BR"], default_language="en")))
     client.cookies.set("language", "pt_BR")
     html = client.get("/", headers=person).text
     assert '<html lang="pt-BR"' in html

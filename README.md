@@ -73,7 +73,7 @@ run changes nothing, so what you wrote stays.
 
 | Page | What it contains |
 |---|---|
-| [Specification](docs/specification.md) | What the base contains, its data, its components, its icons and illustrations, the demo, how it is adapted, and the milestones |
+| [Specification](docs/specification.md) | What the base contains, its data, its components, its icons and illustrations, the demo, how it is adapted, an organization's template, and the milestones |
 | [Standards](docs/standards.md) | Every rule of accessibility, usability, language, components, data and security, with its official source and its check |
 | [Components](docs/components/README.md) | Every component on offer, one page each, with its status |
 | [Decisions](docs/decisions.md) | Why it is built this way, and what is still open |

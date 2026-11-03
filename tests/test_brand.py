@@ -1,6 +1,7 @@
 """The brand's colours keep their contrast in both themes. This is what an organization's theme is checked against."""
 
 import math
+import mimetypes
 import re
 
 import pytest
@@ -98,3 +99,11 @@ def test_a_theme_that_fails_is_caught():
 )
 def test_contrast_follows_the_wcag_formula(first, second, expected):
     assert contrast(first, second) == pytest.approx(expected, abs=0.02)
+
+
+def test_the_organizations_fonts_go_out_with_their_own_type_on_every_system():
+    """Starlette names a file's type from Python's table, which Windows leaves without fonts."""
+    from app.core.application import FONT_TYPES
+
+    for extension, kind in FONT_TYPES.items():
+        assert mimetypes.guess_type(f"brand{extension}")[0] == kind

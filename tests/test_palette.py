@@ -10,6 +10,7 @@ from app.core.templating import SearchItem, register_search
 from app.main import create_app
 from tests.conftest import build_settings
 from tests.helpers import ANIMATIONS_FINISHED, run_axe, untranslated
+from tools import translations
 
 pages = pytest.mark.browser
 ANIMATING = """document.getAnimations()
@@ -215,6 +216,7 @@ def test_the_button_shows_the_shortcut_for_the_platform(browser, base_url):
 
 
 @pages
+@pytest.mark.skipif("es" not in translations.REQUIRED, reason="it reads the Spanish text; this application has none")
 def test_it_is_in_the_language_of_the_page(open_page):
     page = open_page("/", language="es")
     page.keyboard.press("Control+k")

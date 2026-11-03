@@ -24,7 +24,7 @@ APP_ROLE_GROUPS = '{"admin":["demo-admins"]}'
 
 # The tests on a person's computer, where IT allows it: the browser checks use Edge, which Windows has.
 [tests]
-run = ["pytest", "-q", "--ignore=tests/demo/test_clean_application.py"]  # that one downloads Tailwind, so CI runs it
+run = ["pytest", "-q", "--ignore=tests/demo/test_clean_application.py", "--ignore=tests/demo/test_template.py"]  # those download Tailwind, so CI runs them
 
 [tests.environment]
 APP_BROWSER_CHANNEL = "msedge"

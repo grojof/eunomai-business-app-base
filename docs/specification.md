@@ -26,12 +26,12 @@ app/
   core/      identity, roles, settings, database, exact column types, server lists, reading forms, languages, formatters, errors, health
   ui/        components: catalog.py, Jinja macros, settings, palette, the stylesheet's source, app.js, charts.js, board.js,
              calendar.js, vendored htmx, Chart.js, SortableJS and FullCalendar, Lucide's icons in templates/ui/icons/, illustrations in static/illustrations/
-  brand/     theme.css, logo.svg, the organization's own icons in icons/
+  brand/     theme.css with the light and dark themes and the fonts, logo.svg, fonts/, the organization's own icons in icons/
   demo/      screens, their fixed values, models and generated data, the gallery with its generated examples/, translations
 locales/     the translations of core and ui
 migrations/  Alembic: how it reaches the database, the template of a migration, and versions/
 tests/
-tools/       stylesheet, component pages, gallery data, translations, CLDR data, copied files, icon search and checks, dependency update, demo removal
+tools/       stylesheet, component pages, gallery data, translations, CLDR data, copied files, icon search and checks, dependency update, demo removal, an organization's template
 docs/
   components/  one page per component, generated, and catalog.json
 ```
@@ -41,7 +41,6 @@ Planned, and not there today:
 | Folder | Contents | Arrives in |
 |---|---|---|
 | `deploy/` | Example service files and the [registration](#registration) file | Milestone 6 |
-| `app/brand/` | Fonts | Milestone 7 |
 
 ## Stack
 
@@ -717,29 +716,61 @@ each page says so.
 
 | To do this | Change |
 |---|---|
-| Your colours, radius and logos | The base uses daisyUI's `light` and `dark` themes as they come. To change them, paste what [daisyUI's theme generator](https://daisyui.com/theme-generator/) gives you into `app/brand/theme.css`, in hex or oklch, and run `tools/css.py`. Contrast of your theme's text colours is then computed |
+| Your colours, radius and logos | The base uses daisyUI's `light` and `dark` themes as they come. To change them, paste what [daisyUI's theme generator](https://daisyui.com/theme-generator/) gives you into `app/brand/theme.css`, in hex or oklch, as a theme named `light` and one named `dark`, and run `tools/css.py`. The comment in that file shows both. A value left out keeps daisyUI's, and `dark` follows the system's choice with `prefersdark: true`. Contrast of your themes' text colours is then computed |
 | Your icons | SVG files in `app/brand/icons/`, drawn as [Icons and illustrations](#icons-and-illustrations) says, and their words in `app/brand/icons/tags.json`. Use a name Lucide does not have. Then `tools/icons.py check` |
+| Your fonts | The files in `app/brand/fonts/`, which the application serves at `/static/brand/fonts/`, so the policy's `font-src 'self'` allows them and nothing is loaded from another server. In `app/brand/theme.css`, an `@font-face` for each file and `--font-sans` in `@theme`, with a fallback after it, as the file's comment shows; then `tools/css.py`. Check that the font's licence lets you serve it |
 | Your illustrations | Files in `app/ui/static/illustrations/`, from your own tools, shown with `<img src>` or as a CSS background. Then `tools/icons.py check` |
 | Another CSS library | `app/ui/`: the macros and the stylesheet's source; screens do not change |
-| Your languages | Each folder under `locales/` is a required language: add yours, run `tools/translations.py update` and translate it. Change `APP_LANGUAGES` too |
+| Your languages | Each folder under `locales/` is a required language: add yours, run `tools/translations.py update` and translate it. Change `APP_LANGUAGES` too. To offer fewer, `tools/remove_demo.py --languages es` keeps those folders alone and makes the settings offer English and them; English is the language of the code, so it is always there, and at least one other is kept, which the translation checks need. `--default-language` sets the last resort, English otherwise |
 | Your screens' texts | Each package of `app/` other than `core`, `ui` and `brand`, such as `app/demo/`, keeps its texts in its own `locales/`: `tools/translations.py update` finds its Python and its `templates/` with nothing to register, and its `install` adds the folder with `application.state.languages.add_folder` |
 | Your time zone | `APP_TIME_ZONE`; the default is UTC |
 | Your database | `APP_DATABASE_URL`, then `alembic upgrade head`. See [Data](#data) |
 | Your uploads | `APP_UPLOAD_FOLDER`, `APP_UPLOAD_MAX_BYTES`, `APP_REQUEST_MAX_BYTES`, and `KINDS` in `app/core/uploads.py`. Read [what production needs](#uploads) |
 | Add a table | A model on `Base`, its module imported in `migrations/env.py`, then `alembic revision --autogenerate` and read what it wrote. A test compares models and migrations |
+| Sample data for a module | `app/<module>/sample_data.py` with `holds_rows(session)`, whether its tables hold any row, and `fill(session)`, which replaces its rows with made-up ones; the caller commits. `uv run --frozen python -m app.core.sample_data --if-empty` applies the migrations, then fills each module that holds no rows, with nothing to register, and only in development. An application's preview runs exactly that, so a module brings its own rows without a change to `.eunomai/project.toml`, which IT keeps. No real people or companies |
 | Your identity proxy | Settings: `APP_TRUSTED_PROXIES`, `APP_HEADER_*`, `APP_GROUPS_SEPARATOR`, `APP_ROLE_GROUPS` |
-| Start an application | Clone your copy and run `tools/remove_demo.py`, then `tools/css.py`. It deletes the demo with its tests, its models and first migration, the gallery's source and placeholders, renames `demo-admins` in `.env.example` and in the preview, turns the rules only the demo proved to *By hand*, and makes `AGENTS.md` describe an application, with a place at its top for what yours is. Fill that in first. A base that edited `AGENTS.md` is told which changes it must make by hand. It runs once: a second run refuses, so it can never overwrite what was written. The application keeps the settings menu, the palette, every icon, Lucide's and the organization's, the illustrations, `app/core/`'s database and Alembic with no migrations, ready for its own, and its stylesheet shrinks by more than a quarter. Run it before adding a migration, which would otherwise follow the demo's. `tools/gallery.py` stays, with nothing to do |
-| See it on a person's computer | `[preview]` in `.eunomai/project.toml`, which a connector reads from the main branch: `setup` on every version, then `run`, each after `uv run --frozen`, in an export of the repository with no `.env`, with `[preview.environment]`. That gives a made-up person with the admin role, so nobody signs in, and the database and attached files in `{data}`, a folder the connector keeps from one version to the next. `setup` generates the rows with `--if-empty`, so only the first version waits for them and what a person saved stays. Everything it needs is in the main dependencies: the connector installs without development tools. `tools/remove_demo.py` changes `setup` to the migrations. An application that adds its own first rows adds them here, leaving rows that are there |
-| Run the tests on a person's computer | `[tests]` in the same file, where IT allows it: `pytest` with the browser in `APP_BROWSER_CHANNEL`, Edge on Windows, since nothing is downloaded there. The demo's test of a clean application downloads Tailwind's executable, so it is left to CI; `tools/remove_demo.py` deletes both |
+| Start an application | Clone your copy and run `tools/remove_demo.py`, then `tools/css.py`; `--languages` keeps fewer languages, as *Your languages* says. It deletes the demo with its tests, its models and first migration, the gallery's source and placeholders, `tools/make_template.py`, renames `demo-admins` in `.env.example` and in the preview, turns the rules only the demo proved to *By hand*, and makes `AGENTS.md` describe an application, with a place at its top for what yours is. Fill that in first. A base that edited `AGENTS.md` is told which changes it must make by hand. It runs once: a second run refuses, so it can never overwrite what was written. The application keeps the settings menu, the palette, every icon, Lucide's and the organization's, the illustrations, `app/core/`'s database and Alembic with no migrations, ready for its own, and its stylesheet shrinks by more than a quarter. Run it before adding a migration, which would otherwise follow the demo's. `tools/gallery.py` stays, with nothing to do |
+| See it on a person's computer | `[preview]` in `.eunomai/project.toml`, which a connector reads from the main branch: `setup` on every version, then `run`, each after `uv run --frozen`, in an export of the repository with no `.env`, with `[preview.environment]`. That gives a made-up person with the admin role, so nobody signs in, and the database and attached files in `{data}`, a folder the connector keeps from one version to the next. `setup` generates the rows with `--if-empty`, so only the first version waits for them and what a person saved stays. Everything it needs is in the main dependencies: the connector installs without development tools. `tools/remove_demo.py` changes `setup` to `app.core.sample_data --if-empty`: the migrations, then each module's sample data. An application adds its first rows in its modules' `sample_data.py`, not here |
+| Run the tests on a person's computer | `[tests]` in the same file, where IT allows it: `pytest` with the browser in `APP_BROWSER_CHANNEL`, Edge on Windows, since nothing is downloaded there. The demo's tests of a clean application and of a template download Tailwind's executable, so they are left to CI; `tools/remove_demo.py` deletes them |
 | Add your own component | A macro in `app/ui/`, its line in `app/ui/catalog.py`, and a page in `docs/components/`. Only `description` is required in the page's frontmatter; do not put the `Generated by tools/components.py` marker in it. `tools/components.py` keeps your page and adds it to the index. An approved component needs `macro=` in its line. In your organization's base, add `app/demo/templates/demo/gallery/specimens/<name>.html` and it appears on its gallery page; applications have no gallery |
 | Fix or hide the settings menu | `APP_LAYOUT_*` for the look, `APP_LAYOUT_CHOICES` for what people may change; `[]` hides the menu |
 | Add to the search | `register_search`, as [the palette](#command-palette) shows |
+| Make your organization's template | `tools/make_template.py` with your layer: see [An organization's template](#an-organizations-template) |
 
-An application that needs something different changes it: the code belongs to whoever cloned it. There is no update
-mechanism. When the base improves, an application compares versions and takes what it wants.
+An application that needs something different changes it: the code belongs to whoever cloned it. An application has
+no update mechanism: when the base improves, it compares versions and takes what it wants. An organization's template
+is made again from the base, as the next section says, so the projects it starts begin with the improvements.
 
 `AGENTS.md`, the documentation and the checks travel with every clone. Any of them can be removed and the application
 still runs.
+
+## An organization's template
+
+An organization keeps a small layer, and `tools/make_template.py` makes its application template from the base and that
+layer. The template is what IT starts each project from; nobody edits it by hand.
+
+```bash
+uv run --frozen python tools/make_template.py --layer ../our-layer --out ../our-template --ref <a tag of the base>
+```
+
+| Part | What it holds |
+|---|---|
+| `layer.toml` | `name`, which applications show until they are given their own; `languages`, kept besides English; `default_language`, optional |
+| `files/` | Copied onto the template, under `app/brand/` (themes, logo, fonts, icons) and a CI folder (`.gitea/`, `.github/`, `.forgejo/`) only. A file anywhere else is refused, before anything is written |
+
+Each run starts from an empty folder, or from a clone of the template's repository with nothing uncommitted, which keeps
+its history. It exports the base at `--ref`, or this folder as it is without one, runs `tools/remove_demo.py` with the
+layer's languages, leaves out the base's own workflows, copies the layer, writes the name into `.env.example` and the
+preview, builds the stylesheet, runs the icon and translation checks and the template's own tests, unless
+`--skip-tests`, and writes `.template-source`: the base's commit and the layer's hash. It never commits or pushes. A
+person reviews the difference in the clone and merges it through a pull request.
+
+| Decision | Why | Instead of |
+|---|---|---|
+| The template is made, never edited | Every fix of the base reaches the organization by running the tool again, and the pull request shows exactly what changed. The same base and layer give the same files | A copy edited by hand, where each fix is repeated by hand and the two drift apart; a fork that merges the base, where each merge meets the files `remove_demo.py` deleted |
+| The layer writes only its brand and its CI | What it may change is short and reviewable; anything else is a change to the base, made once for every organization | A layer that patches any file, which would break with the next version of the base |
+| The base's workflows stay out | They maintain the base on GitHub, with a daily dependency job no application needs; each organization's CI depends on its server and its runners | Shipping them to every project, where they queue forever without runners or repeat the base's work every day |
+| The name goes into `.env.example` and the preview | Local work and a preview show the organization's name; production sets `APP_NAME` as it sets everything else | Changing the settings' default in the code |
 
 ## Checks
 
@@ -747,6 +778,7 @@ still runs.
 |---|---|
 | Unit and integration tests | Behaviour, including permissions per role |
 | Tests with `app/demo/` deleted | In a copy without the demo, the stylesheet builds, every tool check passes and the tests pass, browser tests included, run as a person runs them: nothing is set for it, and no test may stay out because the demo has gone. These tests live in `tests/demo/`: they go with the demo, as does everything else that only makes sense while it exists |
+| An organization's template | A fictional layer makes one: nothing of the demo or of the base's workflows, its languages alone, its name, both themes and its font in the stylesheet, the font served under the policy, its own tests passing, the same files from a second run, and a layer that reaches beyond its place refused before anything is written |
 | Accessibility scan, in both themes | No automatically detectable failure on real screens: the start, error, settings and administration pages, every layout, each look of the theme and language controls, the open palette, the equipment list and its detail, the dashboard with charts and an open data table, planning with the editor open, the work order form empty, filled, with errors, with files and with a conflict, its confirmations as a page and in a dialog, the searchable select with its list open, the gallery's index and the frame of its pages; the page's title in the top bar in every navigation mode, with the sticky header on and off; dense and wide lists; Planning's filter panel shown and hidden, wide and on a phone; the equipment page with its charts; the board; Planning's timeline; the calendar in month, week, agenda and after its "+ more", in three languages. Official examples are left out: see [Standards](standards.md#official-examples) |
 | Brand contrast | Each text colour of a theme added to `theme.css` against its background |
 | Keyboard tests | Sorting, paging and changing tab keep focus, the table's box scrolls, and the editor opens, keeps the keyboard and gives focus back. Every control of the start page is reached with visible focus; focus stops clear of the sticky header; Escape closes the user menu, the phone menu, a dialog and the palette, and returns focus; each look of the theme and language controls, the Preview and Code switch and the copy button work with a keyboard. A list's own choices and the filter panel's button keep focus; a chart's table filters its list; a card moves by its form with focus following it; the timeline's box scrolls; an event is reached and moved through its form |

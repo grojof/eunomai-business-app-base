@@ -9,7 +9,7 @@ person or real system: it stays neutral so anyone can clone it.
 |---|---|---|
 | `app/core/` | Identity, roles, settings, the database and its column types, lists on the server, reading forms, uploads, languages, formatters, errors, health | Never imports from `app/demo/` |
 | `app/ui/` | Components as macros, the settings menu, the command palette, the stylesheet's source, the few JavaScript files, Lucide's icons, the illustrations | Screens call macros; daisyUI classes stay here where possible |
-| `app/brand/` | The theme, logos, the organization's own icons | The only folder an organization must change |
+| `app/brand/` | The light and dark themes, the logo, the fonts, the organization's own icons | The only folder an organization must change |
 | `app/demo/` | Demo screens, models, generated data, the gallery and their translations | Deleting it leaves a working application |
 | `migrations/` | Alembic's setup, and one file per change of the models | A model that changes needs its migration: a test compares them on both databases |
 
@@ -56,6 +56,8 @@ Add your own components as [the specification](docs/specification.md#adapting-it
 - Add a dependency only if the [stack](docs/specification.md#stack) needs it. Pin it and check it for known
   vulnerabilities.
 - No secrets in the repository, and no real people or companies in demo data.
+- Made-up rows to try a module's screens go in `app/<module>/sample_data.py`, with `holds_rows(session)` and
+  `fill(session)`: a preview fills them by itself, so `.eunomai/project.toml` stays as it is.
 
 ## Checks
 
@@ -89,8 +91,8 @@ uv run --frozen pytest -q -m "not browser" --ignore=tests/demo
 uv run --frozen pytest -q -m "not browser" tests/demo
 ```
 
-- `tests/demo/test_clean_application.py` needs Tailwind's executable, which `tools/css.py` downloads to `.cache/`. Without
-  it and without network, add `--ignore=tests/demo/test_clean_application.py` and say so.
+- `tests/demo/test_clean_application.py` and `tests/demo/test_template.py` need Tailwind's executable, which
+  `tools/css.py` downloads to `.cache/`. Without it and without network, add an `--ignore=` for each and say so.
 - Browser tests are left for CI: say so in the pull request.
 - Never run git in the project folder from a sandbox shell.
 - Never ask a person to run a command: what cannot run here goes in the pull request as not checked.
