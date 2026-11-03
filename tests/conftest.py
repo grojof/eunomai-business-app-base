@@ -119,7 +119,8 @@ def browser() -> Iterator[Any]:
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as playwright:
-        chrome = playwright.chromium.launch(channel="chrome")
+        # A browser the computer has, never one downloaded: Chrome by default, Edge with APP_BROWSER_CHANNEL=msedge.
+        chrome = playwright.chromium.launch(channel=os.environ.get("APP_BROWSER_CHANNEL", "chrome"))
         yield chrome
         chrome.close()
 

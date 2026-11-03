@@ -152,14 +152,22 @@ def preview_section(folder: Path) -> dict[str, Any]:
 
 
 @contextmanager
-def preview_running(folder: Path) -> Iterator[int]:
-    """Exactly what `[preview]` says, in a folder with no `.env`, and only the system's variables besides its own."""
+def preview_running(folder: Path, data: Path | None = None) -> Iterator[int]:
+    """Exactly what `[preview]` says, in a folder with no `.env`, and only the system's variables besides its own.
+    `data` is the folder a connector keeps between versions, outside the copy, as `{data}`."""
     section = preview_section(folder)
+    kept = data or folder.parent / "kept"
+    kept.mkdir(exist_ok=True)
+
+    def filled(word: str) -> str:
+        return word.replace("{data}", kept.resolve().as_posix())
+
     tools = str(Path(sys.executable).parent)
     system = {name: os.environ[name] for name in ("SYSTEMROOT", "TEMP", "TMP", "HOME", "PATH") if name in os.environ}
-    environment = system | section["environment"]
+    environment = system | {name: filled(value) for name, value in section["environment"].items()}
 
     def command(words: list[str]) -> list[str]:
+        words = [filled(word) for word in words]
         return [shutil.which(words[0], path=tools) or words[0], *words[1:]]
 
     for step in section["setup"]:

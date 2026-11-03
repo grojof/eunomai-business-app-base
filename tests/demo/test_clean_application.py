@@ -6,6 +6,7 @@ would hide the very thing it is here to find.
 
 import re
 import subprocess
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -57,6 +58,11 @@ def test_nothing_of_the_demo_stays(application):
 
 def test_the_preview_needs_only_the_migrations(application):
     assert preview_section(application)["setup"] == [["alembic", "upgrade", "head"]]
+
+
+def test_the_tests_run_whole_on_a_persons_computer(application):
+    declaration = tomllib.loads((application / ".eunomai" / "project.toml").read_text(encoding="utf-8"))
+    assert declaration["tests"] == {"run": ["pytest", "-q"], "environment": {"APP_BROWSER_CHANNEL": "msedge"}}
     assert "demo" not in (application / ".eunomai" / "project.toml").read_text(encoding="utf-8")
 
 

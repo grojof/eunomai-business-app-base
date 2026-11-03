@@ -28,20 +28,33 @@ class Domain:
     sources: tuple[tuple[Path, str, str], ...]
 
 
-DOMAINS = [
-    Domain(
-        ROOT / "locales",
-        (
-            (ROOT / "app" / "core", "**.py", PYTHON),
-            (ROOT / "app" / "ui", "catalog.py", PYTHON),
-            (ROOT / "app" / "ui" / "templates", "**.html", TEMPLATES),
-        ),
-    ),
-    Domain(
-        ROOT / "app" / "demo" / "locales",
-        ((ROOT / "app" / "demo", "**.py", PYTHON), (ROOT / "app" / "demo" / "templates", "**.html", TEMPLATES)),
-    ),
-]
+SHARED = {"core", "ui", "brand"}
+"""The folders of `app/` whose texts are the base's, in `locales/`. Every other package keeps its own."""
+
+
+def domains(app: Path = ROOT / "app") -> list[Domain]:
+    """The base's texts, then one domain for each package of `app/`, such as the demo or an application's screens:
+    its Python and its `templates/`, kept in its own `locales/`, which its `install` adds."""
+    found = [
+        Domain(
+            app.parent / "locales",
+            (
+                (app / "core", "**.py", PYTHON),
+                (app / "ui", "catalog.py", PYTHON),
+                (app / "ui" / "templates", "**.html", TEMPLATES),
+            ),
+        )
+    ]
+    for folder in sorted(path for path in app.iterdir() if (path / "__init__.py").is_file()):
+        if folder.name not in SHARED:
+            sources = [(folder, "**.py", PYTHON)]
+            if (folder / "templates").is_dir():
+                sources.append((folder / "templates", "**.html", TEMPLATES))
+            found.append(Domain(folder / "locales", tuple(sources)))
+    return found
+
+
+DOMAINS = domains()
 LOCALES = ROOT / "locales"
 
 
@@ -79,6 +92,8 @@ def update() -> None:
         if not domain.catalogues.parent.exists():
             continue
         template = extract(domain)
+        if not domain.catalogues.exists() and not any(message.id for message in template):
+            continue  # a package with no texts gets no catalogues
         for language in REQUIRED:
             path = path_of(domain, language)
             catalog = read(path, language)

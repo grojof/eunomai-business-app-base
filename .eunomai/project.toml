@@ -7,15 +7,24 @@ technologies = ["Python", "FastAPI", "Pydantic", "SQLAlchemy", "Alembic", "Postg
                 "Tailwind CSS", "daisyUI", "Chart.js", "XlsxWriter", "HTML and CSS"]
 
 # The application on a person's computer, from a fresh export with no .env. Each command runs after `uv run --frozen`,
-# in the export, with the environment below: `setup` once, then `run`. See docs/specification.md#adapting-it
+# in the export, with the environment below: `setup` on every version, then `run`. `{data}` is a folder the connector
+# keeps from one version to the next. See docs/specification.md#adapting-it
 [preview]
-setup = [["python", "-m", "app.demo.generate"]]
+setup = [["python", "-m", "app.demo.generate", "--if-empty"]]
 run = ["uvicorn", "app.main:app", "--no-proxy-headers", "--host", "127.0.0.1", "--port", "{port}"]
 
-# A made-up person with the admin role, so nobody signs in, and a SQLite file in the run folder.
+# A made-up person with the admin role, so nobody signs in, and the database and files in the kept folder.
 [preview.environment]
 APP_ENVIRONMENT = "development"
-APP_DATABASE_URL = "sqlite:///.data/preview.db"
+APP_DATABASE_URL = "sqlite:///{data}/preview.db"
+APP_UPLOAD_FOLDER = "{data}/uploads"
 APP_FAKE_IDENTITY = "true"
 APP_FAKE_GROUPS = '["demo-admins"]'
 APP_ROLE_GROUPS = '{"admin":["demo-admins"]}'
+
+# The tests on a person's computer, where IT allows it: the browser checks use Edge, which Windows has.
+[tests]
+run = ["pytest", "-q", "--ignore=tests/demo/test_clean_application.py"]  # that one downloads Tailwind, so CI runs it
+
+[tests.environment]
+APP_BROWSER_CHANNEL = "msedge"

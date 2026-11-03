@@ -76,8 +76,8 @@ uv run --frozen pytest -q                            # with TEST_DATABASE_URL, t
 ```
 
 Start the server with `--no-proxy-headers`, as the [README](README.md#try-it) does. Browser tests use the Chrome
-already on the computer; nothing is downloaded. After upgrading Babel, a test may ask for
-`uv run --frozen python tools/cldr_grouping.py`.
+already on the computer, or the browser `APP_BROWSER_CHANNEL` names (`msedge` for Edge); nothing is downloaded. After
+upgrading Babel, a test may ask for `uv run --frozen python tools/cldr_grouping.py`.
 
 ## In a sandbox
 

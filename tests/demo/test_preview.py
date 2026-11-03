@@ -1,17 +1,29 @@
 """The demo through `[preview]`: real screens on real rows, from a copy with no `.env`, on a person's computer."""
 
 from collections.abc import Iterator
+from pathlib import Path
 from typing import Any
 
 import pytest
+from sqlalchemy import insert
+from sqlalchemy.orm import Session
 
+from app.core.database import create_database_engine
+from app.demo.generate import equipment_row
+from app.demo.models import Equipment
 from tests.helpers import fetch, preview_running, repository_copy
 
 
 @pytest.fixture(scope="module")
-def port(tmp_path_factory: pytest.TempPathFactory) -> Iterator[int]:
-    with preview_running(repository_copy(tmp_path_factory.mktemp("preview") / "application")) as started:
-        yield started
+def first(tmp_path_factory: pytest.TempPathFactory) -> Iterator[tuple[Path, int]]:
+    folder = tmp_path_factory.mktemp("preview")
+    with preview_running(repository_copy(folder / "application")) as started:
+        yield folder, started
+
+
+@pytest.fixture(scope="module")
+def port(first: tuple[Path, int]) -> int:
+    return first[1]
 
 
 def test_the_list_has_its_rows(port):
@@ -47,3 +59,20 @@ def test_a_person_saves_a_work_order(browser: Any, port):
     page.get_by_text(" saved.").first.wait_for()
     assert "/planning" in page.url
     context.close()
+
+
+def test_a_new_version_keeps_what_was_saved(first, tmp_path):
+    """The connector starts each version from a new copy, with the same kept folder: the rows stay, and are not made
+    again."""
+    folder, _port = first
+    engine = create_database_engine(f"sqlite:///{(folder / 'kept' / 'preview.db').as_posix()}")
+    with Session(engine) as session:
+        row = equipment_row(50_000)
+        del row["id"]
+        session.execute(insert(Equipment), [row])
+        session.commit()
+    engine.dispose()
+    with preview_running(repository_copy(tmp_path / "application"), folder / "kept") as port:
+        status, html = fetch(port, "/equipment")
+    assert status == 200
+    assert "50,001 pieces of equipment" in html
