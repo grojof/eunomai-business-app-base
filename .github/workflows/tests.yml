@@ -60,4 +60,6 @@ jobs:
       - run: uv run --frozen python tools/gallery.py check
       - run: uv run --frozen python tools/icons.py check
       - run: uv run --frozen python tools/translations.py check
-      - run: uv run --frozen pytest -q --durations=25
+      # in parallel on the runner's cores (two to four), then the tests marked serial, alone: as tools/test.py does
+      - run: uv run --frozen pytest -q -n auto -m "not serial" --durations=25
+      - run: uv run --frozen pytest -q -m serial

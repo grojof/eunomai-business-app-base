@@ -1,5 +1,7 @@
 import atexit
+import inspect
 import os
+import re
 import shutil
 import socket
 import tempfile
@@ -50,6 +52,24 @@ def postgresql_is_missing(environment: Mapping[str, str]) -> bool:
 def pytest_configure(config: pytest.Config) -> None:
     if postgresql_is_missing(os.environ):
         raise pytest.UsageError("TEST_DATABASE_URL is empty on Linux in CI: these tests would not reach PostgreSQL")
+
+
+CLOCK = re.compile(r"time\.sleep|deadline|wait_for_timeout|time\.time\(\)|monotonic|perf_counter")
+"""A test that measures or waits on the clock needs the computer to itself: beside other tests it only gets slower,
+and then wrong. It is marked `serial` by what its body calls, so a new one is too; tools/test.py runs those after the
+others, alone. `@pytest.mark.serial` marks any other test that must not share the computer."""
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    waits: dict[Any, bool] = {}
+    for item in items:
+        function = getattr(item, "function", None)
+        if function is None:
+            continue
+        if function not in waits:
+            waits[function] = bool(CLOCK.search(inspect.getsource(function)))
+        if waits[function]:
+            item.add_marker(pytest.mark.serial)
 
 
 def build_settings(**overrides: Any) -> Settings:

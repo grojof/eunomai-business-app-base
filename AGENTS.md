@@ -80,8 +80,14 @@ uv run --frozen python tools/components.py check     # after changing the catalo
 uv run --frozen python tools/gallery.py check        # generated from daisyUI's documentation: tools/gallery.py
 uv run --frozen python tools/icons.py check          # icons, their names, and every SVG shown as an image
 uv run --frozen python tools/translations.py check   # after changing texts: tools/translations.py update
-uv run --frozen pytest -q                            # with TEST_DATABASE_URL, the database tests run on PostgreSQL too
+uv run --frozen python tools/test.py --affected      # while working: what the changes against main can break, and why
+uv run --frozen python tools/test.py                 # before merging: every test, six at a time, then those marked serial
 ```
+
+With `TEST_DATABASE_URL` set to a PostgreSQL kept for tests (an address with its password, kept in the person's own
+settings, never in the repository) the database tests run on PostgreSQL too, each in a schema of its own; without
+it `tools/test.py` says they ran on SQLite alone. Run it with PostgreSQL before merging. Plain `uv run --frozen pytest
+-q` still runs every test one at a time.
 
 Start the server with `--no-proxy-headers`, as the [README](README.md#run-it) does. Browser tests use the Chrome
 already on the computer, or the browser `APP_BROWSER_CHANNEL` names (`msedge` for Edge); nothing is downloaded. After

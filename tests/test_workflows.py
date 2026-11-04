@@ -92,7 +92,8 @@ def test_the_tests_workflow_keeps_its_rules():
     assert TESTS_WORKFLOW.count("runs-on:") == 1
     assert "runs-on: ${{ matrix.os }}" in TESTS_WORKFLOW
     assert "timeout-minutes: 35" in TESTS_WORKFLOW
-    assert "pytest -q --durations=25" in TESTS_WORKFLOW
+    assert 'pytest -q -n auto -m "not serial" --durations=25' in TESTS_WORKFLOW
+    assert "pytest -q -m serial" in TESTS_WORKFLOW, "what needs the computer alone runs after, alone"
     assert re.search(r"postgres: postgres:[\d.]+@sha256:[0-9a-f]{64}", TESTS_WORKFLOW)
     assert "image: ${{ matrix.postgres }}" in TESTS_WORKFLOW
     commands = re.findall(r"^\s+- run: (.+)$", TESTS_WORKFLOW, re.M)
