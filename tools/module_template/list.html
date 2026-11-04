@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import filter_bar, link_button, page_heading, panel %}
+{% block title %}{{ _("$title") }}{% endblock %}
+{% block content %}
+{% call page_heading(_("$title"), _("$description")) %}
+{% if can_edit %}{{ link_button(_("$new_label"), "$path/new", "primary", name="plus") }}{% endif %}
+{% endcall %}
+{% call panel(_("$list_label")) %}
+{{ filter_bar(view) }}
+<div id="$package-results" data-results>
+  {% include "$package/results.html" %}
+</div>
+{% endcall %}
+{% endblock %}

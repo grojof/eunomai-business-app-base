@@ -29,6 +29,8 @@ flowchart LR
 > out. Milestone 4, in progress: lists that a person can make dense and as wide as the screen, the page's title in
 > the top bar, filters in a side panel that can be hidden, charts whose parts filter a list, a board of work orders, a timeline in Planning, and a calendar of visits and work orders. The rest is in the [milestones](docs/base/specification.md#milestones).
 
+<a id="run-it"></a>
+
 ## Try it
 
 Needs [uv](https://docs.astral.sh/uv/). A copy of `.env.example` gives a fake identity for local work.
@@ -68,7 +70,9 @@ To start an application of your own, clone this, then run `uv run --frozen pytho
 `AGENTS.md` stops describing a neutral base and describes an application, so real work belongs there. `README.md` becomes
 the application's own map, and this documentation stays in `docs/base/`. Fill in *What this application is* at the top
 of `AGENTS.md` before anything else: every assistant reads it first. The step runs once, and a second
-run changes nothing, so what you wrote stays.
+run changes nothing, so what you wrote stays. Each module of screens then starts with `tools/new_module.py`, which
+writes its list, its pages, its form, its migration and its tests from a short description, as
+[A new module](docs/base/specification.md#a-new-module) says.
 
 ## Documentation
 
@@ -76,7 +80,7 @@ The base's documentation is in `docs/base/`, where every application keeps it as
 
 | Page | What it contains |
 |---|---|
-| [Specification](docs/base/specification.md) | What the base contains, its data, its components, its icons and illustrations, the demo, how it is adapted, an organization's template, and the milestones |
+| [Specification](docs/base/specification.md) | What the base contains, its data, its components, its icons and illustrations, the demo, how it is adapted, a new module, an organization's template, and the milestones |
 | [Standards](docs/base/standards.md) | Every rule of accessibility, usability, language, components, data and security, with its official source and its check |
 | [Components](docs/base/components/README.md) | Every component on offer, one page each, with its status |
 | [Decisions](docs/base/decisions.md) | Why it is built this way, and what is still open |

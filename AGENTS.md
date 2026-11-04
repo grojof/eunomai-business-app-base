@@ -32,6 +32,11 @@ Add your own components as [the specification](docs/base/specification.md#adapti
 - Every text a user can see goes through translation. Every number, date and time goes through the locale's formatter.
 - Colours come from the brand. No invented values such as `bg-[#ff0000]`, `text-[13px]` or `[color:#ff0000]`: a test
   refuses them.
+- A new module of screens, with a list, a page for each row and a form, starts with `tools/new_module.py`: describe
+  it in TOML (`uv run --frozen python tools/new_module.py --example` prints a commented description), run it with
+  `--spec`, then change what this application needs. It writes the model, the migration, the routes, the templates,
+  the sample data, the texts and the tests, which pass every check once a person translates the texts:
+  [A new module](docs/base/specification.md#a-new-module). Read the base only for what it did not write.
 - Use the existing macros before writing anything new: screens call `button`, not a raw `.btn`. daisyUI's examples in
   the gallery are reference material, not a model for a screen. After changing templates, run
   `uv run --frozen python tools/css.py`.
@@ -78,7 +83,7 @@ uv run --frozen python tools/translations.py check   # after changing texts: too
 uv run --frozen pytest -q                            # with TEST_DATABASE_URL, the database tests run on PostgreSQL too
 ```
 
-Start the server with `--no-proxy-headers`, as the [README](README.md#try-it) does. Browser tests use the Chrome
+Start the server with `--no-proxy-headers`, as the [README](README.md#run-it) does. Browser tests use the Chrome
 already on the computer, or the browser `APP_BROWSER_CHANNEL` names (`msedge` for Edge); nothing is downloaded. After
 upgrading Babel, a test may ask for `uv run --frozen python tools/cldr_grouping.py`.
 
@@ -92,8 +97,9 @@ uv run --frozen pytest -q -m "not browser" --ignore=tests/demo
 uv run --frozen pytest -q -m "not browser" tests/demo
 ```
 
-- `tests/demo/test_clean_application.py` and `tests/demo/test_template.py` need Tailwind's executable, which
-  `tools/css.py` downloads to `.cache/`. Without it and without network, add an `--ignore=` for each and say so.
+- `tests/demo/test_clean_application.py`, `tests/demo/test_template.py` and `tests/demo/test_new_module.py` need
+  Tailwind's executable, which `tools/css.py` downloads to `.cache/`. Without it and without network, add an
+  `--ignore=` for each and say so.
 - Browser tests are left for CI: say so in the pull request.
 - Never run git in the project folder from a sandbox shell.
 - Never ask a person to run a command: what cannot run here goes in the pull request as not checked.

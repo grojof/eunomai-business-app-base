@@ -12,7 +12,7 @@ from alembic.script import ScriptDirectory
 from alembic.util.exc import CommandError
 from sqlalchemy import Column, Integer, Table, text
 
-from app.core.columns import COLLATION, ExactDecimal
+from app.core.columns import COLLATION, ExactDecimal, UtcDateTime
 from app.core.database import Base, create_database_engine, migrate
 from tests.helpers import ROOT
 
@@ -216,3 +216,15 @@ def test_a_batch_change_in_any_migration_keeps_an_exact_column_numeric(database_
     with engine.connect() as connection:
         assert connection.scalars(text("SELECT id FROM invoice ORDER BY amount")).all() == [2, 1]
     engine.dispose()
+
+
+def test_a_generated_migration_writes_the_exact_types_as_they_are_made():
+    """`alembic revision --autogenerate` copies a type's repr into the migration: with its arguments, the migration
+    would not run, since these types take none. tools/new_module.py and a person adding a table both rely on it."""
+    from alembic.autogenerate import render_python_code
+    from alembic.operations import ops
+    from sqlalchemy import MetaData
+
+    table = Table("sample", MetaData(), Column("amount", ExactDecimal()), Column("moment", UtcDateTime()))
+    code = render_python_code(ops.UpgradeOps([ops.CreateTableOp.from_table(table)]))
+    assert "app.core.columns.ExactDecimal()" in code and "app.core.columns.UtcDateTime()" in code
