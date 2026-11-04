@@ -54,6 +54,10 @@ def test_a_tool_runs_the_tests_that_name_it() -> None:
     assert "test_new_module.py" in names(runner.select(["tools/new_module.py"]))
 
 
+@pytest.mark.skipif(
+    not (ROOT / "tests" / "test_workflows.py").exists(),
+    reason="an organization's template leaves out the base's workflows and the tests that read them",
+)
 def test_the_workflows_run_their_tests() -> None:
     assert "test_workflows.py" in names(runner.select([".github/workflows/tests.yml"]))
 
