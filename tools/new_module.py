@@ -1412,6 +1412,17 @@ def write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
+_SQLITE_BOOLEAN_DEFAULT = re.compile(r"""(sa\.Boolean\(\).*?server_default=)sa\.text\((["'])([01])\2\)""")
+
+
+def portable_defaults(migration: str) -> str:
+    """A boolean's default as both databases read it. Alembic writes what SQLite holds, 0 or 1, and PostgreSQL refuses
+    an integer as a boolean column's default; `sa.false()` and `sa.true()` are what the demo's migrations use."""
+    return _SQLITE_BOOLEAN_DEFAULT.sub(
+        lambda found: found[1] + ("sa.true()" if found[3] == "1" else "sa.false()"), migration
+    )
+
+
 def next_revision(versions: Path) -> str:
     numbers = [int(match[1]) for path in versions.glob("*.py") if (match := re.match(r"([0-9]{4})_", path.name))]
     return f"{max(numbers, default=0) + 1:04d}"
@@ -1435,7 +1446,7 @@ def migration(root: Path, module: Module) -> None:
         revision = next_revision(root / "migrations" / "versions")
         command.revision(config, message=f"{module.title}: their table", autogenerate=True, rev_id=revision)
     for written in (root / "migrations" / "versions").glob(f"{revision}_*.py"):
-        lines = written.read_text(encoding="utf-8").splitlines(keepends=True)
+        lines = portable_defaults(written.read_text(encoding="utf-8")).splitlines(keepends=True)
         kept = "".join(line for line in lines if "### " not in line)  # Alembic's own reminders: read it, as the rest
         written.write_text(re.sub(r"\n\n\n+(?=\n*def |\Z)", "\n\n\n", kept), encoding="utf-8", newline="\n")
         tidy([written])

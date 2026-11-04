@@ -145,7 +145,10 @@ def test_it_writes_the_module_and_puts_it_in_place(application):
     )
     assert "import app.visits.models" in (application / "migrations" / "env.py").read_text(encoding="utf-8")
     [migration] = (application / "migrations" / "versions").glob("0001_*.py")
-    assert "ExactDecimal()" in migration.read_text(encoding="utf-8")
+    written = migration.read_text(encoding="utf-8")
+    assert "ExactDecimal()" in written
+    assert "server_default=sa.false()" in written, "PostgreSQL refuses 0 as a boolean's default"
+    assert not re.search(r"Boolean\(\).*server_default=sa\.text", written)
     assert (application / "tests" / "test_visits.py").is_file()
 
 

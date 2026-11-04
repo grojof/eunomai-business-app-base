@@ -215,3 +215,16 @@ def test_the_stylesheet_reads_the_templates_it_copies():
         for name in re.findall(r'class="([^"$]+)"', path.read_text(encoding="utf-8"))
     }
     assert "min-w-0 md:col-span-2" in copied, "the generated fields' wrappers are written in the template too"
+
+
+def test_a_booleans_default_in_a_migration_is_one_postgresql_accepts():
+    """Alembic writes what SQLite holds; on 2026-11-04 GitHub's PostgreSQL refused `DEFAULT 0` for a boolean."""
+    written = (
+        'sa.Column("confirmed", sa.Boolean(), server_default=sa.text("0"), nullable=False),\n'
+        "sa.Column('active', sa.Boolean(), server_default=sa.text('1'), nullable=False),\n"
+        'sa.Column("people", sa.Integer(), server_default=sa.text("0"), nullable=False),\n'
+    )
+    portable = new_module.portable_defaults(written)
+    assert "sa.Boolean(), server_default=sa.false(), nullable" in portable
+    assert "sa.Boolean(), server_default=sa.true(), nullable" in portable
+    assert 'sa.Integer(), server_default=sa.text("0")' in portable, "only a boolean's default changes"
