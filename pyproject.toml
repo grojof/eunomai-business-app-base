@@ -24,6 +24,7 @@ dev = [
     "mypy>=1.13,<3",
     "playwright>=1.64,<2",
     "pytest>=9,<10",
+    "pytest-xdist>=3.8,<4",
     "ruff>=0.14,<1",
 ]
 
@@ -53,6 +54,7 @@ addopts = "--strict-markers"
 markers = [
     "browser: needs a real browser",
     "rule(identifier): the rule of docs/base/standards.md this test proves",
+    "serial: needs the computer to itself (ports, processes, the clock); tools/test.py runs it after the others, alone",
 ]
 
 [tool.ruff]

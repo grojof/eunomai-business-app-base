@@ -65,14 +65,14 @@ def test_a_hint_stays_while_there_is_an_error(field):
 
 
 @pytest.mark.rule("A11Y-08")
-@pytest.mark.parametrize("field", set(FIELDS) - {"checkbox"})
+@pytest.mark.parametrize("field", sorted(set(FIELDS) - {"checkbox"}))
 def test_the_error_comes_before_the_control_with_the_hint_above_it(field):
     html = str(FIELDS[field](hint="How to fill it", error="Fix this"))
     assert html.index('id="box-hint"') < html.index('id="box-error"') < html.index(control(html))
 
 
 @pytest.mark.rule("A11Y-08")
-@pytest.mark.parametrize("field", set(FIELDS) - {"checkbox"})
+@pytest.mark.parametrize("field", sorted(set(FIELDS) - {"checkbox"}))
 def test_an_optional_field_says_so_and_a_required_one_tells_assistive_technology(field):
     assert "(optional)" in str(FIELDS[field](required=False))
     assert "(optional)" not in str(FIELDS[field]())

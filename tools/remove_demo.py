@@ -132,7 +132,8 @@ is the default and production never runs on SQLite.
 The tests, and every other check, are in [AGENTS.md](AGENTS.md#checks):
 
 ```bash
-uv run --frozen pytest -q
+uv run --frozen python tools/test.py --affected   # what the changes against main can break
+uv run --frozen python tools/test.py              # every test, in parallel
 ```
 
 ## Documentation

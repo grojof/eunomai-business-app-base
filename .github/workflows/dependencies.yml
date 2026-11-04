@@ -49,7 +49,8 @@ jobs:
           uv run --frozen python tools/gallery.py
           uv run --frozen python tools/css.py
           uv run --frozen python tools/components.py
-          uv run --frozen pytest -q
+          uv run --frozen pytest -q -n auto -m "not serial"
+          uv run --frozen pytest -q -m serial
           { git diff --name-only -z; git ls-files -o --exclude-standard -z; } | tar --null -T - -cf "$RUNNER_TEMP/out/update.tar"
 
       # A failure must reach the issue. update.tar exists only if the tests passed, and `propose` needs success.

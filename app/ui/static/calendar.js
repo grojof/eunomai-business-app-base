@@ -128,11 +128,20 @@
       },
       datesSet: () => remember(calendar),
       eventDrop: (info) => moved(config, info),
+      // Ready once the events from the server are on screen, not when the grid is drawn: until then they still move,
+      // as events that share an hour split its width.
+      loading: (busy) => {
+        if (!busy) {
+          document.documentElement.dataset.calendarReady = "";
+        }
+      },
     });
     calendar.render();
     mounted.set(box, calendar);
     box.querySelector("[data-calendar-fallback]").hidden = true;
-    document.documentElement.dataset.calendarReady = "";
+    if (Array.isArray(config.events)) {
+      document.documentElement.dataset.calendarReady = "";
+    }
   }
 
   async function start(root) {
