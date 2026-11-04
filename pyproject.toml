@@ -1,5 +1,5 @@
 [project]
-name = "business-app-base"
+name = "eunomai-business-app-base"
 version = "0.1.0"
 description = "A demo business application to clone and adapt."
 readme = "README.md"

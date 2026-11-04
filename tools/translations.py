@@ -67,7 +67,7 @@ REQUIRED = languages_in(LOCALES)
 
 
 def extract(domain: Domain) -> Catalog:
-    template = Catalog(project="business-app-base")
+    template = Catalog(project="eunomai-business-app-base")
     for folder, pattern, method in domain.sources:
         for filename, lineno, message, comments, context in extract_from_dir(
             folder, method_map=[(pattern, method)], keywords=KEYWORDS, strip_comment_tags=True
@@ -82,7 +82,7 @@ def path_of(domain: Domain, language: str) -> Path:
 
 def read(path: Path, language: str) -> Catalog:
     if not path.exists():
-        return Catalog(locale=language, project="business-app-base")
+        return Catalog(locale=language, project="eunomai-business-app-base")
     with path.open("rb") as file:
         return read_po(file, locale=language)
 

@@ -127,7 +127,7 @@ def fetch(name: str, version: str, member: str) -> bytes:
 
 
 def download(url: str) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": "business-app-base"})
+    request = urllib.request.Request(url, headers={"User-Agent": "eunomai-business-app-base"})
     with urllib.request.urlopen(request, timeout=120) as response:
         content: bytes = response.read()
     return content

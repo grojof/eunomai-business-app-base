@@ -39,7 +39,7 @@ def uv(*args: str) -> None:
 
 def pins() -> dict[str, str]:
     packages = tomllib.loads(LOCK.read_text(encoding="utf-8"))["package"]
-    return {p["name"]: p["version"] for p in packages if p["name"] != "business-app-base" and "version" in p}
+    return {p["name"]: p["version"] for p in packages if p["name"] != "eunomai-business-app-base" and "version" in p}
 
 
 def installed() -> dict[str, str]:

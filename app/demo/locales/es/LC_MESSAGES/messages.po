@@ -1,13 +1,13 @@
-# Spanish translations for business-app-base.
+# Spanish translations for eunomai-business-app-base.
 # Copyright (C) 2026 ORGANIZATION
-# This file is distributed under the same license as the business-app-base
+# This file is distributed under the same license as the eunomai-business-app-base
 # project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: business-app-base VERSION\n"
+"Project-Id-Version: eunomai-business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2026-11-02 15:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"

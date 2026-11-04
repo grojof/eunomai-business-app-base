@@ -32,7 +32,7 @@ def migrated_database() -> str:
     included, made once per run. A page that reads one of the application's tables finds it empty, not missing, so an
     application never edits this file for its start page; and a person's own `.data/` never changes what tests see."""
     if not _MIGRATED:
-        folder = Path(tempfile.mkdtemp(prefix="business-app-base-tests-"))
+        folder = Path(tempfile.mkdtemp(prefix="eunomai-business-app-base-tests-"))
         atexit.register(shutil.rmtree, folder, ignore_errors=True)
         url = f"sqlite:///{(folder / 'migrated.db').as_posix()}"
         migrate(url)

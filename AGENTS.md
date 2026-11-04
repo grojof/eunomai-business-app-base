@@ -1,4 +1,4 @@
-# AGENTS.md — business-app-base
+# AGENTS.md — eunomai-business-app-base
 
 For anyone working in this repository, person or AI assistant. The repository is in English and names no organization,
 person or real system: it stays neutral so anyone can clone it.

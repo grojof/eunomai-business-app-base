@@ -1,14 +1,14 @@
 ---
 type: reference
 title: Specification
-description: "What business-app-base contains: its structure, stack, data, components, demo, how an organization adapts it, how it is checked, and the milestones."
+description: "What eunomai-business-app-base contains: its structure, stack, data, components, demo, how an organization adapts it, how it is checked, and the milestones."
 tags: [specification, components, data, demo, template]
 related: [standards.md, decisions.md]
 ---
 
 # Specification
 
-`business-app-base` is a working application that demonstrates its own components. An organization clones it once and
+`eunomai-business-app-base` is a working application that demonstrates its own components. An organization clones it once and
 adds its brand; each new application is then a clone of that copy, with the demo deleted.
 
 Success means three things, each testable:
