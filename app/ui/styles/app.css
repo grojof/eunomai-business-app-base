@@ -4,6 +4,7 @@
 @import "tailwindcss" source(none);
 @source "../../**/*.html";
 @source "../catalog.py";
+@source "../../../tools/module_template"; /* what tools/new_module.py writes, so a new module needs no new build */
 @source "../../demo/examples/classes.txt"; /* demo */
 
 @plugin "../../../tools/tailwind/daisyui.mjs" {

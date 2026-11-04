@@ -8,6 +8,13 @@ from tools import translations
 
 pytestmark = pytest.mark.browser
 PAGES = ["/", "/missing"]
+FOCUS_SHOWN = """(() => {
+  const focused = document.activeElement;
+  const wrapper = focused.closest(".input, .select, .textarea");  // daisyUI draws a field's ring on its wrapper
+  return [focused, wrapper].some((element) => element && getComputedStyle(element).outlineStyle !== "none");
+})()"""
+"""Whether the focused control shows where it is: its own outline, or the one daisyUI draws around a field with an icon
+inside, as the search of a list has."""
 
 
 @pytest.mark.rule("A11Y-01")
@@ -47,7 +54,7 @@ def test_every_control_is_reached_by_keyboard_with_visible_focus(open_page):
             break
         reached += 1
         if page.evaluate("document.activeElement.id") != "main":
-            assert page.evaluate("getComputedStyle(document.activeElement).outlineStyle") != "none"
+            assert page.evaluate(FOCUS_SHOWN), page.evaluate("document.activeElement.outerHTML.slice(0, 200)")
     assert reached >= expected
 
 

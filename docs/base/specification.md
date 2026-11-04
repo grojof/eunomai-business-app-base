@@ -746,7 +746,8 @@ each page says so.
 | Your time zone | `APP_TIME_ZONE`; the default is UTC |
 | Your database | `APP_DATABASE_URL`, then `alembic upgrade head`. See [Data](#data) |
 | Your uploads | `APP_UPLOAD_FOLDER`, `APP_UPLOAD_MAX_BYTES`, `APP_REQUEST_MAX_BYTES`, and `KINDS` in `app/core/uploads.py`. Read [what production needs](#uploads) |
-| Add a table | A model on `Base`, its module imported in `migrations/env.py`, then `alembic revision --autogenerate` and read what it wrote. A test compares models and migrations |
+| Add a module of screens | `tools/new_module.py`, as [A new module](#a-new-module) says |
+| Add a table | A model on `Base`, its module imported in `migrations/env.py`, then `alembic revision --autogenerate` and read what it wrote: the exact types are written as they are made, so it runs. A test compares models and migrations |
 | Sample data for a module | `app/<module>/sample_data.py` with `holds_rows(session)`, whether its tables hold any row, and `fill(session)`, which replaces its rows with made-up ones; the caller commits. `uv run --frozen python -m app.core.sample_data --if-empty` applies the migrations, then fills each module that holds no rows, with nothing to register, and only in development. An application's preview runs exactly that, so a module brings its own rows without a change to `.eunomai/project.toml`, which IT keeps. No real people or companies |
 | Your identity proxy | Settings: `APP_TRUSTED_PROXIES`, `APP_HEADER_*`, `APP_GROUPS_SEPARATOR`, `APP_ROLE_GROUPS` |
 | Start an application | Clone your copy and run `tools/remove_demo.py`, then `tools/css.py`; `--languages` keeps fewer languages, as *Your languages* says. It deletes the demo with its tests, its models and first migration, the gallery's source and placeholders, `tools/make_template.py`, renames `demo-admins` in `.env.example` and in the preview, turns the rules only the demo proved to *By hand*, makes `AGENTS.md` describe an application, with a place at its top for what yours is, and replaces `README.md` with the application's own, as [Documentation](#documentation) says. Fill those in first. A base that edited `AGENTS.md` is told which changes it must make by hand. It runs once: a second run refuses, so it can never overwrite what was written. The application keeps the settings menu, the palette, every icon, Lucide's and the organization's, the illustrations, `app/core/`'s database and Alembic with no migrations, ready for its own, and its stylesheet shrinks by more than a quarter. Run it before adding a migration, which would otherwise follow the demo's. `tools/gallery.py` stays, with nothing to do |
@@ -763,6 +764,46 @@ is made again from the base, as the next section says, so the projects it starts
 
 `AGENTS.md`, the documentation and the checks travel with every clone. Any of them can be removed and the application
 still runs.
+
+## A new module
+
+`tools/new_module.py` writes a complete module of screens from a short description: a list with search, filters and
+pages, a page for each row, and one form to add or change a row. Each module is a package of `app/`.
+
+```bash
+uv run --frozen python tools/new_module.py --example > module.toml   # a commented description to start from
+uv run --frozen python tools/new_module.py --spec module.toml
+```
+
+| In the description | What it says |
+|---|---|
+| `package`, `entity`, `title`, `singular`, `plural` | The package (`app/assets/`), the model's class, and the words the pages use, in English: they go through the translations |
+| `path`, `icon`, `description`, `role`, `edit_role` | Optional: the address (`/assets`), a Lucide icon for the navigation, a line under the title, who may open it and who may change it (`admin` for both) |
+| `[[field]]` | `name`, `label` and `type`: `text`, `long_text`, `integer`, `decimal`, `date`, `datetime`, `boolean` or `choice`. Then `required`, `unique` (a text, a whole number or a date, and required), `search` (a text), `filter` (a choice or a yes or no), `list` (a column), `hint`, and the limits of its type: `longest`, `low`, `high`, `places`, `choices` |
+
+The first field shown in the list names each row: a required text. A description that breaks a rule is refused with
+what to fix, and nothing is written; so is a package that exists.
+
+| It writes | As the base does it |
+|---|---|
+| `models.py` | A model on `Base`, exact decimals and moments in UTC, a check constraint for each choice, an index on what is sorted or filtered, and a version column |
+| The migration | `alembic revision --autogenerate`, against a database at the newest migration, as a person makes one |
+| `routes.py` | A `ListView` with its columns, filters and search; a page per row; a form read at its edge with `app/core/forms.py`, every problem by field and what was typed kept; a unique value checked before saving and by the database; a save on an old page shows what the other person changed, and saves nothing |
+| `templates/` | Only the base's macros: `server_table`, `filter_bar`, `description_list`, the field macros, `error_summary` and `conflict_notice` |
+| `sample_data.py` | Made-up rows, the same on every run, which a preview fills by itself |
+| `locales/` | Every text in every language's catalogue, untranslated: a person translates them, and until then `tools/translations.py check` names them |
+| `tests/test_<package>.py` | The list, search, filters, a new row, a refused value, an edit, an edit on an old page, a unique value, the role, a row that does not exist, the sample data, and the accessibility scan of each screen in both themes |
+
+It also adds the module to `app/main.py` and its models to `migrations/env.py`, and formats what it wrote with the
+project's formatter. On a failure, everything it wrote goes. The stylesheet already holds every class the module's
+templates use, so nothing has to be built again.
+
+| Decision | Why | Instead of |
+|---|---|---|
+| A generator, not a pattern to copy | What can be written by code is written the same way every time, and it passes the checks from the first run: an assistant spends its time on what is particular to the application, not on learning the base | Copying a screen of the demo and adapting it, which reads most of the base first and drifts with each copy |
+| Plain code, as a person writes it | What it writes belongs to the application from then on: it is read and changed like any other code, with no tie back to the generator | Code that calls the generator at run time, or a framework of generic screens |
+| One kind of module | A list, a page and a form cover most of what a business application holds. Boards, calendars, timelines and dashboards have their own pieces in `app/core/`, which a module adds to | A generator for every screen, which would need its own options for each |
+| Texts left for a person | Machine translations are not accepted as they are, so the tests name every text until a person has read it | Translations written by the tool |
 
 ## An organization's template
 
@@ -796,6 +837,7 @@ person reviews the difference in the clone and merges it through a pull request.
 
 | Check | What it proves |
 |---|---|
+| A new module | `tests/test_new_module.py` reads what `tools/new_module.py` writes and every refusal. `tests/demo/test_new_module.py` runs it in a clean application, with a field of every type, translates the texts as a person would, and runs that application's whole suite, browser checks included, with its start page reading the new table |
 | Unit and integration tests | Behaviour, including permissions per role |
 | Tests with `app/demo/` deleted | In a copy without the demo, the stylesheet builds, every tool check passes and the tests pass, browser tests included, run as a person runs them: nothing is set for it, and no test may stay out because the demo has gone. These tests live in `tests/demo/`: they go with the demo, as does everything else that only makes sense while it exists |
 | An organization's template | A fictional layer makes one: nothing of the demo or of the base's workflows, its languages alone, its name, both themes and its font in the stylesheet, the font served under the policy, its own tests passing, the same files from a second run, and a layer that reaches beyond its place refused before anything is written |

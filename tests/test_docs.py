@@ -17,6 +17,8 @@ LINK = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 FENCE = re.compile(r"^(```|~~~).*?^\1", re.M | re.S)
 INLINE_CODE = re.compile(r"`[^`\n]*`")
 HEADING = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$", re.M)
+NAMED = re.compile(r'<a\s+(?:id|name)="([^"]+)"\s*>\s*</a>')
+"""An anchor that stays when the heading after it is translated: `<a id="run-it"></a>`."""
 TYPES = {"tutorial", "how-to", "reference", "explanation", "decision"}
 FRONTMATTER = re.compile(r"\A---\n(.*?)\n---\n", re.S)
 
@@ -40,8 +42,9 @@ def slug(heading: str) -> str:
 
 
 def anchors(page: Path) -> set[str]:
-    found: set[str] = set()
-    for heading in HEADING.findall(FENCE.sub("", page.read_text(encoding="utf-8"))):
+    text = FENCE.sub("", page.read_text(encoding="utf-8"))
+    found: set[str] = set(NAMED.findall(INLINE_CODE.sub("", text)))
+    for heading in HEADING.findall(text):
         base, number = slug(heading), 0
         while (candidate := base if number == 0 else f"{base}-{number}") in found:
             number += 1
@@ -155,3 +158,15 @@ def test_a_link_to_a_missing_file_or_heading_is_named_and_code_is_not_a_link(app
 )
 def test_anchors_follow_githubs_rules(heading, expected):
     assert slug(heading) == expected
+
+
+def test_a_named_anchor_stays_when_its_heading_is_translated(application):
+    """A link from AGENTS.md to a README section must not tie the heading to English: a team writes it in its own."""
+    (application / "README.md").write_text('# App\n\n<a id="run-it"></a>\n\n## Pruébala\n', encoding="utf-8")
+    (application / "AGENTS.md").write_text("[Run it](README.md#run-it) [Gone](README.md#try-it)\n", encoding="utf-8")
+    assert broken_links(application) == ["AGENTS.md: README.md#try-it (no such heading)"]
+
+
+def test_agents_reaches_the_readmes_run_section_by_a_named_anchor():
+    assert "README.md#run-it" in (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    assert "run-it" in anchors(ROOT / "README.md")

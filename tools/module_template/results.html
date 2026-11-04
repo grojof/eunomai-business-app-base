@@ -1,0 +1,26 @@
+{#- What changes when the list changes: a whole page includes it, and htmx asks for it alone. -#}
+{% from "ui/macros.html" import cell, empty_state, filter_bar, link_button, list_summary, pagination, row_actions, row_header, server_table %}
+{% if refill_filters %}{{ filter_bar(view, refill=true) }}{% endif %}
+{% call list_summary(view, ngettext("%(count)s $singular", "%(count)s $plural", view.total, count=view.total|decimal)) %}{% endcall %}
+{% if view.rows %}
+{% call(row) server_table(view, _("$caption"), _("Actions")) %}
+$cells
+{{ row_actions([
+  (_("View"), _("View %(name)s", name=row.$first), "$path/" ~ row.id, "eye"),
+] + ([
+  (_("Edit"), _("Edit %(name)s", name=row.$first), "$path/" ~ row.id ~ "/edit", "pencil"),
+] if can_edit else [])) }}
+{% endcall %}
+{{ pagination(view) }}
+{% else %}
+<input type="hidden" name="size" value="{{ view.size }}" form="{{ view.form_id }}">
+{% if view.term or view.active %}
+{% call empty_state(_("No $plural match"), _("Try fewer filters, or another word."), "search", 2) %}
+{{ link_button(_("Clear all"), view.clear_link, small=true) }}
+{% endcall %}
+{% else %}
+{% call empty_state(_("No $plural yet"), _("The first one you add will be listed here."), "$icon", 2) %}
+{% if can_edit %}{{ link_button(_("$new_label"), "$path/new", "primary", small=true, name="plus") }}{% endif %}
+{% endcall %}
+{% endif %}
+{% endif %}

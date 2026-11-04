@@ -1,4 +1,6 @@
+import atexit
 import os
+import shutil
 import socket
 import tempfile
 import threading
@@ -15,14 +17,27 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, make_url
 
+from app.core.database import migrate
 from app.core.settings import Settings
 from app.main import create_app
 
 PERSON = {"X-Remote-User": "demo.person", "X-Remote-Name": "Demo Person", "X-Remote-Groups": "staff|admins"}
 TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "")
 """A PostgreSQL to run the database tests on as well. Nothing in it is touched: each test gets a schema of its own."""
-NO_DATABASE = (Path(tempfile.gettempdir()) / "business-app-base-tests" / "nothing-here.db").as_posix()
-"""Where a test looks unless it asks for a database: a person's own `.data/` must not change what tests see."""
+_MIGRATED: list[str] = []
+
+
+def migrated_database() -> str:
+    """Where a test looks unless it asks for a database: SQLite with every migration applied, the application's own
+    included, made once per run. A page that reads one of the application's tables finds it empty, not missing, so an
+    application never edits this file for its start page; and a person's own `.data/` never changes what tests see."""
+    if not _MIGRATED:
+        folder = Path(tempfile.mkdtemp(prefix="business-app-base-tests-"))
+        atexit.register(shutil.rmtree, folder, ignore_errors=True)
+        url = f"sqlite:///{(folder / 'migrated.db').as_posix()}"
+        migrate(url)
+        _MIGRATED.append(url)
+    return _MIGRATED[0]
 
 
 def postgresql_is_missing(environment: Mapping[str, str]) -> bool:
@@ -42,7 +57,7 @@ def build_settings(**overrides: Any) -> Settings:
         "environment": "development",
         "trusted_proxies": ["testclient"],
         "role_groups": {"admin": ["admins"]},
-        "database_url": f"sqlite:///{NO_DATABASE}",
+        "database_url": migrated_database(),
     }
     if overrides.get("environment") == "production":
         values["database_url"] = "postgresql+psycopg://application@localhost/application"  # nothing connects to it

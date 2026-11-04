@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import breadcrumbs, page_heading %}
+{% set title = heading if item else _("$new_label") %}
+{% block title %}{{ _("Error") ~ ": " if errors else "" }}{{ title }}{% endblock %}
+{% block content %}
+{{ breadcrumbs([(_("$title"), back), (title, "")]) }}
+{{ page_heading(title, "" if item else _("Fill in what is known: only what is marked as optional can wait.")) }}
+<div id="$package-form" class="max-w-4xl">
+  {% include "$package/form.html" %}
+</div>
+{% endblock %}

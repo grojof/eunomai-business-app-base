@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import breadcrumbs, card, description_list, link_button, message, page_heading %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+{{ breadcrumbs([(_("$title"), back), (heading, "")]) }}
+{% call page_heading(heading) %}
+{% if can_edit %}{{ link_button(_("Edit"), "$path/" ~ item.id ~ "/edit?back=" ~ back|urlencode, "primary", name="pencil") }}{% endif %}
+{% endcall %}
+{% if outcome %}<div role="status">{{ message("success", outcome) }}</div>{% endif %}
+<div class="max-w-4xl">
+  {% call card(_("Details"), "details-title") %}
+  {{ description_list([
+$details
+  ]) }}
+  {% endcall %}
+</div>
+{% endblock %}

@@ -48,6 +48,10 @@ class ExactDecimal(TypeDecorator[Decimal]):
     def __init__(self) -> None:
         super().__init__(WHOLE_DIGITS + DECIMAL_DIGITS, DECIMAL_DIGITS)
 
+    def __repr__(self) -> str:
+        """As Alembic writes it in a migration it generates: the precision is the type's own, not an argument."""
+        return "ExactDecimal()"
+
     def load_dialect_impl(self, dialect: Dialect) -> TypeEngine[Any]:
         if dialect.name == "sqlite":
             return dialect.type_descriptor(Text(collation=COLLATION))
@@ -79,6 +83,10 @@ class UtcDateTime(TypeDecorator[datetime]):
 
     def __init__(self) -> None:
         super().__init__(timezone=True)
+
+    def __repr__(self) -> str:
+        """As Alembic writes it in a migration it generates: the time zone is the type's own, not an argument."""
+        return "UtcDateTime()"
 
     def process_bind_param(self, value: datetime | None, dialect: Dialect) -> datetime | None:
         if value is None:
