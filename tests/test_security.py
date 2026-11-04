@@ -206,7 +206,7 @@ def test_no_secret_file_is_tracked_by_default():
 @pytest.mark.rule("SEC-10")
 def test_every_package_in_the_lock_carries_hashes():
     lock = tomllib.loads((ROOT / "uv.lock").read_text(encoding="utf-8"))
-    packages = [package for package in lock["package"] if package["name"] != "business-app-base"]
+    packages = [package for package in lock["package"] if package["name"] != "eunomai-business-app-base"]
     assert packages
     for package in packages:
         files = [*package.get("wheels", []), *([package["sdist"]] if "sdist" in package else [])]

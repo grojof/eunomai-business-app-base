@@ -1,4 +1,4 @@
-# business-app-base
+# eunomai-business-app-base
 
 A demo business application to clone and adapt. Its gallery shows every daisyUI component with an honest status and
 every official example, and the approved ones are built to one standard of accessibility, usability and language
@@ -12,7 +12,7 @@ what helps, change the rest.
 
 ```mermaid
 flowchart LR
-    b[business-app-base<br/>the demo] -->|clone, add your brand| o[Your organization's base]
+    b[eunomai-business-app-base<br/>the demo] -->|clone, add your brand| o[Your organization's base]
     o -->|clone, delete the demo| a[Application]
     o -->|clone, delete the demo| c[Application]
     classDef data fill:#ede9fe,stroke:#7c3aed,color:#4c1d95

@@ -100,7 +100,7 @@ def test_the_icon_set_stays_whole(application):
 def test_agents_md_describes_an_application(application):
     text = (application / "AGENTS.md").read_text(encoding="utf-8")
     assert re.findall(r"^## .+", text, re.M)[0] == "## What this application is"
-    assert not re.search(r"\bdemo\b|gallery|business-app-base|neutral|tests/demo", text, re.I)
+    assert not re.search(r"\bdemo\b|gallery|eunomai-business-app-base|neutral|tests/demo", text, re.I)
     assert b"\r\n" not in (application / "AGENTS.md").read_bytes()
     for link in re.findall(r"\]\((?!http)([^)#]+)", text):
         assert (application / link).exists(), link
@@ -111,7 +111,7 @@ def test_the_readme_is_the_applications_map_and_the_bases_documentation_stays_ap
     """An application once kept the base's README and its pages, and wrote none of its own."""
     readme = (application / "README.md").read_text(encoding="utf-8")
     assert readme == remove_demo.APPLICATION_README
-    assert not re.search(r"\bdemo\b|gallery|business-app-base|milestone", readme, re.I)
+    assert not re.search(r"\bdemo\b|gallery|eunomai-business-app-base|milestone", readme, re.I)
     assert "](docs/base/specification.md)" in readme and "app.core.sample_data --if-empty" in readme
     assert sorted(path.name for path in (application / "docs").iterdir()) == ["base"]
     assert (application / "docs" / "base" / "standards.md").is_file()
@@ -125,7 +125,9 @@ def test_it_changes_all_of_agents_md_and_a_base_that_edited_it_hears_what_it_mis
     remove_demo.changed(edited, remove_demo.AGENTS_CHANGES[5:6])
     assert edited.read_text(encoding="utf-8") == "# Our base\n\n- A new component needs its tests,\n"
     remove_demo.changed(edited, remove_demo.AGENTS_CHANGES[:1])
-    assert "AGENTS.md: not found, so change it by hand: # AGENTS.md — business-app-base" in capsys.readouterr().out
+    assert (
+        "AGENTS.md: not found, so change it by hand: # AGENTS.md — eunomai-business-app-base" in capsys.readouterr().out
+    )
 
 
 def test_a_second_run_changes_nothing(application):

@@ -1,7 +1,7 @@
 ---
 type: reference
 title: Decisions
-description: "Why business-app-base is built the way it is, what was rejected, and the questions still open."
+description: "Why eunomai-business-app-base is built the way it is, what was rejected, and the questions still open."
 tags: [decisions]
 related: [specification.md, standards.md]
 ---
