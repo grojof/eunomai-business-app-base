@@ -1,0 +1,8 @@
+{#- The board itself: the page includes it, and htmx asks for it alone after a move. -#}
+{% from "ui/macros.html" import board as draw_board, conflict_notice, message %}
+{% set top %}
+{% if conflict %}{{ conflict_notice(_("Someone else moved this $singular first"), _("Nothing of yours was moved. The card is where they left it: move it again if you still want to."), conflict) }}{% endif %}
+{% if refused %}<div role="alert" tabindex="-1" data-focus>{{ message("warning", refused) }}</div>{% endif %}
+{% if moved %}<div role="status"{% if announce %} data-announce="{{ moved }}"{% endif %} data-once="moved">{{ message("success", moved) }}</div>{% endif %}
+{% endset %}
+{{ draw_board(board, top) }}

@@ -6,15 +6,16 @@ moved it first, with the version column. Then it gives the card its place in the
 """
 
 from collections.abc import Mapping
-from typing import Annotated, Any, cast
+from typing import Annotated, Any
 from urllib.parse import urlencode
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse, Response
-from sqlalchemy import Select, Table, and_, bindparam, func, or_, select, update
+from sqlalchemy import Select, func, select
 from sqlalchemy.orm import Session, contains_eager
 
-from app.core.boards import Board, BoardCard, BoardColumn, Move, rank_between, read_move, renumbered
+from app.core import boards
+from app.core.boards import Board, BoardCard, BoardColumn, place_card, read_move
 from app.core.database import DatabaseSession, saved
 from app.core.forms import Refused
 from app.core.i18n import _
@@ -114,49 +115,9 @@ def _moved_message(order: WorkOrder) -> str:
     }
 
 
-def column_lock(statuses: tuple[str, ...]) -> Select[int]:
-    """Holds the rows of the columns a move reads and writes, where the database can: PostgreSQL locks them until the
-    commit, in one order, so two moves cannot deadlock, and a move that waited reads the ranks another move left. SQLite
-    has one writer at a time and takes no row locks: SQLAlchemy leaves FOR UPDATE out there."""
-    return (
-        select(WorkOrder.id).where(WorkOrder.status.in_(sorted(set(statuses)))).order_by(WorkOrder.id).with_for_update()
-    )
-
-
-def _neighbours(session: Session, order: WorkOrder, move: Move) -> tuple[int | None, int | None]:
-    """The ranks around the place asked for, in the whole column and not only in what a page showed. Refused if the
-    card to follow is not in that column."""
-    column = and_(WorkOrder.status == move.to, WorkOrder.id != order.id)
-    if move.after is None:
-        first = session.scalar(select(func.min(WorkOrder.rank)).where(column))
-        return None, first
-    after = session.get(WorkOrder, move.after, populate_existing=True) if move.after <= LARGEST_ID else None
-    if after is None or after.status != move.to or after.id == order.id:
-        raise Refused(_("That place on the board has changed. Here it is as it is now: try again."))
-    later = or_(WorkOrder.rank > after.rank, and_(WorkOrder.rank == after.rank, WorkOrder.id > after.id))
-    following = session.scalar(select(func.min(WorkOrder.rank)).where(column, later))
-    if following == after.rank:  # two cards share a number: the column needs its gaps back
-        return after.rank, after.rank
-    return after.rank, following
-
-
-def _renumber(session: Session, order: WorkOrder, move: Move) -> int:
-    """Gives the column its gaps back with the card in its place, and returns the card's new rank. Only the rank
-    changes, through the table, so no other card's version moves."""
-    others = session.scalars(
-        select(WorkOrder.id)
-        .where(WorkOrder.status == move.to, WorkOrder.id != order.id)
-        .order_by(WorkOrder.rank, WorkOrder.id)
-    ).all()
-    place = others.index(move.after) + 1 if move.after in others else 0
-    ids = [*others[:place], order.id, *others[place:]]
-    rows = renumbered(ids)
-    table = cast(Table, WorkOrder.__table__)
-    statement = update(table).where(table.c.id == bindparam("row_id")).values(rank=bindparam("row_rank"))
-    session.execute(
-        statement, [{"row_id": row["id"], "row_rank": row["rank"]} for row in rows if row["id"] != order.id]
-    )
-    return rows[place]["rank"]
+def column_lock(statuses: tuple[str, ...]) -> Select[Any]:
+    """The columns a move reads and writes, held until it commits: see app/core/boards.py."""
+    return boards.column_lock(WorkOrder, "status", statuses)
 
 
 def _conflict(order: WorkOrder) -> list[tuple[str, str]]:
@@ -189,17 +150,19 @@ def move_card(
     session.refresh(order)  # what another move, which this one waited for, left
     if move.version != order.version:
         return _page(request, session, place, 200 if partial else 409, conflict=_conflict(order), focus=order.id)
-    try:
-        previous, following = _neighbours(session, order, move)
-    except Refused as problem:
-        return _page(request, session, place, 200 if partial else 409, refused=str(problem), focus=order.id)
+    status = order.status
 
     def change() -> None:
-        rank = rank_between(previous, following)
+        place_card(session, WorkOrder, order, move, "status")
+        order.status = status  # set_status records when it closed, from the state it leaves
         set_status(order, move.to)
-        order.rank = rank if rank is not None else _renumber(session, order, move)
 
-    if not saved(session, change):
+    try:
+        moved = saved(session, change)
+    except Refused as problem:
+        session.rollback()
+        return _page(request, session, place, 200 if partial else 409, refused=str(problem), focus=order.id)
+    if not moved:
         now = session.get(WorkOrder, move.card)
         if now is None:
             raise HTTPException(status_code=404)

@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import empty_state, gantt, page_heading, tabs %}
+{% block title %}{{ _("$title on a timeline") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("$title on a timeline"), _("Each $singular as a bar on its days.")) }}
+{{ tabs(_("$title: views"), views, "timeline") }}
+<section class="rounded-box border border-base-300 bg-base-100 py-4" aria-label="{{ _('$title on a timeline') }}">
+  <nav class="mb-3 flex flex-wrap gap-2 px-4 print:hidden" aria-label="{{ _('Scale') }}">
+    {% for text, href, current in steps %}<a class="btn btn-sm{{ ' btn-active' if current else '' }}" href="{{ href }}"{% if current %} aria-current="page"{% endif %}>{{ text }}</a>{% endfor %}
+  </nav>
+  {% if items %}
+  {% if total > shown_now %}<p class="px-4 pb-3 text-sm">{{ _("The first %(shown)s of %(total)s, the earliest first.", shown=shown_now|decimal, total=total|decimal) }}</p>{% endif %}
+  {% call gantt("$package-timeline", _("$title on a timeline, with their dates"), plan, [(_("$first_label"), false), (_("$start_label"), true), (_("$end_label"), true)], _("Each one is a bar from its first day to its last. The upright red line is today, %(today)s.", today=today|date)) %}
+  <tbody>
+    {% for item in items %}
+    <tr class="hover:bg-base-200">
+      <th scope="row" class="max-w-28 truncate font-medium sm:max-w-48"><a class="link link-hover" href="$path/{{ item.id }}">{{ item.$first }}</a></th>
+      <td class="hidden 2xl:table-cell">{{ item.$start|date }}</td>
+      <td class="hidden 2xl:table-cell">{{ $end_cell }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  {% endcall %}
+  {% else %}
+  {{ empty_state(_("Nothing to show yet"), _("A $singular appears here once it has a date in $start_label."), "calendar", 2) }}
+  {% endif %}
+</section>
+{% endblock %}

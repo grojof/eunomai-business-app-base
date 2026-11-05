@@ -36,7 +36,10 @@ Add your own components as [the specification](docs/base/specification.md#adapti
   it in TOML (`uv run --frozen python tools/new_module.py --example` prints a commented description), run it with
   `--spec`, then change what this application needs. It writes the model, the migration, the routes, the templates,
   the sample data, the texts and the tests, which pass every check once a person translates the texts:
-  [A new module](docs/base/specification.md#a-new-module). Read the base only for what it did not write.
+  [A new module](docs/base/specification.md#a-new-module). A row that belongs to another module's row is a
+  `reference` field to that module, made first; a board, a calendar or a timeline of a module's rows is its `[board]`,
+  `[calendar]` or `[timeline]`. Describe them there instead of writing those screens by hand, and read the base only
+  for what it did not write.
 - Use the existing macros before writing anything new: screens call `button`, not a raw `.btn`. daisyUI's examples in
   the gallery are reference material, not a model for a screen. After changing templates, run
   `uv run --frozen python tools/css.py`.
@@ -56,7 +59,8 @@ Add your own components as [the specification](docs/base/specification.md#adapti
   address in SQL: read [Lists on the server](docs/base/specification.md#lists-on-the-server). Charts come from
   `app/core/charts.py` and the `chart` macro, always with a summary. Excel comes from `app/core/excel.py`. A board
   comes from `app/core/boards.py`, a timeline from `app/core/gantt.py` and a calendar from `app/core/calendars.py`,
-  each with its macro: the server decides every move.
+  each with its macro: the server decides every move. A card's link and actions come from `BoardCard` (`href`,
+  `lines`, `actions`), which the board draws as buttons a finger can hit, never as bare small links.
 - A form uses the field macros and reads every value with `app/core/forms.py`, at the edge: read
   [Forms](docs/base/specification.md#forms). It is `novalidate`, and a failed save keeps what was typed.
 - Add a dependency only if the [stack](docs/base/specification.md#stack) needs it. Pin it and check it for known

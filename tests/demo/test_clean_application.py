@@ -67,6 +67,7 @@ def test_the_tests_run_whole_on_a_persons_computer(application):
     declaration = tomllib.loads((application / ".eunomai" / "project.toml").read_text(encoding="utf-8"))
     assert declaration["tests"] == {
         "run": ["python", "tools/test.py"],
+        "some": ["python", "tools/test.py", "--"],
         "environment": {"APP_BROWSER_CHANNEL": "msedge"},
     }
     assert "demo" not in (application / ".eunomai" / "project.toml").read_text(encoding="utf-8")

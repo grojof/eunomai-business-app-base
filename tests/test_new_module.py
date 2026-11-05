@@ -214,6 +214,57 @@ def test_what_it_writes_for_references_is_python_and_jinja(tmp_path):
     assert 'searchable_select("place", _("Place"), options.place' in new_module.templates(read)["form.html"]
 
 
+WITH_VIEWS = (
+    EVERY_TYPE
+    + """
+[board]
+field = "kind"
+
+[calendar]
+start = "starts_at"
+
+[timeline]
+start = "booked_on"
+"""
+)
+
+
+def test_its_other_views_are_read_and_written_as_python_and_jinja():
+    read = module(WITH_VIEWS)
+    assert read.views == ["board", "calendar", "timeline"]
+    assert read.board and read.board.name == "kind" and read.calendar and read.calendar.end is None
+    assert 'rank: Mapped[int] = mapped_column(BigInteger, server_default="0", index=True)' in new_module.models_code(
+        read
+    )
+    code = new_module.views_code(read)
+    for name in ("def board_page(", "def move_card(", "def calendar_page(", "def move_event(", "def timeline_page("):
+        assert name in code, name
+    compile(code, "views", "exec")
+    compile(new_module.tests_code(read), "tests", "exec")
+    written = new_module.views_templates(read)
+    assert set(written) == {"board.html", "board_part.html", "calendar.html", "timeline.html"}
+    for name, text in [*written.items(), *new_module.templates(read).items()]:
+        assert "$" not in text, name
+        environment.parse(text)
+    assert '{{ tabs(_("Visits: views"), views, "list") }}' in new_module.templates(read)["list.html"]
+
+
+@pytest.mark.parametrize(
+    ("view", "said"),
+    [
+        ('[board]\nfield = "confirmed"', "[board] says field = a choice"),
+        ('[board]\nfield = ["kind"]', "[board] says field = a choice"),
+        ('[calendar]\nstart = "people"', "[calendar] start is a date or a date and time"),
+        ('[calendar]\nstart = "starts_at"\nend = "booked_on"', "[calendar] end is another field of the same type"),
+        ('[calendar]\nend = "starts_at"', "[calendar] says start = a field"),
+        ('[timeline]\nstart = "starts_at"', "[timeline] start is a date of this module"),
+    ],
+)
+def test_a_view_that_cannot_be_made_is_refused_with_what_to_fix(view, said):
+    with pytest.raises(new_module.Refused, match=re.escape(said)):
+        module(EVERY_TYPE + "\n" + view + "\n")
+
+
 def test_the_first_column_names_each_row_so_it_is_a_required_text():
     text = EVERY_TYPE.replace(
         'type = "text"\nrequired = true\nunique = true\nsearch = true\nlist = true', 'type = "text"\nsearch = true'

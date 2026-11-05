@@ -19,7 +19,7 @@ import subprocess
 import sys
 import tempfile
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from pathlib import Path
 from string import Template
@@ -34,8 +34,8 @@ WORDS = re.compile(r"[A-Za-z0-9][^\"\\%{}<>$\n]{0,79}\Z")
 """Text that becomes a message to translate, in a template and in Python: no quotes, braces, markup or placeholders."""
 CHOICE = re.compile(r"[a-z][a-z0-9_]{0,23}\Z")
 ICON = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*\Z")
-RESERVED_FIELDS = {"id", "version", "back", "saved", "q", "sort", "dir", "size", "page", "panel"}
-"""The table's own columns, the form's hidden fields and the words a list's address uses."""
+RESERVED_FIELDS = {"id", "version", "rank", "back", "saved", "moved", "q", "sort", "dir", "size", "page", "panel"}
+"""The table's own columns, a board's place in its column, the form's hidden fields and the words an address uses."""
 SHARED = {"core", "ui", "brand", "demo"}
 LIMITS = {"text": 255, "long_text": 10000}
 DEFAULTS: dict[str, dict[str, Any]] = {
@@ -119,6 +119,16 @@ type = "long_text"
 # required = true
 # filter = true
 # list = true
+
+# Other views of the same rows, each optional, each a page with tabs between them and the list:
+[board]                     # a card for each row, in a column for each value of a choice, moved by form or by dragging
+field = "state"
+
+[calendar]                  # each row on its day: a date or a date and time, and an end of the same type if it has one
+start = "bought_on"
+
+[timeline]                  # each row as a bar on its days: a date, and an end date if it has one
+start = "bought_on"
 """
 DESCRIPTION = "module.toml"
 """What another module's reference reads of this one: written beside its code, with the names it was made with."""
@@ -184,6 +194,14 @@ class Field:
 
 
 @dataclass(frozen=True)
+class Span:
+    """The fields a calendar or a timeline places each row by: its start, and its end if it has one."""
+
+    start: Field
+    end: Field | None = None
+
+
+@dataclass(frozen=True)
 class Module:
     package: str
     entity: str
@@ -197,6 +215,14 @@ class Module:
     role: str
     edit_role: str
     fields: tuple[Field, ...]
+    board: Field | None = None
+    calendar: Span | None = None
+    timeline: Span | None = None
+
+    @property
+    def views(self) -> list[str]:
+        """The pages besides the list, in the order of their tabs."""
+        return [name for name in ("board", "calendar", "timeline") if getattr(self, name)]
 
     @property
     def first(self) -> Field:
@@ -361,6 +387,9 @@ def read_module(spec: dict[str, Any], app: Path) -> Module:
         "role",
         "edit_role",
         "field",
+        "board",
+        "calendar",
+        "timeline",
     }
     unknown = sorted(set(spec) - known)
     if unknown:
@@ -412,7 +441,39 @@ def read_module(spec: dict[str, Any], app: Path) -> Module:
     )
     if module.first.kind != "text" or not module.first.required:
         raise Refused(f"the first field shown in the list names each row: {module.first.name} is a required text")
-    return module
+    return replace(
+        module,
+        board=read_board(spec.get("board"), read),
+        calendar=read_span(spec.get("calendar"), read, "calendar", ("date", "datetime")),
+        timeline=read_span(spec.get("timeline"), read, "timeline", ("date",)),
+    )
+
+
+def read_board(spec: object, fields: tuple[Field, ...]) -> Field | None:
+    if spec is None:
+        return None
+    named = {field.name: field for field in fields if field.kind == "choice"}
+    if not isinstance(spec, dict) or set(spec) != {"field"} or str(spec["field"]) not in named:
+        raise Refused("[board] says field = a choice of this module: its values are the columns")
+    return named[spec["field"]]
+
+
+def read_span(spec: object, fields: tuple[Field, ...], view: str, kinds: tuple[str, ...]) -> Span | None:
+    if spec is None:
+        return None
+    named = {field.name: field for field in fields}
+    what = " or ".join("a date" if kind == "date" else "a date and time" for kind in kinds)
+    if not isinstance(spec, dict) or not set(spec) <= {"start", "end"} or "start" not in spec:
+        raise Refused(f"[{view}] says start = a field, and end = another if each row has one")
+    start = named.get(spec["start"]) if isinstance(spec["start"], str) else None
+    if start is None or start.kind not in kinds:
+        raise Refused(f"[{view}] start is {what} of this module")
+    if "end" not in spec:
+        return Span(start)
+    end = named.get(spec["end"]) if isinstance(spec["end"], str) else None
+    if end is None or end.kind != start.kind or end is start:
+        raise Refused(f"[{view}] end is another field of the same type as start")
+    return Span(start, end)
 
 
 # --- the model ----------------------------------------------------------------------------------------------------
@@ -470,7 +531,7 @@ def models_code(module: Module) -> str:
         "from datetime import date, datetime",
         "from decimal import Decimal",
         "",
-        "from sqlalchemy import CheckConstraint, ForeignKey, String, Text, false",
+        "from sqlalchemy import BigInteger, CheckConstraint, ForeignKey, String, Text, false",
         "from sqlalchemy.orm import Mapped, mapped_column, relationship",
         "",
         "from app.core.database import Base",
@@ -491,6 +552,8 @@ def models_code(module: Module) -> str:
         lines.append(f"    __table_args__ = ({', '.join(constraints)},)")
     lines += ["", "    id: Mapped[int] = mapped_column(primary_key=True)"]
     lines += [column_line(field) for field in module.fields]
+    if module.board:
+        lines.append('    rank: Mapped[int] = mapped_column(BigInteger, server_default="0", index=True)')
     lines += [
         '    version: Mapped[int] = mapped_column(server_default="1")',
         "",
@@ -672,6 +735,19 @@ def routes_code(module: Module) -> str:
         )
     lines += ["", ""]
 
+    if module.views:
+        tab = {"board": "Board", "calendar": "Calendar", "timeline": "Timeline"}
+        entries = " ".join(f'("{name}", N_("{tab[name]}"), "/{name}"),' for name in module.views)
+        lines += [
+            f'VIEWS = (("list", N_("List"), ""), {entries})',
+            '"""This module\'s pages of the same rows: the tabs that lead from one to another."""',
+            "",
+            "",
+            "def view_links() -> list[tuple[str, str, str]]:",
+            "    return [(key, _(label), PATH + end) for key, label, end in VIEWS]",
+            "",
+            "",
+        ]
     lines += [
         "def can_edit(request: Request) -> bool:",
         '    """Whether to offer it. The routes check again: hiding a link is not a control."""',
@@ -798,6 +874,7 @@ def routes_code(module: Module) -> str:
         f'        "{module.package}/results.html",',
         "        can_edit=can_edit(request),",
         "        labels=LABELS,",
+        *(["        views=view_links(),"] if module.views else []),
         "    )",
         "",
         "",
@@ -1090,7 +1167,7 @@ def package_code(module: Module) -> str:
             "",
             "from app.core.i18n import N_",
             "from app.core.templating import NavigationItem, add_templates",
-            f"from app.{module.package} import routes",
+            f"from app.{module.package} import routes" + (", views" if module.views else ""),
             "",
             "HERE = Path(__file__).resolve().parent",
             "",
@@ -1101,9 +1178,145 @@ def package_code(module: Module) -> str:
             f'    item = NavigationItem(N_("{module.title}"), routes.PATH, "{module.icon}", role=routes.ROLE)',
             "    application.state.navigation.append(item)",
             "    routes.install(application)",
+            *(["    views.install(application)"] if module.views else []),
             "",
         ]
     )
+
+
+# --- other views of the same rows -------------------------------------------------------------------------------
+
+
+def chunk(name: str, values: dict[str, str]) -> str:
+    return Template((TEMPLATES / name).read_text(encoding="utf-8")).substitute(values)
+
+
+def views_code(module: Module) -> str:
+    """Imports may be more than it uses: `tidy` takes away the unused ones and puts the rest in order."""
+    entity, zone = module.entity, module.having("datetime")
+    names = [{"board": "a board", "calendar": "a calendar", "timeline": "a timeline"}[name] for name in module.views]
+    from_models, from_routes = [entity], ["LARGEST_ID", "PATH", "SHOWN", "Editor", "Reader", "can_edit", "shown"]
+    from_routes += ["view_links", *(["zone_of"] if zone else [])]
+    board, calendar, plan = module.board, module.calendar, module.timeline
+    if board:
+        from_models.append(f"{board.constant}_CHOICES")
+        from_routes.append(f"{board.constant}_LABELS")
+    code = chunk(
+        "views.py.txt",
+        {
+            "title": module.title,
+            "names": " and ".join([", ".join(names[:-1]), names[-1]] if len(names) > 1 else names),
+            "model_import": f"from app.{module.package}.models import {', '.join(sorted(from_models))}",
+            "route_import": f"from app.{module.package}.routes import {', '.join(from_routes)}",
+            "entity": entity,
+            "words": "shown(item, zone_of(request))" if zone else "shown(item)",
+        },
+    )
+    common = {
+        "entity": entity,
+        "package": module.package,
+        "first": module.first.name,
+        "title": module.title,
+        "singular": module.singular,
+    }
+    install = ["", "", "def install(application: FastAPI) -> None:", "    add = application.add_api_route"]
+    if board:
+        shown_lines = [f.name for f in module.fields if f.listed and f is not module.first and f is not board][:2]
+        lines = ", ".join(f'"{name}"' for name in shown_lines) + ("," if len(shown_lines) == 1 else "")
+        more = f'f"{{PATH}}?" + urlencode({{"{board.name}": key}})' if board.filter else "PATH"
+        code += chunk(
+            "board.py.txt",
+            common
+            | {
+                "field": board.name,
+                "phrase": board.phrase,
+                "card_lines": lines,
+                "labels": f"{board.constant}_LABELS",
+                "choices": f"{board.constant}_CHOICES",
+                "more": more,
+            },
+        )
+        install += [
+            "    add(BOARD_PATH, board_page, include_in_schema=False)",
+            '    add(f"{BOARD_PATH}/move", move_card, methods=["POST"], include_in_schema=False)',
+        ]
+    if calendar:
+        start, end = calendar.start.name, calendar.end.name if calendar.end else ""
+        timed = calendar.start.kind == "datetime"
+        if timed:
+            ends = f"item.{end} if item.{end} and item.{end} > start else " if end else ""
+            event_end = f"{ends}start + timedelta(hours=1)"
+            bounds = (
+                "    local = ZoneInfo(zone)\n"
+                "    low = datetime.combine(first, time(), local).astimezone(UTC)\n"
+                "    high = datetime.combine(after, time(), local).astimezone(UTC)"
+            )
+        else:
+            event_end = f"max(item.{end}, start) if item.{end} else start" if end else "start"
+            bounds = "    low, high = first, after"
+        shift = (
+            f"    if item.{end} is not None:\n        item.{end} = moved_to + (item.{end} - item.{start})"
+            if end
+            else ""
+        )
+        code += chunk(
+            "calendar.py.txt",
+            common
+            | {
+                "start": start,
+                "start_phrase": calendar.start.phrase,
+                "event_end": event_end,
+                "bounds": bounds,
+                "ends": f"func.coalesce({entity}.{end}, {entity}.{start})" if end else f"{entity}.{start}",
+                "read_start": "read_moment(start)" if timed else "read_day(start)",
+                "shift": shift,
+                "when": "format_datetime(moved_to, request.app.state.settings.time_zone)"
+                if timed
+                else "format_date(moved_to)",
+            },
+        )
+        install += [
+            "    add(CALENDAR_PATH, calendar_page, include_in_schema=False)",
+            '    add(f"{CALENDAR_PATH}/events", calendar_events, include_in_schema=False)',
+            '    add(f"{CALENDAR_PATH}/move", move_event, methods=["POST"], include_in_schema=False)',
+        ]
+    if plan:
+        start, end = plan.start.name, plan.end.name if plan.end else ""
+        code += chunk(
+            "timeline.py.txt",
+            common
+            | {
+                "start": start,
+                "start_phrase": plan.start.phrase,
+                "task_end": f"item.{end} or item.{start}" if end else f"item.{start}",
+            },
+        )
+        install.append("    add(TIMELINE_PATH, timeline_page, include_in_schema=False)")
+    return code + "\n".join(install) + "\n"
+
+
+def views_templates(module: Module) -> dict[str, str]:
+    common = {"title": module.title, "package": module.package, "singular": module.singular, "path": module.path}
+    written: dict[str, str] = {}
+    if module.board:
+        values = common | {"phrase": module.board.phrase}
+        written |= {name: chunk(name, values) for name in ("board.html", "board_part.html")}
+    if module.calendar:
+        written["calendar.html"] = chunk("calendar.html", common | {"start_phrase": module.calendar.start.phrase})
+    if module.timeline:
+        start, end = module.timeline.start, module.timeline.end
+        values = common | {
+            "first": module.first.name,
+            "first_label": module.first.label,
+            "start": start.name,
+            "start_label": start.label,
+            "end_label": end.label if end else "Last day",
+            "end_cell": f"item.{end.name}|date if item.{end.name} else item.{start.name}|date"
+            if end
+            else f"item.{start.name}|date",
+        }
+        written["timeline.html"] = chunk("timeline.html", values)
+    return written
 
 
 # --- sample data --------------------------------------------------------------------------------------------------
@@ -1146,6 +1359,8 @@ def sample_code(module: Module) -> str:
         if field.optional:
             value = f"None if number % 5 == 4 else {value}"
         values.append(f'        "{field.name}": {value},')
+    if module.board:
+        values.append('        "rank": (number + 1) * 1024,  # its place in its column on the board')
     after, numbers, chosen, pointed = [], [], [], ""
     if module.references:
         packages = ", ".join(f'"{package}"' for package in module.targets)
@@ -1318,6 +1533,11 @@ def templates(module: Module) -> dict[str, str]:
         "cells": "\n".join(cell_line(field, position, module) for position, field in enumerate(listed)),
         "details": ",\n".join(f'    (_("{field.label}"), {display(field, "item")})' for field in module.fields),
         "fields": "\n".join(form_field(field) for field in module.fields),
+        "views": (
+            f'{{% from "ui/macros.html" import tabs %}}\n{{{{ tabs(_("{module.title}: views"), views, "list") }}}}\n'
+            if module.views
+            else ""
+        ),
     }
     written = {}
     for name in ("list", "results", "detail", "page", "form"):
@@ -1353,6 +1573,76 @@ def typed_value(field: Field) -> str:
     return field.choices[-1][0]
 
 
+def view_tests(module: Module) -> list[str]:
+    """The board, the calendar and the timeline: each opens, and each moves what it can move, as a person would."""
+    path, lines = module.path, []
+    if module.views:
+        lines += [
+            "def test_the_list_leads_to_the_other_views(filled, person):",
+            "    client, _url = filled",
+            f'    page = client.get("{path}", headers=person)',
+            *(f"    assert 'href=\"{path}/{name}\"' in page.text" for name in module.views),
+            "",
+            "",
+        ]
+    if board := module.board:
+        first_label = board.choices[0][1]
+        lines += [
+            "def test_the_board_shows_its_columns_and_a_card_moves_to_another(filled, person):",
+            "    client, url = filled",
+            f'    page = client.get("{path}/board", headers=person)',
+            f'    assert page.status_code == 200 and "{first_label}" in page.text and name_of(0) in page.text',
+            "    item = rows(url)[0]",
+            f"    to = next(value for value in {board.constant}_CHOICES if value != item.{board.name})",
+            '    move = {"card": str(item.id), "to": to, "after": "", "version": str(item.version)}',
+            f'    sent = client.post("{path}/board/move", data=move, headers=SAME_SITE | person, '
+            "follow_redirects=False)",
+            "    assert sent.status_code == 303",
+            f"    assert rows(url)[0].{board.name} == to",
+            f'    again = client.post("{path}/board/move", data=move, headers=SAME_SITE | person)',
+            '    assert again.status_code == 409, "a move made on an old page moves nothing"',
+            "",
+            "",
+        ]
+    if calendar := module.calendar:
+        start, timed = calendar.start.name, calendar.start.kind == "datetime"
+        sent_start, expected = (
+            ("2026-01-07T10:00:00Z", "datetime(2026, 1, 7, 10, tzinfo=UTC)")
+            if timed
+            else ("2026-01-07", "date(2026, 1, 7)")
+        )
+        lines += [
+            "def test_the_calendar_gives_the_events_of_its_days_and_one_moves(filled, person):",
+            "    client, url = filled",
+            '    month = {"view": "month", "date": "2026-01-05"}',
+            f'    page = client.get("{path}/calendar", params=month, headers=person)',
+            "    assert page.status_code == 200 and name_of(0) in page.text",
+            '    days = {"start": "2026-01-01", "end": "2026-02-01"}',
+            f'    events = client.get("{path}/calendar/events", params=days, headers=person).json()',
+            '    assert name_of(0) in [event["title"] for event in events]',
+            "    item = rows(url)[0]",
+            f'    drop = {{"event": f"{module.package}-{{item.id}}", "start": "{sent_start}", '
+            '"version": str(item.version)}',
+            f'    moved = client.post("{path}/calendar/move", data=drop, headers=SAME_SITE | person)',
+            "    assert moved.status_code == 200, moved.text",
+            f"    assert rows(url)[0].{start} == {expected}",
+            f'    late = client.post("{path}/calendar/move", data=drop, headers=SAME_SITE | person)',
+            '    assert late.status_code == 409, "a drop made on an old page moves nothing"',
+            "",
+            "",
+        ]
+    if module.timeline:
+        lines += [
+            "def test_the_timeline_shows_each_row_with_a_date(filled, person):",
+            "    client, _url = filled",
+            f'    page = client.get("{path}/timeline", params={{"scale": "month"}}, headers=person)',
+            "    assert page.status_code == 200 and name_of(0) in page.text",
+            "",
+            "",
+        ]
+    return lines
+
+
 def tests_code(module: Module) -> str:
     first = module.first
     valid = "\n".join(f'    "{field.name}": "{typed_value(field)}",' for field in module.fields)
@@ -1367,6 +1657,7 @@ def tests_code(module: Module) -> str:
         f'"""{module.title}: what tools/new_module.py made, proved. Change these tests with the module."""',
         "",
         "from collections.abc import Iterator",
+        "from datetime import UTC, date, datetime",
         "from typing import Any",
         "",
         "import pytest",
@@ -1377,7 +1668,8 @@ def tests_code(module: Module) -> str:
         "from app.core.database import create_database_engine, migrate",
         "from app.core.sample_data import fill_all",
         f"from app.{module.package} import sample_data",
-        f"from app.{module.package}.models import {module.entity}",
+        f"from app.{module.package}.models import {module.entity}"
+        + (f", {module.board.constant}_CHOICES" if module.board else ""),
         "from app.main import create_app",
         "from tests.conftest import build_settings, page_opener, running_server",
         "from tests.helpers import run_axe_in_both_themes",
@@ -1533,6 +1825,7 @@ def tests_code(module: Module) -> str:
             "",
             "",
         ]
+    lines += view_tests(module)
     lines += [
         "def test_without_the_role_nothing_opens_and_nothing_changes(filled):",
         "    client, url = filled",
@@ -1576,7 +1869,9 @@ def tests_code(module: Module) -> str:
         "",
         "",
         "@pytest.mark.browser",
-        f'@pytest.mark.parametrize("path", ["{path}", "{path}/1", "{path}/new", "{path}/1/edit"])',
+        f'@pytest.mark.parametrize("path", ["{path}", "{path}/1", "{path}/new", "{path}/1/edit"'
+        + "".join(f', "{path}/{name}"' for name in module.views)
+        + "])",
         "def test_no_detectable_accessibility_failure(browser: Any, filled_server: str, path: str):",
         "    with page_opener(browser, filled_server) as open_page:",
         "        assert run_axe_in_both_themes(open_page(path, bypass_csp=True)) == []",
@@ -1705,8 +2000,10 @@ def make(module: Module, root: Path = ROOT, catalogues: bool = True) -> list[str
         write(app / "routes.py", routes_code(module))
         write(app / "sample_data.py", sample_code(module))
         write(app / DESCRIPTION, description(module))
-        for name, text in templates(module).items():
+        for name, text in (templates(module) | views_templates(module)).items():
             write(app / "templates" / module.package / name, text)
+        if module.views:
+            write(app / "views.py", views_code(module))
         write(tests, tests_code(module))
         write(main, install_in_main(before[main], module.package))
         write(env, import_in_env(before[env], module.package))

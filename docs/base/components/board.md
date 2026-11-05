@@ -11,7 +11,23 @@ tags: [component, data-display, available]
 `/board`.
 
 A board drawn on the server, from a `Board` of `app/core/boards.py`: columns, each with its title, its first cards and
-how many there are in all, with a link to the rest. The caller writes a card's content; `card.item` is its row.
+how many there are in all, with a link to the rest. A card with `href` is drawn by the macro: its `title` as a link to
+its page, its `lines`, and its `actions` as small buttons a finger can hit. Otherwise the caller writes a card's
+content, with `card.item` as its row, and puts any action in those same buttons: a bare link beside another on a card
+fails WCAG 2.5.8.
+
+```python
+BoardCard(
+    item.id,
+    item.version,
+    label,
+    item,
+    title=item.title,
+    href=f"/findings/{item.id}",
+    lines=[_("Audit: %(name)s") % {"name": item.audit.name}],
+    actions=[(_("Actions"), f"/actions?finding={item.id}", _("Actions of %(name)s") % {"name": item.title})],
+)
+```
 
 ```python
 board = Board("board", _("Work orders by state"), columns, "/board/move", can_move=can_edit(request), focus=moved_id)

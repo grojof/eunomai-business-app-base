@@ -1,0 +1,92 @@
+
+
+# --- the board: one column for each $phrase, cards moved on the server. See docs/base/specification.md#boards
+
+BOARD_PATH = f"{PATH}/board"
+CARDS_SHOWN = 12
+"""A column shows this many cards; the rest are a link away, in the list."""
+CARD_LINES = ($card_lines)
+"""The fields a card shows under its name."""
+
+
+def card(request: Request, item: $entity) -> BoardCard:
+    said = words(request, item)
+    lines = [f"{_(SHOWN[name])}: {said[name]}" for name in CARD_LINES]
+    return BoardCard(item.id, item.version, item.$first, item, title=item.$first, href=f"{PATH}/{item.id}", lines=lines)
+
+
+def load_board(request: Request, session: Session, focus: int | None = None) -> Board:
+    """Each column's first cards in their order, and how many there are in all."""
+    counted = dict(session.execute(select($entity.$field, func.count()).group_by($entity.$field)).all())
+    columns = []
+    for key, label in $labels.items():
+        rows = session.scalars(
+            select($entity).where($entity.$field == key).order_by($entity.rank, $entity.id).limit(CARDS_SHOWN)
+        )
+        cards = [card(request, item) for item in rows]
+        columns.append(BoardColumn(key, _(label), cards, counted.get(key, 0), $more))
+    label = _("$title by $phrase")
+    return Board("$package-board", label, columns, f"{BOARD_PATH}/move", can_move=can_edit(request), focus=focus)
+
+
+def board_answer(request: Request, session: Session, status: int = 200, **context: Any) -> Response:
+    board = load_board(request, session, context.pop("focus", None))
+    template = "$package/board_part.html" if fragment_requested(request) else "$package/board.html"
+    defaults = {"moved": "", "conflict": [], "refused": "", "announce": False}
+    response = render(
+        request, template, status_code=status, board=board, views=view_links(), **defaults | context
+    )
+    response.headers["Vary"] = "HX-Request"
+    return response
+
+
+def moved_message(item: $entity) -> str:
+    return _("%(name)s is now in %(column)s.") % {"name": item.$first, "column": _($labels[item.$field])}
+
+
+def board_page(request: Request, session: DatabaseSession, _person: Reader) -> Response:
+    number = number_in(request.query_params.get("moved", ""))
+    item = session.get($entity, number) if number is not None else None
+    return board_answer(request, session, moved=moved_message(item) if item else "")
+
+
+def card_conflict(request: Request, item: $entity) -> list[tuple[str, str]]:
+    return [(_(SHOWN["$field"]), words(request, item)["$field"])]
+
+
+def move_card(
+    request: Request,
+    session: DatabaseSession,
+    _person: Editor,
+    card: Annotated[str, Form()] = "",
+    to: Annotated[str, Form()] = "",
+    after: Annotated[str, Form()] = "",
+    version: Annotated[str, Form()] = "",
+) -> Response:
+    """Moves one card, by its own form or by dragging, which sends that form. Cross-site posts never reach this."""
+    try:
+        move = read_move(card, to, after, version, $choices)
+    except Refused:
+        raise HTTPException(status_code=400) from None
+    item = session.get($entity, move.card)
+    if item is None:
+        raise HTTPException(status_code=404)
+    partial = fragment_requested(request)
+    late = 200 if partial else 409
+    session.execute(column_lock($entity, "$field", (item.$field, move.to)))
+    session.refresh(item)  # what another move, which this one waited for, left
+    if move.version != item.version:
+        return board_answer(request, session, late, conflict=card_conflict(request, item), focus=item.id)
+    try:
+        done = saved(session, lambda: place_card(session, $entity, item, move, "$field"))
+    except Refused as problem:
+        session.rollback()
+        return board_answer(request, session, late, refused=str(problem), focus=move.card)
+    if not done:
+        now = session.get($entity, move.card)
+        if now is None:
+            raise HTTPException(status_code=404)
+        return board_answer(request, session, late, conflict=card_conflict(request, now), focus=now.id)
+    if not partial:
+        return RedirectResponse(f"{BOARD_PATH}?moved={item.id}", status_code=303)
+    return board_answer(request, session, moved=moved_message(item), focus=item.id, announce=True)

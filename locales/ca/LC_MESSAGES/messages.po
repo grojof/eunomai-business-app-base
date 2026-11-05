@@ -1,6 +1,7 @@
 # Catalan translations for eunomai-business-app-base.
 # Copyright (C) 2026 ORGANIZATION
-# This file is distributed under the same license as the eunomai-business-app-base
+# This file is distributed under the same license as the
+# eunomai-business-app-base
 # project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
@@ -9,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eunomai-business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-02 15:08+0100\n"
+"POT-Creation-Date: 2026-11-05 13:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ca\n"
@@ -634,6 +635,9 @@ msgstr ""
 "És massa gran per enviar-lo. Tria un fitxer més petit: el que has escrit "
 "continua aquí."
 
+msgid "That place on the board has changed. Here it is as it is now: try again."
+msgstr "Aquell lloc del tauler ha canviat. Aquí és com és ara: torna-ho a provar."
+
 msgid "That time could not be read."
 msgstr "No s'ha pogut llegir aquesta hora."
 
@@ -732,6 +736,10 @@ msgstr "Prova amb altres dies, o amb menys filtres."
 
 msgid "Type to search"
 msgstr "Escriu per cercar"
+
+#, python-format
+msgid "Until %(day)s"
+msgstr "Fins al %(day)s"
 
 #, python-format
 msgid "Use %(most)s characters at most."

@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import page_heading, tabs %}
+{% block title %}{{ _("$title by $phrase") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("$title by $phrase"), _("Move a card with its own form, or drag it to another column.")) }}
+{{ tabs(_("$title: views"), views, "board") }}
+{% include "$package/board_part.html" %}
+{% endblock %}

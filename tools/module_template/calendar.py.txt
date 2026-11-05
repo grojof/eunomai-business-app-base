@@ -1,0 +1,94 @@
+
+
+# --- the calendar: each $singular on its $start_phrase. See docs/base/specification.md#calendars
+
+CALENDAR_PATH = f"{PATH}/calendar"
+
+
+def event(item: $entity, movable: bool) -> CalendarEvent | None:
+    """A row on the calendar. Its link leads to the form that changes it: the keyboard's way to move it."""
+    start = item.$start
+    if start is None:
+        return None
+    end = $event_end
+    address = f"{PATH}/{item.id}/edit" if movable else f"{PATH}/{item.id}"
+    return CalendarEvent(f"$package-{item.id}", item.$first, start, end, address, "primary", item.version, movable)
+
+
+def events_between(session: Session, first: date, after: date, zone: str, movable: bool) -> list[CalendarEvent]:
+    """Every $singular that touches these days, in the application's time zone."""
+$bounds
+    rows = session.scalars(
+        select($entity).where($entity.$start < high, $ends >= low).order_by($entity.$start, $entity.id)
+    )
+    return [found for item in rows if (found := event(item, movable)) is not None]
+
+
+def calendar_page(request: Request, session: DatabaseSession, _person: Reader) -> Response:
+    zone = request.app.state.settings.time_zone
+    now = today(request)
+    period = Period.read(request.query_params, now)
+    movable = can_edit(request)
+    events = events_between(session, period.first, period.last + timedelta(days=1), zone, movable)
+    names = {"month": _("Month"), "week": _("Week"), "agenda": _("Agenda")}
+    steps = [
+        (_("Previous"), period.address(CALENDAR_PATH, day=period.step(False)), False),
+        (_("Today"), period.address(CALENDAR_PATH, day=now), False),
+        (_("Next"), period.address(CALENDAR_PATH, day=period.step(True)), False),
+        *((names[view], period.address(CALENDAR_PATH, view=view), view == period.view) for view in names),
+    ]
+    config = calendar_config(f"{CALENDAR_PATH}/events", f"{CALENDAR_PATH}/move", zone, period, now, movable)
+    return render(
+        request,
+        "$package/calendar.html",
+        config=config,
+        agenda=agenda(events, period, zone),
+        steps=steps,
+        views=view_links(),
+    )
+
+
+def calendar_events(request: Request, session: DatabaseSession, _person: Reader) -> Response:
+    """What the calendar asks for: the events of some days, as JSON, with their moments in UTC."""
+    try:
+        first, after = read_range(request.query_params.get("start", ""), request.query_params.get("end", ""))
+    except Refused:
+        raise HTTPException(status_code=400) from None
+    zone = request.app.state.settings.time_zone
+    return JSONResponse([found.as_json() for found in events_between(session, first, after, zone, can_edit(request))])
+
+
+def refused(message: str, status: int = 409) -> JSONResponse:
+    return JSONResponse({"message": message}, status_code=status)
+
+
+def move_event(
+    request: Request,
+    session: DatabaseSession,
+    _person: Editor,
+    event: Annotated[str, Form()] = "",
+    start: Annotated[str, Form()] = "",
+    version: Annotated[str, Form()] = "",
+) -> Response:
+    """A drop: the new $start_phrase read with its time zone, the version compared, and what to say, as JSON. What
+    it lasts stays as it was."""
+    number = number_in(event, "$package-")
+    if number is None:
+        return refused(_("That could not be moved. It is back where it was."), 400)
+    item = session.get($entity, number)
+    if item is None:
+        return refused(_("This is no longer here: someone may have removed it."), 404)
+    try:
+        moved_to = $read_start
+    except Refused as problem:
+        return refused(str(problem), 422)
+    late = _("Someone else changed this first. It is back where it was: reload the page to see where it is now.")
+    if version != str(item.version) or item.$start is None:
+        return refused(late)
+$shift
+    item.$start = moved_to
+    if not saved(session):
+        return refused(late)
+    when = $when
+    message = _("%(name)s is now on %(when)s.") % {"name": item.$first, "when": when}
+    return JSONResponse({"version": item.version, "message": message})

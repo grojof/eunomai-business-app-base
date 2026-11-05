@@ -136,3 +136,20 @@ def test_a_rank_past_its_bound_asks_for_the_column_to_be_numbered_again():
     assert rank_between(RANK_LIMIT - 10, None) is None
     assert rank_between(None, -RANK_LIMIT + 10) is None
     assert rank_between(RANK_LIMIT - 4000, None) == RANK_LIMIT - 4000 + RANK_STEP
+
+
+def test_a_card_with_an_address_is_drawn_by_the_board_with_actions_a_finger_can_hit():
+    card = BoardCard(
+        7,
+        3,
+        "Finding 7",
+        title="Loose rail",
+        href="/findings/7",
+        lines=("Audit 3",),
+        actions=(("Actions", "/a?f=7", "Actions of finding 7"),),
+    )
+    things = Board("things", "Things", [BoardColumn("todo", "To do", [card], 1)], "/things/move", True)
+    html = str(MACROS.board(things))
+    assert '<a class="link link-hover" href="/findings/7">Loose rail</a></h3>' in html
+    assert '<p class="text-xs">Audit 3</p>' in html
+    assert '<a class="btn btn-ghost btn-xs" href="/a?f=7" aria-label="Actions of finding 7">Actions</a>' in html

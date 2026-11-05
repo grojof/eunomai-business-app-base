@@ -271,10 +271,11 @@ all and where the rest are; the caller of the macro writes a card's content.
 
 | What | How |
 |---|---|
+| A card | `BoardCard` with `href` is drawn by the macro: its title as a link to its page, a few `lines`, and `actions` as small buttons, which a finger can hit. A card the caller draws puts its actions in the same buttons: a bare link beside another on a card is too small for WCAG 2.5.8 |
 | Moving without a pointer | Each card a person may move carries a form behind a small "Change column" disclosure, a native `details`, so a card stays light: a select of columns and a Move button, a plain POST that puts it first in that column. It works by keyboard and without JavaScript, the disclosure and the select are named with the card, and after a move focus is back on the card's disclosure |
 | Dragging | `board.js` loads SortableJS, with its integrity, only for a board that can change. A pointer drags at once; a finger rests a moment first, so that a swipe still scrolls. A drop sends the same form, with `after`, the card it now follows. After htmx brings a board, its lists are wired again |
 | The server decides | `read_move` reads the card, the column and the card to follow against their lists. The route checks the role, that the card to follow is in that column, and the card's version, so a card someone else moved first is a [conflict](#two-people-on-one-row) that moves nothing and says where it is now |
-| Order | A big integer, `rank`, in each column, read with the primary key after it. A card takes the number half way between its neighbours in the whole column, not only in what the page showed; with no number left between them, or one that would pass 2⁶², the column is numbered again through the table, which moves no other card's version |
+| Order | `place_card` and `column_lock` in `app/core/boards.py`, which the demo's board and a generated module's use. A big integer, `rank`, in each column, read with the primary key after it. A card takes the number half way between its neighbours in the whole column, not only in what the page showed; with no number left between them, or one that would pass 2⁶², the column is numbered again through the table, which moves no other card's version |
 | Two moves at once | A move first locks the rows of the columns it reads and writes, in one order, where the database can: on PostgreSQL a second move waits, then reads the ranks the first left, and two moves cannot deadlock. SQLite has one writer at a time and takes no row locks. The test of the wait runs on PostgreSQL only |
 | After a move | With htmx the board comes back with focus on the card's select and the move announced; without JavaScript a redirect, and the address says what moved for that one page |
 | A phone | Columns stack, so the page never scrolls sideways |
@@ -768,7 +769,8 @@ still runs.
 ## A new module
 
 `tools/new_module.py` writes a complete module of screens from a short description: a list with search, filters and
-pages, a page for each row, and one form to add or change a row. Each module is a package of `app/`.
+pages, a page for each row, and one form to add or change a row, and, if the description asks, a board, a calendar and
+a timeline of the same rows. Each module is a package of `app/`.
 
 ```bash
 uv run --frozen python tools/new_module.py --example > module.toml   # a commented description to start from
@@ -780,6 +782,9 @@ uv run --frozen python tools/new_module.py --spec module.toml
 | `package`, `entity`, `title`, `singular`, `plural` | The package (`app/assets/`), the model's class, and the words the pages use, in English: they go through the translations |
 | `path`, `icon`, `description`, `role`, `edit_role` | Optional: the address (`/assets`), a Lucide icon for the navigation, a line under the title, who may open it and who may change it (`admin` for both) |
 | `[[field]]` | `name`, `label` and `type`: `text`, `long_text`, `integer`, `decimal`, `date`, `datetime`, `boolean`, `choice` or `reference`. Then `required`, `unique` (a text, a whole number or a date, and required), `search` (a text), `filter` (a choice, a yes or no, or a reference), `list` (a column), `hint`, and the limits of its type: `longest`, `low`, `high`, `places`, `choices` |
+| `[board]` | `field`, a choice: a card for each row, in a column for each of its values, moved by its own form or by dragging, at `<path>/board` |
+| `[calendar]` | `start`, a date or a date and time, and `end`, of the same type, if each row has one: each row on its day or at its time, moved by dragging or through its form, at `<path>/calendar` |
+| `[timeline]` | `start`, a date, and `end`, a date, if each row has one: each row as a bar on its days, the earliest first, at `<path>/timeline` |
 | A `reference` | `to`, the package of another module this tool made: each row points to one of its rows. The form offers its rows by name, with a box to search them; the list shows the name as a link to that row, and can filter by it, so `/guests?visit=3` lists one visit's guests. Make the module it points to first. The column is `<name>_id`, so a field cannot be called that too |
 
 The first field shown in the list names each row: a required text. A description that breaks a rule is refused with
@@ -790,11 +795,12 @@ what to fix, and nothing is written; so is a package that exists.
 | `models.py` | A model on `Base`, exact decimals and moments in UTC, a check constraint for each choice, an index on what is sorted or filtered, and a version column |
 | The migration | `alembic revision --autogenerate`, against a database at the newest migration, as a person makes one |
 | `routes.py` | A `ListView` with its columns, filters and search; a page per row; a form read at its edge with `app/core/forms.py`, every problem by field and what was typed kept; a unique value checked before saving and by the database; a save on an old page shows what the other person changed, and saves nothing |
-| `templates/` | Only the base's macros: `server_table`, `filter_bar`, `description_list`, the field macros, `error_summary` and `conflict_notice` |
+| `templates/` | Only the base's macros: `server_table`, `filter_bar`, `description_list`, the field macros, `error_summary` and `conflict_notice`; for its other views `board`, `calendar` and `gantt`, with `tabs` between them and the list |
+| `views.py` | With a board, a calendar or a timeline: their pages and moves, on `app/core/boards.py` (`column_lock`, `place_card`), `app/core/calendars.py` (`agenda`) and `app/core/gantt.py`. A board gives the table a `rank` column |
 | `sample_data.py` | Made-up rows, the same on every run, which a preview fills by itself. A reference points to the other module's rows, which `AFTER` fills first |
 | `module.toml` | Its entity, table, address and the field that names each row: what another module's reference reads |
 | `locales/` | Every text in every language's catalogue, untranslated: a person translates them, and until then `tools/translations.py check` names them |
-| `tests/test_<package>.py` | The list, search, filters, a new row, a refused value, an edit, an edit on an old page, a unique value, a reference to a row that is not there, the role, each page opening, a row that does not exist, the sample data, and the accessibility scan of each screen in both themes |
+| `tests/test_<package>.py` | The list, search, filters, a new row, a refused value, an edit, an edit on an old page, a unique value, a reference to a row that is not there, a card moved and a move on an old page, a calendar's events and a drop, the timeline, the role, each page opening, a row that does not exist, the sample data, and the accessibility scan of each screen in both themes |
 
 It also adds the module to `app/main.py` and its models to `migrations/env.py`, and formats what it wrote with the
 project's formatter. On a failure, everything it wrote goes. The stylesheet already holds every class the module's
@@ -804,7 +810,7 @@ templates use, so nothing has to be built again.
 |---|---|---|
 | A generator, not a pattern to copy | What can be written by code is written the same way every time, and it passes the checks from the first run: an assistant spends its time on what is particular to the application, not on learning the base | Copying a screen of the demo and adapting it, which reads most of the base first and drifts with each copy |
 | Plain code, as a person writes it | What it writes belongs to the application from then on: it is read and changed like any other code, with no tie back to the generator | Code that calls the generator at run time, or a framework of generic screens |
-| One kind of module | A list, a page and a form cover most of what a business application holds. Boards, calendars, timelines and dashboards have their own pieces in `app/core/`, which a module adds to | A generator for every screen, which would need its own options for each |
+| One kind of module, with its other views | A list, a page and a form cover most of what a business application holds. A board, a calendar and a timeline of the same rows are options of the module, since one written by hand starts by reading the base's pieces, which costs more than the rest of the module. A dashboard reads several modules, so it stays the application's own, on `stats` and `chart` | A generator for every screen; or views left to be written by hand from `app/core/` |
 | Texts left for a person | Machine translations are not accepted as they are, so the tests name every text until a person has read it | Translations written by the tool |
 
 ## An organization's template
