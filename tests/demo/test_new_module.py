@@ -1,6 +1,7 @@
-"""tools/new_module.py in an organization's template, as a person would run it: a module with every type of field, a
-second one whose rows point to the first's, their texts translated, and the application's whole suite, browser checks
-included, run as a person's computer runs it.
+"""tools/new_module.py in an organization's template, as a person would run it: a module with every type of field and
+every other view (a board, a calendar of moments and a timeline of dates), a second one whose rows point to the
+first's, their texts translated, and the application's whole suite, browser checks included, run as a person's computer
+runs it.
 
 That one run proves three things at once: the demo goes cleanly (a template is the base without its demo), a layer's
 brand and languages work, and a generated module fits. Each once ran the same suite on its own, three times over;
@@ -111,6 +112,16 @@ name = "summary"
 label = "Summary"
 type = "long_text"
 longest = 500
+
+[board]
+field = "kind"
+
+[calendar]
+start = "starts_at"
+end = "ends_at"
+
+[timeline]
+start = "booked_on"
 """
 
 

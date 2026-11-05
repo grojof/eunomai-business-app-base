@@ -1,0 +1,43 @@
+"""$title, seen as $names.
+
+Made by tools/new_module.py: change it as this application needs. See docs/base/specification.md#a-new-module
+"""
+
+from datetime import UTC, date, datetime, time, timedelta
+from typing import Annotated, Any
+from urllib.parse import urlencode
+from zoneinfo import ZoneInfo
+
+from fastapi import FastAPI, Form, HTTPException, Request
+from fastapi.responses import JSONResponse, RedirectResponse, Response
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+
+from app.core.boards import Board, BoardCard, BoardColumn, column_lock, place_card, read_move
+from app.core.calendars import CalendarEvent, Period, agenda, calendar_config, read_day, read_moment, read_range
+from app.core.database import DatabaseSession, saved
+from app.core.formatters import format_date, format_datetime
+from app.core.forms import Refused
+from app.core.gantt import Task, timeline
+from app.core.i18n import _
+from app.core.tables import fragment_requested
+from app.core.templating import render
+$model_import
+$route_import
+
+
+def today(request: Request) -> date:
+    return datetime.now(ZoneInfo(request.app.state.settings.time_zone)).date()
+
+
+def words(request: Request, item: $entity) -> dict[str, str]:
+    """Each field of a row in words, as its page shows them."""
+    return $words
+
+
+def number_in(text: str, prefix: str = "") -> int | None:
+    """A row's number in what a page sent; anything else names no row."""
+    rest = text.removeprefix(prefix)
+    if not (text.startswith(prefix) and rest.isascii() and rest.isdigit() and len(rest) < 10):
+        return None
+    return int(rest) if int(rest) <= LARGEST_ID else None

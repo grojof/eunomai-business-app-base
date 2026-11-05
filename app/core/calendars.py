@@ -7,6 +7,7 @@ Without JavaScript the same events are an agenda drawn on the server, with its o
 """
 
 import re
+from collections import defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
@@ -14,6 +15,7 @@ from typing import Any
 from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
 
+from app.core.formatters import format_date, format_time
 from app.core.forms import Refused
 from app.core.i18n import _, current_language
 
@@ -234,3 +236,25 @@ def calendar_config(
         "extra": dict(extra),
         "words": calendar_words(),
     }
+
+
+def agenda(
+    events: list[CalendarEvent], period: Period, zone: str
+) -> list[tuple[date, list[tuple[str, CalendarEvent]]]]:
+    """The same events by day, for a page without JavaScript: each under the first of its days that is shown, and one
+    of several days says until when."""
+    days: dict[date, list[tuple[str, CalendarEvent]]] = defaultdict(list)
+    for event in events:
+        if isinstance(event.start, datetime):
+            day = event.start.astimezone(ZoneInfo(zone)).date()
+            if period.first <= day <= period.last:
+                days[day].append((format_time(event.start, zone), event))
+        else:
+            assert isinstance(event.end, date)  # noqa: S101  # all-day
+            first = max(event.start, period.first)
+            if first <= period.last:
+                when = (
+                    _("All day") if event.end == event.start else _("Until %(day)s") % {"day": format_date(event.end)}
+                )
+                days[first].append((when, event))
+    return sorted(days.items())

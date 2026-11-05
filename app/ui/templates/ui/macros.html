@@ -653,8 +653,10 @@
 </div>
 {% endmacro %}
 
-{#- A board: cards in columns, drawn on the server. `board` is a Board from app/core/boards.py, and the caller writes a
-    card's content. Each card a person may move carries, behind a small "Change column" disclosure, a form that moves
+{#- A board: cards in columns, drawn on the server. `board` is a Board from app/core/boards.py. A card with `href` is
+    drawn here: its title as a link to its page, its lines, and its actions as small buttons, which a finger can hit; a
+    bare link beside another on a card is too small for WCAG 2.5.8. Otherwise the caller writes a card's content, and
+    puts any action in the same small buttons. Each card a person may move carries, behind a small "Change column" disclosure, a form that moves
     it: a plain POST, so it works without JavaScript, and by keyboard. board.js lets a pointer or a finger drag it, and sends that same form with the card it
     now follows. The server answers with the board as it is, focus back on the card's control and the move announced.
     Columns stack on a narrow screen, so the page never scrolls sideways. `message` goes at the top: what was moved, or
@@ -671,7 +673,17 @@
       <ol class="grid min-h-16 gap-2" data-board-list data-column="{{ column.key }}" aria-labelledby="{{ board.identifier }}-{{ column.key }}-title">
         {% for card in column.cards %}
         <li id="{{ board.identifier }}-card-{{ card.id }}" class="rounded-box border border-base-300 bg-base-100 p-3 text-sm{{ ' cursor-grab' if board.can_move else '' }}" data-card="{{ card.id }}">
+          {% if card.href %}
+          <h3 class="font-semibold"><a class="link link-hover" href="{{ card.href }}">{{ card.title }}</a></h3>
+          {% for line in card.lines %}<p class="text-xs">{{ line }}</p>{% endfor %}
+          {% if card.actions %}
+          <div class="mt-2 flex flex-wrap gap-2 print:hidden">
+            {% for label, href, name in card.actions %}<a class="btn btn-ghost btn-xs" href="{{ href }}" aria-label="{{ name }}">{{ label }}</a>{% endfor %}
+          </div>
+          {% endif %}
+          {% else %}
           {{ caller(card) }}
+          {% endif %}
           {% if board.can_move %}
           <details class="mt-1 print:hidden" data-move-menu>
             <summary id="{{ board.identifier }}-move-{{ card.id }}" class="btn btn-ghost btn-xs"{% if board.focus == card.id %} data-focus{% endif %}>{{ icon("arrow-right", "size-3.5") }}{{ _("Change column") }}<span class="sr-only">: {{ card.label }}</span></summary>

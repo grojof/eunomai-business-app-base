@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% from "ui/macros.html" import calendar, page_heading, tabs %}
+{% block title %}{{ _("$title on a calendar") }}{% endblock %}
+{% block content %}
+{{ page_heading(_("$title on a calendar"), _("Drag one to another day, or open it to change it with its form.")) }}
+{{ tabs(_("$title: views"), views, "calendar") }}
+{{ calendar("$package-calendar", _("$title on a calendar"), config, agenda, steps) }}
+{% endblock %}

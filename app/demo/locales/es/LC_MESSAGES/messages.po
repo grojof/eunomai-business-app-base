@@ -1,6 +1,7 @@
 # Spanish translations for eunomai-business-app-base.
 # Copyright (C) 2026 ORGANIZATION
-# This file is distributed under the same license as the eunomai-business-app-base
+# This file is distributed under the same license as the
+# eunomai-business-app-base
 # project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
@@ -9,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eunomai-business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-02 15:08+0100\n"
+"POT-Creation-Date: 2026-11-05 13:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -129,9 +130,6 @@ msgstr "Compresor de aire"
 
 msgid "All dates"
 msgstr "Todas las fechas"
-
-msgid "All day"
-msgstr "Todo el día"
 
 msgid "All locations"
 msgstr "Todas las ubicaciones"
@@ -1099,11 +1097,6 @@ msgstr "Tabla"
 msgid "That could not be moved. It is back where it was."
 msgstr "No se ha podido mover. Ha vuelto a donde estaba."
 
-msgid "That place on the board has changed. Here it is as it is now: try again."
-msgstr ""
-"Ese lugar del tablero ha cambiado. Aquí está como es ahora: vuelve a "
-"intentarlo."
-
 msgid ""
 "That time does not exist on that day: the clocks go forward. Choose a "
 "time after the change."
@@ -1255,10 +1248,6 @@ msgstr "Tipo"
 
 msgid "Type to narrow the list."
 msgstr "Escribe para acotar la lista."
-
-#, python-format
-msgid "Until %(day)s"
-msgstr "Hasta el %(day)s"
 
 msgid "Updated"
 msgstr "Actualizado"

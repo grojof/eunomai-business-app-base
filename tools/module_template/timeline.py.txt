@@ -1,0 +1,29 @@
+
+
+# --- the timeline: each $singular as a bar on its days. See docs/base/specification.md#timelines
+
+TIMELINE_PATH = f"{PATH}/timeline"
+TASKS_SHOWN = 100
+"""The first rows by their $start_phrase: a picture of more would not be read."""
+
+
+def timeline_page(request: Request, session: DatabaseSession, _person: Reader) -> Response:
+    dated = $entity.$start.is_not(None)
+    rows = list(session.scalars(select($entity).where(dated).order_by($entity.$start, $entity.id).limit(TASKS_SHOWN)))
+    total = session.scalar(select(func.count()).select_from($entity).where(dated)) or 0
+    tasks = [Task(item.id, item.$first, item.$start, $task_end) for item in rows]
+    now = today(request)
+    plan = timeline(tasks, request.query_params.get("scale", "fit"), now)
+    scales = {"fit": _("Fit"), "day": _("Days"), "week": _("Weeks"), "month": _("Months")}
+    steps = [(label, f"{TIMELINE_PATH}?{urlencode({'scale': key})}", key == plan.asked) for key, label in scales.items()]
+    return render(
+        request,
+        "$package/timeline.html",
+        plan=plan,
+        items=rows,
+        steps=steps,
+        total=total,
+        shown_now=len(rows),
+        today=now,
+        views=view_links(),
+    )

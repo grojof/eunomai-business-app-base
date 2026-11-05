@@ -6,7 +6,6 @@ the server checks the role, reads the new moment with its time zone, and compare
 after someone else's is refused and the event goes back.
 """
 
-from collections import defaultdict
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Annotated, Any
 from urllib.parse import parse_qsl, urlencode, urlsplit
@@ -17,9 +16,9 @@ from fastapi.responses import JSONResponse, RedirectResponse, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session, contains_eager
 
-from app.core.calendars import CalendarEvent, Period, calendar_config, read_day, read_moment, read_range
+from app.core.calendars import CalendarEvent, Period, agenda, calendar_config, read_day, read_moment, read_range
 from app.core.database import DatabaseSession, saved
-from app.core.formatters import format_date, format_datetime, format_time
+from app.core.formatters import format_date, format_datetime
 from app.core.forms import Refused, read_date, read_fields, read_time
 from app.core.i18n import _
 from app.core.identity import Person, require_role
@@ -102,28 +101,6 @@ def events_between(
     return found
 
 
-def _agenda(
-    events: list[CalendarEvent], period: Period, zone: str
-) -> list[tuple[date, list[tuple[str, CalendarEvent]]]]:
-    """The same events by day, for a page without JavaScript: each under the first of its days that is shown, and one
-    of several days says until when."""
-    days: dict[date, list[tuple[str, CalendarEvent]]] = defaultdict(list)
-    for event in events:
-        if isinstance(event.start, datetime):
-            day = event.start.astimezone(ZoneInfo(zone)).date()
-            if period.first <= day <= period.last:
-                days[day].append((format_time(event.start, zone), event))
-        else:
-            assert isinstance(event.end, date)  # noqa: S101  # all-day
-            first = max(event.start, period.first)
-            if first <= period.last:
-                when = (
-                    _("All day") if event.end == event.start else _("Until %(day)s") % {"day": format_date(event.end)}
-                )
-                days[first].append((when, event))
-    return sorted(days.items())
-
-
 def calendar_page(request: Request, session: DatabaseSession) -> Response:
     state = rows_state(session)
     if state != READY:
@@ -155,7 +132,7 @@ def calendar_page(request: Request, session: DatabaseSession) -> Response:
         "demo/calendar/page.html",
         state=state,
         config=config,
-        agenda=_agenda(events, period, zone),
+        agenda=agenda(events, period, zone),
         steps=steps,
         location=location,
         locations=[(value, _(value)) for value in labels_in_order(LOCATIONS)],
