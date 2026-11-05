@@ -1,5 +1,6 @@
-"""tools/new_module.py in an organization's template, as a person would run it: a module with every type of field,
-its texts translated, and the application's whole suite, browser checks included, run as a person's computer runs it.
+"""tools/new_module.py in an organization's template, as a person would run it: a module with every type of field, a
+second one whose rows point to the first's, their texts translated, and the application's whole suite, browser checks
+included, run as a person's computer runs it.
 
 That one run proves three things at once: the demo goes cleanly (a template is the base without its demo), a layer's
 brand and languages work, and a generated module fits. Each once ran the same suite on its own, three times over;
@@ -113,6 +114,41 @@ longest = 500
 """
 
 
+REFERENCES = """
+package = "guests"
+entity = "Guest"
+title = "Guests"
+singular = "guest"
+plural = "guests"
+icon = "users"
+
+[[field]]
+name = "full_name"
+label = "Full name"
+type = "text"
+required = true
+search = true
+list = true
+
+[[field]]
+name = "visit"
+label = "Visit"
+type = "reference"
+to = "visits"
+required = true
+filter = true
+list = true
+
+[[field]]
+name = "next_visit"
+label = "Next visit"
+type = "reference"
+to = "visits"
+list = true
+"""
+"""Two references to one module's rows, one required and filtered, one that may be empty."""
+
+
 def translate_like_a_person(folder: Path) -> None:
     """Every new text gets a translation, accepted: what a person does after the generator, and no test may skip."""
     for path in sorted(folder.rglob("messages.po")):
@@ -136,6 +172,8 @@ def application(tmp_path_factory: pytest.TempPathFactory) -> Path:
     succeeded(make(a_layer(folder / "layer"), copy), "tools/make_template.py")
     (copy / "visits.toml").write_text(EVERY_TYPE, encoding="utf-8")
     succeeded(run_in(copy, "tools/new_module.py", "--spec", "visits.toml"), "tools/new_module.py")
+    (copy / "guests.toml").write_text(REFERENCES, encoding="utf-8")
+    succeeded(run_in(copy, "tools/new_module.py", "--spec", "guests.toml"), "tools/new_module.py, a reference")
     return copy
 
 
@@ -145,9 +183,9 @@ def test_it_writes_the_module_and_puts_it_in_place(application):
         assert (folder / name).is_file(), name
     for name in ("list.html", "results.html", "detail.html", "page.html", "form.html"):
         assert (folder / "templates" / "visits" / name).is_file(), name
-    assert "install_visits(application)\n    install_home(application)" in (application / "app" / "main.py").read_text(
-        encoding="utf-8"
-    )
+    assert "install_visits(application)\n    install_guests(application)\n    install_home(application)" in (
+        application / "app" / "main.py"
+    ).read_text(encoding="utf-8")
     assert "import app.visits.models" in (application / "migrations" / "env.py").read_text(encoding="utf-8")
     [migration] = (application / "migrations" / "versions").glob("0001_*.py")
     written = migration.read_text(encoding="utf-8")
@@ -155,6 +193,10 @@ def test_it_writes_the_module_and_puts_it_in_place(application):
     assert "server_default=sa.false()" in written, "PostgreSQL refuses 0 as a boolean's default"
     assert not re.search(r"Boolean\(\).*server_default=sa\.text", written)
     assert (application / "tests" / "test_visits.py").is_file()
+    assert 'path = "/visits"' in (folder / "module.toml").read_text(encoding="utf-8")
+    [pointing] = (application / "migrations" / "versions").glob("0002_*.py")
+    written = pointing.read_text(encoding="utf-8")
+    assert "sa.ForeignKeyConstraint(" in written and '["next_visit_id"]' in written and '["visit.id"]' in written
 
 
 def test_its_texts_wait_for_a_person_and_nothing_else_does(application):
@@ -170,7 +212,7 @@ def test_a_second_run_writes_nothing(application):
     again = run_in(application, "tools/new_module.py", "--spec", "visits.toml")
     assert again.returncode == 1 and "Nothing was written" in again.stderr
     assert (application / "app" / "main.py").read_text(encoding="utf-8") == before
-    assert len(list((application / "migrations" / "versions").glob("*.py"))) == 1
+    assert len(list((application / "migrations" / "versions").glob("*.py"))) == 2
 
 
 @pytest.mark.long
@@ -178,10 +220,22 @@ def test_the_applications_whole_suite_passes_with_the_module_and_a_start_page_th
     """The base's own tests open the start page. One that reads the module's table finds it, empty: the tests' default
     database has every migration, the application's own included, so no base file had to change for it. The suite runs
     with tools/test.py, as `[tests]` runs it on a person's computer, so the template's brand and its one language are
-    proved with it."""
-    translate_like_a_person(application / "app" / "visits" / "locales")
-    succeeded(run_in(application, "tools/translations.py", "check"), "translations")
+    proved with it. The catalogues and the routes are left as they were found: the other tests share the application,
+    and one of them reads that its texts still wait for a person."""
+    kept = {path: path.read_bytes() for path in (application / "app").rglob("*") if path.suffix in (".po", ".mo")}
     routes = application / "app" / "visits" / "routes.py"
+    kept[routes] = routes.read_bytes()
+    try:
+        whole_suite_with_a_start_page(application, routes)
+    finally:
+        for path, content in kept.items():
+            path.write_bytes(content)
+
+
+def whole_suite_with_a_start_page(application: Path, routes: Path) -> None:
+    for package in ("visits", "guests"):
+        translate_like_a_person(application / "app" / package / "locales")
+    succeeded(run_in(application, "tools/translations.py", "check"), "translations")
     text = routes.read_text(encoding="utf-8")
     route = "    add(PATH, item_list, include_in_schema=False)\n"
     assert route in text
@@ -197,12 +251,13 @@ def test_the_applications_whole_suite_passes_with_the_module_and_a_start_page_th
 
 
 def test_a_preview_starts_with_its_sample_rows(application, tmp_path):
-    """What a person's preview runs: the migrations, then each module's made-up rows, and only once."""
+    """What a person's preview runs: the migrations, then each module's made-up rows, and only once. The rows that
+    point to others come after them."""
     setup = tomllib.loads((application / ".eunomai" / "project.toml").read_text(encoding="utf-8"))["preview"]["setup"]
     assert setup == [["python", "-m", "app.core.sample_data", "--if-empty"]]
     url = f"sqlite:///{(tmp_path / 'preview.db').as_posix()}"
     environment = os.environ | {"APP_ENVIRONMENT": "development", "APP_DATABASE_URL": url}
-    for expected in ("filled visits", "left as they were: visits"):
+    for expected in ("filled visits, guests", "left as they were: visits, guests"):
         done = subprocess.run(
             [sys.executable, "-m", "app.core.sample_data", "--if-empty"],
             cwd=application,

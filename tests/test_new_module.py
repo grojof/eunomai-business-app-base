@@ -95,7 +95,7 @@ def test_the_example_reads_as_a_module():
 def test_every_type_is_read_with_its_defaults():
     read = module()
     assert read.path == "/visits" and read.table == "visit" and read.role == read.edit_role == "admin"
-    assert {field.kind for field in read.fields} == set(new_module.TYPES)
+    assert {field.kind for field in read.fields} == set(new_module.TYPES) - {"reference"}, "read below, with a module"
     budget = next(field for field in read.fields if field.name == "budget")
     assert (budget.low, budget.high, budget.places, budget.optional) == (0, 999_999_999, 4, True)
     kind = next(field for field in read.fields if field.name == "kind")
@@ -131,6 +131,87 @@ def test_every_type_is_read_with_its_defaults():
 def test_a_description_that_cannot_make_a_module_is_refused_with_what_to_fix(text, said):
     with pytest.raises(new_module.Refused, match=re.escape(said)):
         module(text)
+
+
+PLACES = 'entity = "Place"\ntable = "place"\npath = "/places"\nname = "name"\n'
+"""What tools/new_module.py writes beside a module it made: a reference reads it."""
+WITH_REFERENCES = (
+    EVERY_TYPE
+    + """
+[[field]]
+name = "place"
+label = "Place"
+type = "reference"
+to = "places"
+required = true
+filter = true
+list = true
+
+[[field]]
+name = "backup_place"
+label = "Backup place"
+type = "reference"
+to = "places"
+list = true
+"""
+)
+
+
+def an_application(folder: Path, models: str = "class Place(Base):\n    name: Mapped[str]\n") -> Path:
+    (folder / "places").mkdir()
+    (folder / "places" / "module.toml").write_text(PLACES, encoding="utf-8")
+    (folder / "places" / "models.py").write_text(models, encoding="utf-8")
+    return folder
+
+
+def test_a_reference_points_to_a_module_it_made(tmp_path):
+    read = module(WITH_REFERENCES, an_application(tmp_path))
+    place, backup = read.references
+    assert place.target == backup.target == new_module.Target("places", "Place", "place", "/places", "name")
+    assert (place.column, place.required, place.optional, backup.optional) == ("place_id", True, False, True)
+    assert list(read.targets) == ["places"]
+
+
+@pytest.mark.parametrize(
+    ("change", "said"),
+    [
+        (('to = "places"\nrequired', 'to = "nowhere"\nrequired'), "app/nowhere/module.toml is missing"),
+        (('to = "places"\nrequired', 'to = "core"\nrequired'), "to is the package of another module"),
+        (('to = "places"\nrequired', 'to = "places"\nsearch = true\nrequired'), "a reference takes"),
+        (('type = "date"', 'type = "date"\nto = "places"'), "to is for a reference"),
+        (('name = "backup_place"', 'name = "place_id"'), "also takes owner_id"),
+    ],
+)
+def test_a_reference_that_cannot_be_made_is_refused_with_what_to_fix(tmp_path, change, said):
+    with pytest.raises(new_module.Refused, match=re.escape(said)):
+        module(WITH_REFERENCES.replace(*change), an_application(tmp_path))
+
+
+def test_a_reference_to_a_module_that_changed_its_names_is_refused(tmp_path):
+    with pytest.raises(new_module.Refused, match=re.escape("no longer has Place with name")):
+        module(WITH_REFERENCES, an_application(tmp_path, "class Location(Base):\n    name: Mapped[str]\n"))
+
+
+def test_what_it_writes_for_references_is_python_and_jinja(tmp_path):
+    read = module(WITH_REFERENCES, an_application(tmp_path))
+    models = new_module.models_code(read)
+    assert 'place_id: Mapped[int] = mapped_column(ForeignKey("place.id"), index=True)' in models
+    assert "backup_place: Mapped[Place | None] = relationship(foreign_keys=[backup_place_id])" in models
+    routes = new_module.routes_code(read)
+    assert 'BACKUP_PLACE = aliased(Place, name="backup_place")' in routes, "two references to one table, two names"
+    sample = new_module.sample_code(read)
+    assert 'AFTER = ("places",)' in sample and "def empty(session: Session)" in sample
+    for name, code in (
+        ("models", models),
+        ("routes", routes),
+        ("sample", sample),
+        ("tests", new_module.tests_code(read)),
+    ):
+        compile(code, name, "exec")
+    for name, text in new_module.templates(read).items():
+        assert "$" not in text, name
+        environment.parse(text)
+    assert 'searchable_select("place", _("Place"), options.place' in new_module.templates(read)["form.html"]
 
 
 def test_the_first_column_names_each_row_so_it_is_a_required_text():

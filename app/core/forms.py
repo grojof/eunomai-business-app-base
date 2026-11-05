@@ -66,6 +66,23 @@ def read_choice(text: str, options: Collection[str], message: str) -> str:
     return text
 
 
+LARGEST_ID = 2**31 - 1
+"""The database's integer: a longer number names no row."""
+
+
+def read_reference[Row](text: str, find: Callable[[int], Row | None], message: str, *, needed: bool) -> Row | None:
+    """A row of another table, chosen in a list by its number: `find` reads it, as `session.get` does. Refused when the
+    number names no row: one removed since the page was drawn, or typed into the form by hand."""
+    if not text and not needed:
+        return None
+    if not (text.isascii() and text.isdigit() and len(text) < 11 and int(text) <= LARGEST_ID):
+        raise Refused(message)
+    row = find(int(text))
+    if row is None:
+        raise Refused(message)
+    return row
+
+
 def read_flag(text: str) -> bool:
     """A checkbox sends its value when it is ticked, and nothing when it is not."""
     if text not in ("", "yes"):
