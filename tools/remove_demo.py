@@ -148,8 +148,8 @@ How to work in this repository: [AGENTS.md](AGENTS.md).
 """An application's README, replacing the base's: a map of the application, with places to fill in. Each page the
 application adds to docs/ gets a row in its table."""
 DEMO_TESTS = (
-    '["pytest", "-q", "--ignore=tests/demo/test_clean_application.py", "--ignore=tests/demo/test_template.py", '
-    '"--ignore=tests/demo/test_new_module.py"]'
+    '["python", "tools/test.py", "--", "--ignore=tests/demo/test_clean_application.py", '
+    '"--ignore=tests/demo/test_template.py", "--ignore=tests/demo/test_new_module.py"]'
 )
 DEMO_TESTS_WHY = "those download Tailwind, so CI runs them"
 PREVIEW_CHANGES = (
@@ -158,7 +158,7 @@ PREVIEW_CHANGES = (
         'setup = [["python", "-m", "app.core.sample_data", "--if-empty"]]',
     ),
     ("demo-admins", "admins"),
-    (f"run = {DEMO_TESTS}  # {DEMO_TESTS_WHY}", 'run = ["pytest", "-q"]'),
+    (f"run = {DEMO_TESTS}  # {DEMO_TESTS_WHY}", 'run = ["python", "tools/test.py"]'),
 )
 """The base's generated rows go with the demo: the migrations, then each module's own sample data, are what an
 application's first run needs. Nor is there a demo test that downloads."""

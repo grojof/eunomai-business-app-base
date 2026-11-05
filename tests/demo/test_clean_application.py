@@ -22,9 +22,11 @@ def succeeded(result: subprocess.CompletedProcess[str], what: object) -> None:
 
 
 def own_tests_pass(folder: Path, *arguments: str) -> None:
-    """The application's own tests, and no test may stay out because the demo has gone."""
-    result = run_in(folder, "-m", "pytest", "-q", "-x", "-rs", *arguments)
-    succeeded(result, arguments)
+    """The application's own tests, as a person's computer runs them, and no test may stay out because the demo has
+    gone. tests/demo/test_new_module.py runs them once, in a template with a module: see there why only there."""
+    result = run_in(folder, "tools/test.py", "--", "-rfEs", *arguments)
+    failures = [line for line in result.stdout.splitlines() if line.startswith(("FAILED", "ERROR"))]
+    assert result.returncode == 0, f"{failures or arguments}: {result.stdout[-2000:]} {result.stderr[-1000:]}"
     assert " passed" in result.stdout.splitlines()[-1]
     assert [line for line in result.stdout.splitlines() if line.startswith("SKIPPED") and "demo" in line.lower()] == []
 
@@ -63,7 +65,10 @@ def test_the_preview_needs_the_migrations_and_each_modules_sample_data(applicati
 
 def test_the_tests_run_whole_on_a_persons_computer(application):
     declaration = tomllib.loads((application / ".eunomai" / "project.toml").read_text(encoding="utf-8"))
-    assert declaration["tests"] == {"run": ["pytest", "-q"], "environment": {"APP_BROWSER_CHANNEL": "msedge"}}
+    assert declaration["tests"] == {
+        "run": ["python", "tools/test.py"],
+        "environment": {"APP_BROWSER_CHANNEL": "msedge"},
+    }
     assert "demo" not in (application / ".eunomai" / "project.toml").read_text(encoding="utf-8")
 
 
@@ -148,15 +153,6 @@ def test_the_stylesheet_shrinks(application):
 @pytest.mark.parametrize("check", ["css", "components", "gallery", "icons", "translations", "vendor"])
 def test_every_tool_check_passes(application, check):
     succeeded(run_in(application, f"tools/{check}.py", "check"), check)
-
-
-def test_the_applications_own_tests_pass(application):
-    own_tests_pass(application, "-m", "not browser")
-
-
-@pytest.mark.browser
-def test_the_applications_own_browser_tests_pass(application):
-    own_tests_pass(application, "-m", "browser")
 
 
 def test_the_promised_way_to_add_a_component_passes_the_checks_with_the_demo(tmp_path):

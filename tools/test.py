@@ -3,21 +3,26 @@
     uv run --frozen python tools/test.py              the whole suite
     uv run --frozen python tools/test.py --affected   only what the files changed against main can break (RULES)
     uv run --frozen python tools/test.py --list       says what --affected would run, and runs nothing
+    uv run --frozen python tools/test.py -- -k board  pytest's own options after --, for both passes
 
-The tests run with pytest-xdist, six at a time at most (`--workers`), except those marked `serial`, which run after,
-one at a time: they need the computer to themselves. Each database test gets a schema of its own, so the workers
-never meet in PostgreSQL.
+The tests run with pytest-xdist, as many at a time as the computer has cores and free memory for (`--workers` sets
+it), except those marked `serial`, which run after, one at a time: they need the computer to themselves. Idle workers
+take tests from busy ones, and the long tests start first, so no worker is left with a queue at the end. Each database
+test gets a schema of its own, so the workers never meet in PostgreSQL.
 The browser and the PostgreSQL come from the environment as always (`APP_BROWSER_CHANNEL`, `TEST_DATABASE_URL`).
-Plain `pytest` still runs everything one at a time. Standard library only.
+It ends with one line that counts both passes, as pytest's own would. Plain `pytest` still runs everything one at a
+time. Standard library only.
 """
 
 import argparse
+import ctypes
 import os
 import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 TESTS = ROOT / "tests"
@@ -102,22 +107,94 @@ def select(paths: list[str]) -> Selection:
     return chosen
 
 
-def _run(command: list[str]) -> int:
+SUMMARY = re.compile(r"(?:=+ )?(.{1,300}?) in ([\d.]+)s(?: \([^)]{0,40}\))?(?: =+)?")
+COUNT = re.compile(r"(\d+) (passed|failed|errors?|skipped|xfailed|xpassed|deselected|warnings?)\b")
+
+
+BELOW_NORMAL = 0x4000  # Windows' BELOW_NORMAL_PRIORITY_CLASS
+
+
+def _lower_priority() -> None:
+    if sys.platform != "win32":  # Windows takes a flag instead
+        os.nice(5)
+
+
+def _run(command: list[str], low_priority: bool = False) -> tuple[int, dict[str, int], float]:
+    """Runs a pass, printing as it goes, and reads its last summary line: its counts and its seconds. A pass at a low
+    priority takes whatever the computer leaves free, and gives way to what the person is doing; its browsers and
+    servers inherit it."""
+    lower: dict[str, Any] = {}
+    if low_priority:
+        lower = {"creationflags": BELOW_NORMAL} if sys.platform == "win32" else {"preexec_fn": _lower_priority}
     print("$", " ".join(command), flush=True)
-    code = subprocess.run(command, cwd=ROOT).returncode
-    return 0 if code == NO_TESTS else code
+    counts: dict[str, int] = {}
+    seconds = 0.0
+    # Bytes through as they come, in whatever encoding pytest wrote them: only the summary, plain ASCII, is read.
+    with subprocess.Popen(command, cwd=ROOT, stdout=subprocess.PIPE, **lower) as process:
+        for raw in process.stdout or ():
+            sys.stdout.buffer.write(raw)
+            sys.stdout.buffer.flush()
+            found = SUMMARY.fullmatch(raw.decode("utf-8", "replace").strip())
+            if found and COUNT.search(found[1]):
+                counts = {
+                    word.rstrip("s") if word.startswith(("error", "warning")) else word: int(number)
+                    for number, word in COUNT.findall(found[1])
+                }
+                seconds = float(found[2])
+    code = process.returncode
+    return (0 if code == NO_TESTS else code), counts, seconds
 
 
-WORKERS = 6
-"""Tests at once, at most: each worker starts its own browser, server and database, and with one per core (20 on a
-computer of 2026) the computer ran out of memory. `--workers` changes it."""
+MEMORY_PER_WORKER = 1.5 * 2**30
+"""Bytes a worker needs: it starts its own browser, server and database. With one per core (20 on a computer of 2026)
+the computer ran out of memory; eleven at once, with 15 GB free, did not."""
+MOST_WORKERS = 8
 
 
-def run(files: list[str], workers: int = WORKERS) -> int:
-    """Two passes over the same selection: in parallel without `serial`, then `serial` alone."""
-    count = str(min(workers, os.cpu_count() or 1))
-    first = _run([*PYTEST, "-n", count, "-m", "not serial", *files])
-    second = _run([*PYTEST, "-m", "serial", *files])
+def free_memory() -> int | None:
+    """Bytes of memory free now, or None where the system does not say."""
+    if sys.platform == "win32":
+
+        class Status(ctypes.Structure):
+            _fields_ = [("length", ctypes.c_ulong), ("load", ctypes.c_ulong)] + [
+                (name, ctypes.c_ulonglong)
+                for name in ("total", "free", "total_page", "free_page", "total_virtual", "free_virtual", "extended")
+            ]
+
+        status = Status()
+        status.length = ctypes.sizeof(Status)
+        return status.free if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)) else None
+    try:
+        return os.sysconf("SC_AVPHYS_PAGES") * os.sysconf("SC_PAGE_SIZE")
+    except (ValueError, OSError, AttributeError):
+        return None
+
+
+def default_workers() -> int:
+    """As many as the cores and the free memory allow, up to MOST_WORKERS."""
+    memory = free_memory()
+    by_memory = MOST_WORKERS if memory is None else int(memory // MEMORY_PER_WORKER)
+    return max(1, min(os.cpu_count() or 1, by_memory, MOST_WORKERS))
+
+
+def summary(counts: dict[str, int], seconds: float) -> str:
+    order = ["failed", "passed", "skipped", "deselected", "xfailed", "xpassed", "error", "warning"]
+    words = ", ".join(f"{counts[word]} {word}" for word in order if counts.get(word))
+    return f"{words or 'no tests ran'} in {seconds:.2f}s (both passes)"
+
+
+def run(files: list[str], workers: int | None = None, options: list[str] | None = None) -> int:
+    """Two passes over the same selection: in parallel without `serial`, at a low priority, then `serial` alone, at the
+    normal one, since those tests measure time. Then one line for both."""
+    count = str(workers or default_workers())
+    extra = options or []
+    parallel = [*PYTEST, "-n", count, "--dist", "worksteal", "-m", "not serial", *extra, *files]
+    first, counts, seconds = _run(parallel, low_priority=True)
+    second, more, more_seconds = _run([*PYTEST, "-m", "serial", *extra, *files])
+    for word, number in more.items():
+        counts[word] = counts.get(word, 0) + number
+    counts.pop("deselected", None)  # each pass leaves out what the other runs
+    print(summary(counts, seconds + more_seconds), flush=True)
     return first or second
 
 
@@ -125,13 +202,14 @@ def main(arguments: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="The tests, fast.")
     parser.add_argument("--affected", action="store_true", help="only what the changes against main can break")
     parser.add_argument("--list", action="store_true", help="say what --affected would run, and run nothing")
-    parser.add_argument("--workers", type=int, default=WORKERS, help=f"tests at once, at most (default {WORKERS})")
+    parser.add_argument("--workers", type=int, help="tests at once (default: what the cores and free memory allow)")
+    parser.add_argument("pytest", nargs="*", help="pytest's own options, after --")
     options = parser.parse_args(arguments)
     alone = "TEST_DATABASE_URL is not set: the database tests run on SQLite alone, not on PostgreSQL."
     if not (options.affected or options.list):
         if not os.environ.get("TEST_DATABASE_URL"):
             print(alone)
-        return run([], options.workers)
+        return run([], options.workers, options.pytest)
     paths = changed_files()
     chosen = select(paths)
     if (chosen.database or chosen.everything) and not os.environ.get("TEST_DATABASE_URL"):
@@ -143,7 +221,7 @@ def main(arguments: list[str] | None = None) -> int:
     print("Runs: the whole suite." if chosen.everything else f"Runs: {', '.join(files) or 'no test'}.")
     if options.list or not (chosen.everything or files):
         return 0
-    return run([] if chosen.everything else files, options.workers)
+    return run([] if chosen.everything else files, options.workers, options.pytest)
 
 
 if __name__ == "__main__":

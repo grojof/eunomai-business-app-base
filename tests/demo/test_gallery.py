@@ -538,16 +538,20 @@ def watch(page, failures):
 
 @pytest.mark.browser
 @pytest.mark.rule("SEC-06")
+@pytest.mark.rule("A11Y-12")
 @pytest.mark.parametrize("name", NAMES)
-def test_a_page_opens_clean(open_page, name):
+def test_a_page_opens_clean_and_fits_a_phone(open_page, name):
+    """Both checks on one load, at a phone's width: what a page asks for and runs does not depend on the width. Each
+    page was once opened twice for them, and they were a tenth of the base's whole suite."""
     failures: list[str] = []
-    page = open_page("/settings")
+    page = open_page("/settings", width=320)
     watch(page, failures)
     page.goto(page.url.replace("/settings", f"/gallery/{name}"))
     page.wait_for_load_state("networkidle")
     styled = page.evaluate("[...document.querySelectorAll('[data-style]')].filter((e) => !e.style.length).length")
     assert styled == 0
     assert failures == []
+    assert not overflows_sideways(page)
 
 
 @pytest.mark.browser
@@ -579,13 +583,6 @@ def test_the_code_panel_passes_the_scan(open_page, theme):
     page = open_page("/gallery/modal", theme=theme, bypass_csp=True)
     page.get_by_role("tab", name="Code").first.click()
     assert run_axe(page, exclude=FRAME_EXCLUDES) == []
-
-
-@pytest.mark.browser
-@pytest.mark.rule("A11Y-12")
-@pytest.mark.parametrize("name", NAMES)
-def test_every_page_fits_a_phone(open_page, name):
-    assert not overflows_sideways(open_page(f"/gallery/{name}", width=320))
 
 
 @pytest.mark.browser

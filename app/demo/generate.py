@@ -185,17 +185,27 @@ def inspection_rows(equipment: int, seed: int = SEED) -> list[dict[str, Any]]:
     return rows
 
 
+ROWS_PER_STATEMENT = 500
+"""Rows sent in one INSERT. One statement per row waited on the network for each: 50,000 rows took a minute and a half
+on a PostgreSQL in another machine, and a few seconds this way. Small enough for SQLite's limit on parameters."""
+
+
+def insert_rows(session: Session, model: Any, rows: list[dict[str, Any]]) -> None:
+    for start in range(0, len(rows), ROWS_PER_STATEMENT):
+        session.execute(insert(model).values(rows[start : start + ROWS_PER_STATEMENT]))
+
+
 def replace_rows(session: Session, rows: int = EQUIPMENT_ROWS, seed: int = SEED) -> int:
     """Replaces the demo's tables, and returns how many work orders that made. The caller commits."""
     session.execute(delete(Inspection))
     session.execute(delete(WorkOrder))
     session.execute(delete(Equipment))
     orders = (rows + WORK_ORDER_EVERY - 1) // WORK_ORDER_EVERY
-    session.execute(insert(Equipment), [equipment_row(position, seed) for position in range(rows)])
+    insert_rows(session, Equipment, [equipment_row(position, seed) for position in range(rows)])
     order_rows = waiting_orders(ranked_orders([work_order_row(position, seed) for position in range(orders)]))
-    session.execute(insert(WorkOrder), order_rows)
+    insert_rows(session, WorkOrder, order_rows)
     visits = inspection_rows(rows, seed)
-    session.execute(insert(Inspection), visits)
+    insert_rows(session, Inspection, visits)
     if session.get_bind().dialect.name == "postgresql":  # the numbers above were given, so its counters did not move
         for table, last in (("equipment", rows), ("work_order", orders), ("inspection", len(visits))):
             sequence = text("SELECT setval(pg_get_serial_sequence(:table, 'id'), :last)")

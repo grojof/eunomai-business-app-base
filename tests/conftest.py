@@ -27,6 +27,9 @@ PERSON = {"X-Remote-User": "demo.person", "X-Remote-Name": "Demo Person", "X-Rem
 TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "")
 """A PostgreSQL to run the database tests on as well. Nothing in it is touched: each test gets a schema of its own."""
 _MIGRATED: list[str] = []
+_SYSTEM_TEMPORARY = tempfile.gettempdir()
+"""Read as the tests start: a test that sends temporary files elsewhere, to watch them, must not find this run's
+database folder among them because it happened to be the first to ask for the database."""
 
 
 def migrated_database() -> str:
@@ -34,7 +37,7 @@ def migrated_database() -> str:
     included, made once per run. A page that reads one of the application's tables finds it empty, not missing, so an
     application never edits this file for its start page; and a person's own `.data/` never changes what tests see."""
     if not _MIGRATED:
-        folder = Path(tempfile.mkdtemp(prefix="eunomai-business-app-base-tests-"))
+        folder = Path(tempfile.mkdtemp(prefix="eunomai-business-app-base-tests-", dir=_SYSTEM_TEMPORARY))
         atexit.register(shutil.rmtree, folder, ignore_errors=True)
         url = f"sqlite:///{(folder / 'migrated.db').as_posix()}"
         migrate(url)
@@ -60,7 +63,7 @@ and then wrong. It is marked `serial` by what its body calls, so a new one is to
 others, alone. `@pytest.mark.serial` marks any other test that must not share the computer."""
 
 
-def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
     waits: dict[Any, bool] = {}
     for item in items:
         function = getattr(item, "function", None)
@@ -70,6 +73,24 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
             waits[function] = bool(CLOCK.search(inspect.getsource(function)))
         if waits[function]:
             item.add_marker(pytest.mark.serial)
+    workers = int(getattr(config, "workerinput", {}).get("workercount", 1))
+    items[:] = long_first(items, workers)
+
+
+def long_first(items: list[Any], workers: int) -> list[Any]:
+    """The tests marked `long` at the head of the workers' shares, one each in turn: pytest-xdist gives each worker a
+    run of consecutive tests, so all of them first would leave one worker with every long test, one after another, and
+    a long test last would leave the others waiting for it. Every worker orders them the same, as xdist requires."""
+    long = [item for item in items if item.get_closest_marker("long")]
+    rest = [item for item in items if not item.get_closest_marker("long")]
+    share = max(1, len(items) // max(1, workers))
+    places = {(number % workers) * share + number // workers: item for number, item in enumerate(long)}
+    ordered: list[Any] = []
+    for item in rest:
+        while len(ordered) in places:
+            ordered.append(places.pop(len(ordered)))
+        ordered.append(item)
+    return ordered + [places[place] for place in sorted(places)]
 
 
 def build_settings(**overrides: Any) -> Settings:

@@ -1,7 +1,8 @@
 """An organization's template, made from this base and a layer: what the layer brings, and nothing it may not touch.
 
 The template is made once, as an organization would, with a fictional layer: its own themes, a font, one language and
-its CI. These tests go with the demo: the tool works on the base, and an application has nothing to make it from.
+its CI. These tests go with the demo: the tool works on the base, and an application has nothing to make it from. Its
+own suite runs in tests/demo/test_new_module.py, in a template with a generated module.
 """
 
 import json
@@ -145,20 +146,6 @@ def test_the_same_base_and_layer_make_the_same_template(made, tmp_path):
     first, second = files(out), files(again)
     assert sorted(first) == sorted(second)
     assert [name for name in first if first[name] != second[name]] == []
-
-
-def own_tests_pass(folder: Path, *arguments: str) -> None:
-    result = run_in(folder, "-m", "pytest", "-q", "-x", "-rs", "-p", "no:cacheprovider", *arguments)
-    assert result.returncode == 0, f"{arguments}: {result.stdout[-3000:]} {result.stderr[-1000:]}"
-
-
-def test_the_templates_own_tests_pass_with_its_brand_and_its_languages(made):
-    own_tests_pass(made[1], "-m", "not browser")
-
-
-@pytest.mark.browser
-def test_the_templates_own_browser_tests_pass_with_its_brand_and_its_languages(made):
-    own_tests_pass(made[1], "-m", "browser")
 
 
 @pytest.mark.parametrize(

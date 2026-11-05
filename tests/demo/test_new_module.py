@@ -1,6 +1,10 @@
-"""tools/new_module.py in a clean application, as a person would run it: a module with every type of field, its
-texts translated, and the application's whole suite, browser checks included. It goes with the demo, as the clean
-application's tests do: in an application, tests/test_new_module.py stays.
+"""tools/new_module.py in an organization's template, as a person would run it: a module with every type of field,
+its texts translated, and the application's whole suite, browser checks included, run as a person's computer runs it.
+
+That one run proves three things at once: the demo goes cleanly (a template is the base without its demo), a layer's
+brand and languages work, and a generated module fits. Each once ran the same suite on its own, three times over;
+tests/demo/test_clean_application.py and tests/demo/test_template.py keep their own quick checks. It goes with the
+demo: in an application, tests/test_new_module.py stays.
 
 It downloads Tailwind's executable once, as tests/demo/test_clean_application.py does, so it is left out where nothing
 may be downloaded.
@@ -17,7 +21,8 @@ import pytest
 from babel.messages.pofile import read_po, write_po
 
 from tests.demo.test_clean_application import own_tests_pass, succeeded
-from tests.helpers import ROOT, repository_copy, run_in
+from tests.demo.test_template import a_layer, make
+from tests.helpers import ROOT, run_in
 from tools import new_module
 
 EVERY_TYPE = """
@@ -126,9 +131,9 @@ def translate_like_a_person(folder: Path) -> None:
 
 @pytest.fixture(scope="module")
 def application(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    copy = repository_copy(tmp_path_factory.mktemp("module") / "application")
-    succeeded(run_in(copy, "tools/remove_demo.py"), "tools/remove_demo.py")
-    succeeded(run_in(copy, "tools/css.py"), "tools/css.py")
+    folder = tmp_path_factory.mktemp("module")
+    copy = folder / "application"
+    succeeded(make(a_layer(folder / "layer"), copy), "tools/make_template.py")
     (copy / "visits.toml").write_text(EVERY_TYPE, encoding="utf-8")
     succeeded(run_in(copy, "tools/new_module.py", "--spec", "visits.toml"), "tools/new_module.py")
     return copy
@@ -168,9 +173,12 @@ def test_a_second_run_writes_nothing(application):
     assert len(list((application / "migrations" / "versions").glob("*.py"))) == 1
 
 
+@pytest.mark.long
 def test_the_applications_whole_suite_passes_with_the_module_and_a_start_page_that_reads_its_table(application):
     """The base's own tests open the start page. One that reads the module's table finds it, empty: the tests' default
-    database has every migration, the application's own included, so no base file had to change for it."""
+    database has every migration, the application's own included, so no base file had to change for it. The suite runs
+    with tools/test.py, as `[tests]` runs it on a person's computer, so the template's brand and its one language are
+    proved with it."""
     translate_like_a_person(application / "app" / "visits" / "locales")
     succeeded(run_in(application, "tools/translations.py", "check"), "translations")
     routes = application / "app" / "visits" / "routes.py"
