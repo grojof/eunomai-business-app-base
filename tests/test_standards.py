@@ -8,6 +8,7 @@ import sys
 import tempfile
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import parse_qsl, urlsplit
 
 import pytest
 from fastapi.testclient import TestClient
@@ -115,8 +116,15 @@ def test_templates_use_no_invented_colours_or_sizes():
         assert re.findall(r"[\w:-]+-\[[^\]]*\]|[\s\"':]\[[a-zA-Z-]+:[^\]\s]+\]", text) == [], template
 
 
+def kind_of_page(address: str) -> tuple[str, tuple[str, ...]]:
+    """A page and the parameters it is asked with, whatever their values: `/calendar?date=…` is one kind of page, not
+    one per week. A link to the next week leads to another next week, and a crawl that followed them never ended."""
+    parts = urlsplit(address)
+    return parts.path, tuple(sorted({name for name, _value in parse_qsl(parts.query, keep_blank_values=True)}))
+
+
 def crawled_classes() -> set[str]:
-    """Every class on every page a person can reach, found by following the links from the start page."""
+    """Every class on every kind of page a person can reach, found by following the links from the start page."""
     application = create_app(build_settings())
     client = TestClient(application, raise_server_exceptions=False)
     person = {"X-Remote-User": "demo.person", "X-Remote-Groups": "admins"}
@@ -125,9 +133,9 @@ def crawled_classes() -> set[str]:
     waiting, seen = ["/"], set()
     while waiting:
         path = waiting.pop()
-        if path in seen:
+        if kind_of_page(path) in seen:
             continue
-        seen.add(path)
+        seen.add(kind_of_page(path))
         page_classes, links = classes.read_page(client.get(path, headers=person).text)
         found |= page_classes
         waiting += [link.split("#")[0] for link in links if link.startswith("/") and not link.startswith("/static")]
@@ -170,6 +178,12 @@ def every_class() -> set[str]:
         | classes.template_literals(sources)
         | classes.catalogue_classes()
     )
+
+
+def test_the_crawl_visits_each_kind_of_page_once_whatever_the_values():
+    assert kind_of_page("/calendar?date=2026-11-02&view=week") == kind_of_page("/calendar?view=month&date=2031-01-06")
+    assert kind_of_page("/calendar") != kind_of_page("/calendar?date=2026-11-02")
+    assert kind_of_page("/equipment?status=") == ("/equipment", ("status",))
 
 
 @pytest.mark.rule("COMP-04")

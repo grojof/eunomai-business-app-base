@@ -24,6 +24,7 @@ import sys
 import unicodedata
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree
@@ -81,6 +82,14 @@ class Icon:
 
 
 def read_json(path: Path) -> Any:
+    """A JSON file, read again only when it changes: a search reads Lucide's index of 1,600 icons, and a test runs
+    hundreds of searches. Callers must not change what it returns."""
+    stat = path.stat()
+    return _read_json(path, stat.st_mtime_ns, stat.st_size)
+
+
+@cache
+def _read_json(path: Path, _modified: int, _size: int) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -124,6 +133,7 @@ def aliases(index: Path = INDEX) -> dict[str, str]:
 # Search
 
 
+@cache  # a search reads every tag of every icon: the same few thousand texts, each time
 def normalise(text: str) -> str:
     """Lowercase, without accents: `Camión` and `camion` are the same word."""
     plain = "".join(c for c in unicodedata.normalize("NFKD", text.lower()) if not unicodedata.combining(c))

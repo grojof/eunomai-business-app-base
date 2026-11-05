@@ -73,5 +73,5 @@ def test_files_people_attach_go_there_too():
 
 def test_the_tests_name_a_browser_the_computer_has():
     tests = tomllib.loads((ROOT / ".eunomai" / "project.toml").read_text(encoding="utf-8"))["tests"]
-    assert tests["run"][0] == "pytest"
+    assert tests["run"][:2] == ["python", "tools/test.py"]  # in parallel: one at a time did not fit
     assert tests["environment"] == {"APP_BROWSER_CHANNEL": "msedge"}

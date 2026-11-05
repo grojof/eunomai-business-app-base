@@ -81,7 +81,7 @@ uv run --frozen python tools/gallery.py check        # generated from daisyUI's 
 uv run --frozen python tools/icons.py check          # icons, their names, and every SVG shown as an image
 uv run --frozen python tools/translations.py check   # after changing texts: tools/translations.py update
 uv run --frozen python tools/test.py --affected      # while working: what the changes against main can break, and why
-uv run --frozen python tools/test.py                 # before merging: every test, six at a time, then those marked serial
+uv run --frozen python tools/test.py                 # before merging: every test, in parallel, then those marked serial
 ```
 
 With `TEST_DATABASE_URL` set to a PostgreSQL kept for tests (an address with its password, kept in the person's own

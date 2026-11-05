@@ -53,6 +53,7 @@ filterwarnings = ["error::DeprecationWarning"]
 addopts = "--strict-markers"
 markers = [
     "browser: needs a real browser",
+    "long: takes minutes; tools/test.py starts it first, one at the head of each worker's share",
     "rule(identifier): the rule of docs/base/standards.md this test proves",
     "serial: needs the computer to itself (ports, processes, the clock); tools/test.py runs it after the others, alone",
 ]
