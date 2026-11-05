@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from app.core.i18n import PSEUDO
 from app.main import create_app
 from tests.conftest import build_settings
-from tests.helpers import ROOT, overflows_sideways, repository_text_files, run_axe, untranslated
+from tests.helpers import ROOT, overflows_sideways, repository_text_files, run_axe_in_both_themes, untranslated
 
 PAGES = ["/", "/settings", "/administration"]
 LAYOUTS = [
@@ -76,9 +76,8 @@ def test_a_long_decimal_reaches_the_page_exactly(client, person):
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
 @pytest.mark.parametrize("path", PAGES)
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_no_detectable_accessibility_failure(open_page, path, theme):
-    assert run_axe(open_page(path, theme=theme, bypass_csp=True)) == []
+def test_no_detectable_accessibility_failure(open_page, path):
+    assert run_axe_in_both_themes(open_page(path, bypass_csp=True)) == []
 
 
 @pytest.mark.browser
@@ -102,9 +101,8 @@ def test_new_content_gets_focus_and_is_announced(open_page):
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.parametrize("layout", LAYOUTS)
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_every_arrangement_passes_the_scan(open_page, layout, theme):
-    assert run_axe(open_page("/", theme=theme, layout=layout, bypass_csp=True)) == []
+def test_every_arrangement_passes_the_scan(open_page, layout):
+    assert run_axe_in_both_themes(open_page("/", layout=layout, bypass_csp=True)) == []
 
 
 @pytest.mark.browser

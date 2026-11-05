@@ -18,7 +18,7 @@ from app.demo.models import LAST_MOMENT, WorkOrder, WorkOrderFile
 from app.main import create_app
 from tests.conftest import build_settings, page_opener, running_server
 from tests.demo.support import fill, until
-from tests.helpers import overflows_sideways, run_axe, untranslated
+from tests.helpers import overflows_sideways, run_axe_in_both_themes, untranslated
 
 HTMX = {"HX-Request": "true"}
 SAME_SITE = {"Sec-Fetch-Site": "same-origin"}
@@ -458,10 +458,9 @@ def test_the_screens_call_macros():
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
 @pytest.mark.parametrize("path", SCREENS)
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1280, 390])
-def test_no_detectable_accessibility_failure(open_filled, path, theme, width):
-    assert run_axe(open_filled(path, theme=theme, width=width, bypass_csp=True)) == []
+def test_no_detectable_accessibility_failure(open_filled, path, width):
+    assert run_axe_in_both_themes(open_filled(path, width=width, bypass_csp=True)) == []
 
 
 @pytest.fixture
@@ -483,25 +482,23 @@ def fill_in(page):
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1280, 390])
-def test_a_form_with_errors_passes_the_scan(own_rows, theme, width):
-    page = own_rows("/work-orders/new", theme=theme, width=width, bypass_csp=True)
+def test_a_form_with_errors_passes_the_scan(own_rows, width):
+    page = own_rows("/work-orders/new", width=width, bypass_csp=True)
     page.get_by_role("button", name="Save").click()
     page.wait_for_selector("#work-order [role=alert]")
-    assert run_axe(page) == []
+    assert run_axe_in_both_themes(page) == []
 
 
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1280, 390])
-def test_the_open_delete_dialog_passes_the_scan(own_rows, theme, width):
-    page = own_rows("/work-orders/1/edit", theme=theme, width=width, bypass_csp=True)
+def test_the_open_delete_dialog_passes_the_scan(own_rows, width):
+    page = own_rows("/work-orders/1/edit", width=width, bypass_csp=True)
     page.get_by_role("link", name="Delete").click()
     page.wait_for_selector("dialog#confirm[open]")
-    assert run_axe(page) == []
+    assert run_axe_in_both_themes(page) == []
 
 
 @pytest.mark.browser
@@ -977,14 +974,13 @@ def test_removing_a_file_opens_a_dialog_and_comes_back(upload_server):
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1280, 390])
-def test_a_form_with_files_passes_the_scan(upload_server, theme, width):
+def test_a_form_with_files_passes_the_scan(upload_server, width):
     open_page, _folder = upload_server
     first = open_page("/work-orders/1/edit?back=%2Fplanning")
     choose(first)
     first.get_by_role("button", name="Save").click()
     first.get_by_text(" saved.").first.wait_for()
-    page = open_page("/work-orders/1/edit", theme=theme, width=width, bypass_csp=True)
-    assert run_axe(page) == []
+    page = open_page("/work-orders/1/edit", width=width, bypass_csp=True)
+    assert run_axe_in_both_themes(page) == []
     assert not overflows_sideways(page)

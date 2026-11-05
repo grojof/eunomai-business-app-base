@@ -93,13 +93,35 @@ def untranslated(html: str, allowed: tuple[str, ...]) -> list[str]:
 def run_axe(page: Any, exclude: tuple[str, ...] = ()) -> list[str]:
     """Runs the accessibility scan on the open page and returns each failure, with where it is."""
     page.evaluate(ANIMATIONS_FINISHED)
-    page.add_script_tag(path=str(ROOT / "tests" / "vendor" / "axe.min.js"))
+    if not page.evaluate("typeof axe !== 'undefined'"):
+        page.add_script_tag(path=str(ROOT / "tests" / "vendor" / "axe.min.js"))
     context = {"exclude": [[selector] for selector in exclude]}
     result = page.evaluate(
         "([tags, context]) => axe.run(context, {runOnly: {type: 'tag', values: tags}})",
         [WCAG_TAGS, context],
     )
     return [f"{v['id']}: {node['target']}" for v in result["violations"] for node in v["nodes"]]
+
+
+TO_DARK = """() => {
+    const still = document.createElement("style");
+    still.textContent = "*, *::before, *::after { transition: none !important; }";
+    document.head.append(still);
+    document.querySelectorAll("input.theme-controller").forEach((input) => { input.checked = input.value === "dark"; });
+    document.documentElement.dataset.theme = "dark";
+}"""
+"""The dark theme on the open page, as the theme control puts it with no reload; charts follow it. The colours change
+at once and stay still: eased in, those of content not on screen, such as a closed menu's, would start easing only when
+shown, and the scan measures the page at rest. The base's own tests prove, on its richest pages, that the page then
+paints wherever the scan looks as the page loaded dark."""
+
+
+def run_axe_in_both_themes(page: Any, exclude: tuple[str, ...] = ()) -> list[str]:
+    """The scan on a page opened in the light theme, then again in the dark one: one load instead of two."""
+    assert page.evaluate("document.documentElement.dataset.theme") == "light"
+    light = run_axe(page, exclude)
+    page.evaluate(TO_DARK)
+    return [f"light {failure}" for failure in light] + [f"dark {failure}" for failure in run_axe(page, exclude)]
 
 
 def focus_order(page: Any) -> tuple[list[str], list[str]]:

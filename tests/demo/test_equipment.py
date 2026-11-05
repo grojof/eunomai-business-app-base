@@ -15,7 +15,7 @@ from app.demo.models import Equipment
 from app.main import create_app
 from tests.conftest import build_settings
 from tests.demo.support import announced, until
-from tests.helpers import ROOT, overflows_sideways, run_axe, untranslated
+from tests.helpers import ROOT, overflows_sideways, run_axe_in_both_themes, untranslated
 
 ROW = re.compile(r'<a class="link link-hover" href="/equipment/\d+">(EQ-\d+)</a>')
 HTMX = {"HX-Request": "true"}
@@ -228,17 +228,15 @@ def test_the_columns_it_sorts_by_have_their_index():
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
 @pytest.mark.parametrize("path", ["/equipment", "/equipment?status=stopped&sort=cost", "/equipment?q=nothing"])
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_no_detectable_accessibility_failure(open_filled, path, theme):
-    assert run_axe(open_filled(path, theme=theme, bypass_csp=True)) == []
+def test_no_detectable_accessibility_failure(open_filled, path):
+    assert run_axe_in_both_themes(open_filled(path, bypass_csp=True)) == []
 
 
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_no_detectable_failure_without_the_rows(open_page, theme):
-    assert run_axe(open_page("/equipment", theme=theme, bypass_csp=True)) == []
+def test_no_detectable_failure_without_the_rows(open_page):
+    assert run_axe_in_both_themes(open_page("/equipment", bypass_csp=True)) == []
 
 
 @pytest.mark.browser

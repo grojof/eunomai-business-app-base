@@ -16,7 +16,7 @@ from app.demo.gallery import data, highlight, inline_code
 from app.main import create_app
 from app.ui.catalog import APPROVED, CATEGORIES, components
 from tests.conftest import PERSON, build_settings
-from tests.helpers import overflows_sideways, run_axe, untranslated, without_official_examples
+from tests.helpers import overflows_sideways, run_axe_in_both_themes, untranslated, without_official_examples
 from tools import gallery as tool
 from tools import update_dependencies
 
@@ -571,18 +571,16 @@ def test_the_index_opens_clean(open_page):
 @pytest.mark.parametrize(
     "path", ["/gallery", "/gallery/button", "/gallery/modal", "/gallery/calendar", "/gallery/drawer"]
 )
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_the_frame_passes_the_scan(open_page, path, theme):
-    assert run_axe(open_page(path, theme=theme, bypass_csp=True), exclude=FRAME_EXCLUDES) == []
+def test_the_frame_passes_the_scan(open_page, path):
+    assert run_axe_in_both_themes(open_page(path, bypass_csp=True), exclude=FRAME_EXCLUDES) == []
 
 
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_the_code_panel_passes_the_scan(open_page, theme):
-    page = open_page("/gallery/modal", theme=theme, bypass_csp=True)
+def test_the_code_panel_passes_the_scan(open_page):
+    page = open_page("/gallery/modal", bypass_csp=True)
     page.get_by_role("tab", name="Code").first.click()
-    assert run_axe(page, exclude=FRAME_EXCLUDES) == []
+    assert run_axe_in_both_themes(page, exclude=FRAME_EXCLUDES) == []
 
 
 @pytest.mark.browser

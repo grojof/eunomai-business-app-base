@@ -9,7 +9,7 @@ from app.core.i18n import PSEUDO
 from app.core.templating import SearchItem, register_search
 from app.main import create_app
 from tests.conftest import build_settings
-from tests.helpers import ANIMATIONS_FINISHED, run_axe, untranslated
+from tests.helpers import ANIMATIONS_FINISHED, run_axe, run_axe_in_both_themes, untranslated
 from tools import translations
 
 pages = pytest.mark.browser
@@ -99,13 +99,15 @@ def test_the_shortcut_closes_it_too(open_page):
 @pages
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1280, 390])
-def test_the_open_palette_passes_the_scan(open_page, theme, width):
-    page = open_page("/", theme=theme, width=width, bypass_csp=True)
+def test_the_open_palette_passes_the_scan(open_page, width):
+    page = open_page("/", width=width, bypass_csp=True)
     open_palette(page)
     assert run_axe(page) == []
     page.keyboard.type("nothing like this anywhere")
+    assert run_axe_in_both_themes(page) == []
+    page.keyboard.press("Control+A")
+    page.keyboard.press("Backspace")
     assert run_axe(page) == []
 
 

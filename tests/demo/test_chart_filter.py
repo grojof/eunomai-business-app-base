@@ -6,7 +6,7 @@ import pytest
 
 from app.core.i18n import PSEUDO
 from tests.demo.support import announced, until
-from tests.helpers import overflows_sideways, run_axe
+from tests.helpers import overflows_sideways, run_axe_in_both_themes
 
 CHARTS_READY = "document.documentElement.dataset.chartsReady !== undefined"
 PLACES = "#figure-locations-summary"
@@ -48,12 +48,11 @@ def test_the_dashboard_leads_from_each_state_to_its_list(filled):
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-10")
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_the_equipment_page_with_its_charts_passes_the_scan(open_filled, theme):
-    page = open_filled("/equipment", theme=theme, bypass_csp=True)
+def test_the_equipment_page_with_its_charts_passes_the_scan(open_filled):
+    page = open_filled("/equipment", bypass_csp=True)
     until(page, CHARTS_READY)
     page.locator(f"{PLACES} >> xpath=ancestor::figure//summary").click()
-    assert run_axe(page) == []
+    assert run_axe_in_both_themes(page) == []
 
 
 @pytest.mark.browser

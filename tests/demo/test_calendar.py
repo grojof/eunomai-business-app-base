@@ -17,7 +17,7 @@ from app.demo.models import Inspection, WorkOrder
 from app.main import create_app
 from tests.conftest import PERSON, build_settings, running_server
 from tests.demo.support import fill, until
-from tests.helpers import overflows_sideways, run_axe, untranslated
+from tests.helpers import overflows_sideways, run_axe_in_both_themes, untranslated
 from tools import vendor
 
 SAME_SITE = {"Sec-Fetch-Site": "same-origin"}
@@ -262,29 +262,27 @@ def test_fullcalendar_and_its_theme_are_pinned_and_past_the_two_week_rule():
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
 @pytest.mark.parametrize("view", ["month", "week", "agenda"])
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("language", ["en", "es", "ca"])
-def test_the_calendar_passes_the_scan(open_filled, view, theme, language):
-    page = open_filled(f"/calendar?view={view}&date=2026-10-28", theme=theme, language=language, bypass_csp=True)
+def test_the_calendar_passes_the_scan(open_filled, view, language):
+    page = open_filled(f"/calendar?view={view}&date=2026-10-28", language=language, bypass_csp=True)
     until(page, READY)
-    assert run_axe(page) == []
+    assert run_axe_in_both_themes(page) == []
 
 
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("font", ["", "Impact", "monospace"])
-def test_more_events_lead_to_the_agenda_of_their_week_and_pass_the_scan(open_filled, theme, font):
+def test_more_events_lead_to_the_agenda_of_their_week_and_pass_the_scan(open_filled, font):
     """A box over the month hid part of the events under it, and how much depended on the font: Linux's failed the
     target-size check where Windows' did not. Impact here does the same on Windows. The agenda hides nothing."""
-    page = open_filled("/calendar?view=month&date=2026-10-28", theme=theme, bypass_csp=True)
+    page = open_filled("/calendar?view=month&date=2026-10-28", bypass_csp=True)
     if font:
         page.add_style_tag(content=f"*, *::before {{ font-family: {font} !important; }}")
     until(page, READY)
     page.locator(".calendar-more").first.click()
     until(page, "location.search.includes('view=agenda')")
     assert page.locator(".calendar-popover").count() == 0
-    assert run_axe(page) == []
+    assert run_axe_in_both_themes(page) == []
 
 
 @pytest.mark.browser

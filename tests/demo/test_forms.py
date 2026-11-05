@@ -3,7 +3,7 @@
 import pytest
 
 from tests.demo.support import until
-from tests.helpers import overflows_sideways, run_axe
+from tests.helpers import overflows_sideways, run_axe_in_both_themes
 
 SPECIMENS = (
     "input",
@@ -49,19 +49,17 @@ def box(open_page):
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.parametrize("name", OWN_PAGES)
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_each_own_specimen_passes_the_scan(open_page, name, theme):
-    assert run_axe(open_page(f"/gallery/{name}", theme=theme, bypass_csp=True), exclude=FRAME_EXCLUDES) == []
+def test_each_own_specimen_passes_the_scan(open_page, name):
+    assert run_axe_in_both_themes(open_page(f"/gallery/{name}", bypass_csp=True), exclude=FRAME_EXCLUDES) == []
 
 
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_the_open_list_passes_the_scan(open_page, theme):
-    page = open_page(SEARCHABLE, theme=theme, bypass_csp=True)
+def test_the_open_list_passes_the_scan(open_page):
+    page = open_page(SEARCHABLE, bypass_csp=True)
     page.locator(BOX).press("ArrowDown")
-    assert run_axe(page, exclude=FRAME_EXCLUDES) == []
+    assert run_axe_in_both_themes(page, exclude=FRAME_EXCLUDES) == []
 
 
 @pytest.mark.browser
@@ -280,11 +278,10 @@ def test_inside_a_dialog_escape_closes_the_list_first_and_enter_chooses(open_pag
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_the_list_in_a_dialog_passes_the_scan(open_page, theme):
-    page = open_page(SEARCHABLE, theme=theme, bypass_csp=True)
+def test_the_list_in_a_dialog_passes_the_scan(open_page):
+    page = open_page(SEARCHABLE, bypass_csp=True)
     open_in_a_dialog(page)
-    assert run_axe(page, exclude=FRAME_EXCLUDES) == []
+    assert run_axe_in_both_themes(page, exclude=FRAME_EXCLUDES) == []
 
 
 @pytest.mark.browser
@@ -333,12 +330,11 @@ def open_confirmation(page):
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1280, 390])
-def test_the_open_confirmation_passes_the_scan(open_page, theme, width):
-    page = open_page(CONFIRMATION, theme=theme, width=width, bypass_csp=True)
+def test_the_open_confirmation_passes_the_scan(open_page, width):
+    page = open_page(CONFIRMATION, width=width, bypass_csp=True)
     open_confirmation(page)
-    assert run_axe(page, exclude=FRAME_EXCLUDES) == []
+    assert run_axe_in_both_themes(page, exclude=FRAME_EXCLUDES) == []
 
 
 @pytest.mark.browser

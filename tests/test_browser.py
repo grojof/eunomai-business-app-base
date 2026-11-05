@@ -3,7 +3,7 @@
 import pytest
 
 from app.core.i18n import PSEUDO
-from tests.helpers import focus_order, overflows_sideways, run_axe
+from tests.helpers import focus_order, overflows_sideways, run_axe_in_both_themes
 from tools import translations
 
 pytestmark = pytest.mark.browser
@@ -21,10 +21,8 @@ inside, as the search of a list has."""
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
 @pytest.mark.parametrize("path", PAGES)
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_no_detectable_accessibility_failure(open_page, path, theme):
-    page = open_page(path, theme=theme, bypass_csp=True)
-    assert run_axe(page) == []
+def test_no_detectable_accessibility_failure(open_page, path):
+    assert run_axe_in_both_themes(open_page(path, bypass_csp=True)) == []
 
 
 @pytest.mark.rule("A11Y-13")

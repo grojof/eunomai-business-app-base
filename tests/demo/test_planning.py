@@ -21,7 +21,7 @@ from app.demo.planning import checked, month_of, planning_view
 from app.main import create_app
 from tests.conftest import build_settings, page_opener, running_server
 from tests.demo.support import fill, until
-from tests.helpers import overflows_sideways, run_axe, untranslated
+from tests.helpers import overflows_sideways, run_axe_in_both_themes, untranslated
 
 HTMX = {"HX-Request": "true"}
 SAME_SITE = {"Sec-Fetch-Site": "same-origin"}
@@ -317,20 +317,18 @@ def test_the_screens_call_macros():
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
 @pytest.mark.parametrize("path", ["/planning", "/planning?group=month&status=", "/planning/1/edit"])
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_no_detectable_accessibility_failure(open_filled, path, theme):
-    assert run_axe(open_filled(path, theme=theme, bypass_csp=True)) == []
+def test_no_detectable_accessibility_failure(open_filled, path):
+    assert run_axe_in_both_themes(open_filled(path, bypass_csp=True)) == []
 
 
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_no_detectable_failure_with_the_editor_open(open_filled, theme):
-    page = open_filled("/planning", theme=theme, bypass_csp=True)
+def test_no_detectable_failure_with_the_editor_open(open_filled):
+    page = open_filled("/planning", bypass_csp=True)
     page.locator("[id^=edit-]").first.click()
     page.wait_for_selector("dialog[open] form")
-    assert run_axe(page) == []
+    assert run_axe_in_both_themes(page) == []
 
 
 @pytest.mark.browser
