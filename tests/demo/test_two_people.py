@@ -18,7 +18,7 @@ from app.demo.models import WorkOrder, WorkOrderFile
 from app.main import create_app
 from tests.conftest import build_settings, page_opener, running_server
 from tests.demo.support import fill, until
-from tests.helpers import ROOT, run_axe
+from tests.helpers import ROOT, run_axe_in_both_themes
 
 HTMX = {"HX-Request": "true"}
 SAME_SITE = {"Sec-Fetch-Site": "same-origin"}
@@ -490,10 +490,9 @@ def test_in_two_browsers_the_second_is_told_in_the_dialog_with_focus_and_what_wa
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1280, 390])
-def test_the_conflict_passes_the_scan(two_people, theme, width):
-    first = two_people("/work-orders/1/edit", theme=theme, width=width, bypass_csp=True)
+def test_the_conflict_passes_the_scan(two_people, width):
+    first = two_people("/work-orders/1/edit", width=width, bypass_csp=True)
     second = two_people("/work-orders/1/edit")
     second.locator("#field-title").fill("Theirs")
     second.get_by_role("button", name="Save").click()
@@ -504,7 +503,7 @@ def test_the_conflict_passes_the_scan(two_people, theme, width):
     first.wait_for_selector("#work-order [role=alert]")
     assert "Theirs" in first.locator("#work-order [role=alert]").inner_text()
     assert first.locator("#field-title").input_value() == "Mine"
-    assert run_axe(first) == []
+    assert run_axe_in_both_themes(first) == []
 
 
 @pytest.mark.browser

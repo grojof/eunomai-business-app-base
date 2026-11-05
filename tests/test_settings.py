@@ -130,6 +130,7 @@ pages = pytest.mark.browser
 @pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1280, 390])
 def test_the_settings_pass_the_scan_with_every_control_on_the_page(open_page, theme, width):
+    """Loaded in each theme, not switched like other pages' scans: this page shows which theme is chosen."""
     assert run_axe(open_page("/settings", theme=theme, width=width, bypass_csp=True)) == []
 
 

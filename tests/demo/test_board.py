@@ -16,7 +16,7 @@ from app.demo.models import WorkOrder
 from app.main import create_app
 from tests.conftest import PERSON, TEST_DATABASE_URL, build_settings, empty_database, page_opener, running_server
 from tests.demo.support import announced, fill, until
-from tests.helpers import overflows_sideways, run_axe, untranslated
+from tests.helpers import overflows_sideways, run_axe_in_both_themes, untranslated
 
 SAME_SITE = {"Sec-Fetch-Site": "same-origin"}
 HTMX = {"HX-Request": "true"}
@@ -195,10 +195,9 @@ def test_no_text_outside_translation_without_the_rows(client, person):
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1440, 375])
-def test_the_board_passes_the_scan(open_filled, theme, width):
-    assert run_axe(open_filled("/board?location=Roof", theme=theme, width=width, bypass_csp=True)) == []
+def test_the_board_passes_the_scan(open_filled, width):
+    assert run_axe_in_both_themes(open_filled("/board?location=Roof", width=width, bypass_csp=True)) == []
 
 
 @pytest.mark.browser

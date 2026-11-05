@@ -12,7 +12,7 @@ from app.core.i18n import PSEUDO
 from app.demo.charts import chart_examples
 from app.demo.models import WorkOrder
 from tests.demo.support import until
-from tests.helpers import overflows_sideways, run_axe, untranslated
+from tests.helpers import overflows_sideways, run_axe_in_both_themes, untranslated
 
 TYPES = ["bar", "stacked", "line", "area", "pie", "doughnut", "radar", "scatter", "bubble", "mixed"]
 CHARTS_READY = "document.documentElement.dataset.chartsReady !== undefined"
@@ -103,21 +103,19 @@ def test_month_labels_are_in_the_persons_language(client, person, language):
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
 @pytest.mark.rule("A11Y-10")
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_no_detectable_accessibility_failure_on_the_dashboard(open_filled, theme):
-    page = open_filled("/", theme=theme, bypass_csp=True)
+def test_no_detectable_accessibility_failure_on_the_dashboard(open_filled):
+    page = open_filled("/", bypass_csp=True)
     until(page, CHARTS_READY)
-    assert run_axe(page) == []
+    assert run_axe_in_both_themes(page) == []
 
 
 @pytest.mark.browser
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_no_detectable_failure_with_a_table_open(open_filled, theme):
-    page = open_filled("/", theme=theme, bypass_csp=True)
+def test_no_detectable_failure_with_a_table_open(open_filled):
+    page = open_filled("/", bypass_csp=True)
     page.locator("figure summary").first.click()
-    assert run_axe(page) == []
+    assert run_axe_in_both_themes(page) == []
 
 
 @pytest.mark.browser

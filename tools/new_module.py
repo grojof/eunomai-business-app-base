@@ -1193,7 +1193,7 @@ def tests_code(module: Module) -> str:
         f"from app.{module.package}.models import {module.entity}",
         "from app.main import create_app",
         "from tests.conftest import build_settings, page_opener, running_server",
-        "from tests.helpers import run_axe",
+        "from tests.helpers import run_axe_in_both_themes",
         "",
         'SAME_SITE = {"Sec-Fetch-Site": "same-origin"}',
         'OUTSIDER = {"X-Remote-User": "someone.else", "X-Remote-Name": "Someone Else", "X-Remote-Groups": "staff"}',
@@ -1358,11 +1358,9 @@ def tests_code(module: Module) -> str:
         "",
         "@pytest.mark.browser",
         f'@pytest.mark.parametrize("path", ["{path}", "{path}/1", "{path}/new", "{path}/1/edit"])',
-        '@pytest.mark.parametrize("theme", ["light", "dark"])',
-        "def test_no_detectable_accessibility_failure(browser: Any, filled_server: str, path: str, theme: str):",
+        "def test_no_detectable_accessibility_failure(browser: Any, filled_server: str, path: str):",
         "    with page_opener(browser, filled_server) as open_page:",
-        "        page = open_page(path, theme=theme, bypass_csp=True)",
-        "        assert run_axe(page) == []",
+        "        assert run_axe_in_both_themes(open_page(path, bypass_csp=True)) == []",
         "",
     ]
     return "\n".join(lines)

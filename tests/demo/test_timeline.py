@@ -15,7 +15,7 @@ from app.demo.models import Equipment, WorkOrder
 from app.main import create_app
 from tests.conftest import PERSON, build_settings, page_opener, running_server
 from tests.demo.support import announced, fill, until
-from tests.helpers import overflows_sideways, run_axe, untranslated
+from tests.helpers import overflows_sideways, run_axe_in_both_themes, untranslated
 
 TIMELINE = "/planning?show=timeline&location=Roof"
 ALLOWED = ("Business App", "Demo Person", "Air compressor", "Conveyor belt", "Standby generator", "Cooling tower")
@@ -79,10 +79,9 @@ def test_no_text_outside_translation(filled):
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1440, 375])
-def test_the_timeline_passes_the_scan(open_filled, theme, width):
-    assert run_axe(open_filled(TIMELINE, theme=theme, width=width, bypass_csp=True)) == []
+def test_the_timeline_passes_the_scan(open_filled, width):
+    assert run_axe_in_both_themes(open_filled(TIMELINE, width=width, bypass_csp=True)) == []
 
 
 @pytest.mark.browser

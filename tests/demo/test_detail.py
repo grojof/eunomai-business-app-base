@@ -10,7 +10,7 @@ from app.demo.generate import equipment_row, work_order_row
 from app.main import create_app
 from tests.conftest import build_settings
 from tests.demo.support import until
-from tests.helpers import overflows_sideways, run_axe, untranslated
+from tests.helpers import overflows_sideways, run_axe_in_both_themes, untranslated
 
 ALLOWED = (
     "Business App",
@@ -117,9 +117,8 @@ def test_no_text_outside_translation(filled, path):
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
 @pytest.mark.parametrize("path", ["/equipment/1", "/equipment/1?tab=orders", "/equipment/2?tab=orders"])
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_no_detectable_accessibility_failure(open_filled, path, theme):
-    assert run_axe(open_filled(path, theme=theme, bypass_csp=True)) == []
+def test_no_detectable_accessibility_failure(open_filled, path):
+    assert run_axe_in_both_themes(open_filled(path, bypass_csp=True)) == []
 
 
 @pytest.mark.browser

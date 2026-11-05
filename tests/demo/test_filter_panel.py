@@ -6,7 +6,7 @@ import pytest
 
 from app.core.i18n import PSEUDO
 from tests.demo.support import until
-from tests.helpers import overflows_sideways, run_axe
+from tests.helpers import overflows_sideways, run_axe_in_both_themes
 
 TOGGLE = "#planning-filter-toggle"
 PANEL = "#planning-filter-panel"
@@ -34,10 +34,9 @@ def test_a_panel_state_that_is_not_one_is_ignored(filled):
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
 @pytest.mark.parametrize("path", ["/planning", "/planning?panel=hidden", "/planning?panel=shown&status=closed"])
-@pytest.mark.parametrize("theme", ["light", "dark"])
 @pytest.mark.parametrize("width", [1440, 375])
-def test_the_panel_passes_the_scan(open_filled, path, theme, width):
-    assert run_axe(open_filled(path, theme=theme, width=width, bypass_csp=True)) == []
+def test_the_panel_passes_the_scan(open_filled, path, width):
+    assert run_axe_in_both_themes(open_filled(path, width=width, bypass_csp=True)) == []
 
 
 @pytest.mark.browser

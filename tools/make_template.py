@@ -198,7 +198,7 @@ def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
     for check in CHECKS:
         run(out, *check)
     if tests:
-        run(out, "-m", "pytest", "-q", "-p", "no:cacheprovider")
+        run(out, "tools/test.py", "--", "-q", "-p", "no:cacheprovider")
     (out / SOURCE_FILE).write_text(
         "# Made by tools/make_template.py from eunomai-business-app-base: run it again, never edit this template.\n"
         f'base_commit = "{commit}"\n'

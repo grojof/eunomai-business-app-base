@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from app.main import create_app
 from tests.conftest import PERSON, build_settings
 from tests.demo.support import until
-from tests.helpers import overflows_sideways, run_axe
+from tests.helpers import overflows_sideways, run_axe_in_both_themes
 
 DENSE = {"list_density": "dense"}
 WIDE = {"list_width": "wide", "width": "centered"}
@@ -56,9 +56,8 @@ def test_an_application_that_fixes_them_offers_no_choice(filled_url):
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
 @pytest.mark.parametrize("path", ["/equipment", "/planning"])
-@pytest.mark.parametrize("theme", ["light", "dark"])
-def test_a_dense_and_wide_list_passes_the_scan(open_filled, path, theme):
-    assert run_axe(open_filled(path, theme=theme, layout=DENSE | WIDE, bypass_csp=True)) == []
+def test_a_dense_and_wide_list_passes_the_scan(open_filled, path):
+    assert run_axe_in_both_themes(open_filled(path, layout=DENSE | WIDE, bypass_csp=True)) == []
 
 
 @pytest.mark.browser
