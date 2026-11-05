@@ -16,7 +16,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
-from sqlalchemy import ColumnElement, Select, func, or_
+from sqlalchemy import ColumnElement, Select, func, or_, select
 from sqlalchemy.orm import Session
 
 from app.core.templating import layout_for, render
@@ -307,6 +307,13 @@ class ListView:
     @property
     def form_id(self) -> str:
         return f"{self.name}-filters"
+
+
+def reference_options(session: Session, number: Any, name: Any) -> list[tuple[str, str]]:
+    """Another table's rows to choose from, as a filter and a form offer them: each one's number, as text, and its
+    name, in name order. All of them: a list for some hundreds of rows, as `searchable_select` says."""
+    rows = session.execute(select(number, name).order_by(name, number))
+    return [(str(row_number), str(row_name)) for row_number, row_name in rows]
 
 
 def list_query(address: str, path: str) -> dict[str, str]:

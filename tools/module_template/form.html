@@ -1,5 +1,5 @@
 {#- The whole form, for the page and for htmx: a failed save comes back here, in the same place, with focus on its errors. -#}
-{% from "ui/macros.html" import card, checkbox_field, conflict_notice, date_field, error_summary, form_actions, input_field, number_field, select_field, textarea_field %}
+{% from "ui/macros.html" import card, checkbox_field, conflict_notice, date_field, error_summary, form_actions, input_field, number_field, searchable_select, select_field, textarea_field %}
 <form class="space-y-6" method="post" action="{{ action }}" hx-post="{{ action }}" hx-target="#$package-form" hx-disabled-elt="find button[type=submit]" hx-disinherit="*" novalidate>
   {% if errors %}{{ error_summary(_("Check what you entered"), summary) }}{% endif %}
   {% if conflict %}{{ conflict_notice(_("Someone else changed this $singular"), _("Nothing of yours is saved yet, and what you typed is still here. They saved what is listed below. Save again to replace it with what you typed, or cancel to keep theirs."), conflict) }}{% endif %}

@@ -27,7 +27,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES = Path(__file__).resolve().parent / "module_template"
-TYPES = ("text", "long_text", "integer", "decimal", "date", "datetime", "boolean", "choice")
+TYPES = ("text", "long_text", "integer", "decimal", "date", "datetime", "boolean", "choice", "reference")
 NAME = re.compile(r"[a-z][a-z0-9_]{0,39}\Z")
 ENTITY = re.compile(r"[A-Z][A-Za-z0-9]{0,39}\Z")
 WORDS = re.compile(r"[A-Za-z0-9][^\"\\%{}<>$\n]{0,79}\Z")
@@ -47,6 +47,7 @@ DEFAULTS: dict[str, dict[str, Any]] = {
     "datetime": {},
     "boolean": {},
     "choice": {},
+    "reference": {},
 }
 EARLIEST, LATEST = date(2000, 1, 1), date(2100, 12, 31)
 ROWS = 24
@@ -107,11 +108,37 @@ places = 2
 name = "notes"
 label = "Notes"
 type = "long_text"
+
+# A reference points to a row of another module made by this tool, by its package: a list to choose from in the form,
+# its name as a link in the list, and a filter. Make the module it points to first.
+# [[field]]
+# name = "location"
+# label = "Location"
+# type = "reference"
+# to = "locations"
+# required = true
+# filter = true
+# list = true
 """
+DESCRIPTION = "module.toml"
+"""What another module's reference reads of this one: written beside its code, with the names it was made with."""
+REFERENCE_KEYS = {"name", "label", "type", "to", "required", "filter", "list", "hint"}
 
 
 class Refused(Exception):
     """The description cannot make a module: what is wrong, said so that it can be fixed."""
+
+
+@dataclass(frozen=True)
+class Target:
+    """The module a reference points to, as its module.toml describes it."""
+
+    package: str
+    entity: str
+    table: str
+    path: str
+    name: str
+    """The field that names each of its rows: what a list to choose from shows."""
 
 
 @dataclass(frozen=True)
@@ -130,6 +157,12 @@ class Field:
     high: int
     places: int
     choices: tuple[tuple[str, str], ...]
+    target: Target | None = None
+
+    @property
+    def column(self) -> str:
+        """The table's column: a reference keeps the number of the row it points to."""
+        return f"{self.name}_id" if self.kind == "reference" else self.name
 
     @property
     def identifier(self) -> str:
@@ -141,8 +174,8 @@ class Field:
 
     @property
     def optional(self) -> bool:
-        """Empty is a value of its own: a number or a date not known yet. A text keeps it as an empty text."""
-        return not self.required and self.kind in ("integer", "decimal", "date", "datetime")
+        """Empty is a value of its own: a number, a date or a row not known yet. A text keeps it as an empty text."""
+        return not self.required and self.kind in ("integer", "decimal", "date", "datetime", "reference")
 
     @property
     def phrase(self) -> str:
@@ -172,6 +205,15 @@ class Module:
     def having(self, kind: str) -> bool:
         return any(field.kind == kind for field in self.fields)
 
+    @property
+    def references(self) -> tuple[Field, ...]:
+        return tuple(field for field in self.fields if field.kind == "reference")
+
+    @property
+    def targets(self) -> dict[str, Target]:
+        """Each module pointed to, once, by package."""
+        return {field.target.package: field.target for field in self.references if field.target}
+
 
 def _words(value: object, what: str) -> str:
     if not isinstance(value, str) or not WORDS.match(value.strip()):
@@ -196,7 +238,34 @@ def _whole(spec: dict[str, Any], key: str, default: int, what: str) -> int:
     return value
 
 
-def read_field(spec: object, position: int) -> Field:
+def read_target(app: Path, package: object, name: str) -> Target:
+    """The module a reference points to: one this tool made, still where it was put."""
+    if not isinstance(package, str) or not NAME.match(package) or package in SHARED:
+        raise Refused(f"field {name}: to is the package of another module, such as locations")
+    described = app / package / DESCRIPTION
+    if not described.is_file():
+        raise Refused(
+            f"field {name}: app/{package}/{DESCRIPTION} is missing: a reference points to a module tools/new_module.py "
+            "made, so make that one first"
+        )
+    try:
+        found = tomllib.loads(described.read_text(encoding="utf-8"))
+    except tomllib.TOMLDecodeError as problem:
+        raise Refused(f"app/{package}/{DESCRIPTION} cannot be read: {problem}") from None
+    values = {key: found.get(key) for key in ("entity", "table", "path", "name")}
+    if not all(isinstance(value, str) and value for value in values.values()):
+        raise Refused(f"app/{package}/{DESCRIPTION} needs entity, table, path and name")
+    models = app / package / "models.py"
+    code = models.read_text(encoding="utf-8") if models.is_file() else ""
+    if f"class {values['entity']}(" not in code or f"    {values['name']}: Mapped[" not in code:
+        raise Refused(
+            f"field {name}: app/{package}/models.py no longer has {values['entity']} with {values['name']}: "
+            f"correct app/{package}/{DESCRIPTION} as it is now"
+        )
+    return Target(package, *(str(values[key]) for key in ("entity", "table", "path", "name")))
+
+
+def read_field(spec: object, position: int, app: Path) -> Field:
     if not isinstance(spec, dict):
         raise Refused(f"field {position} is a [[field]] table")
     name = spec.get("name")
@@ -220,6 +289,7 @@ def read_field(spec: object, position: int) -> Field:
         "high",
         "places",
         "choices",
+        "to",
     }
     unknown = sorted(set(spec) - known)
     if unknown:
@@ -227,6 +297,10 @@ def read_field(spec: object, position: int) -> Field:
     kind = spec.get("type")
     if kind not in TYPES:
         raise Refused(f"field {name}: type is one of {', '.join(TYPES)}")
+    if kind == "reference" and set(spec) - REFERENCE_KEYS:
+        raise Refused(f"field {name}: a reference takes {', '.join(sorted(REFERENCE_KEYS - {'name', 'type'}))}")
+    if "to" in spec and kind != "reference":
+        raise Refused(f"field {name}: to is for a reference")
     defaults = DEFAULTS[kind]
     label = _words(spec.get("label"), f"field {name}: label")
     hint = _words(spec["hint"], f"field {name}: hint") if "hint" in spec else ""
@@ -263,12 +337,13 @@ def read_field(spec: object, position: int) -> Field:
         raise Refused(f"field {name}: a unique value is required, or two empty ones would collide")
     if search and kind not in ("text", "long_text"):
         raise Refused(f"field {name}: search is for a text")
-    if filtered and kind not in ("choice", "boolean"):
-        raise Refused(f"field {name}: filter is for a choice or a yes or no")
     if listed and kind == "long_text":
         raise Refused(f"field {name}: a long text is not a column: it goes on the detail page")
+    if filtered and kind not in ("choice", "boolean", "reference"):
+        raise Refused(f"field {name}: filter is for a choice, a yes or no, or a reference")
+    target = read_target(app, spec.get("to"), name) if kind == "reference" else None
     return Field(
-        name, label, kind, required, unique, search, filtered, listed, hint, longest, low, high, places, choices
+        name, label, kind, required, unique, search, filtered, listed, hint, longest, low, high, places, choices, target
     )
 
 
@@ -315,9 +390,10 @@ def read_module(spec: dict[str, Any], app: Path) -> Module:
     fields = spec.get("field")
     if not isinstance(fields, list) or not fields:
         raise Refused("at least one [[field]]")
-    read = tuple(read_field(field, number) for number, field in enumerate(fields, 1))
-    if len({field.name for field in read}) != len(read):
-        raise Refused("two fields have the same name")
+    read = tuple(read_field(field, number, app) for number, field in enumerate(fields, 1))
+    names = [field.name for field in read] + [field.column for field in read if field.column != field.name]
+    if len(set(names)) != len(names):
+        raise Refused("two fields have the same name: a reference called owner also takes owner_id")
     if not any(field.listed for field in read):
         raise Refused("at least one field is shown in the list: say list = true")
     module = Module(
@@ -354,6 +430,13 @@ PYTHON_TYPES = {
 
 
 def column_line(field: Field) -> str:
+    if field.target:
+        nullable = " | None" if field.optional else ""
+        return (
+            f"    {field.column}: Mapped[int{nullable}] = "
+            f'mapped_column(ForeignKey("{field.target.table}.id"), index=True)\n'
+            f"    {field.name}: Mapped[{field.target.entity}{nullable}] = relationship(foreign_keys=[{field.column}])"
+        )
     kind = PYTHON_TYPES[field.kind]
     annotation = f"{kind} | None" if field.optional else kind
     arguments = []
@@ -387,10 +470,11 @@ def models_code(module: Module) -> str:
         "from datetime import date, datetime",
         "from decimal import Decimal",
         "",
-        "from sqlalchemy import CheckConstraint, String, Text, false",
-        "from sqlalchemy.orm import Mapped, mapped_column",
+        "from sqlalchemy import CheckConstraint, ForeignKey, String, Text, false",
+        "from sqlalchemy.orm import Mapped, mapped_column, relationship",
         "",
         "from app.core.database import Base",
+        *(f"from app.{target.package}.models import {target.entity}" for target in module.targets.values()),
         "",
     ]
     for field in module.fields:
@@ -422,6 +506,10 @@ def models_code(module: Module) -> str:
 def reader(field: Field) -> str:
     """How the form's text for one field becomes the value to save, at the edge."""
     sent = f'sent["{field.name}"]'
+    if field.target:
+        find = f"lambda number: session.get({field.target.entity}, number)"
+        message = f'_("{field.label}: choose one from the list.")'
+        return f"read_reference({sent}, {find}, {message}, needed={field.required})"
     if field.kind in ("text", "long_text"):
         missing = f', missing=_("Enter the {field.phrase}.")' if field.required else ""
         lines = ", lines=True" if field.kind == "long_text" else ""
@@ -448,6 +536,9 @@ def reader(field: Field) -> str:
 def form_value(field: Field) -> str:
     """The stored value as the form's field shows it."""
     value = f"item.{field.name}"
+    if field.target:
+        number = f"item.{field.column}"
+        return f'"" if {number} is None else str({number})' if field.optional else f"str({number})"
     if field.kind == "integer":
         return f'"" if {value} is None else str({value})' if field.optional else f"str({value})"
     if field.kind == "decimal":
@@ -471,6 +562,9 @@ def blank_value(field: Field) -> str:
 def shown_text(field: Field) -> str:
     """The stored value in words, for a conflict: what the other person saved."""
     value = f"item.{field.name}"
+    if field.target:
+        name = f"{value}.{field.target.name}"
+        return f'_("Not given") if {value} is None else {name}' if field.optional else name
     if field.kind in ("text", "long_text"):
         return f'{value} or _("Not given")' if not field.required else value
     if field.kind == "integer":
@@ -500,6 +594,7 @@ def routes_code(module: Module) -> str:
     filtered = [f for f in fields if f.filter]
     model_imports = ", ".join([*(f"{f.constant}_CHOICES" for f in choice_fields), module.entity])
     entity = module.entity
+    joined = [f for f in listed if f.target]
     lines = [
         f'"""{module.title}: the list with search and filters, a page for each one, and the form to add or change one.',
         "Made by tools/new_module.py: change it as this application needs. See docs/base/specification.md#a-new-module",
@@ -516,17 +611,19 @@ def routes_code(module: Module) -> str:
         "from fastapi.responses import Response",
         "from sqlalchemy import select",
         "from sqlalchemy.exc import IntegrityError",
-        "from sqlalchemy.orm import Session",
+        "from sqlalchemy.orm import Session, aliased, contains_eager",
         "",
         "from app.core.database import DatabaseSession, saved",
         "from app.core.formatters import format_date, format_datetime, format_decimal",
-        "from app.core.forms import Refused, read_choice, read_date, read_decimal, read_fields, read_flag, read_text, "
-        "read_whole",
+        "from app.core.forms import Refused, read_choice, read_date, read_decimal, read_fields, read_flag, "
+        "read_reference, read_text, read_whole",
         "from app.core.i18n import N_, _",
         "from app.core.identity import Person, require_role",
-        "from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, render_list, whole_page",
+        "from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, reference_options, "
+        "render_list, whole_page",
         "from app.core.templating import render",
         f"from app.{module.package}.models import {model_imports}",
+        *(f"from app.{target.package}.models import {target.entity}" for target in module.targets.values()),
         "",
         f'ROLE, EDIT_ROLE = "{module.role}", "{module.edit_role}"',
         "Reader = Annotated[Person, Depends(require_role(ROLE))]",
@@ -565,7 +662,15 @@ def routes_code(module: Module) -> str:
         )
         lines += [f"TAKEN = {{{taken}}}", '"""Values no two rows may share, and what a person reads when one does."""']
     shown = ", ".join(f'"{f.name}": N_("{f.label}")' for f in fields)
-    lines += [f"SHOWN = {{{shown}}}", '"""How a conflict names each field."""', "", ""]
+    lines += [f"SHOWN = {{{shown}}}", '"""How a conflict names each field."""']
+    for field in joined:
+        assert field.target  # noqa: S101  # joined holds references alone
+        lines.append(f'{field.constant} = aliased({field.target.entity}, name="{field.name}")')
+    if joined:
+        lines.append(
+            '"""The rows a list shows beside its own, each under a name of its own: two may be of one table."""'
+        )
+    lines += ["", ""]
 
     lines += [
         "def can_edit(request: Request) -> bool:",
@@ -621,7 +726,8 @@ def routes_code(module: Module) -> str:
         ]
     columns = []
     for position, field in enumerate(listed):
-        options = [f'"{field.name}"', f'_("{field.label}")', f"{entity}.{field.name}"]
+        sort = f"{field.constant}.{field.target.name}" if field.target else f"{entity}.{field.name}"
+        options = [f'"{field.name}"', f'_("{field.label}")', sort]
         if field.kind in ("integer", "decimal"):
             options.append("numeric=True")
         if position >= 2:
@@ -631,7 +737,11 @@ def routes_code(module: Module) -> str:
         columns.append(f"            Column({', '.join(options)}),")
     filters = []
     for field in filtered:
-        if field.kind == "choice":
+        if field.target:
+            target = field.target
+            choices = f"reference_options(session, {target.entity}.id, {target.entity}.{target.name})"
+            condition = f"lambda value: {entity}.{field.column} == int(value)"
+        elif field.kind == "choice":
             choices = f"[(value, _(label)) for value, label in {field.constant}_LABELS.items()]"
             condition = f"lambda value: {entity}.{field.name} == value"
         else:
@@ -649,7 +759,7 @@ def routes_code(module: Module) -> str:
     search_columns = ", ".join(f"{entity}.{f.name}" for f in searched)
     search_label = " or ".join(f.label if i == 0 else f.phrase for i, f in enumerate(searched))
     lines += [
-        "def list_view(params: Mapping[str, str]) -> ListView:",
+        "def list_view(params: Mapping[str, str], session: Session) -> ListView:",
         "    return ListView.read(",
         f'        "{module.package}",',
         "        PATH,",
@@ -668,8 +778,19 @@ def routes_code(module: Module) -> str:
         "",
         "",
         "def item_list(request: Request, session: DatabaseSession, _person: Reader) -> Response:",
-        "    view = list_view(request.query_params)",
-        f"    view.load(session, select({entity}))",
+        "    view = list_view(request.query_params, session)",
+        *(
+            [
+                f"    statement = select({entity})"
+                + "".join(f".outerjoin({f.constant}, {entity}.{f.name})" for f in joined),
+                "    shown_beside = ["
+                + ", ".join(f"contains_eager({entity}.{f.name}.of_type({f.constant}))" for f in joined)
+                + "]",
+                "    view.load(session, statement, options=shown_beside)",
+            ]
+            if joined
+            else [f"    view.load(session, select({entity}))"]
+        ),
         "    return render_list(",
         "        request,",
         "        view,",
@@ -687,10 +808,10 @@ def routes_code(module: Module) -> str:
         "    return item",
         "",
         "",
-        'def list_address(request: Request, sent: str = "") -> str:',
+        'def list_address(request: Request, session: Session, sent: str = "") -> str:',
         '    """Back to the list a person came from, with its filters: input like any other, so it is read again."""',
         '    came_from = sent or request.query_params.get("back") or request.headers.get("referer", "")',
-        "    return list_view(list_query(came_from, PATH)).here",
+        "    return list_view(list_query(came_from, PATH), session).here",
         "",
         "",
         "def page_address(item_id: int, back: str, **outcome: str) -> str:",
@@ -708,7 +829,7 @@ def routes_code(module: Module) -> str:
         f'        "{module.package}/detail.html",',
         "        item=item,",
         f"        heading=item.{module.first.name},",
-        "        back=list_address(request),",
+        "        back=list_address(request, session),",
         "        outcome=outcome,",
         "        can_edit=can_edit(request),",
         "        labels=LABELS,",
@@ -800,6 +921,7 @@ def routes_code(module: Module) -> str:
         "",
         "def form(",
         "    request: Request,",
+        "    session: Session,",
         f"    item: {entity} | None,",
         "    back: str,",
         "    values: Mapping[str, Any],",
@@ -820,9 +942,22 @@ def routes_code(module: Module) -> str:
         "        errors=errors,",
         "        summary=[(identifier(name), errors[name]) for name in FIELDS if name in errors],",
         "        conflict=conflict or [],",
-        "        options={name: [(value, _(label)) for value, label in words.items()] for name, words in LABELS.items()},"  # noqa: E501
-        if choice_fields
-        else "        options={},",
+        "        options={",
+        *(
+            [
+                "            **{name: [(value, _(label)) for value, label in words.items()] "
+                "for name, words in LABELS.items()},"
+            ]
+            if choice_fields
+            else []
+        ),
+        *(
+            f'            "{f.name}": reference_options(session, {f.target.entity}.id, '
+            f"{f.target.entity}.{f.target.name}),"
+            for f in fields
+            if f.target
+        ),
+        "        },",
     ]
     if module.having("date"):
         lines += ["        earliest=EARLIEST.isoformat(),", "        latest=LATEST.isoformat(),"]
@@ -874,26 +1009,26 @@ def routes_code(module: Module) -> str:
         taken_after_create = [
             "    if outcome is None:  # another row took a unique value since it was checked",
             f"        errors = {check_call.format(item='None')}[1]",
-            "        return form(request, None, back, typed(sent), errors, 422)",
+            "        return form(request, session, None, back, typed(sent), errors, 422)",
         ]
         taken_after_update = [
             "    if outcome is None:",
             f"        errors = {check_call.format(item='item_id')}[1]",
-            "        return form(request, item_or_404(session, item_id), back, typed(sent), errors, 422)",
+            "        return form(request, session, item_or_404(session, item_id), back, typed(sent), errors, 422)",
         ]
     lines += [
         "",
         "",
-        "def new_form(request: Request, _person: Editor) -> Response:",
-        "    return form(request, None, list_address(request), blank(), {})",
+        "def new_form(request: Request, session: DatabaseSession, _person: Editor) -> Response:",
+        "    return form(request, session, None, list_address(request, session), blank(), {})",
         "",
         "",
         "def create(request: Request, session: DatabaseSession, _person: Editor, sent: Sent) -> Response:",
-        '    back = list_address(request, sent["back"])',
+        '    back = list_address(request, session, sent["back"])',
         *zone_line,
         f"    clean, errors = {check_call.format(item='None')}",
         "    if errors:",
-        "        return form(request, None, back, typed(sent), errors, 422)",
+        "        return form(request, session, None, back, typed(sent), errors, 422)",
         f"    item = {entity}()",
         "    outcome = save(session, item, clean)" if unique_fields else "    save(session, item, clean)",
         *taken_after_create,
@@ -903,27 +1038,27 @@ def routes_code(module: Module) -> str:
         "def edit_form(request: Request, item_id: int, session: DatabaseSession, _person: Editor) -> Response:",
         "    item = item_or_404(session, item_id)",
         *zone_line,
-        f"    return form(request, item, list_address(request), stored(item{zone_argument}), {{}})",
+        f"    return form(request, session, item, list_address(request, session), stored(item{zone_argument}), {{}})",
         "",
         "",
         "def update(",
         "    request: Request, item_id: int, session: DatabaseSession, _person: Editor, sent: Sent",
         ") -> Response:",
         "    item = item_or_404(session, item_id)",
-        '    back = list_address(request, sent["back"])',
+        '    back = list_address(request, session, sent["back"])',
         *zone_line,
         f"    clean, errors = {check_call.format(item='item_id')}",
         "    if errors:",
-        "        return form(request, item, back, typed(sent), errors, 422)",
+        "        return form(request, session, item, back, typed(sent), errors, 422)",
         '    late = read_version(sent["version"]) != item.version',
         f"    if late and (changes := differences(item, clean{zone_argument})):",
-        '        return form(request, item, back, typed(sent) | {"version": item.version}, {}, 409, changes)',
+        '        return form(request, session, item, back, typed(sent) | {"version": item.version}, {}, 409, changes)',
         "    outcome = save(session, item, clean)",
         *taken_after_update,
         "    if outcome is False:  # someone saved in between: what they saved, and the person's own work, still typed",
         "        item = item_or_404(session, item_id)",
         f"        changes = differences(item, clean{zone_argument})",
-        '        return form(request, item, back, typed(sent) | {"version": item.version}, {}, 409, changes)',
+        '        return form(request, session, item, back, typed(sent) | {"version": item.version}, {}, 409, changes)',
         '    return whole_page(request, page_address(item.id, back, saved="1"))',
         "",
         "",
@@ -1005,10 +1140,37 @@ def sample_code(module: Module) -> str:
     choices = [f"{field.constant}_CHOICES" for field in module.fields if field.kind == "choice"]
     values = []
     for field in module.fields:
+        if field.target:
+            continue  # chosen in `fill`, from the rows that are there
         value = sample_value(field)
         if field.optional:
             value = f"None if number % 5 == 4 else {value}"
         values.append(f'        "{field.name}": {value},')
+    after, numbers, chosen, pointed = [], [], [], ""
+    if module.references:
+        packages = ", ".join(f'"{package}"' for package in module.targets)
+        after = [
+            f"AFTER = ({packages},)",
+            '"""The modules whose rows these point to: app.core.sample_data fills them first."""',
+        ]
+        numbers = [
+            "def numbers(session: Session, model: Any) -> list[int]:",
+            "    return list(session.scalars(select(model.id).order_by(model.id)))",
+            "",
+            "",
+        ]
+        for field in module.references:
+            assert field.target  # noqa: S101  # references alone
+            chosen.append(f"    {field.name}_rows = numbers(session, {field.target.entity})")
+            if field.required:
+                chosen += [
+                    f"    if not {field.name}_rows:  # nothing to point to: no row can be made",
+                    "        return",
+                ]
+            pick = f"{field.name}_rows[number % len({field.name}_rows)]"
+            if field.optional:
+                pick = f"None if number % 5 == 4 or not {field.name}_rows else {pick}"
+            pointed += f", {field.column}={pick}"
     return "\n".join(
         [
             f'"""Made-up {module.plural}, so the list is not empty when the application is tried.',
@@ -1024,8 +1186,10 @@ def sample_code(module: Module) -> str:
             "from sqlalchemy.orm import Session",
             "",
             f"from app.{module.package}.models import {', '.join([*choices, module.entity])}",
+            *(f"from app.{target.package}.models import {target.entity}" for target in module.targets.values()),
             "",
             f"ROWS = {ROWS}",
+            *after,
             "",
             "",
             "def row(number: int) -> dict[str, Any]:",
@@ -1038,9 +1202,15 @@ def sample_code(module: Module) -> str:
             f"    return session.scalar(select({module.entity}.id).limit(1)) is not None",
             "",
             "",
-            "def fill(session: Session) -> None:",
+            "def empty(session: Session) -> None:",
             f"    session.execute(delete({module.entity}))",
-            f"    session.add_all({module.entity}(**row(number)) for number in range(ROWS))",
+            "",
+            "",
+            *numbers,
+            "def fill(session: Session) -> None:",
+            "    empty(session)",
+            *chosen,
+            f"    session.add_all({module.entity}(**row(number){pointed}) for number in range(ROWS))",
             "",
         ]
     )
@@ -1052,6 +1222,9 @@ def sample_code(module: Module) -> str:
 def display(field: Field, item: str) -> str:
     """A stored value as a page shows it, in Jinja."""
     value = f"{item}.{field.name}"
+    if field.target:
+        name = f"{value}.{field.target.name}"
+        return f'_("Not given") if {value} is none else {name}' if field.optional else name
     if field.kind in ("text", "long_text"):
         return value if field.required else f'{value} or _("Not given")'
     if field.kind == "integer":
@@ -1101,9 +1274,15 @@ def form_field(field: Field) -> str:
         )
     elif field.kind == "boolean":
         call = f"checkbox_field({', '.join(arguments)}, {value}, {ident}, {error}{hint})"
-    else:
+    elif field.kind == "choice":
         options = f"options.{field.name}"
         call = f"select_field({', '.join(arguments)}, {options}, {value}, {ident}, {error}{hint}, required=true)"
+    else:  # a reference: the rows of the module it points to, with a box to search them
+        every = '_("Choose one")' if field.required else '_("None")'
+        call = (
+            f"searchable_select({', '.join(arguments)}, options.{field.name}, {value}, {ident}, every={every}, "
+            f"{error}{hint}, {required})"
+        )
     wide = " md:col-span-2" if field.kind in ("long_text", "boolean") else ""
     return f'    <div class="min-w-0{wide}">{{{{ {call} }}}}</div>'
 
@@ -1116,6 +1295,9 @@ def cell_line(field: Field, position: int, module: Module) -> str:
         options += ", numeric=true"
     if position >= 2:
         options += ", wide_only=true"
+    if field.target:
+        address = f'"{field.target.path}/" ~ row.{field.column}'
+        options += f", href={address} if row.{field.column} else none" if field.optional else f", href={address}"
     return f"{{{{ cell({display(field, 'row')}{options}) }}}}"
 
 
@@ -1166,6 +1348,8 @@ def typed_value(field: Field) -> str:
         return "2026-05-04T09:30"
     if field.kind == "boolean":
         return "yes"
+    if field.target:
+        return "1"  # the first row of the module it points to, which the sample data made
     return field.choices[-1][0]
 
 
@@ -1174,8 +1358,10 @@ def tests_code(module: Module) -> str:
     valid = "\n".join(f'    "{field.name}": "{typed_value(field)}",' for field in module.fields)
     other_text = next((f for f in module.fields if f.kind in ("text", "long_text") and f is not first), None)
     searched = next((f for f in module.fields if f.search), None)
-    filtered = next((f for f in module.fields if f.filter), None)
+    filtered = next((f for f in module.fields if f.filter and not f.target), None)
     unique = next((f for f in module.fields if f.unique), None)
+    pointing = next((f for f in module.fields if f.target and f.filter), None)
+    reference = next((f for f in module.fields if f.target), None)
     path = module.path
     lines = [
         f'"""{module.title}: what tools/new_module.py made, proved. Change these tests with the module."""',
@@ -1189,6 +1375,7 @@ def tests_code(module: Module) -> str:
         "from sqlalchemy.orm import Session",
         "",
         "from app.core.database import create_database_engine, migrate",
+        "from app.core.sample_data import fill_all",
         f"from app.{module.package} import sample_data",
         f"from app.{module.package}.models import {module.entity}",
         "from app.main import create_app",
@@ -1207,10 +1394,11 @@ def tests_code(module: Module) -> str:
         "",
         "",
         "def filled_database(url: str) -> str:",
+        '    """Every module\'s made-up rows: a row may point to another module\'s."""',
         "    migrate(url)",
         "    engine = create_database_engine(url)",
         "    with Session(engine) as session:",
-        "        sample_data.fill(session)",
+        "        fill_all(session)",
         "        session.commit()",
         "    engine.dispose()",
         "    return url",
@@ -1262,6 +1450,30 @@ def tests_code(module: Module) -> str:
             f'    page = client.get("{path}", params={{"{filtered.name}": {value}, "size": 100}}, headers=person)',
             "    assert name_of(0) in page.text",
             "    assert name_of(1) not in page.text",
+            "",
+            "",
+        ]
+    if pointing:
+        lines += [
+            f"def test_a_filter_keeps_only_the_rows_of_one_{pointing.name}(filled, person):",
+            "    client, url = filled",
+            "    first = rows(url)[0]",
+            f'    page = client.get("{path}", params={{"{pointing.name}": first.{pointing.column}, "size": 100}}, '
+            "headers=person)",
+            "    assert name_of(0) in page.text",
+            "    assert name_of(1) not in page.text",
+            "",
+            "",
+        ]
+    if reference:
+        lines += [
+            f"def test_a_{reference.name}_that_is_not_there_is_refused(filled, person):",
+            "    client, url = filled",
+            f'    sent = client.post("{path}", data=VALID | {{"{reference.name}": "999999"}}, '
+            "headers=SAME_SITE | person)",
+            "    assert sent.status_code == 422",
+            f'    assert "{reference.label}: choose one from the list." in sent.text',
+            "    assert len(rows(url)) == sample_data.ROWS",
             "",
             "",
         ]
@@ -1330,6 +1542,13 @@ def tests_code(module: Module) -> str:
         "    assert len(rows(url)) == sample_data.ROWS",
         "",
         "",
+        "def test_each_page_opens(filled, person):",
+        '    """The scan in a browser, below, would pass on an error page too."""',
+        "    client, _url = filled",
+        f'    for address in ("{path}", "{path}/1", "{path}/new", "{path}/1/edit"):',
+        "        assert client.get(address, headers=person).status_code == 200, address",
+        "",
+        "",
         "def test_a_row_that_does_not_exist_is_not_found(filled, person):",
         "    client, _url = filled",
         f'    assert client.get("{path}/999999", headers=person).status_code == 404',
@@ -1341,7 +1560,7 @@ def tests_code(module: Module) -> str:
         "    engine = create_database_engine(database_url)",
         "    with Session(engine) as session:",
         "        assert not sample_data.holds_rows(session)",
-        "        sample_data.fill(session)",
+        "        fill_all(session)",
         "        session.commit()",
         "        assert sample_data.holds_rows(session)",
         "    engine.dispose()",
@@ -1453,6 +1672,20 @@ def migration(root: Path, module: Module) -> None:
         tidy([written])
 
 
+def description(module: Module) -> str:
+    return "\n".join(
+        [
+            "# What tools/new_module.py made this module with. A reference from another module reads it: if the model",
+            "# changes these names, change them here too.",
+            f'entity = "{module.entity}"',
+            f'table = "{module.table}"',
+            f'path = "{module.path}"',
+            f'name = "{module.first.name}"',
+            "",
+        ]
+    )
+
+
 def make(module: Module, root: Path = ROOT, catalogues: bool = True) -> list[str]:
     """Writes the module, and gives back what is left for a person. On a failure, what it wrote goes."""
     if (root / "app" / "demo").exists():
@@ -1471,6 +1704,7 @@ def make(module: Module, root: Path = ROOT, catalogues: bool = True) -> list[str
         write(app / "models.py", models_code(module))
         write(app / "routes.py", routes_code(module))
         write(app / "sample_data.py", sample_code(module))
+        write(app / DESCRIPTION, description(module))
         for name, text in templates(module).items():
             write(app / "templates" / module.package / name, text)
         write(tests, tests_code(module))
