@@ -19,6 +19,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from sqlalchemy import ColumnElement, Select, func, or_, select
 from sqlalchemy.orm import Session
 
+from app.core.i18n import _
 from app.core.templating import layout_for, render
 
 PAGE_SIZES = (10, 25, 50, 100)
@@ -307,6 +308,38 @@ class ListView:
     @property
     def form_id(self) -> str:
         return f"{self.name}-filters"
+
+
+@dataclass(frozen=True)
+class RelatedList:
+    """Rows of another module that point to one row: the list that shows them, filtered by that row, and how many
+    there are. The module that points adds one to `application.state.related[<package pointed to>]`, and the page of a
+    row of that package offers it, at its top, to whoever may open the list."""
+
+    label: str
+    """Marked with N_ where it is made, translated when shown."""
+    path: str
+    key: str
+    count: Callable[[Session, int], int]
+    role: str | None = None
+    icon: str = "list"
+
+
+def related_lists(request: Request, session: Session, package: str, number: int) -> list[tuple[str, str, int, str]]:
+    """What a row's page offers of the rows that point to it: (label, address, how many, icon), for the person's
+    roles."""
+    person = getattr(request.state, "person", None)
+    roles = person.roles if person else ()
+    return [
+        (
+            _(related.label),
+            f"{related.path}?{urlencode({related.key: number})}",
+            related.count(session, number),
+            related.icon,
+        )
+        for related in request.app.state.related.get(package, [])
+        if related.role is None or related.role in roles
+    ]
 
 
 def reference_options(session: Session, number: Any, name: Any) -> list[tuple[str, str]]:

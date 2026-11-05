@@ -785,7 +785,7 @@ uv run --frozen python tools/new_module.py --spec module.toml
 | `[board]` | `field`, a choice: a card for each row, in a column for each of its values, moved by its own form or by dragging, at `<path>/board` |
 | `[calendar]` | `start`, a date or a date and time, and `end`, of the same type, if each row has one: each row on its day or at its time, moved by dragging or through its form, at `<path>/calendar` |
 | `[timeline]` | `start`, a date, and `end`, a date, if each row has one: each row as a bar on its days, the earliest first, at `<path>/timeline` |
-| A `reference` | `to`, the package of another module this tool made: each row points to one of its rows. The form offers its rows by name, with a box to search them; the list shows the name as a link to that row, and can filter by it, so `/guests?visit=3` lists one visit's guests. Make the module it points to first. The column is `<name>_id`, so a field cannot be called that too |
+| A `reference` | `to`, the package of another module this tool made: each row points to one of its rows. The form offers its rows by name, with a box to search them; the list shows the name as a link to that row, and can filter by it, so `/guests?visit=3` lists one visit's guests, and each visit's page leads there, with how many there are, in a button at its top beside *Edit*: `RelatedList` in `app/core/tables.py`, which the module that points adds to `application.state.related`. Make the module it points to first. The column is `<name>_id`, so a field cannot be called that too |
 
 The first field shown in the list names each row: a required text. A description that breaks a rule is refused with
 what to fix, and nothing is written; so is a package that exists.

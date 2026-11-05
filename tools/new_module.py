@@ -645,6 +645,39 @@ def shown_text(field: Field) -> str:
     return f'_("Not given") if {value} is None else {text}' if field.optional else text
 
 
+def related_lines(module: Module) -> list[str]:
+    """Each reference a list can filter by: the page of the row pointed to leads to this module's rows of it."""
+    pointing = [field for field in module.references if field.filter and field.target]
+    lines = []
+    for field in pointing:
+        assert field.target  # noqa: S101  # references alone
+        target = field.target
+        same = [other for other in pointing if other.target and other.target.package == target.package]
+        label = module.title if len(same) == 1 else f"{module.title} ({field.label})"
+        lines += [
+            f'    related = RelatedList(N_("{label}"), PATH, "{field.name}", rows_of_{field.name}, ROLE, '
+            f'"{module.icon}")',
+            f'    application.state.related.setdefault("{target.package}", []).append(related)',
+        ]
+    return lines
+
+
+def related_counts(module: Module) -> list[str]:
+    lines = []
+    for field in module.references:
+        if field.filter:
+            lines += [
+                f"def rows_of_{field.name}(session: Session, number: int) -> int:",
+                f'    """How many {module.plural} point to it: what its page says beside the link to them."""',
+                f"    pointing = {module.entity}.{field.column} == number",
+                f"    found = select(func.count()).select_from({module.entity}).where(pointing)",
+                "    return session.scalar(found) or 0",
+                "",
+                "",
+            ]
+    return lines
+
+
 def routes_code(module: Module) -> str:
     """Imports may be more than it uses: `tidy` takes away the unused ones and puts the rest in order."""
     fields = module.fields
@@ -672,7 +705,7 @@ def routes_code(module: Module) -> str:
         "",
         "from fastapi import Depends, FastAPI, HTTPException, Request",
         "from fastapi.responses import Response",
-        "from sqlalchemy import select",
+        "from sqlalchemy import func, select",
         "from sqlalchemy.exc import IntegrityError",
         "from sqlalchemy.orm import Session, aliased, contains_eager",
         "",
@@ -682,8 +715,8 @@ def routes_code(module: Module) -> str:
         "read_reference, read_text, read_whole",
         "from app.core.i18n import N_, _",
         "from app.core.identity import Person, require_role",
-        "from app.core.tables import Column, Filter, ListView, fragment_requested, list_query, reference_options, "
-        "render_list, whole_page",
+        "from app.core.tables import Column, Filter, ListView, RelatedList, fragment_requested, list_query, "
+        "reference_options, related_lists, render_list, whole_page",
         "from app.core.templating import render",
         f"from app.{module.package}.models import {model_imports}",
         *(f"from app.{target.package}.models import {target.entity}" for target in module.targets.values()),
@@ -908,6 +941,7 @@ def routes_code(module: Module) -> str:
         f"        heading=item.{module.first.name},",
         "        back=list_address(request, session),",
         "        outcome=outcome,",
+        f'        related=related_lists(request, session, "{module.package}", item.id),',
         "        can_edit=can_edit(request),",
         "        labels=LABELS,",
         "    )",
@@ -1139,7 +1173,9 @@ def routes_code(module: Module) -> str:
         '    return whole_page(request, page_address(item.id, back, saved="1"))',
         "",
         "",
+        *related_counts(module),
         "def install(application: FastAPI) -> None:",
+        *related_lines(module),
         "    add = application.add_api_route",
         "    add(PATH, item_list, include_in_schema=False)",
         '    add(f"{PATH}/new", new_form, include_in_schema=False)',
@@ -1754,6 +1790,16 @@ def tests_code(module: Module) -> str:
             "headers=person)",
             "    assert name_of(0) in page.text",
             "    assert name_of(1) not in page.text",
+            "",
+            "",
+        ]
+    if pointing and pointing.target:
+        lines += [
+            f"def test_the_page_of_a_{pointing.name}_leads_to_its_{module.package}(filled, person):",
+            "    client, url = filled",
+            f"    number = rows(url)[0].{pointing.column}",
+            f'    page = client.get(f"{pointing.target.path}/{{number}}", headers=person)',
+            f"    assert f'href=\"{path}?{pointing.name}={{number}}\"' in page.text",
             "",
             "",
         ]

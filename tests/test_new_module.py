@@ -199,6 +199,8 @@ def test_what_it_writes_for_references_is_python_and_jinja(tmp_path):
     assert "backup_place: Mapped[Place | None] = relationship(foreign_keys=[backup_place_id])" in models
     routes = new_module.routes_code(read)
     assert 'BACKUP_PLACE = aliased(Place, name="backup_place")' in routes, "two references to one table, two names"
+    assert 'application.state.related.setdefault("places", []).append(related)' in routes, "a place's page leads here"
+    assert "def rows_of_backup_place" not in routes, "only a reference the list filters by has a list to lead to"
     sample = new_module.sample_code(read)
     assert 'AFTER = ("places",)' in sample and "def empty(session: Session)" in sample
     for name, code in (

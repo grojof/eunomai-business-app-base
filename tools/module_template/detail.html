@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
-{% from "ui/macros.html" import breadcrumbs, card, description_list, link_button, message, page_heading %}
+{% from "ui/macros.html" import breadcrumbs, card, description_list, icon, link_button, message, page_heading %}
 {% block title %}{{ heading }}{% endblock %}
 {% block content %}
 {{ breadcrumbs([(_("$title"), back), (heading, "")]) }}
 {% call page_heading(heading) %}
+{% for label, href, count, picture in related %}<a class="btn btn-sm btn-outline" href="{{ href }}">{{ icon(picture, "size-4") }}{{ label }}<span class="badge badge-sm">{{ count|decimal }}</span></a>{% endfor %}
 {% if can_edit %}{{ link_button(_("Edit"), "$path/" ~ item.id ~ "/edit?back=" ~ back|urlencode, "primary", name="pencil") }}{% endif %}
 {% endcall %}
 {% if outcome %}<div role="status">{{ message("success", outcome) }}</div>{% endif %}
