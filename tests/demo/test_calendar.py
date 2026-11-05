@@ -518,14 +518,22 @@ def test_a_time_that_happens_twice_is_its_first_and_the_end_comes_after_it_in_ut
 
 @pytest.mark.browser
 def test_a_refusal_that_is_not_json_says_the_calendars_own_words(madrid):
-    context, base, _url = madrid
+    """A short visit, as the drag above takes: the first one of the week could be long or late, and two slots down
+    from it miss the grid, so nothing was dropped and nothing refused, one run in three."""
+    context, base, url = madrid
+    visit = next(
+        row
+        for row in visits(url)
+        if row.starts_at >= datetime(2026, 10, 26, tzinfo=UTC) and row.ends_at - row.starts_at <= timedelta(hours=3)
+    )
+    week = visit.starts_at.date() - timedelta(days=visit.starts_at.weekday())
     page = context.new_page()
     page.route(
         "**/calendar/move", lambda route: route.fulfill(status=500, body="<html>Oops</html>", content_type="text/html")
     )
-    page.goto(f"{base}/calendar?view=week&date=2026-10-26")
+    page.goto(f"{base}/calendar?view=week&date={week.isoformat()}")
     until(page, READY)
-    event = page.locator("a.calendar-event[href^='/inspections/']").first
+    event = page.locator(f"a.calendar-event[href^='/inspections/{visit.id}/']")
     box = event.bounding_box()
     slot = page.locator(".calendar-frame [data-time='09:00:00']").first.bounding_box()["height"]
     page.mouse.move(box["x"] + box["width"] / 2, box["y"] + 6)

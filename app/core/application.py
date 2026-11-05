@@ -269,6 +269,7 @@ def create_core(settings: Settings) -> FastAPI:
     application.state.settings = settings
     application.state.navigation = []
     application.state.search = []
+    application.state.related = {}
     engine = create_database_engine(settings.database_url.get_secret_value())
     application.state.sessions = sessionmaker(engine, expire_on_commit=False)
     application.state.uploads = UploadStore(settings.upload_folder, settings.upload_max_bytes)

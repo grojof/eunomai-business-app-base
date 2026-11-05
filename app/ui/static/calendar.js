@@ -129,10 +129,11 @@
       datesSet: () => remember(calendar),
       eventDrop: (info) => moved(config, info),
       // Ready once the events from the server are on screen, not when the grid is drawn: until then they still move,
-      // as events that share an hour split its width.
+      // as events that share an hour split its width. FullCalendar draws them after it says it has them, and the fonts
+      // can still change their size: two frames after both, nothing moves any more.
       loading: (busy) => {
         if (!busy) {
-          document.documentElement.dataset.calendarReady = "";
+          settled();
         }
       },
     });
@@ -140,8 +141,18 @@
     mounted.set(box, calendar);
     box.querySelector("[data-calendar-fallback]").hidden = true;
     if (Array.isArray(config.events)) {
-      document.documentElement.dataset.calendarReady = "";
+      settled();
     }
+  }
+
+  function settled() {
+    document.fonts.ready.then(() =>
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          document.documentElement.dataset.calendarReady = "";
+        }),
+      ),
+    );
   }
 
   async function start(root) {
