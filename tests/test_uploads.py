@@ -31,11 +31,6 @@ JPEG = b"\xff\xd8\xff\xe0" + bytes(32)
 LARGEST = 1024
 
 
-@pytest.fixture(autouse=True)
-def english():
-    i18n._language.set("en")
-
-
 @pytest.fixture
 def store(tmp_path: Path) -> UploadStore:
     return UploadStore(tmp_path / "uploads", LARGEST)

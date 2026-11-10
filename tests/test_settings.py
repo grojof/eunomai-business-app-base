@@ -6,6 +6,7 @@ import pytest
 from babel import Locale
 from fastapi.testclient import TestClient
 
+from app.core.application import create_core, install_home
 from app.core.i18n import PSEUDO
 from app.core.settings import LAYOUTS, Settings
 from app.main import create_app
@@ -330,7 +331,9 @@ def test_a_page_with_a_heading_of_its_own_keeps_it(client, person):
 
 
 def test_an_application_can_fix_where_the_title_goes():
-    client = with_settings(layout_choices=[], layout_page_title="header")
+    application = create_core(build_settings(layout_choices=[], layout_page_title="header"))
+    install_home(application)  # the base's own first page: the application's may ask for a role, or have no title
+    client = TestClient(application)
     person = {"X-Remote-User": "someone"}
     client.cookies.set("layout_page_title", "page")
     assert '<h1 class="page-title-bar' in client.get("/", headers=person).text

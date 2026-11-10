@@ -9,6 +9,7 @@ import threading
 import time
 from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager
+from gettext import NullTranslations
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -19,6 +20,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, make_url
 
+from app.core import i18n
 from app.core.database import migrate
 from app.core.settings import Settings
 from app.main import create_app
@@ -131,6 +133,14 @@ def empty_database(engine_name: str, folder: Path) -> Iterator[str]:
 def database_url(request: pytest.FixtureRequest, tmp_path: Path) -> Iterator[str]:
     with empty_database(request.param, tmp_path) as url:
         yield url
+
+
+@pytest.fixture(autouse=True)
+def source_language() -> None:
+    """Every test starts in the language of the code. A test that activates another leaves it active for the next
+    one on its worker, and which one that is changes with how the tests are shared out."""
+    i18n._language.set("en")
+    i18n._translations.set(NullTranslations())
 
 
 @pytest.fixture

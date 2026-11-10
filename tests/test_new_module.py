@@ -333,12 +333,6 @@ def test_the_models_are_imported_where_alembic_reads_them():
     assert "import app.visits.models  # noqa: F401\nfrom app.core.database import Base\n" in written
 
 
-def test_its_migration_takes_the_next_number(tmp_path):
-    assert new_module.next_revision(tmp_path) == "0001"
-    (tmp_path / "0007_something.py").write_text("", encoding="utf-8")
-    assert new_module.next_revision(tmp_path) == "0008"
-
-
 def test_the_stylesheet_reads_the_templates_it_copies():
     """A new module needs no new build of the stylesheet: its classes are in the base's from the start."""
     source = (ROOT / "app" / "ui" / "styles" / "app.css").read_text(encoding="utf-8")

@@ -207,6 +207,20 @@ def totals_by(
     return {group: (len(found), exact_sum(found)) for group, found in values.items()}
 
 
+def next_revision(versions: Path) -> str:
+    """The number after the newest migration's: 0001, 0002... so the folder reads in the order they apply."""
+    numbers = [int(found[1]) for path in versions.glob("*.py") if (found := re.match(r"([0-9]{4})_", path.name))]
+    return f"{max(numbers, default=0) + 1:04d}"
+
+
+def number_revision(directives: list[Any], versions: Path) -> None:
+    """Gives a migration Alembic is about to write the next number, unless whoever asked for it gave it one.
+    migrations/env.py calls it, so `alembic revision --autogenerate` names its file as tools/new_module.py does."""
+    for script in directives:
+        if not re.fullmatch(r"[0-9]{4}", script.rev_id or ""):
+            script.rev_id = next_revision(versions)
+
+
 def migrate(url: str) -> None:
     """The same as `alembic upgrade head`, for code that needs it."""
     config = Config(toml_file=str(ROOT / "pyproject.toml"))
