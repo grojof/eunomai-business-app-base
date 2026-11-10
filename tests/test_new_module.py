@@ -356,3 +356,34 @@ def test_a_booleans_default_in_a_migration_is_one_postgresql_accepts():
     assert "sa.Boolean(), server_default=sa.false(), nullable" in portable
     assert "sa.Boolean(), server_default=sa.true(), nullable" in portable
     assert 'sa.Integer(), server_default=sa.text("0")' in portable, "only a boolean's default changes"
+
+
+def test_the_texts_every_module_has_come_translated(tmp_path):
+    from babel.messages.catalog import Catalog
+    from babel.messages.pofile import read_po, write_po
+
+    for language in ("es", "ca"):
+        catalog = Catalog(locale=language)
+        catalog.add("Save")
+        catalog.add("Cancel", "Kept as it was")
+        catalog.add("No pallets yet")
+        path = tmp_path / language / "LC_MESSAGES" / "messages.po"
+        path.parent.mkdir(parents=True)
+        with path.open("wb") as file:
+            write_po(file, catalog)
+    new_module.known_texts(tmp_path)
+    with (tmp_path / "es" / "LC_MESSAGES" / "messages.po").open("rb") as file:
+        texts = {message.id: message.string for message in read_po(file) if message.id}
+    assert texts == {"Save": "Guardar", "Cancel": "Kept as it was", "No pallets yet": ""}
+
+
+@pytest.mark.parametrize("language", ["es", "ca"])
+def test_every_known_text_is_translated_and_keeps_its_placeholders(language):
+    from babel.messages.pofile import read_po
+
+    with (ROOT / "tools" / "module_template" / "locales" / f"{language}.po").open("rb") as file:
+        messages = [message for message in read_po(file) if message.id]
+    assert len(messages) > 40
+    for message in messages:
+        assert message.string, message.id
+        assert sorted(re.findall(r"%\(\w+\)s", message.id)) == sorted(re.findall(r"%\(\w+\)s", message.string))

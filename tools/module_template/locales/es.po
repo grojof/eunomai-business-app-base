@@ -1,0 +1,188 @@
+# Spanish translations for eunomai-business-app-base.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the
+# eunomai-business-app-base project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: eunomai-business-app-base VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-10 16:29+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid "%(name)s is now in %(column)s."
+msgstr "%(name)s está ahora en %(column)s."
+
+#, python-format
+msgid "%(name)s is now on %(when)s."
+msgstr "%(name)s es ahora el %(when)s."
+
+#, python-format
+msgid "%(name)s saved."
+msgstr "Se ha guardado %(name)s."
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Agenda"
+msgstr "Agenda"
+
+msgid "Board"
+msgstr "Tablero"
+
+msgid "Calendar"
+msgstr "Calendario"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Check what you entered"
+msgstr "Revisa lo que has escrito"
+
+msgid "Clear all"
+msgstr "Quitar todos"
+
+msgid "Days"
+msgstr "Días"
+
+msgid "Details"
+msgstr "Detalles"
+
+msgid "Drag one to another day, or open it to change it with its form."
+msgstr "Arrastra uno a otro día, o ábrelo para cambiarlo con su formulario."
+
+#, python-format
+msgid ""
+"Each one is a bar from its first day to its last. The upright red line is"
+" today, %(today)s."
+msgstr ""
+"Cada uno es una barra desde su primer día hasta el último. La línea roja "
+"vertical es hoy, %(today)s."
+
+msgid "Edit"
+msgstr "Editar"
+
+#, python-format
+msgid "Edit %(name)s"
+msgstr "Editar %(name)s"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Fill in what is known: only what is marked as optional can wait."
+msgstr "Rellena lo que se sepa: solo lo marcado como opcional puede esperar."
+
+msgid "Fit"
+msgstr "Ajustar"
+
+msgid "Last day"
+msgstr "Último día"
+
+msgid "List"
+msgstr "Lista"
+
+msgid "Month"
+msgstr "Mes"
+
+msgid "Months"
+msgstr "Meses"
+
+msgid "Move a card with its own form, or drag it to another column."
+msgstr "Mueve una tarjeta con su propio formulario, o arrástrala a otra columna."
+
+msgid "Next"
+msgstr "Siguiente"
+
+msgid "No"
+msgstr "No"
+
+msgid "Not given"
+msgstr "Sin indicar"
+
+msgid ""
+"Nothing of yours is saved yet, and what you typed is still here. They "
+"saved what is listed below. Save again to replace it with what you typed,"
+" or cancel to keep theirs."
+msgstr ""
+"Aún no se ha guardado nada tuyo, y lo que has escrito sigue aquí. Esa "
+"persona guardó lo que aparece abajo. Guarda otra vez para sustituirlo por"
+" lo que has escrito, o cancela para conservar lo suyo."
+
+msgid ""
+"Nothing of yours was moved. The card is where they left it: move it again"
+" if you still want to."
+msgstr ""
+"No se ha movido nada tuyo. La tarjeta está donde la dejaron: muévela otra"
+" vez si aún quieres."
+
+msgid "Nothing to show yet"
+msgstr "Aún no hay nada que mostrar"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Saving…"
+msgstr "Guardando…"
+
+msgid "Scale"
+msgstr "Escala"
+
+msgid ""
+"Someone else changed this first. It is back where it was: reload the page"
+" to see where it is now."
+msgstr ""
+"Otra persona lo cambió antes. Ha vuelto a donde estaba: recarga la página"
+" para ver dónde está ahora."
+
+msgid "That could not be moved. It is back where it was."
+msgstr "No se ha podido mover. Ha vuelto a donde estaba."
+
+#, python-format
+msgid "The first %(shown)s of %(total)s, the earliest first."
+msgstr "Los primeros %(shown)s de %(total)s, primero los más antiguos."
+
+msgid "The first one you add will be listed here."
+msgstr "El primero que añadas aparecerá aquí."
+
+msgid "This is no longer here: someone may have removed it."
+msgstr "Esto ya no está aquí: puede que alguien lo haya quitado."
+
+msgid "Timeline"
+msgstr "Línea de tiempo"
+
+msgid "Today"
+msgstr "Hoy"
+
+msgid "Try fewer filters, or another word."
+msgstr "Prueba con menos filtros o con otra palabra."
+
+msgid "View"
+msgstr "Ver"
+
+#, python-format
+msgid "View %(name)s"
+msgstr "Ver %(name)s"
+
+msgid "Week"
+msgstr "Semana"
+
+msgid "Weeks"
+msgstr "Semanas"
+
+msgid "Yes"
+msgstr "Sí"
+

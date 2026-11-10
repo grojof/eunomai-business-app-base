@@ -1983,6 +1983,26 @@ def import_in_env(text: str, package: str) -> str:
     return added_import(text, f"import app.{package}.models  # noqa: F401", "from app.core.database")
 
 
+def known_texts(catalogues: Path) -> None:
+    """The texts every module has (Save, Cancel, what a board says) come translated, from module_template/locales:
+    what waits for a person is what only this module says, where the words and their gender matter."""
+    from babel.messages.pofile import read_po, write_po
+
+    for source in sorted((TEMPLATES / "locales").glob("*.po")):
+        path = catalogues / source.stem / "LC_MESSAGES" / "messages.po"
+        if not path.is_file():
+            continue
+        with source.open("rb") as file:
+            known = {message.id: message.string for message in read_po(file) if message.id}
+        with path.open("rb") as file:
+            catalog = read_po(file, locale=source.stem)
+        for message in catalog:
+            if isinstance(message.id, str) and message.context is None and not message.string:
+                message.string = known.get(message.id, "")
+        with path.open("wb") as file:  # as tools/translations.py writes them
+            write_po(file, catalog, omit_header=False, sort_output=True, no_location=True, ignore_obsolete=True)
+
+
 def tidy(files: list[Path], rules: str = "I,F401") -> None:
     """The generated Python as the project's formatter writes it, with only the imports it uses. `migrations/env.py`
     keeps every import, which is how Alembic sees each table: there, only a `noqa` that has nothing to silence goes."""
@@ -2080,6 +2100,7 @@ def make(module: Module, root: Path = ROOT, catalogues: bool = True) -> list[str
         migration(root, module)
         if catalogues:  # in a process of its own, which finds the new package among the others
             subprocess.run([sys.executable, str(root / "tools" / "translations.py"), "update"], cwd=root, check=True)
+            known_texts(app / "locales")
     except BaseException:
         shutil.rmtree(app, ignore_errors=True)
         tests.unlink(missing_ok=True)
