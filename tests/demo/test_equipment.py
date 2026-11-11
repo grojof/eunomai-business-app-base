@@ -318,7 +318,9 @@ def test_the_back_button_goes_through_each_state(open_filled):
     assert first_code(page) == first
     assert page.locator("#equipment-status").input_value() == ""
 
-    page.go_forward()
+    page.go_forward()  # as a person does: each step once the page has come, not two before the first lands
+    page.wait_for_url("**/equipment?status=stopped")
+    page.wait_for_selector("th[aria-sort] #equipment-sort-code")
     page.go_forward()
     page.wait_for_url("**/equipment?status=stopped&sort=cost")
     page.wait_for_selector("th[aria-sort] #equipment-sort-cost")
