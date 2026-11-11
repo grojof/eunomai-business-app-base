@@ -88,3 +88,8 @@ The base's documentation is in `docs/base/`, where every application keeps it as
 | [Decisions](docs/base/decisions.md) | Why it is built this way, and what is still open |
 
 How to work in this repository: [AGENTS.md](AGENTS.md).
+
+## Licence
+
+[MIT](LICENSE). The libraries it carries keep their own licences: [third-party notices](THIRD-PARTY-NOTICES.md).
+To report a security problem: [security policy](SECURITY.md).

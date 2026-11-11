@@ -79,6 +79,8 @@ def test_the_template_is_an_application_with_nothing_of_the_demo_or_the_bases_to
     assert not (out / "tools" / "make_template.py").exists()
     assert not (out / ".github").exists(), "the base's own workflows maintain the base, not an organization's template"
     assert not (out / "tests" / "test_workflows.py").exists(), "their tests go with them"
+    assert not (out / "CHANGELOG.md").exists() and not (out / "SECURITY.md").exists(), "the base's own"
+    assert (out / "LICENSE").is_file() and (out / "THIRD-PARTY-NOTICES.md").is_file(), "kept, as their licences ask"
     assert (out / ".gitea" / "workflows" / "tests.yml").read_text(encoding="utf-8") == CI
 
 

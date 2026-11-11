@@ -847,7 +847,8 @@ uv run --frozen python tools/make_template.py --layer ../our-layer --out ../our-
 
 Each run starts from an empty folder, or from a clone of the template's repository with nothing uncommitted, which keeps
 its history. It exports the base at `--ref`, or this folder as it is without one, runs `tools/remove_demo.py` with the
-layer's languages, leaves out the base's own workflows, copies the layer, writes the name into `.env.example` and the
+layer's languages, leaves out the base's own workflows, changelog and security policy (the licence and the third-party
+notices stay), copies the layer, writes the name into `.env.example` and the
 preview, builds the stylesheet, runs the icon and translation checks and the template's own tests, unless
 `--skip-tests`, and writes `.template-source`: the base's commit and the layer's hash. It never commits or pushes. A
 person reviews the difference in the clone and merges it through a pull request.
