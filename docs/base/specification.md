@@ -103,7 +103,10 @@ open. *Reported* below means exactly that: the problem goes to the issue, the ve
 If a new daisyUI file breaks `docs/base/components/` or the [gallery](#gallery), such as a new or removed component or a
 changed format, every daisyUI file stays at its version, an issue says why, and everything else goes ahead. They move
 together or not at all, and so do Lucide's icons and their index. A Lucide version that would remove an icon is
-refused, because a screen may use it: a person decides. Any failed update opens the issue too. The job that
+refused, because a screen may use it: a person decides. One that renames an icon goes ahead, since Lucide still ships
+the old name and `tools/icons.py check` tells a screen that asks for it its new one. A person holds a copied file back
+with `"held": {"below": "<version>", "reason": "..."}` in its entry of `vendor.json`; every weekly summary repeats the
+reason, so the hold stays a decision someone keeps making. Any failed update opens the issue too. The job that
 runs upgraded code can only read; a separate job, which runs no project code, opens the pull request, and accepts only
 the files the update produces.
 

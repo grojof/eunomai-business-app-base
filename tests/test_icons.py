@@ -1,6 +1,7 @@
 """Icons come from Lucide's pinned set or the organization's own, only through the `icon` macro, found by search.
 Illustrations are files shown as images, holding nothing that runs or loads from elsewhere."""
 
+import hashlib
 import json
 import re
 import subprocess
@@ -56,14 +57,26 @@ def test_any_icon_of_the_set_renders_through_the_macro_with_nothing_else_added()
     assert html.count("<svg") == 1
 
 
+DRAWINGS = {
+    "x": "c1e53fc9bbe1a0a0",
+    "search": "185937a98ae03072",
+    "menu": "eb8121ff66622980",
+    "triangle-alert": "2c9139e4a3097dd0",
+    "chevron-down": "be2f2e86753c4c6b",
+    "gauge": "3b509f5d0d1fa1de",
+    "wrench": "bd8649d464e778ce",
+    "calendar-range": "304161afe7bc1c16",
+}
+"""Icons every screen shows, as Lucide 1.59 drew them. A new version may change any other drawing; one of these
+changed waits for a person to look at it, and then its fingerprint here."""
+
+
 def test_the_icons_already_used_keep_their_drawings():
-    """Lucide 1.58 to 1.59 changed one drawing, chess-queen, which no screen uses."""
-    for name in ("x", "search", "menu", "triangle-alert", "chevron-down", "gauge", "wrench", "calendar-range"):
-        assert (
-            (icons.LUCIDE / f"{name}.svg")
-            .read_text(encoding="utf-8")
-            .startswith("<!-- @license lucide-static v1.59.0 - ISC -->\n<svg")
-        )
+    for name, fingerprint in DRAWINGS.items():
+        text = (icons.LUCIDE / f"{name}.svg").read_text(encoding="utf-8")
+        drawing = re.sub(r"\A<!-- @license lucide-static v[0-9.]+ - ISC -->\n", "", text)
+        assert drawing.startswith("<svg"), name
+        assert hashlib.sha256(drawing.encode()).hexdigest()[:16] == fingerprint, f"Lucide changed how {name} looks"
 
 
 @pytest.mark.rule("COMP-05")
