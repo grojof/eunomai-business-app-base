@@ -13,7 +13,7 @@ from alembic.util.exc import CommandError
 from sqlalchemy import Column, Integer, Table, text
 
 from app.core.columns import COLLATION, ExactDecimal, UtcDateTime
-from app.core.database import Base, create_database_engine, migrate
+from app.core.database import Base, create_database_engine, migrate, number_revision
 from tests.helpers import ROOT
 
 TABLES = '''"""Two tables, one pointing to the other."""
@@ -228,3 +228,27 @@ def test_a_generated_migration_writes_the_exact_types_as_they_are_made():
     table = Table("sample", MetaData(), Column("amount", ExactDecimal()), Column("moment", UtcDateTime()))
     code = render_python_code(ops.UpgradeOps([ops.CreateTableOp.from_table(table)]))
     assert "app.core.columns.ExactDecimal()" in code and "app.core.columns.UtcDateTime()" in code
+
+
+class _Script:
+    def __init__(self, rev_id: str | None) -> None:
+        self.rev_id = rev_id
+
+
+@pytest.mark.parametrize(("given", "written"), [("5206662a59c0", "0003"), (None, "0003"), ("0007", "0007")])
+def test_a_migration_takes_the_next_number_unless_it_was_given_one(tmp_path, given, written):
+    for name in ("0001_first.py", "0002_second.py", "notes.py"):
+        (tmp_path / name).write_text("", encoding="utf-8")
+    script = _Script(given)
+    number_revision([script], tmp_path)
+    assert script.rev_id == written
+
+
+def test_the_first_migration_is_number_one(tmp_path):
+    script = _Script("abc")
+    number_revision([script], tmp_path)
+    assert script.rev_id == "0001"
+
+
+def test_alembic_numbers_the_migrations_it_writes():
+    assert "process_revision_directives=numbered" in (ROOT / "migrations" / "env.py").read_text(encoding="utf-8")

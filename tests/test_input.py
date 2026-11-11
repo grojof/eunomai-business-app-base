@@ -25,11 +25,6 @@ EARLY = date(2000, 1, 1)
 LATE = date(2099, 12, 31)
 
 
-@pytest.fixture(autouse=True)
-def english():
-    i18n._language.set("en")
-
-
 @pytest.mark.rule("SEC-03")
 def test_text_loses_its_outer_spaces_and_keeps_the_rest():
     assert read_text("  Oil change  ", longest=80) == "Oil change"

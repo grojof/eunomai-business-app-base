@@ -7,11 +7,14 @@ import subprocess
 import sys
 import time
 import tomllib
-from collections.abc import Iterator
+import unicodedata
+from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
+
+from babel.dates import get_day_names, get_month_names
 
 ROOT = Path(__file__).resolve().parent.parent
 TEXT_ATTRIBUTES = ("aria-label", "title", "placeholder", "alt", "data-announce")
@@ -71,8 +74,24 @@ class _Texts(HTMLParser):
             self.texts.append(data.strip())
 
 
+def _date_words() -> re.Pattern[str]:
+    words: set[str] = set()
+    for language in ("en", "es", "ca"):
+        for width in ("wide", "abbreviated"):
+            for context in ("format", "stand-alone"):
+                words.update(get_month_names(width, context, language).values())
+                words.update(get_day_names(width, context, language).values())
+    return re.compile(r"(?<!\w)(?:" + "|".join(sorted(map(re.escape, words), key=len, reverse=True)) + r")(?!\w)", re.I)
+
+
+DATE_WORDS = _date_words()
+"""The months and days the formatters write, in each language the base brings: a date is formatted, not translated,
+so the pseudo-language does not mark it."""
+
+
 def untranslated(html: str, allowed: tuple[str, ...]) -> list[str]:
-    """Texts a person would see that did not go through translation: in the pseudo-language, all others are marked."""
+    """Texts a person would see that did not go through translation: in the pseudo-language, all others are marked.
+    A text made only of the names of months and days is a formatted date."""
     parser = _Texts()
     html = without_official_examples(html)
     while "⟦" in html:  # innermost first, because a translated text can hold another. Marks may hold <code>
@@ -85,6 +104,7 @@ def untranslated(html: str, allowed: tuple[str, ...]) -> list[str]:
         text = rest
         for word in allowed:
             rest = rest.replace(word, "")
+        rest = DATE_WORDS.sub("", rest)
         if re.search(r"[^\W\d_]", rest):
             found.append(text)
     return found
@@ -240,3 +260,20 @@ def repository_text_files() -> list[Path]:
 
 def overflows_sideways(page: Any) -> bool:
     return bool(page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth"))
+
+
+def plain(text: object) -> str:
+    """Without accents or capitals: as a search compares."""
+    letters = unicodedata.normalize("NFKD", str(text))
+    return "".join(letter for letter in letters if not unicodedata.combining(letter)).casefold()
+
+
+def shows_only(page: str, inside: Iterable[str], outside: Iterable[str]) -> None:
+    """A page of results shows a row that belongs and none that does not. `inside` and `outside` are the names of the
+    rows as the page writes them, whatever the rows are. A name both have, or one written inside another, proves
+    nothing and is left out."""
+    kept = set(inside)
+    assert any(name in page for name in kept), "none of the rows that belong is shown"
+    for name in set(outside) - kept:
+        if not any(name in other for other in kept):
+            assert name not in page, f"{name} does not belong and is shown"

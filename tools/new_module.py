@@ -1627,7 +1627,8 @@ def view_tests(module: Module) -> list[str]:
             "def test_the_board_shows_its_columns_and_a_card_moves_to_another(filled, person):",
             "    client, url = filled",
             f'    page = client.get("{path}/board", headers=person)',
-            f'    assert page.status_code == 200 and "{first_label}" in page.text and name_of(0) in page.text',
+            f'    assert page.status_code == 200 and "{first_label}" in page.text',
+            "    assert any(shown(item) in page.text for item in rows(url))",
             "    item = rows(url)[0]",
             f"    to = next(value for value in {board.constant}_CHOICES if value != item.{board.name})",
             '    move = {"card": str(item.id), "to": to, "after": "", "version": str(item.version)}',
@@ -1642,26 +1643,28 @@ def view_tests(module: Module) -> list[str]:
         ]
     if calendar := module.calendar:
         start, timed = calendar.start.name, calendar.start.kind == "datetime"
-        sent_start, expected = (
-            ("2026-01-07T10:00:00Z", "datetime(2026, 1, 7, 10, tzinfo=UTC)")
+        day, later, sent_start = (
+            (f"item.{start}.date()", "timedelta(hours=1)", 'to.strftime("%Y-%m-%dT%H:%M:%SZ")')
             if timed
-            else ("2026-01-07", "date(2026, 1, 7)")
+            else (f"item.{start}", "timedelta(days=1)", "to.isoformat()")
         )
         lines += [
             "def test_the_calendar_gives_the_events_of_its_days_and_one_moves(filled, person):",
             "    client, url = filled",
-            '    month = {"view": "month", "date": "2026-01-05"}',
+            f"    item = next(found for found in rows(url) if found.{start} is not None)",
+            f"    day = {day}",
+            '    month = {"view": "month", "date": day.isoformat()}',
             f'    page = client.get("{path}/calendar", params=month, headers=person)',
-            "    assert page.status_code == 200 and name_of(0) in page.text",
-            '    days = {"start": "2026-01-01", "end": "2026-02-01"}',
+            "    assert page.status_code == 200 and shown(item) in page.text",
+            '    days = {"start": (day - timedelta(days=1)).isoformat(), "end": (day + timedelta(days=2)).isoformat()}',
             f'    events = client.get("{path}/calendar/events", params=days, headers=person).json()',
-            '    assert name_of(0) in [event["title"] for event in events]',
-            "    item = rows(url)[0]",
-            f'    drop = {{"event": f"{module.package}-{{item.id}}", "start": "{sent_start}", '
+            f'    assert str(item.{module.first.name}) in [event["title"] for event in events]',
+            f"    to = item.{start} + {later}",
+            f'    drop = {{"event": f"{module.package}-{{item.id}}", "start": {sent_start}, '
             '"version": str(item.version)}',
             f'    moved = client.post("{path}/calendar/move", data=drop, headers=SAME_SITE | person)',
             "    assert moved.status_code == 200, moved.text",
-            f"    assert rows(url)[0].{start} == {expected}",
+            f"    assert one(url, item.id).{start} == to",
             f'    late = client.post("{path}/calendar/move", data=drop, headers=SAME_SITE | person)',
             '    assert late.status_code == 409, "a drop made on an old page moves nothing"',
             "",
@@ -1670,9 +1673,10 @@ def view_tests(module: Module) -> list[str]:
     if module.timeline:
         lines += [
             "def test_the_timeline_shows_each_row_with_a_date(filled, person):",
-            "    client, _url = filled",
+            "    client, url = filled",
             f'    page = client.get("{path}/timeline", params={{"scale": "month"}}, headers=person)',
-            "    assert page.status_code == 200 and name_of(0) in page.text",
+            "    assert page.status_code == 200",
+            "    assert any(shown(item) in page.text for item in rows(url))",
             "",
             "",
         ]
@@ -1684,6 +1688,7 @@ def tests_code(module: Module) -> str:
     valid = "\n".join(f'    "{field.name}": "{typed_value(field)}",' for field in module.fields)
     other_text = next((f for f in module.fields if f.kind in ("text", "long_text") and f is not first), None)
     searched = next((f for f in module.fields if f.search), None)
+    searched_values = ", ".join(f"item.{f.name}" for f in module.fields if f.search) + ","
     filtered = next((f for f in module.fields if f.filter and not f.target), None)
     unique = next((f for f in module.fields if f.unique), None)
     pointing = next((f for f in module.fields if f.target and f.filter), None)
@@ -1693,11 +1698,12 @@ def tests_code(module: Module) -> str:
         f'"""{module.title}: what tools/new_module.py made, proved. Change these tests with the module."""',
         "",
         "from collections.abc import Iterator",
-        "from datetime import UTC, date, datetime",
+        "from datetime import timedelta",
         "from typing import Any",
         "",
         "import pytest",
         "from fastapi.testclient import TestClient",
+        "from markupsafe import escape",
         "from sqlalchemy import select",
         "from sqlalchemy.orm import Session",
         "",
@@ -1708,7 +1714,7 @@ def tests_code(module: Module) -> str:
         + (f", {module.board.constant}_CHOICES" if module.board else ""),
         "from app.main import create_app",
         "from tests.conftest import build_settings, page_opener, running_server",
-        "from tests.helpers import run_axe_in_both_themes",
+        "from tests.helpers import plain, run_axe_in_both_themes, shows_only",
         "",
         'SAME_SITE = {"Sec-Fetch-Site": "same-origin"}',
         'OUTSIDER = {"X-Remote-User": "someone.else", "X-Remote-Name": "Someone Else", "X-Remote-Groups": "staff"}',
@@ -1747,37 +1753,50 @@ def tests_code(module: Module) -> str:
         "    return found",
         "",
         "",
-        "def name_of(number: int) -> str:",
-        f'    return str(sample_data.row(number)["{first.name}"])',
+        f"def one(url: str, number: int) -> {module.entity}:",
+        "    return next(item for item in rows(url) if item.id == number)",
+        "",
+        "",
+        f"def shown(item: {module.entity}) -> str:",
+        '    """Its name as a page writes it. These tests read the rows there are: the sample data can change."""',
+        f"    return str(escape(item.{first.name}))",
         "",
         "",
         "def test_the_list_shows_its_rows(filled, person):",
-        "    client, _url = filled",
+        "    client, url = filled",
         f'    page = client.get("{path}", headers=person)',
         "    assert page.status_code == 200",
-        "    assert name_of(0) in page.text",
+        "    assert any(shown(item) in page.text for item in rows(url))",
         "",
         "",
     ]
     if searched:
         lines += [
             "def test_a_search_finds_the_row_it_names(filled, person):",
-            "    client, _url = filled",
-            f'    wanted = str(sample_data.row(4)["{searched.name}"])',
-            f'    page = client.get("{path}", params={{"q": wanted}}, headers=person)',
-            "    assert name_of(4) in page.text",
-            "    assert name_of(5) not in page.text",
+            "    client, url = filled",
+            "    found = rows(url)",
+            f"    wanted = str(next(item.{searched.name} for item in found if item.{searched.name}))",
+            f'    page = client.get("{path}", params={{"q": wanted, "size": 100}}, headers=person)',
+            "    texts = {item.id: plain(' '.join(str(text or '') for text in "
+            f"({searched_values}))) for item in found}}",
+            "    named = [item for item in found if plain(wanted) in texts[item.id]]",
+            "    others = [shown(item) for item in found if item not in named]",
+            "    shows_only(page.text, [shown(item) for item in named], others)",
             "",
             "",
         ]
     if filtered:
-        value = '"yes"' if filtered.kind == "boolean" else f'sample_data.row(0)["{filtered.name}"]'
+        flag = filtered.kind == "boolean"
+        value = '"yes"' if flag else f"kept.{filtered.name}"
         lines += [
             "def test_a_filter_keeps_only_its_rows(filled, person):",
-            "    client, _url = filled",
+            "    client, url = filled",
+            "    found = rows(url)",
+            f"    kept = next(item for item in found if item.{filtered.name})" if flag else "    kept = found[0]",
             f'    page = client.get("{path}", params={{"{filtered.name}": {value}, "size": 100}}, headers=person)',
-            "    assert name_of(0) in page.text",
-            "    assert name_of(1) not in page.text",
+            f"    inside = [shown(item) for item in found if item.{filtered.name} == kept.{filtered.name}]",
+            f"    outside = [shown(item) for item in found if item.{filtered.name} != kept.{filtered.name}]",
+            "    shows_only(page.text, inside, outside)",
             "",
             "",
         ]
@@ -1785,11 +1804,13 @@ def tests_code(module: Module) -> str:
         lines += [
             f"def test_a_filter_keeps_only_the_rows_of_one_{pointing.name}(filled, person):",
             "    client, url = filled",
-            "    first = rows(url)[0]",
+            "    found = rows(url)",
+            f"    first = next(item for item in found if item.{pointing.column} is not None)",
             f'    page = client.get("{path}", params={{"{pointing.name}": first.{pointing.column}, "size": 100}}, '
             "headers=person)",
-            "    assert name_of(0) in page.text",
-            "    assert name_of(1) not in page.text",
+            f"    inside = [shown(item) for item in found if item.{pointing.column} == first.{pointing.column}]",
+            f"    outside = [shown(item) for item in found if item.{pointing.column} != first.{pointing.column}]",
+            "    shows_only(page.text, inside, outside)",
             "",
             "",
         ]
@@ -1797,7 +1818,7 @@ def tests_code(module: Module) -> str:
         lines += [
             f"def test_the_page_of_a_{pointing.name}_leads_to_its_{module.package}(filled, person):",
             "    client, url = filled",
-            f"    number = rows(url)[0].{pointing.column}",
+            f"    number = next(item.{pointing.column} for item in rows(url) if item.{pointing.column} is not None)",
             f'    page = client.get(f"{pointing.target.path}/{{number}}", headers=person)',
             f"    assert f'href=\"{path}?{pointing.name}={{number}}\"' in page.text",
             "",
@@ -1807,26 +1828,29 @@ def tests_code(module: Module) -> str:
         lines += [
             f"def test_a_{reference.name}_that_is_not_there_is_refused(filled, person):",
             "    client, url = filled",
+            "    before = len(rows(url))",
             f'    sent = client.post("{path}", data=VALID | {{"{reference.name}": "999999"}}, '
             "headers=SAME_SITE | person)",
             "    assert sent.status_code == 422",
             f'    assert "{reference.label}: choose one from the list." in sent.text',
-            "    assert len(rows(url)) == sample_data.ROWS",
+            "    assert len(rows(url)) == before",
             "",
             "",
         ]
     lines += [
         "def test_a_new_one_is_saved_and_shown(filled, person):",
         "    client, url = filled",
+        "    before = len(rows(url))",
         f'    sent = client.post("{path}", data=VALID, headers=SAME_SITE | person, follow_redirects=False)',
         "    assert sent.status_code == 303",
         '    page = client.get(sent.headers["location"], headers=person)',
         f'    assert VALID["{first.name}"] in page.text',
-        "    assert len(rows(url)) == sample_data.ROWS + 1",
+        "    assert len(rows(url)) == before + 1",
         "",
         "",
         "def test_a_refused_value_keeps_what_was_typed(filled, person):",
         "    client, url = filled",
+        "    before = len(rows(url))",
         f'    sent = client.post("{path}", data=VALID | {{"{first.name}": ""}}, headers=SAME_SITE | person)',
         "    assert sent.status_code == 422",
         f'    assert "Enter the {first.phrase}." in sent.text',
@@ -1834,28 +1858,28 @@ def tests_code(module: Module) -> str:
     if other_text:
         lines.append(f'    assert VALID["{other_text.name}"] in sent.text')
     lines += [
-        "    assert len(rows(url)) == sample_data.ROWS",
+        "    assert len(rows(url)) == before",
         "",
         "",
         "def test_an_edit_is_saved(filled, person):",
         "    client, url = filled",
-        "    item = rows(url)[1]",
+        "    item = rows(url)[-1]",
         '    form = VALID | {"version": str(item.version)}',
         f'    sent = client.post(f"{path}/{{item.id}}", data=form, headers=SAME_SITE | person, follow_redirects=False)',
         "    assert sent.status_code == 303",
-        f'    assert rows(url)[1].{first.name} == VALID["{first.name}"]',
+        f'    assert one(url, item.id).{first.name} == VALID["{first.name}"]',
         "",
         "",
         "def test_an_edit_made_on_an_old_page_says_what_changed_and_saves_nothing(filled, person):",
         "    client, url = filled",
-        "    item = rows(url)[1]",
+        "    item = rows(url)[-1]",
         '    first = VALID | {"version": str(item.version)}',
         f'    client.post(f"{path}/{{item.id}}", data=first, headers=SAME_SITE | person)',
         f'    late = VALID | {{"{first.name}": "Typed on an old page", "version": str(item.version)}}',
         f'    sent = client.post(f"{path}/{{item.id}}", data=late, headers=SAME_SITE | person)',
         "    assert sent.status_code == 409",
         f'    assert "Someone else changed this {module.singular}" in sent.text',
-        f'    assert rows(url)[1].{first.name} == VALID["{first.name}"]',
+        f'    assert one(url, item.id).{first.name} == VALID["{first.name}"]',
         "",
         "",
     ]
@@ -1863,11 +1887,12 @@ def tests_code(module: Module) -> str:
         lines += [
             "def test_a_value_another_row_has_is_refused(filled, person):",
             "    client, url = filled",
-            f'    taken = VALID | {{"{unique.name}": str(sample_data.row(0)["{unique.name}"])}}',
+            "    before = len(rows(url))",
+            f'    taken = VALID | {{"{unique.name}": str(rows(url)[0].{unique.name})}}',
             f'    sent = client.post("{path}", data=taken, headers=SAME_SITE | person)',
             "    assert sent.status_code == 422",
             f'    assert "Another {module.singular} already has this {unique.phrase}." in sent.text',
-            "    assert len(rows(url)) == sample_data.ROWS",
+            "    assert len(rows(url)) == before",
             "",
             "",
         ]
@@ -1875,16 +1900,18 @@ def tests_code(module: Module) -> str:
     lines += [
         "def test_without_the_role_nothing_opens_and_nothing_changes(filled):",
         "    client, url = filled",
+        "    before = len(rows(url))",
         f'    assert client.get("{path}", headers=OUTSIDER).status_code == 403',
         f'    assert client.get("{path}/1", headers=OUTSIDER).status_code == 403',
         f'    assert client.post("{path}", data=VALID, headers=SAME_SITE | OUTSIDER).status_code == 403',
-        "    assert len(rows(url)) == sample_data.ROWS",
+        "    assert len(rows(url)) == before",
         "",
         "",
         "def test_each_page_opens(filled, person):",
         '    """The scan in a browser, below, would pass on an error page too."""',
-        "    client, _url = filled",
-        f'    for address in ("{path}", "{path}/1", "{path}/new", "{path}/1/edit"):',
+        "    client, url = filled",
+        "    number = rows(url)[0].id",
+        f'    for address in ("{path}", f"{path}/{{number}}", "{path}/new", f"{path}/{{number}}/edit"):',
         "        assert client.get(address, headers=person).status_code == 200, address",
         "",
         "",
@@ -1956,6 +1983,26 @@ def import_in_env(text: str, package: str) -> str:
     return added_import(text, f"import app.{package}.models  # noqa: F401", "from app.core.database")
 
 
+def known_texts(catalogues: Path) -> None:
+    """The texts every module has (Save, Cancel, what a board says) come translated, from module_template/locales:
+    what waits for a person is what only this module says, where the words and their gender matter."""
+    from babel.messages.pofile import read_po, write_po
+
+    for source in sorted((TEMPLATES / "locales").glob("*.po")):
+        path = catalogues / source.stem / "LC_MESSAGES" / "messages.po"
+        if not path.is_file():
+            continue
+        with source.open("rb") as file:
+            known = {message.id: message.string for message in read_po(file) if message.id}
+        with path.open("rb") as file:
+            catalog = read_po(file, locale=source.stem)
+        for message in catalog:
+            if isinstance(message.id, str) and message.context is None and not message.string:
+                message.string = known.get(message.id, "")
+        with path.open("wb") as file:  # as tools/translations.py writes them
+            write_po(file, catalog, omit_header=False, sort_output=True, no_location=True, ignore_obsolete=True)
+
+
 def tidy(files: list[Path], rules: str = "I,F401") -> None:
     """The generated Python as the project's formatter writes it, with only the imports it uses. `migrations/env.py`
     keeps every import, which is how Alembic sees each table: there, only a `noqa` that has nothing to silence goes."""
@@ -1984,18 +2031,13 @@ def portable_defaults(migration: str) -> str:
     )
 
 
-def next_revision(versions: Path) -> str:
-    numbers = [int(match[1]) for path in versions.glob("*.py") if (match := re.match(r"([0-9]{4})_", path.name))]
-    return f"{max(numbers, default=0) + 1:04d}"
-
-
 def migration(root: Path, module: Module) -> None:
     """Written by Alembic from the model, against a database at the newest migration, as a person would make it."""
     from alembic import command
     from alembic.config import Config
 
     sys.path.insert(0, str(root))
-    from app.core.database import migrate
+    from app.core.database import migrate, next_revision
 
     # Alembic formats what it writes with ruff, from the environment this runs in
     os.environ["PATH"] = str(Path(sys.executable).parent) + os.pathsep + os.environ.get("PATH", "")
@@ -2058,6 +2100,7 @@ def make(module: Module, root: Path = ROOT, catalogues: bool = True) -> list[str
         migration(root, module)
         if catalogues:  # in a process of its own, which finds the new package among the others
             subprocess.run([sys.executable, str(root / "tools" / "translations.py"), "update"], cwd=root, check=True)
+            known_texts(app / "locales")
     except BaseException:
         shutil.rmtree(app, ignore_errors=True)
         tests.unlink(missing_ok=True)
