@@ -352,8 +352,7 @@ def test_paging_keeps_focus_and_at_the_end_moves_it_to_the_table(open_filled):
     page.get_by_role("link", name="Next page").focus()
     page.keyboard.press("Enter")
     for number in range(2, 11):
-        # a page of 100 rows, beside the other tests: it checks where focus goes, not how fast the page comes
-        until(page, f"document.querySelector('#equipment-results a[aria-current]').textContent === '{number}'", 15)
+        until(page, f"document.querySelector('#equipment-results a[aria-current]').textContent === '{number}'")
         if number < 10:
             until(page, "document.activeElement.id === 'equipment-next'")
             page.keyboard.press("Enter")

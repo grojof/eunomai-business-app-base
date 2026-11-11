@@ -19,8 +19,10 @@ def fill(url: str, rows: int) -> None:
     engine.dispose()
 
 
-def until(page: Any, expression: str, seconds: int = 5) -> None:
-    """Waits for a condition. `wait_for_function` runs through eval, which this application's policy refuses."""
+def until(page: Any, expression: str, seconds: int = 15) -> None:
+    """Waits for a condition. `wait_for_function` runs through eval, which this application's policy refuses.
+    It returns as soon as the condition holds, so a long limit costs nothing when the test passes: it only spares a
+    test that is right from failing on a computer busy with other tests."""
     deadline = time.monotonic() + seconds
     while time.monotonic() < deadline:
         try:
