@@ -84,8 +84,9 @@ def sha384(content: bytes) -> str:
     return base64.b64encode(hashlib.sha384(content).digest()).decode()
 
 
-def newest_allowed(name: str, current: str) -> str | None:
-    """The newest stable version of this major one that passes the rules, never older than `current`.
+def newest_allowed(name: str, current: str, below: str | None = None) -> str | None:
+    """The newest stable version of this major one that passes the rules, never older than `current`, and older
+    than `below` when a person held the package back.
 
     A settled version comes first. Otherwise `current` stays, unless it is vulnerable: only then may a newer version
     skip the wait. None means nothing qualifies, `current` included.
@@ -95,7 +96,10 @@ def newest_allowed(name: str, current: str) -> str | None:
     released: dict[str, datetime] = {
         version: datetime.fromisoformat(package["time"][version].replace("Z", "+00:00"))
         for version, data in package["versions"].items()
-        if version.startswith(major) and "-" not in version and not data.get("deprecated")
+        if version.startswith(major)
+        and "-" not in version
+        and not data.get("deprecated")
+        and (below is None or version_key(version) < version_key(below))
     }
     limit = datetime.now(UTC) - WINDOW
     candidates = sorted((v for v in released if version_key(v) >= version_key(current)), key=version_key, reverse=True)
@@ -191,6 +195,16 @@ def archive_files(url: str) -> Iterator[tuple[str, bytes]]:
 def tag_files(version: str) -> Iterator[tuple[str, bytes]]:
     """Each file of a daisyUI version's git tag."""
     return archive_files(f"https://codeload.github.com/saadeghi/daisyui/tar.gz/refs/tags/v{version}")
+
+
+def lucide_old_names(version: str) -> set[str]:
+    """The names a version still ships a drawing for but no longer lists: Lucide keeps an icon's old name for a while
+    after renaming it, and its metadata gives the new name (see tools/icons.py aliases)."""
+    with tarfile.open(fileobj=io.BytesIO(tarball("lucide-static", version))) as archive:
+        names = archive.getnames()
+        listed = set(json.loads(archive.extractfile(LUCIDE_LISTING).read()))  # type: ignore[union-attr]
+    drawn = {name.removeprefix("package/icons/").removesuffix(".svg") for name in names}
+    return {name for name in drawn - listed if f"package/icons/{name}.svg" in names}
 
 
 def lucide_icons(version: str) -> dict[str, bytes]:
@@ -336,7 +350,13 @@ def check() -> list[str]:
 
 def _update_entry(name: str, entry: dict[str, Any], changes: list[str]) -> str | None:
     """Moves one entry. The same version must give the same bytes: anything else was replaced behind its number."""
-    version = newest_allowed(entry.get("package", name), entry["version"])
+    held = entry.get("held")
+    package = entry.get("package", name)
+    version = (
+        newest_allowed(package, entry["version"], held["below"]) if held else newest_allowed(package, entry["version"])
+    )
+    if held:  # said every week, so a hold is a decision someone keeps making, not one forgotten
+        changes.append(f"`{name}` held below {held['below']}: {held['reason']}")
     if version is None:
         return "no allowed version"
     if "executables" in entry:
@@ -372,8 +392,13 @@ def _update_folder(name: str, entry: dict[str, Any], version: str, changes: list
         raise Refused(f"version {version} no longer gives the folder recorded in vendor.json")
     if not same_version:
         removed = sorted(Path(item).stem for item in set(present) - set(files) if item.endswith(".svg"))
-        if removed:
-            raise Refused(f"version {version} removes icons a screen may use: {removed}")
+        renamed = set(lucide_old_names(version)) if removed else set()
+        if gone := [icon for icon in removed if icon not in renamed]:
+            raise Refused(f"version {version} removes icons a screen may use: {gone}")
+        if removed:  # an application that still asks for one is told its new name by tools/icons.py check
+            changes.append(
+                f"Lucide renamed {', '.join(f'`{icon}`' for icon in removed)}: see its new name in tools/lucide"
+            )
     write_folder(folder, files)
     changes.append(f"`{name}` {entry['version']} to {version}")
     entry.update(version=version, sha384=folder_digest(files))

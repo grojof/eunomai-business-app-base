@@ -12,7 +12,11 @@
     "target": "app/ui/static/vendor/chart.umd.min.js",
     "script": true,
     "on_demand": true,
-    "sha384": "jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"
+    "sha384": "jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ",
+    "held": {
+      "below": "4.6.0",
+      "reason": "4.6 leaves charts wider than a narrowed window, so the page scrolls sideways, and moves the slices of a doughnut; tests/demo/test_charts.py and test_chart_filter.py show both"
+    }
   },
   "sortablejs": {
     "version": "1.15.7",
@@ -121,17 +125,17 @@
     "sha384": "I2ONUDQdmD8ANCUlc8SAVSEgse4Wrmfm3spZ7Pgn0DZcj8Ez5SviOOAFHchTaPib"
   },
   "lucide-static": {
-    "version": "1.59.0",
+    "version": "1.63.0",
     "folder": "app/ui/templates/ui/icons",
     "script": false,
-    "sha384": "TVPNN4B7+sDQv2LR4/6SaS6bEVu8ChEoMaTDZeun1i1WYzNSAEhok+LwWYZSucZ3"
+    "sha384": "Xo4kVUtR8sd8Z2UKyoJfKdVqDFp42qzgdOga1y+wXcqEaqUKWclZmtUjhOXCVnbz"
   },
   "lucide-index": {
     "package": "lucide-static",
-    "version": "1.59.0",
+    "version": "1.63.0",
     "archive": "https://codeload.github.com/lucide-icons/lucide/tar.gz/refs/tags/{version}",
     "target": "tools/lucide/index.json",
     "script": false,
-    "sha384": "6OnQSCqpe1HuvDg9fXYo2Z752keLEDH2LRa3oxzSbY0psMNwwFphb8yutn6TcfC6"
+    "sha384": "B01vMeJc7qlHrOTnjy+G2HCNMLp3dRx1TGdzKgTOvdtK0+zGxhGBbw/Jq0DXyu0J"
   }
 }

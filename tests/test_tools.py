@@ -429,6 +429,20 @@ def test_a_new_version_that_removes_an_icon_waits_for_a_person(icon_folder, monk
     assert vendor.read_entries()["lucide-static"]["version"] == "1.0.0"
 
 
+def test_a_new_version_that_renames_an_icon_goes_ahead(icon_folder, monkeypatch):
+    """Lucide 1.63 renamed archive-restore to archive-arrow-up and kept the old drawing, unlisted, for a while."""
+    monkeypatch.setattr(vendor, "newest_allowed", lambda name, current: "1.1.0")
+    package = lucide_tarball(
+        {"x": b"<svg>x</svg>", "plus-circle": b"<svg>+</svg>", "plus": b"<svg>+</svg>"}, ["x", "plus-circle"]
+    )
+    monkeypatch.setattr(vendor, "tarball", lambda name, version: package)
+    changes, refused = vendor.update()
+    assert refused == []
+    assert "Lucide renamed `plus`" in changes[0]
+    assert not (icon_folder / "plus.svg").exists() and (icon_folder / "plus-circle.svg").exists()
+    assert vendor.read_entries()["lucide-static"]["version"] == "1.1.0"
+
+
 def test_a_new_version_of_the_icons_records_its_hash(icon_folder, monkeypatch):
     icons = {"x": b"<svg>x2</svg>", "plus": b"<svg>+</svg>", "truck": b"<svg>t</svg>"}
     monkeypatch.setattr(vendor, "newest_allowed", lambda name, current: "1.1.0")
@@ -659,3 +673,12 @@ def test_a_fix_the_limits_refuse_reaches_the_problems(monkeypatch):
     notes = []
     assert update_dependencies.review(notes, {}) == [("thing", "1.0.0", "2.0.0 fixes CVE-1, but the limits refuse it")]
     assert notes == []
+
+
+def test_a_held_package_stays_below_the_version_a_person_named(monkeypatch):
+    times = {"4.5.1": "2026-01-01T00:00:00Z", "4.6.0": "2026-02-01T00:00:00Z", "4.6.1": "2026-03-01T00:00:00Z"}
+    registry = {"time": times, "versions": {version: {} for version in times}}
+    monkeypatch.setattr(vendor, "read_json", lambda url: registry)
+    monkeypatch.setattr(vendor, "vulnerabilities", lambda name, version: [])
+    assert vendor.newest_allowed("chart.js", "4.5.1") == "4.6.1"
+    assert vendor.newest_allowed("chart.js", "4.5.1", below="4.6.0") == "4.5.1"
