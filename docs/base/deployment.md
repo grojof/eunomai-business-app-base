@@ -54,7 +54,7 @@ Every setting is an environment variable starting with `APP_`; `.env.example` li
 |---|---|
 | `APP_ENVIRONMENT` | `production`, which is also the default |
 | `APP_NAME` | The application's name, as people see it |
-| `APP_DATABASE_URL` | `postgresql+psycopg://<user>:<password>@<host>:5432/<database>`, from the service's secrets, never in the repository |
+| `APP_DATABASE_URL` | The PostgreSQL address, `postgresql+psycopg://` with the user, its credential, the host and the database, from the service's secrets, never in the repository |
 | `APP_UPLOAD_FOLDER` | A folder outside the application's, writable by the service |
 | `APP_TIME_ZONE` | The organization's, such as `Europe/Madrid`: what dates and times show in |
 | `APP_DEFAULT_LANGUAGE`, `APP_LANGUAGES` | The languages offered and the last resort |
