@@ -84,7 +84,7 @@ FullCalendar's three stylesheets are linked by the `calendar` macro, with their 
 
 ## Dependencies
 
-A weekly workflow keeps dependencies current, and every clone inherits it. It updates to the newest version the rules
+A weekly workflow keeps the base's dependencies current, on GitHub; an organization's template leaves the base's workflows out, and its layer brings its own CI if it wants one. It updates to the newest version the rules
 allow, runs the tests and proposes one pull request, which a person merges. While a problem remains, an issue stays
 open. *Reported* below means exactly that: the problem goes to the issue, the version stays and the update goes on.
 
@@ -774,10 +774,12 @@ each page says so.
 | Fix or hide the settings menu | `APP_LAYOUT_*` for the look, `APP_LAYOUT_CHOICES` for what people may change; `[]` hides the menu |
 | Add to the search | `register_search`, as [the palette](#command-palette) shows |
 | Make your organization's template | `tools/make_template.py` with your layer: see [An organization's template](#an-organizations-template) |
+| Bring an application up to a newer template | `tools/update_application.py`: see [Updating an application](#updating-an-application) |
 
-An application that needs something different changes it: the code belongs to whoever cloned it. An application has
-no update mechanism: when the base improves, it compares versions and takes what it wants. An organization's template
-is made again from the base, as the next section says, so the projects it starts begin with the improvements.
+An application that needs something different changes it: the code belongs to whoever cloned it. An organization's
+template is made again from the base, as the next section says, so the projects it starts begin with the improvements,
+and an application made from it takes them with `tools/update_application.py`, on a branch a person reviews: see
+[Updating an application](#updating-an-application).
 
 `AGENTS.md`, the documentation and the checks travel with every clone. Any of them can be removed and the application
 still runs.
@@ -854,8 +856,30 @@ person reviews the difference in the clone and merges it through a pull request.
 |---|---|---|
 | The template is made, never edited | Every fix of the base reaches the organization by running the tool again, and the pull request shows exactly what changed. The same base and layer give the same files | A copy edited by hand, where each fix is repeated by hand and the two drift apart; a fork that merges the base, where each merge meets the files `remove_demo.py` deleted |
 | The layer writes only its brand and its CI | What it may change is short and reviewable; anything else is a change to the base, made once for every organization | A layer that patches any file, which would break with the next version of the base |
-| The base's workflows stay out | They maintain the base on GitHub, with a daily dependency job no application needs; each organization's CI depends on its server and its runners | Shipping them to every project, where they queue forever without runners or repeat the base's work every day |
+| The base's workflows stay out | They maintain the base on GitHub, with a weekly dependency job no application needs; each organization's CI depends on its server and its runners | Shipping them to every project, where they queue forever without runners or repeat the base's work every day |
 | The name goes into `.env.example` and the preview | Local work and a preview show the organization's name; production sets `APP_NAME` as it sets everything else | Changing the settings' default in the code |
+
+## Updating an application
+
+```bash
+uv run --frozen python tools/update_application.py --template <template repository> --check
+uv run --frozen python tools/update_application.py --template <template repository>
+```
+
+`.template-source` says which version of the template an application was made from. The tool finds that version in
+the template's history and merges the change from it to the newest (or `--to`) into the application, with git's own
+three-way merge and that version as the base. A file the application never touched takes the new version; one it
+changed is merged; where both changed the same lines, the file keeps conflict markers for a person. The application's
+own files are not touched. `--check` changes nothing and says what would happen: the versions, the template's files
+the application changed, and which files would merge cleanly or not. Without it the update goes on a new branch,
+`template-<base>`, committed when nothing is in conflict. It never pushes. An application made before the tool
+existed runs it from a newer template's folder, with `--application` naming its own.
+
+| Decision | Why | Instead of |
+|---|---|---|
+| The template's change, merged with the version the application came from as base | Exactly what the template changed reaches the application, and what the application changed stays: a file both changed is merged line by line | Copying the template's files over the application, which loses its changes; merging the base, whose demo the application never had |
+| A branch, never a push | The application's tests and a person's review decide, through the pull request, as for any change | Updating `main`, or every application at once |
+| The version found by `.template-source` in the template's history | A repository made from a template on a git server keeps the files, not the history; `.template-source` is what is left of where it came from | Asking the person which version it was |
 
 ## Checks
 
