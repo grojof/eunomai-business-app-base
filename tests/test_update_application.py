@@ -67,7 +67,8 @@ def template(tmp_path) -> Path:
 @pytest.fixture
 def application(tmp_path) -> Path:
     """Made from v1 as a git server makes a repository from a template: the files, none of its history. Then its own
-    work: a module, a changed identity (as assistants building applications have done) and its name in the settings' last line."""
+    work: a module, a changed identity (as assistants building applications have done) and its name in the settings'
+    last line."""
     folder = repository(tmp_path / "application")
     commit(folder, V1, "made from the template")
     own = dict(V1)

@@ -39,6 +39,9 @@ NOT_COPIED = {".git", ".venv", ".cache", ".data", "__pycache__", ".pytest_cache"
 SOURCE_FILE = ".template-source"
 BASE_CI_TESTS = "tests/test_workflows.py"
 """The tests of the base's own workflows, which go with them."""
+BASE_ONLY = ("CHANGELOG.md", "SECURITY.md")
+"""What the base changed and where to report a flaw in it: an application has its own, if any. LICENSE and
+THIRD-PARTY-NOTICES.md stay, as their licences ask."""
 CHECKS = (["tools/css.py"], ["tools/icons.py", "check"], ["tools/translations.py", "check"])
 """The stylesheet made for the layer's brand, then the checks a layer's files could break."""
 
@@ -188,6 +191,8 @@ def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
     run(out, "tools/remove_demo.py", *languages)
     shutil.rmtree(out / ".github" / "workflows", ignore_errors=True)
     (out / BASE_CI_TESTS).unlink(missing_ok=True)
+    for name in BASE_ONLY:
+        (out / name).unlink(missing_ok=True)
     if (out / ".github").is_dir() and not any((out / ".github").iterdir()):
         (out / ".github").rmdir()
     for path in layer.files:
