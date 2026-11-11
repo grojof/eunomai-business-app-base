@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased: 0.1.0
+## 0.1.0 (2026-11-11)
 
 The first version, for organizations to make their template from: a working demo of its components, lists, forms,
 boards, calendars, timelines, charts and Excel exports on SQLite and PostgreSQL, identity from a trusted proxy with
