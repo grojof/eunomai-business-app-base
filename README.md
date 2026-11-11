@@ -86,6 +86,7 @@ The base's documentation is in `docs/base/`, where every application keeps it as
 | [Standards](docs/base/standards.md) | Every rule of accessibility, usability, language, components, data and security, with its official source and its check |
 | [Components](docs/base/components/README.md) | Every component on offer, one page each, with its status |
 | [Decisions](docs/base/decisions.md) | Why it is built this way, and what is still open |
+| [Deployment](docs/base/deployment.md) | Running an application on a server: settings, database, service and the identity proxy in front |
 
 How to work in this repository: [AGENTS.md](AGENTS.md).
 
