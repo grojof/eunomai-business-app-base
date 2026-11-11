@@ -84,7 +84,7 @@ FullCalendar's three stylesheets are linked by the `calendar` macro, with their 
 
 ## Dependencies
 
-A weekly workflow keeps dependencies current, and every clone inherits it. It updates to the newest version the rules
+A weekly workflow keeps the base's dependencies current, on GitHub; an organization's template leaves the base's workflows out, and its layer brings its own CI if it wants one. It updates to the newest version the rules
 allow, runs the tests and proposes one pull request, which a person merges. While a problem remains, an issue stays
 open. *Reported* below means exactly that: the problem goes to the issue, the version stays and the update goes on.
 
@@ -856,7 +856,7 @@ person reviews the difference in the clone and merges it through a pull request.
 |---|---|---|
 | The template is made, never edited | Every fix of the base reaches the organization by running the tool again, and the pull request shows exactly what changed. The same base and layer give the same files | A copy edited by hand, where each fix is repeated by hand and the two drift apart; a fork that merges the base, where each merge meets the files `remove_demo.py` deleted |
 | The layer writes only its brand and its CI | What it may change is short and reviewable; anything else is a change to the base, made once for every organization | A layer that patches any file, which would break with the next version of the base |
-| The base's workflows stay out | They maintain the base on GitHub, with a daily dependency job no application needs; each organization's CI depends on its server and its runners | Shipping them to every project, where they queue forever without runners or repeat the base's work every day |
+| The base's workflows stay out | They maintain the base on GitHub, with a weekly dependency job no application needs; each organization's CI depends on its server and its runners | Shipping them to every project, where they queue forever without runners or repeat the base's work every day |
 | The name goes into `.env.example` and the preview | Local work and a preview show the organization's name; production sets `APP_NAME` as it sets everything else | Changing the settings' default in the code |
 
 ## Updating an application

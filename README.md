@@ -12,9 +12,9 @@ what helps, change the rest.
 
 ```mermaid
 flowchart LR
-    b[eunomai-business-app-base<br/>the demo] -->|clone, add your brand| o[Your organization's base]
-    o -->|clone, delete the demo| a[Application]
-    o -->|clone, delete the demo| c[Application]
+    b[eunomai-business-app-base<br/>the demo] -->|tools/make_template.py<br/>with your brand| o[Your organization's template]
+    o -->|a new repository from it| a[Application]
+    o -->|a new repository from it| c[Application]
     classDef data fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
     classDef step fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
     class b,o data
@@ -65,7 +65,9 @@ The whole suite runs on a computer before each push. On GitHub the tests run on 
 when started by hand: *Actions*, *Tests*, *Run workflow*, or `gh workflow run tests.yml --ref <branch>`. Do it before
 publishing, and after a change to the database layer.
 
-To start an application of your own, clone this, then run `uv run --frozen python tools/remove_demo.py` and
+An organization makes its template from this with `tools/make_template.py` and its brand, as
+[An organization's template](docs/base/specification.md#an-organizations-template) says, and starts each application
+from that template. To try the base alone, clone this, then run `uv run --frozen python tools/remove_demo.py` and
 `uv run --frozen python tools/css.py`. The first is what turns the clone into an application: the demo goes, and
 `AGENTS.md` stops describing a neutral base and describes an application, so real work belongs there. `README.md` becomes
 the application's own map, and this documentation stays in `docs/base/`. Fill in *What this application is* at the top
