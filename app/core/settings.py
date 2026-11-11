@@ -26,6 +26,10 @@ SERVED = Path(__file__).resolve().parent.parent
 ONE_MEGABYTE = 1024 * 1024
 
 
+SIGNED_IN = "signed_in"
+"""The role of everyone the proxy identified: a module open to them all asks for it."""
+
+
 class Settings(BaseSettings):
     # Hiding the input keeps a password in database_url out of the message of any refused setting.
     model_config = SettingsConfigDict(env_prefix="APP_", env_file=".env", extra="ignore", hide_input_in_errors=True)
@@ -71,6 +75,8 @@ class Settings(BaseSettings):
     header_groups: str = "X-Remote-Groups"
     groups_separator: str = "|"
     role_groups: dict[str, list[str]] = {}
+    """Each role and the groups that give it. `*` in a group stands for any text: {"manager": ["departamento-*"]}.
+    Everyone the proxy identified also has `signed_in`, which no group gives."""
 
     # Local work only: a person without a proxy. Refuses to start outside development.
     fake_identity: bool = False
@@ -87,6 +93,10 @@ class Settings(BaseSettings):
             raise ValueError(f"layout_choices has unknown names: {sorted(unknown)}")
         if self.upload_folder.resolve().is_relative_to(SERVED):
             raise ValueError("upload_folder must be outside app/, where nothing a person sends can be served or run")
+        if SIGNED_IN in self.role_groups:
+            raise ValueError(f"role_groups cannot give {SIGNED_IN}: everyone the proxy identified has it")
+        if any(not name.strip("*") for granted_by in self.role_groups.values() for name in granted_by):
+            raise ValueError("role_groups: a group cannot be only *, which any group matches; use signed_in")
         if self.request_max_bytes < self.upload_max_bytes:
             raise ValueError("request_max_bytes must leave room for a whole file of upload_max_bytes")
         self._check_database()

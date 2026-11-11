@@ -387,3 +387,12 @@ def test_every_known_text_is_translated_and_keeps_its_placeholders(language):
     for message in messages:
         assert message.string, message.id
         assert sorted(re.findall(r"%\(\w+\)s", message.id)) == sorted(re.findall(r"%\(\w+\)s", message.string))
+
+
+def test_a_module_open_to_everyone_identified_proves_that_and_the_401():
+    open_to_all = new_module.tests_code(
+        module(EVERY_TYPE.replace('plural = "visits"', 'plural = "visits"\nrole = "signed_in"', 1))
+    )
+    assert "def test_everyone_identified_opens_it" in open_to_all and ".status_code == 401" in open_to_all
+    assert "def test_without_the_role_nothing_opens" not in open_to_all
+    assert "def test_without_the_role_nothing_opens" in new_module.tests_code(module())

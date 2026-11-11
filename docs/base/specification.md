@@ -442,6 +442,19 @@ addresses in `APP_TRUSTED_PROXIES`, by default this computer. Uvicorn listens on
 with `--no-proxy-headers`: otherwise it replaces the proxy's address with the one in `X-Forwarded-For`, and everyone
 gets 401. A repeated identity header means no identity.
 
+Roles come from groups, in `APP_ROLE_GROUPS`. A `*` in a group stands for any text, so a family of groups gives one
+role: `{"admin": ["app-admins"], "manager": ["departamento-*"]}`. Which one matched, a department for example, is the
+application's own to read from the person's groups: the base knows nothing of what a group means. Everyone the proxy
+identified also has `signed_in`, which no group gives: a screen open to all of them asks for it, and who may come in
+at all is the proxy's, or Entra's, to decide.
+
+| Roles | How |
+|---|---|
+| None: whoever comes in may do everything | `role = "signed_in"` in each module; nothing in `APP_ROLE_GROUPS` |
+| Fixed, from the directory's groups | `APP_ROLE_GROUPS`, each role and its groups |
+| One role from a family of groups, and what it covers from which | A pattern in `APP_ROLE_GROUPS`; the application reads the matching group from `Person.groups` |
+| Managed in the application, with the directory giving only who comes in | Not in the base: a module of the application's own, for whom may see that screen |
+
 A visitor without identity gets the 401 page, with no navigation, version or user menu. The public paths are exactly
 `/health` and `/static/`. For local work, a fake identity is available and refuses to start outside development.
 
@@ -783,7 +796,7 @@ uv run --frozen python tools/new_module.py --spec module.toml
 | In the description | What it says |
 |---|---|
 | `package`, `entity`, `title`, `singular`, `plural` | The package (`app/assets/`), the model's class, and the words the pages use, in English: they go through the translations |
-| `path`, `icon`, `description`, `role`, `edit_role` | Optional: the address (`/assets`), a Lucide icon for the navigation, a line under the title, who may open it and who may change it (`admin` for both) |
+| `path`, `icon`, `description`, `role`, `edit_role` | Optional: the address (`/assets`), a Lucide icon for the navigation, a line under the title, who may open it and who may change it (`admin` for both; `signed_in` is everyone identified, and its tests prove the 401 instead of the 403) |
 | `[[field]]` | `name`, `label` and `type`: `text`, `long_text`, `integer`, `decimal`, `date`, `datetime`, `boolean`, `choice` or `reference`. Then `required`, `unique` (a text, a whole number or a date, and required), `search` (a text), `filter` (a choice, a yes or no, or a reference), `list` (a column), `hint`, and the limits of its type: `longest`, `low`, `high`, `places`, `choices` |
 | `[board]` | `field`, a choice: a card for each row, in a column for each of its values, moved by its own form or by dragging, at `<path>/board` |
 | `[calendar]` | `start`, a date or a date and time, and `end`, of the same type, if each row has one: each row on its day or at its time, moved by dragging or through its form, at `<path>/calendar` |

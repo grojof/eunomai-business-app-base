@@ -1,12 +1,13 @@
 """Who is asking: a trusted proxy says so in headers. The application has no login of its own."""
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
 
 from fastapi import HTTPException, Request
 from starlette.datastructures import Headers
 
-from app.core.settings import Settings
+from app.core.settings import SIGNED_IN, Settings
 
 
 @dataclass(frozen=True)
@@ -26,8 +27,21 @@ def _text(value: str) -> str:
         return value.strip()
 
 
+def _pattern(granted_by: str) -> re.Pattern[str]:
+    """A group's name, where `*` stands for any text: `departamento-*` is every group that starts so. Nothing else is
+    special, so a group with brackets or dots in its name is matched as it is written."""
+    return re.compile(".*".join(re.escape(part) for part in granted_by.split("*")))
+
+
 def _roles(groups: frozenset[str], settings: Settings) -> frozenset[str]:
-    return frozenset(role for role, granted_by in settings.role_groups.items() if groups & set(granted_by))
+    """`signed_in` for everyone the proxy identified, and each role whose groups or patterns match one of theirs.
+    Which group matched, a department for example, is the application's to read from `Person.groups`."""
+    granted = {SIGNED_IN}
+    for role, granted_by in settings.role_groups.items():
+        patterns = [_pattern(name) for name in granted_by]
+        if any(pattern.fullmatch(group) for pattern in patterns for group in groups):
+            granted.add(role)
+    return frozenset(granted)
 
 
 def from_request(headers: Headers, client_host: str | None, settings: Settings) -> Person | None:

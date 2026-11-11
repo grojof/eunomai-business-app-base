@@ -60,7 +60,8 @@ singular = "asset"          # in sentences: "No assets yet", "%(count)s asset"
 plural = "assets"
 description = "Every asset, its state and who has it."
 icon = "package"            # a Lucide icon: uv run --frozen python tools/icons.py search <word>
-role = "admin"              # who may open it; edit_role, who may change it, is the same unless it says otherwise
+role = "admin"              # who may open it (signed_in: everyone identified); edit_role, who may change it,
+                            # is the same unless it says otherwise
 
 # Field types: text, long_text, integer, decimal, date, datetime, boolean, choice. Each may say: required, unique (text,
 # integer or date, and then required), search (text), filter (choice or boolean), list (shown as a column), hint.
@@ -1897,16 +1898,35 @@ def tests_code(module: Module) -> str:
             "",
         ]
     lines += view_tests(module)
+    if module.role == "signed_in":  # open to everyone identified: who has none is all that is left to refuse
+        lines += [
+            "def test_without_identity_nothing_opens_and_nothing_changes(filled):",
+            "    client, url = filled",
+            "    before = len(rows(url))",
+            f'    assert client.get("{path}").status_code == 401',
+            f'    assert client.post("{path}", data=VALID, headers=SAME_SITE).status_code == 401',
+            "    assert len(rows(url)) == before",
+            "",
+            "",
+            "def test_everyone_identified_opens_it(filled):",
+            "    client, _url = filled",
+            f'    assert client.get("{path}", headers=OUTSIDER).status_code == 200',
+            "",
+            "",
+        ]
+    else:
+        lines += [
+            "def test_without_the_role_nothing_opens_and_nothing_changes(filled):",
+            "    client, url = filled",
+            "    before = len(rows(url))",
+            f'    assert client.get("{path}", headers=OUTSIDER).status_code == 403',
+            f'    assert client.get("{path}/1", headers=OUTSIDER).status_code == 403',
+            f'    assert client.post("{path}", data=VALID, headers=SAME_SITE | OUTSIDER).status_code == 403',
+            "    assert len(rows(url)) == before",
+            "",
+            "",
+        ]
     lines += [
-        "def test_without_the_role_nothing_opens_and_nothing_changes(filled):",
-        "    client, url = filled",
-        "    before = len(rows(url))",
-        f'    assert client.get("{path}", headers=OUTSIDER).status_code == 403',
-        f'    assert client.get("{path}/1", headers=OUTSIDER).status_code == 403',
-        f'    assert client.post("{path}", data=VALID, headers=SAME_SITE | OUTSIDER).status_code == 403',
-        "    assert len(rows(url)) == before",
-        "",
-        "",
         "def test_each_page_opens(filled, person):",
         '    """The scan in a browser, below, would pass on an error page too."""',
         "    client, url = filled",
