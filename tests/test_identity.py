@@ -1,5 +1,5 @@
 import pytest
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.testclient import TestClient
 
 from app import __version__
@@ -90,3 +90,46 @@ def test_a_role_is_checked_on_the_server(person):
     response = client.get("/secret", headers=person)
     assert response.status_code == 403
     assert "secret" not in response.text.split("<title>")[0]
+
+
+def roles_of(groups: str, **role_groups) -> set[str]:
+    application = create_app(build_settings(role_groups=role_groups))
+    seen = {}
+
+    async def who(request: Request) -> dict[str, str]:
+        seen["roles"] = set(request.state.person.roles)
+        return {}
+
+    application.add_api_route("/who", who)
+    TestClient(application).get("/who", headers={"X-Remote-User": "someone", "X-Remote-Groups": groups})
+    return seen["roles"]
+
+
+def test_everyone_identified_has_signed_in_and_no_group_gives_it():
+    assert roles_of("", admin=["admins"]) == {"signed_in"}
+    with pytest.raises(ValueError, match="signed_in"):
+        build_settings(role_groups={"signed_in": ["staff"]})
+
+
+@pytest.mark.parametrize(
+    ("groups", "expected"),
+    [
+        ("departamento-calidad", {"signed_in", "manager"}),
+        ("staff|departamento-produccion", {"signed_in", "manager"}),
+        ("departamento", {"signed_in"}),
+        ("otro-departamento-calidad", {"signed_in"}),
+        ("admins", {"signed_in", "admin"}),
+    ],
+)
+def test_a_star_in_a_group_stands_for_any_text(groups, expected):
+    assert roles_of(groups, admin=["admins"], manager=["departamento-*"]) == expected
+
+
+def test_only_the_star_is_special_in_a_group():
+    assert roles_of("team.a[1]", auditor=["team.a[1]"]) == {"signed_in", "auditor"}
+    assert roles_of("teamxa1", auditor=["team.a[1]"]) == {"signed_in"}
+
+
+def test_a_group_that_is_only_a_star_is_refused():
+    with pytest.raises(ValueError, match="use signed_in"):
+        build_settings(role_groups={"everyone": ["*"]})
