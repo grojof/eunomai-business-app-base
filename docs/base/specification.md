@@ -755,7 +755,7 @@ each page says so.
 | To do this | Change |
 |---|---|
 | Your colours, radius and logos | The base uses daisyUI's `light` and `dark` themes as they come. To change them, paste what [daisyUI's theme generator](https://daisyui.com/theme-generator/) gives you into `app/brand/theme.css`, in hex or oklch, as a theme named `light` and one named `dark`, and run `tools/css.py`. The comment in that file shows both. A value left out keeps daisyUI's, and `dark` follows the system's choice with `prefersdark: true`. Contrast of your themes' text colours is then computed |
-| Your top bar and menu | A daisyUI theme called `bar` in `app/brand/theme.css`, made with the same generator, in which both the bar and the menu are drawn when `APP_LAYOUT_BAR` is `brand` (or a person chooses it): everything on them, the menus they open included, takes its colours, and its contrast is checked like the others'. A logo for them in `app/brand/logo-bar.svg`, of any proportion; without it, `logo.svg`. Their size and the logo's in the same file: `:root { --app-bar-height: 4rem; --app-nav-width: 18rem; --app-logo-height: 2.5rem; }` (the logo is `.app-logo`, 2rem high by default). The bar is `.app-bar` and the menu `.app-nav`, for anything else a brand adds to them |
+| Your top bar, menu, logos and roles | [Your theme](#your-theme) |
 | Your icons | SVG files in `app/brand/icons/`, drawn as [Icons and illustrations](#icons-and-illustrations) says, and their words in `app/brand/icons/tags.json`. Use a name Lucide does not have. Then `tools/icons.py check` |
 | Your fonts | The files in `app/brand/fonts/`, which the application serves at `/static/brand/fonts/`, so the policy's `font-src 'self'` allows them and nothing is loaded from another server. In `app/brand/theme.css`, an `@font-face` for each file and `--font-sans` in `@theme`, with a fallback after it, as the file's comment shows; then `tools/css.py`. Check that the font's licence lets you serve it |
 | Your illustrations | Files in `app/ui/static/illustrations/`, from your own tools, shown with `<img src>` or as a CSS background. Then `tools/icons.py check` |
@@ -785,6 +785,59 @@ and an application made from it takes them with `tools/update_application.py`, o
 
 `AGENTS.md`, the documentation and the checks travel with every clone. Any of them can be removed and the application
 still runs.
+
+## Your theme
+
+Everything a brand sets lives in `app/brand/`, and nothing else changes: daisyUI's themes, a few CSS variables, the
+logos and the fonts. Each colour pair is checked by `tests/test_brand.py`, text at 4.5:1 and what shows a state at
+3:1, in every theme the brand defines.
+
+**Themes**, made with [daisyUI's theme generator](https://daisyui.com/theme-generator/) and pasted into
+`app/brand/theme.css`: `light`, `dark`, and `bar` for the top bar and the menu when `APP_LAYOUT_BAR` is `brand`. A
+theme also holds daisyUI's radii (`--radius-field`, `--radius-box`, `--radius-selector`), border (`--border`), depth
+(`--depth`) and sizes (`--size-field`, `--size-selector`); square corners on the bar alone, for instance, are
+`--radius-field: 0rem` in `bar`. A value a theme leaves out is the page's, which may not show on the bar: set each one
+the bar uses.
+
+**Roles**, CSS variables a theme may set for itself, inside its block, so each theme has its own:
+
+| Variable | Default | Where | Checked against |
+|---|---|---|---|
+| `--app-focus-color` | `primary` | The keyboard's focus | `base-100`, `base-200` at 3:1 |
+| `--app-focus-width`, `--app-focus-offset` | `2px`, `2px` | The focus's line | — |
+| `--app-selected`, `--app-selected-content` | `neutral`, `neutral-content` | The menu's current item, the option the arrow keys are on | Each other at 4.5:1 |
+| `--app-tab-indicator` | The tab's text | The current tab's line | `base-100` at 3:1 |
+| `--app-event`, `--app-event-content` | `primary` at 22% on `base-100`, `base-content` | Calendar events | Each other at 4.5:1 |
+| `--app-chart-1` to `--app-chart-4` | `primary`, `accent`, `secondary`, `info` | A chart's series, in order | `base-100` at 3:1 |
+| `--app-link-color` | The text's | Links | `base-100` at 4.5:1 |
+| `--app-heading-font`, `--app-heading-weight` | The text's font; bold and semibold | `h1` and `h2` | — |
+
+**Sizes**, on `:root`: `--app-bar-height` (the bar's own), `--app-nav-width` (16rem), `--app-nav-width-compact`
+(4rem), `--app-logo-height` (2rem). The bar is `.app-bar`, the menu `.app-nav`, the logo `.app-logo`, for anything
+else a brand adds to them.
+
+**Logos**, SVG files of any proportion; only `logo.svg` is required, and each falls back as the table says:
+
+| File | What | Without it |
+|---|---|---|
+| `logo.svg` | The logomark, the symbol, on a light background | — |
+| `logo-full.svg` | The logotype, the whole logo, on a light background | `logo.svg` |
+| `logo-bar.svg` | The logomark on the bar | `logo.svg` |
+| `logo-bar-full.svg` | The logotype on the bar | `logo-bar.svg`, then `logo-full.svg` |
+| `favicon.svg` | The browser's tab | `logo.svg` |
+
+The whole logo goes where it fits: the top bar on a wide screen and the side menu. The symbol goes where room is
+short: the icons-only menu and a phone. The application's name follows the logo.
+
+**Arrangement.** The side menu folds to its icons and back from a button at its foot, which is the same choice as the
+settings menu's. In the icons-only menu a link's name shows beside it on hover and on keyboard focus, stays while the
+pointer moves onto it, and Escape hides it. With the page's title in the top bar, its breadcrumb trail goes there
+too, and the title takes the place of the trail's last item, the page itself. An organization sets the arrangement
+its applications start with in `layer.toml` (see [An organization's template](#an-organizations-template)).
+
+**Files are linked with a stamp of their content** (`app.css?v=…`): a browser fetches one again as soon as it
+changes and never keeps an old script after an update. The copied libraries take their pinned hash as their stamp:
+an old copy would fail the new integrity and not run.
 
 ## A new module
 

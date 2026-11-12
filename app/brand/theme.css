@@ -34,9 +34,8 @@
    the same generator: base-100 is the bar, base-200 and base-300 what sits on it (the search box, a line), neutral
    the menu's current item, primary the keyboard's focus. A value it leaves out is the page's, which may not show on
    the bar: set each one. Without a theme called "bar", the brand's colours look like the page's.
-   The bar's height, the menu's width and the logo's height are yours too, here:
-   :root { --app-bar-height: 4rem; --app-nav-width: 18rem; --app-logo-height: 2.5rem; }
-   And a logo for the bar, such as a white one for a dark bar: app/brand/logo-bar.svg. Without it, logo.svg. */
+   The bar's height, the menu's widths, the logo's height, the brand's roles (focus, selected, charts...) and the
+   logos for each place are yours too: see "Your theme" in docs/base/specification.md. */
 @plugin "../../tools/tailwind/daisyui-theme.mjs" {
   name: "bar";
   color-scheme: dark;
