@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 (2026-11-12)
+
+Two tests that failed in an organization's template, though nothing was wrong:
+
+- The side menu's tests wait for an application that has a menu. A template, or an application before its first
+  module, has none, and they failed there instead of being skipped.
+- The palette's test asked for the selected option's icon in the option's own colour. With a brand's icon tile
+  (`--app-icon-tile`) it is in the tile's, turned round, as it should be.
+
 ## 0.2.0 (2026-11-12)
 
 An organization can now make its applications look clearly its own with its brand files and a few settings, and
