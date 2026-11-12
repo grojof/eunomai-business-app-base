@@ -8,6 +8,11 @@ import pytest
 
 from tools import update_application as tool
 
+pytestmark = pytest.mark.skipif(
+    (tool.git_version() or (0, 0)) < tool.GIT_NEEDED,
+    reason="git 2.40 or later is needed: IT's computers have it, a person's computer and some sandboxes do not",
+)
+
 SOURCE_V1 = '# Made by tools/make_template.py\nbase_commit = "1111111aaaa"\nlayer = "layer-one"\n'
 SOURCE_V2 = '# Made by tools/make_template.py\nbase_commit = "2222222bbbb"\nlayer = "layer-one"\n'
 V1 = {
@@ -166,3 +171,10 @@ def test_from_another_folder_the_check_reads_the_named_application(template, app
     assert "1 in conflict" in capsys.readouterr().out
     assert tool.main(["--template", str(template), "--application", str(application), "--to", "nowhere"]) == 1
     assert "no branch, tag or commit nowhere" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(("found", "said"), [(None, "there is none"), ((2, 39), "this one is 2.39")])
+def test_without_a_git_that_can_merge_with_a_base_it_says_so_and_changes_nothing(monkeypatch, found, said):
+    monkeypatch.setattr(tool, "git_version", lambda: found)
+    with pytest.raises(tool.Refused, match=said):
+        tool.check_git()

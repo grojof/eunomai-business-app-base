@@ -874,7 +874,8 @@ changed is merged; where both changed the same lines, the file keeps conflict ma
 own files are not touched. `--check` changes nothing and says what would happen: the versions, the template's files
 the application changed, and which files would merge cleanly or not. Without it the update goes on a new branch,
 `template-<base>`, committed when nothing is in conflict. It never pushes. An application made before the tool
-existed runs it from a newer template's folder, with `--application` naming its own.
+existed runs it from a newer template's folder, with `--application` naming its own. It needs git 2.40 or later (`git merge-tree --merge-base`), as IT's computers have;
+without it, it says so and changes nothing, and its tests are skipped: a person's computer has no git on purpose.
 
 | Decision | Why | Instead of |
 |---|---|---|

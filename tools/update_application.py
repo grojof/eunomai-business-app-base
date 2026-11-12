@@ -23,6 +23,7 @@ An application made before this tool existed does not have it: run it from a new
 """
 
 import argparse
+import re
 import subprocess
 import sys
 import tomllib
@@ -32,6 +33,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ".template-source"
 TEMPLATE_REF = "refs/eunomai/template"
+
+
+GIT_NEEDED = (2, 40)
+"""`git merge-tree --merge-base`, which the update needs, is in git 2.40 and later."""
 
 
 class Refused(Exception):
@@ -52,6 +57,25 @@ def source(text: str) -> tuple[str, str]:
         return str(values["base_commit"]), str(values["layer"])
     except (tomllib.TOMLDecodeError, KeyError) as error:
         raise Refused(f"{SOURCE} cannot be read: {error}") from None
+
+
+def git_version() -> tuple[int, ...] | None:
+    """The version of the git on this computer; None when there is none. A person's computer, where applications
+    are built with an assistant, has none on purpose: this tool is IT's."""
+    try:
+        said = subprocess.run(["git", "--version"], capture_output=True, text=True).stdout
+    except OSError:
+        return None
+    found = re.search(r"(\d+)\.(\d+)", said)
+    return (int(found[1]), int(found[2])) if found else None
+
+
+def check_git() -> None:
+    found = git_version()
+    if found is None:
+        raise Refused("git is needed, and there is none on this computer")
+    if found < GIT_NEEDED:
+        raise Refused(f"git {GIT_NEEDED[0]}.{GIT_NEEDED[1]} or later is needed, this one is {found[0]}.{found[1]}")
 
 
 def fetch(template: str, ref: str, cwd: Path) -> str:
@@ -115,6 +139,7 @@ def merge(plan: Plan, cwd: Path) -> tuple[str, list[str]]:
 
 
 def plan_update(template: str, ref: str, cwd: Path = ROOT) -> Plan:
+    check_git()
     here = cwd / SOURCE
     if not here.is_file():
         raise Refused(f"no {SOURCE}: this application was not made by tools/make_template.py")
