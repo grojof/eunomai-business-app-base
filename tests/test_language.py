@@ -383,3 +383,23 @@ def test_any_other_date_is_refused(text):
 def test_a_date_in_other_digits_is_refused(text):
     with pytest.raises(ValueError):
         formatters.parse_date(text)
+
+
+def test_a_catalogue_changes_only_when_its_texts_do(tmp_path, monkeypatch):
+    """A module's new texts left the base's catalogues with a new date in their header: an update of the template
+    then found a change on both sides of them, and could not come in on its own."""
+    app = tmp_path / "app"
+    for package, text in (("core", "Shared"), ("orders", "Orders")):
+        (app / package).mkdir(parents=True)
+        (app / package / "__init__.py").write_text("", encoding="utf-8")
+        (app / package / "texts.py").write_text(f'_("{text}")\n', encoding="utf-8")
+    monkeypatch.setattr(translations, "DOMAINS", translations.domains(app))
+    monkeypatch.setattr(translations, "REQUIRED", ["es"])
+    translations.update()
+    base = tmp_path / "locales" / "es" / "LC_MESSAGES" / "messages.po"
+    first = base.read_bytes()
+    (app / "orders" / "texts.py").write_text('_("Orders")\n_("New order")\n', encoding="utf-8")
+    translations.update()
+    assert base.read_bytes() == first  # the base's catalogue, untouched
+    module = app / "orders" / "locales" / "es" / "LC_MESSAGES" / "messages.po"
+    assert b'msgid "New order"' in module.read_bytes()

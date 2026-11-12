@@ -7,6 +7,7 @@ uv run --frozen python tools/translations.py check    report anything missing, u
 import re
 import sys
 from dataclasses import dataclass
+from io import BytesIO
 from pathlib import Path
 
 from babel.messages.catalog import Catalog, Message
@@ -97,10 +98,17 @@ def update() -> None:
         for language in REQUIRED:
             path = path_of(domain, language)
             catalog = read(path, language)
+            created = catalog.creation_date
             catalog.update(template, no_fuzzy_matching=True)
-            path.parent.mkdir(parents=True, exist_ok=True)
-            with path.open("wb") as file:
-                write_po(file, catalog, omit_header=False, sort_output=True, no_location=True, ignore_obsolete=True)
+            # The header keeps its date, and a catalogue whose texts did not change is not written: a date that moved
+            # on every run set the base's catalogues apart in each application, and an update of its template then
+            # met a change on both sides, which nobody had made.
+            catalog.creation_date = created
+            written = BytesIO()
+            write_po(written, catalog, omit_header=False, sort_output=True, no_location=True, ignore_obsolete=True)
+            if not path.exists() or path.read_bytes() != written.getvalue():
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(written.getvalue())
 
 
 def _texts(message: object) -> list[str]:
