@@ -293,7 +293,7 @@ def test_the_brands_colours_reach_the_bar_and_the_menu(open_page, navigation):
     if navigation == "side":
         assert background(page.locator("#navigation")) == BAR
     logo = page.locator("#navigation img" if navigation == "side" else "header.app-bar img").first
-    assert logo.get_attribute("src") == "/static/brand/logo.svg"  # the base has no logo for the bar
+    assert logo.evaluate("i => i.currentSrc").endswith("/static/brand/logo-bar-full.svg")
     plain = open_page("/", layout={"navigation": navigation})
     assert plain.locator("header.app-bar").get_attribute("data-theme") is None
     assert background(plain.locator("header.app-bar")) != BAR
@@ -334,11 +334,31 @@ def test_the_brands_roles_reach_the_focus_the_menu_and_the_icons_only_menu(open_
     assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 80
 
 
-def test_the_bar_takes_its_own_logo_only_when_the_brand_has_one():
+def test_each_logo_falls_back_to_the_one_a_brand_has(tmp_path, monkeypatch):
     from app.core import templating
 
-    assert not templating.BAR_LOGO.exists()  # the base has none
-    assert templating.environment.globals["bar_logo"] == "/static/brand/logo.svg"
+    monkeypatch.setattr(templating, "BRAND", tmp_path)
+    (tmp_path / "logo.svg").write_text("<svg/>")
+    assert templating._first("logo-bar-full.svg", "logo-bar.svg", "logo-full.svg") == "/static/brand/logo.svg"
+    (tmp_path / "logo-full.svg").write_text("<svg/>")
+    assert templating._first("logo-bar-full.svg", "logo-bar.svg", "logo-full.svg") == "/static/brand/logo-full.svg"
+    assert templating._first("favicon.svg") == "/static/brand/logo.svg"
+
+
+@pages
+@pytest.mark.parametrize(
+    ("navigation", "width", "shown"),
+    [
+        ("top", 1280, "logo-bar-full.svg"),
+        ("top", 375, "logo-bar.svg"),
+        ("compact", 1280, "logo-bar.svg"),
+        ("side", 1280, "logo-bar-full.svg"),
+    ],
+)
+def test_the_whole_logo_where_it_fits_and_its_symbol_where_room_is_short(open_page, navigation, width, shown):
+    page = open_page("/", layout={"navigation": navigation, "bar": "brand"}, width=width)
+    place = "header.app-bar img" if navigation == "top" else "#navigation img"
+    assert page.locator(place).first.evaluate("i => i.currentSrc").endswith("/static/brand/" + shown)
 
 
 @pages

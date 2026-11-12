@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="htmx-config" content='{"includeIndicatorStyles":false,"allowEval":false,"historyCacheSize":0,"refreshOnHistoryMiss":true,"attributesToSettle":["class","width","height"],"defaultSettleDelay":0}'>
   <title>{% block title %}{% endblock %} · {{ app_name }}</title>
-  <link rel="icon" href="/static/brand/logo.svg">
+  <link rel="icon" href="{{ favicon }}">
   <link rel="stylesheet" href="/static/ui/app.css">
   {% for script in vendor_scripts %}
   <script src="{{ script.src }}" integrity="{{ script.integrity }}" crossorigin="anonymous" defer></script>
@@ -22,7 +22,6 @@
   {% set side = navigation and layout.navigation in ("side", "compact") %}
   {% set menu_button = "" if layout.navigation == "hidden" else "lg:hidden" %}
   {#- The bar and the menu take the theme called "bar" when the brand's colours are chosen. -#}
-  {% set logo = bar_logo if layout.bar == "brand" else "/static/brand/logo.svg" %}
   {#- The content is drawn first, so that its heading can go to the top bar when a person asks for that. -#}
   {% set title_place = page_title() %}
   {{- title_place.ask(layout.page_title == "header" and layout.navigation != "top") -}}
@@ -37,7 +36,7 @@
         <button class="btn btn-ghost btn-square {{ menu_button }}" type="button" popovertarget="navigation" aria-label="{{ _('Open menu') }}">{{ icon("menu") }}</button>
         {% endif %}
         {% if not side %}
-        <a class="flex items-center gap-2 font-semibold" href="/"><img class="app-logo" src="{{ logo }}" alt=""> <span{% if title_place.text %} class="sr-only md:not-sr-only"{% endif %}>{{ app_name }}</span></a>
+        <a class="flex items-center gap-2 font-semibold" href="/">{% with logo = logos[layout.bar] %}<picture><source media="(width >= 48rem)" srcset="{{ logo.full }}"><img class="app-logo" src="{{ logo.mark }}" alt=""></picture>{% endwith %} <span{% if title_place.text %} class="sr-only md:not-sr-only"{% endif %}>{{ app_name }}</span></a>
         {% endif %}
         {% if title_place.text %}<h1 class="page-title-bar min-w-0 flex-1 truncate">{{ title_place.text }}</h1>{% endif %}
         {% if navigation and not side %}{% include "ui/navigation.html" %}{% endif %}

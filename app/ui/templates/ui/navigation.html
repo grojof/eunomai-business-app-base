@@ -8,7 +8,8 @@
      class="app-nav fixed inset-y-0 start-0 m-0 h-dvh {{ 'app-nav-compact' if compact else '' }} overflow-y-auto overscroll-contain border-0 border-e border-base-300 bg-base-100 p-3 text-base-content lg:border-e-0 {{ shown }}">
   {% if not top %}
   <a class="mb-3 flex flex-wrap items-center gap-2 rounded-field px-2 py-2 text-lg font-bold" href="/">
-    <img class="app-logo" src="{{ bar_logo if layout.bar == 'brand' else '/static/brand/logo.svg' }}" alt="">
+    {#- The whole logo where the menu is wide; its symbol where it holds icons only -#}
+    {% with logo = logos[layout.bar] %}<picture>{% if compact %}<source media="(width >= 64rem)" srcset="{{ logo.mark }}">{% endif %}<img class="app-logo" src="{{ logo.full }}" alt=""></picture>{% endwith %}
     <span{% if compact %} class="lg:sr-only"{% endif %}>{{ app_name }}</span>
   </a>
   {% endif %}

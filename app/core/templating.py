@@ -22,8 +22,20 @@ UI = Path(__file__).resolve().parent.parent / "ui"
 ROOT = UI.parent.parent
 _loaders: list[FileSystemLoader] = [FileSystemLoader(UI / "templates")]
 BRAND_ICONS = FileSystemLoader(UI.parent / "brand" / "icons")
-BAR_LOGO = UI.parent / "brand" / "logo-bar.svg"
-"""A logo for the top bar and the menu in the brand's colours, such as a white one for a dark bar. Optional."""
+BRAND = UI.parent / "brand"
+
+
+def _first(*names: str) -> str:
+    """The first of a brand's files that exists, as it is served; `logo.svg`, which every brand has, at last."""
+    return "/static/brand/" + next((name for name in names if (BRAND / name).exists()), "logo.svg")
+
+
+LOGOS = {
+    "plain": {"mark": _first("logo.svg"), "full": _first("logo-full.svg")},
+    "brand": {"mark": _first("logo-bar.svg"), "full": _first("logo-bar-full.svg", "logo-bar.svg", "logo-full.svg")},
+}
+"""A brand's logos: the logomark, its symbol, where room is short, and the logotype, whole, where it fits; each for a
+light background (`plain`) and for the bar in the brand's colours (`brand`). Only logo.svg is required."""
 """The organization's own icons, as `brand-icons/<name>.svg`. Only the icon macro includes them, as it does Lucide's."""
 _VENDORED = json.loads((ROOT / "vendor.json").read_text(encoding="utf-8"))
 
@@ -82,7 +94,8 @@ class PageTitle:
 
 _page_title: ContextVar[PageTitle | None] = ContextVar("page_title", default=None)
 environment.globals["page_title"] = lambda: _page_title.get() or PageTitle()
-environment.globals["bar_logo"] = "/static/brand/" + ("logo-bar.svg" if BAR_LOGO.exists() else "logo.svg")
+environment.globals["logos"] = LOGOS
+environment.globals["favicon"] = _first("favicon.svg")
 """Each render has its own: a fragment never asks for the top bar, so its heading stays where it is."""
 
 
