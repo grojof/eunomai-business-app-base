@@ -73,9 +73,11 @@
 </div>
 {% endmacro %}
 
-{% macro badge(text, kind="neutral") %}
+{#- `strong`: a badge that must stand out from the others, when a person asks for it. The base's themes draw every badge
+    solid, so here it only makes the text bold; a brand that draws badges quieter draws a strong one solid. -#}
+{% macro badge(text, kind="neutral", strong=false) %}
 {% set classes = {"neutral": "badge-neutral", "info": "badge-info", "success": "badge-success", "warning": "badge-warning", "danger": "badge-error"} %}
-<span class="badge badge-sm whitespace-nowrap {{ classes[kind] }}">{{ text }}</span>
+<span class="badge badge-sm whitespace-nowrap {{ classes[kind] }}{{ ' badge-strong' if strong else '' }}">{{ text }}</span>
 {% endmacro %}
 
 {% macro progress(label, value, text, kind="primary") %}

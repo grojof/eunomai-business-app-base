@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eunomai-business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-05 13:32+0100\n"
+"POT-Creation-Date: 2026-11-12 15:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -1255,6 +1255,9 @@ msgstr "Actualizado"
 #, python-format
 msgid "Updated: %(moment)s"
 msgstr "Actualizado: %(moment)s"
+
+msgid "Urgent"
+msgstr "Urgente"
 
 msgid "Use 2000 characters at most."
 msgstr "Usa 2000 caracteres como máximo."

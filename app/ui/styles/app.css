@@ -76,6 +76,14 @@ div.calendar-dot {
   text-align: center;
 }
 
+/* A badge that must stand out (the macro's `strong`). daisyUI puts its colour classes in the utilities layer, so a
+   brand's theme can draw it solid there too */
+@layer utilities {
+  .badge-strong {
+    font-weight: 600;
+  }
+}
+
 /* Outside any layer, so no component can hide it: daisyUI's menu marks focus only with a background */
 :where(a, button, summary, input, select, textarea):focus-visible {
   outline: 2px solid var(--color-primary);
