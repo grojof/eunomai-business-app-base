@@ -30,6 +30,14 @@
      --font-sans: "Example Sans", ui-sans-serif, system-ui, sans-serif;
    } */
 
+/* daisyUI's dark theme as it comes, but for one value: its primary button's text, which reaches 4.14:1 there and 4.65:1
+   in white */
+@plugin "../../tools/tailwind/daisyui-theme.mjs" {
+  name: "dark";
+  prefersdark: true;
+  --color-primary-content: #ffffff;
+}
+
 /* The top bar and the menu in the brand's colours (layout choice `bar`: brand), in light and dark alike. Make it with
    the same generator: base-100 is the bar, base-200 and base-300 what sits on it (the search box, a line), neutral
    the menu's current item, primary the keyboard's focus. A value it leaves out is the page's, which may not show on

@@ -790,8 +790,10 @@ still runs.
 ## Your theme
 
 Everything a brand sets lives in `app/brand/`, and nothing else changes: daisyUI's themes, a few CSS variables, the
-logos and the fonts. Each colour pair is checked by `tests/test_brand.py`, text at 4.5:1 and what shows a state at
-3:1, in every theme the brand defines.
+logos and the fonts. `tests/test_brand.py` checks what the browser draws: the built stylesheet's themes, daisyUI's
+values with the brand's, and the bar on each page theme, as it inherits what it leaves out, each role as the stylesheet
+falls back without it. Text at 4.5:1 and what shows a state at 3:1. A colour is written as `#rrggbb`, `#rgb`,
+`oklch(L C H)` or `var(--color-...)`.
 
 **Themes**, made with [daisyUI's theme generator](https://daisyui.com/theme-generator/) and pasted into
 `app/brand/theme.css`: `light`, `dark`, and `bar` for the top bar and the menu when `APP_LAYOUT_BAR` is `brand`. A
@@ -806,11 +808,13 @@ the bar uses.
 |---|---|---|---|
 | `--app-focus-color` | `primary` | The keyboard's focus | `base-100`, `base-200` at 3:1 |
 | `--app-focus-width` | `2px` | The focus's line | — |
-| `--app-selected`, `--app-selected-content` | `neutral`, `neutral-content` | The menu's current item, the option the arrow keys are on | Each other at 4.5:1 |
-| `--app-tab-indicator` | The tab's text | The current tab's line | `base-100` at 3:1 |
+| `--app-selected`, `--app-selected-content` | `base-content`, `base-100`: the page turned round | The menu's current item, the option the arrow keys are on | Each other at 4.5:1; `base-100` at 3:1 |
+| `--app-hover`, `--app-hover-content` | `base-200`, the text's | An option under the pointer | Each other at 4.5:1 |
+| `--app-icon-tile`, `--app-icon-tile-content` | `base-200`, the text's | An option's icon and its tile, turned round on the selected one | Each other at 3:1 |
+| `--app-tab-indicator` | The tab's text | The current tab's line | `base-100`, `base-200` at 3:1 |
 | `--app-event`, `--app-event-content` | `primary` at 22% on `base-100`, `base-content` | Calendar events | Each other at 4.5:1 |
-| `--app-chart-1` to `--app-chart-4` | `primary`, `accent`, `secondary`, `info` | A chart's series, in order | `base-100` at 3:1 |
-| `--app-link-color` | The text's | Links | `base-100` at 4.5:1 |
+| `--app-chart-1` to `--app-chart-4` | `primary`, `accent`, `secondary`, `info` | A chart's series, in order | `base-100` at 3:1, where the brand sets them: daisyUI's own are not, and a chart's table carries its numbers |
+| `--app-link-color` | The text's | daisyUI's `.link`; not menus, breadcrumbs or plain links | `base-100`, `base-200` at 4.5:1 |
 
 **On `:root`**, for every theme: `--app-heading-font`, the headings' font (a list of fonts, which Tailwind would split
 inside a theme's block); `--app-bar-height` (the bar's least height, 3.5rem, which the side menu's logo shares, so the two line up), `--app-nav-width` (16rem), `--app-nav-width-compact`

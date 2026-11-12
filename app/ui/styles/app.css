@@ -188,8 +188,8 @@ div.calendar-dot {
 /* The menu's current item and the current tab's line, the brand's to set (--app-selected, --app-selected-content,
    --app-tab-indicator). Outside any layer, as daisyUI declares its own in the utilities layer */
 .menu {
-  --menu-active-bg: var(--app-selected, var(--color-neutral));
-  --menu-active-fg: var(--app-selected-content, var(--color-neutral-content));
+  --menu-active-bg: var(--app-selected, var(--color-base-content));
+  --menu-active-fg: var(--app-selected-content, var(--color-base-100));
 }
 
 .tabs-border > .tab::before {
@@ -542,38 +542,35 @@ div.calendar-dot {
     }
   }
 
-  /* A searchable select's options: the one the arrow keys are on, as in the palette. Selected is one role, the brand's
-     to set with --app-selected and --app-selected-content, for these and for the menu's current item */
-  [data-combobox] [role="option"][aria-selected="true"] > span {
-    background-color: var(--app-selected, var(--color-neutral));
-    color: var(--app-selected-content, var(--color-neutral-content));
-  }
-
+  /* The option the arrow keys are on, in the palette and a searchable select, is the role the menu's current item is
+     too: selected (--app-selected, --app-selected-content). By default the page's colours turned round, which show
+     on every theme. The pointer on another option is hover (--app-hover, --app-hover-content); the selected one keeps
+     its colours under it */
+  [data-combobox] [role="option"][aria-selected="true"] > span,
   #palette-results [role="option"][aria-selected="true"] {
-    background-color: var(--app-selected, var(--color-neutral));
-    color: var(--app-selected-content, var(--color-neutral-content));
+    background-color: var(--app-selected, var(--color-base-content));
+    color: var(--app-selected-content, var(--color-base-100));
   }
 
-  /* The pointer marks the others only: on the selected one it would put the page's light grey under its light text */
   #palette-results [role="option"]:not([aria-selected="true"]):hover {
-    background-color: var(--color-base-200);
+    background-color: var(--app-hover, var(--color-base-200));
+    color: var(--app-hover-content, inherit);
   }
 
-  #palette-results [role="option"][aria-selected="true"] span span {
+  #palette-results [role="option"]:is([aria-selected="true"], :hover) span span {
     color: inherit;
   }
 
-  /* An option's icon on a tile: the page's grey, or on the selected option a veil of its own colour */
+  /* An option's icon on a tile (--app-icon-tile, and the icon's colour --app-icon-tile-content). On the selected
+     option the two turn round; without them, it is a veil of the option's own colour there */
   .palette-icon {
-    background-color: var(--color-base-200);
+    background-color: var(--app-icon-tile, var(--color-base-200));
+    color: var(--app-icon-tile-content, inherit);
   }
 
   #palette-results [role="option"][aria-selected="true"] .palette-icon {
-    background-color: color-mix(in oklab, currentColor 18%, transparent);
-  }
-
-  #palette-results [role="option"][aria-selected="true"] .icon {
-    color: inherit;
+    background-color: var(--app-icon-tile-content, color-mix(in oklab, currentColor 18%, transparent));
+    color: var(--app-icon-tile, inherit);
   }
 
   #palette-results mark {
