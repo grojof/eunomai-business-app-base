@@ -22,6 +22,8 @@ UI = Path(__file__).resolve().parent.parent / "ui"
 ROOT = UI.parent.parent
 _loaders: list[FileSystemLoader] = [FileSystemLoader(UI / "templates")]
 BRAND_ICONS = FileSystemLoader(UI.parent / "brand" / "icons")
+BAR_LOGO = UI.parent / "brand" / "logo-bar.svg"
+"""A logo for the top bar and the menu in the brand's colours, such as a white one for a dark bar. Optional."""
 """The organization's own icons, as `brand-icons/<name>.svg`. Only the icon macro includes them, as it does Lucide's."""
 _VENDORED = json.loads((ROOT / "vendor.json").read_text(encoding="utf-8"))
 
@@ -80,6 +82,7 @@ class PageTitle:
 
 _page_title: ContextVar[PageTitle | None] = ContextVar("page_title", default=None)
 environment.globals["page_title"] = lambda: _page_title.get() or PageTitle()
+environment.globals["bar_logo"] = "/static/brand/" + ("logo-bar.svg" if BAR_LOGO.exists() else "logo.svg")
 """Each render has its own: a fragment never asks for the top bar, so its heading stays where it is."""
 
 

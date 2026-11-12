@@ -5,10 +5,10 @@
 {% set top = layout.navigation == "top" %}
 {% set shown = "" if layout.navigation == "hidden" else ("lg:block lg:static lg:h-auto lg:w-auto lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0" if top else "lg:sticky lg:top-0 lg:block lg:shrink-0") %}
 <nav id="navigation" popover="auto" aria-label="{{ _('Main') }}"
-     class="fixed inset-y-0 start-0 m-0 h-dvh {{ 'lg:w-16 w-64' if compact else 'w-64' }} overflow-y-auto overscroll-contain border-0 border-e border-base-300 bg-base-100 p-3 text-base-content lg:border-e-0 {{ shown }}">
+     class="app-nav fixed inset-y-0 start-0 m-0 h-dvh {{ 'lg:w-16' if compact else '' }} overflow-y-auto overscroll-contain border-0 border-e border-base-300 bg-base-100 p-3 text-base-content lg:border-e-0 {{ shown }}">
   {% if not top %}
-  <a class="mb-3 flex items-center gap-2 rounded-field px-2 py-2 text-lg font-bold" href="/">
-    <img class="size-8" src="/static/brand/logo.svg" alt="">
+  <a class="mb-3 flex flex-wrap items-center gap-2 rounded-field px-2 py-2 text-lg font-bold" href="/">
+    <img class="app-logo" src="{{ bar_logo if layout.bar == 'brand' else '/static/brand/logo.svg' }}" alt="">
     <span{% if compact %} class="lg:sr-only"{% endif %}>{{ app_name }}</span>
   </a>
   {% endif %}

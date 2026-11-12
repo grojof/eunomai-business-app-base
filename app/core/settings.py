@@ -11,6 +11,7 @@ from sqlalchemy.exc import ArgumentError
 
 LAYOUTS: dict[str, tuple[str, ...]] = {
     "navigation": ("side", "compact", "top", "hidden"),
+    "bar": ("plain", "brand"),
     "sticky_header": ("on", "off"),
     "width": ("full", "centered"),
     "density": ("normal", "compact"),
@@ -53,6 +54,8 @@ class Settings(BaseSettings):
 
     # How the application is arranged. See docs/base/specification.md#layouts
     layout_navigation: Literal["side", "compact", "top", "hidden"] = "side"
+    # The top bar and the menu: as the page, or in the brand's colours (the theme called "bar" in app/brand/theme.css).
+    layout_bar: Literal["plain", "brand"] = "plain"
     layout_sticky_header: bool = True
     layout_width: Literal["full", "centered"] = "full"
     layout_density: Literal["normal", "compact"] = "normal"

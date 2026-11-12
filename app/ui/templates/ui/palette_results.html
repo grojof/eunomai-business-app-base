@@ -7,7 +7,7 @@
   {% for item in items %}
   <a id="palette-option-{{ group_index }}-{{ loop.index }}" class="flex items-center gap-3 rounded-field px-3 py-2" role="option" href="{{ item.path }}" tabindex="-1" aria-selected="false"
      data-palette-option data-search="{{ item.label }} {{ item.keywords }} {{ item.description }}">
-    <span class="grid size-8 shrink-0 place-items-center rounded-field bg-base-200">{{ icon(item.icon or "hash", "size-4") }}</span>
+    <span class="palette-icon grid size-8 shrink-0 place-items-center rounded-field">{{ icon(item.icon or "hash", "size-4") }}</span>
     <span class="min-w-0 grow">
       <span class="block font-medium" data-palette-label>{{ item.label }}</span>
       {% if item.description %}<span class="block truncate text-sm">{{ item.description }}</span>{% endif %}

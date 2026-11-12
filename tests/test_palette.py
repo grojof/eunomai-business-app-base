@@ -144,6 +144,27 @@ def test_it_follows_the_combobox_pattern(open_page):
 
 
 @pages
+@pytest.mark.rule("A11Y-05")
+def test_the_selected_option_keeps_its_colours_under_the_pointer(open_page):
+    """The pointer's grey on the selected option left its light text on a light background."""
+    page = open_page("/")
+    open_palette(page)
+    selected = page.locator("#palette-results [aria-selected=true]")
+    colours = (
+        "o => [getComputedStyle(o).backgroundColor, getComputedStyle(o).color,"
+        " getComputedStyle(o.querySelector('.icon')).color]"
+    )
+    before = selected.evaluate(colours)
+    selected.hover()
+    after = selected.evaluate(colours)
+    assert after == before
+    assert after[2] == after[1]  # its icon in the option's own colour
+    tile = "o => getComputedStyle(o.firstElementChild).backgroundColor"
+    others = page.locator("#palette-results [aria-selected=false]").first
+    assert selected.evaluate(tile) != others.evaluate(tile)  # not the page's grey tile under a light icon
+
+
+@pages
 @pytest.mark.rule("A11Y-02")
 def test_arrows_move_and_wrap_and_enter_opens(open_page):
     page = open_page("/")

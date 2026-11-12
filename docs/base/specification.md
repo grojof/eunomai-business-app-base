@@ -465,6 +465,7 @@ An application chooses its arrangement in its settings. The [settings menu](#set
 | Setting | Options | Typical use |
 |---|---|---|
 | `APP_LAYOUT_NAVIGATION` | `side`, `compact` (icons only), `top`, `hidden` (opened from a button) | Side for management applications; top for a few sections |
+| `APP_LAYOUT_BAR` | `plain`, `brand` | `brand` draws the top bar and the menu in the theme called `bar` from `app/brand/theme.css`, with `app/brand/logo-bar.svg` if there is one |
 | `APP_LAYOUT_STICKY_HEADER` | `true`, `false` | Fixed for long tables |
 | `APP_LAYOUT_WIDTH` | `full`, `centered` | Full for tables; centred for forms |
 | `APP_LAYOUT_DENSITY` | `normal`, `compact` | Compact for data-heavy screens |
@@ -754,6 +755,7 @@ each page says so.
 | To do this | Change |
 |---|---|
 | Your colours, radius and logos | The base uses daisyUI's `light` and `dark` themes as they come. To change them, paste what [daisyUI's theme generator](https://daisyui.com/theme-generator/) gives you into `app/brand/theme.css`, in hex or oklch, as a theme named `light` and one named `dark`, and run `tools/css.py`. The comment in that file shows both. A value left out keeps daisyUI's, and `dark` follows the system's choice with `prefersdark: true`. Contrast of your themes' text colours is then computed |
+| Your top bar and menu | A daisyUI theme called `bar` in `app/brand/theme.css`, made with the same generator, in which both the bar and the menu are drawn when `APP_LAYOUT_BAR` is `brand` (or a person chooses it): everything on them, the menus they open included, takes its colours, and its contrast is checked like the others'. A logo for them in `app/brand/logo-bar.svg`, of any proportion; without it, `logo.svg`. Their size and the logo's in the same file: `:root { --app-bar-height: 4rem; --app-nav-width: 18rem; --app-logo-height: 2.5rem; }` (the logo is `.app-logo`, 2rem high by default). The bar is `.app-bar` and the menu `.app-nav`, for anything else a brand adds to them |
 | Your icons | SVG files in `app/brand/icons/`, drawn as [Icons and illustrations](#icons-and-illustrations) says, and their words in `app/brand/icons/tags.json`. Use a name Lucide does not have. Then `tools/icons.py check` |
 | Your fonts | The files in `app/brand/fonts/`, which the application serves at `/static/brand/fonts/`, so the policy's `font-src 'self'` allows them and nothing is loaded from another server. In `app/brand/theme.css`, an `@font-face` for each file and `--font-sans` in `@theme`, with a fallback after it, as the file's comment shows; then `tools/css.py`. Check that the font's licence lets you serve it |
 | Your illustrations | Files in `app/ui/static/illustrations/`, from your own tools, shown with `<img src>` or as a CSS background. Then `tools/icons.py check` |
@@ -842,7 +844,7 @@ uv run --frozen python tools/make_template.py --layer ../our-layer --out ../our-
 
 | Part | What it holds |
 |---|---|
-| `layer.toml` | `name`, which applications show until they are given their own; `languages`, kept besides English; `default_language`, optional |
+| `layer.toml` | `name`, which applications show until they are given their own; `languages`, kept besides English; `default_language`, optional; `[layout]`, optional: the arrangement applications start with, as the settings' defaults, such as `bar = "brand"` for the top bar in the brand's colours. Each key is a `layout_*` setting with options, and a value it does not offer is refused |
 | `files/` | Copied onto the template, under `app/brand/` (themes, logo, fonts, icons) and a CI folder (`.gitea/`, `.github/`, `.forgejo/`) only. A file anywhere else is refused, before anything is written |
 
 Each run starts from an empty folder, or from a clone of the template's repository with nothing uncommitted, which keeps

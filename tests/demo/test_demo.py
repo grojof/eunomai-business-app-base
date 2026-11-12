@@ -16,6 +16,8 @@ LAYOUTS = [
     {"navigation": "hidden"},
     {"sticky_header": "off", "width": "centered"},
     {"density": "compact"},
+    {"bar": "brand"},
+    {"navigation": "top", "bar": "brand"},
 ]
 ALLOWED = ("Business App", "Demo Person", "Mar 15, 2027", "Nov 20, 2026", "Jan 12, 2027", "Nov 9, 2026", "May 3, 2027")
 

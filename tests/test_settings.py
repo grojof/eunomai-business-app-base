@@ -276,6 +276,46 @@ def test_a_person_can_try_each_arrangement(open_page, navigation):
     assert not overflows_sideways(page)
 
 
+BAR = "rgb(31, 41, 55)"
+"""The base's own theme called bar: base-100 #1f2937."""
+
+
+def background(locator) -> str:
+    return locator.evaluate("element => getComputedStyle(element).backgroundColor")
+
+
+@pages
+@pytest.mark.parametrize("navigation", ["side", "top"])
+def test_the_brands_colours_reach_the_bar_and_the_menu(open_page, navigation):
+    page = open_page("/", layout={"navigation": navigation, "bar": "brand"})
+    bar = page.locator("header.app-bar")
+    assert bar.get_attribute("data-theme") == "bar" and background(bar) == BAR
+    if navigation == "side":
+        assert background(page.locator("#navigation")) == BAR
+    logo = page.locator("#navigation img" if navigation == "side" else "header.app-bar img").first
+    assert logo.get_attribute("src") == "/static/brand/logo.svg"  # the base has no logo for the bar
+    plain = open_page("/", layout={"navigation": navigation})
+    assert plain.locator("header.app-bar").get_attribute("data-theme") is None
+    assert background(plain.locator("header.app-bar")) != BAR
+
+
+@pages
+def test_the_menus_width_is_the_brands_and_icons_only_still_narrows_it(open_page):
+    page = open_page("/", layout={"navigation": "side"})
+    assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 256
+    page.evaluate("document.documentElement.style.setProperty('--app-nav-width', '18rem')")
+    assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 288
+    page = open_page("/", layout={"navigation": "compact"})
+    assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 64
+
+
+def test_the_bar_takes_its_own_logo_only_when_the_brand_has_one():
+    from app.core import templating
+
+    assert not templating.BAR_LOGO.exists()  # the base has none
+    assert templating.environment.globals["bar_logo"] == "/static/brand/logo.svg"
+
+
 @pages
 @pytest.mark.parametrize("control", THEME_CONTROLS)
 def test_a_style_chosen_reaches_the_header(open_page, control):

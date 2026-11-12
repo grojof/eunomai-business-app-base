@@ -46,7 +46,9 @@ FONT = b"wOF2 not a real font, only bytes to serve"
 def a_layer(folder: Path, files: dict[str, bytes] | None = None, **settings: object) -> Path:
     values = {"name": "Example Org apps", "languages": ["es"], "default_language": "es", **settings}
     folder.mkdir(parents=True)
-    lines = [f"{key} = {json.dumps(value)}" for key, value in values.items()]
+    lines = [f"{key} = {json.dumps(value)}" for key, value in values.items() if not isinstance(value, dict)]
+    for key, table in ((key, value) for key, value in values.items() if isinstance(value, dict)):
+        lines += [f"[{key}]", *(f"{name} = {json.dumps(value)}" for name, value in table.items())]
     (folder / "layer.toml").write_text("\n".join(lines) + "\n", encoding="utf-8")
     default = {
         "app/brand/theme.css": THEMES.encode(),
@@ -67,7 +69,7 @@ def make(layer: Path, out: Path, *options: str) -> subprocess.CompletedProcess[s
 @pytest.fixture(scope="module")
 def made(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
     folder = tmp_path_factory.mktemp("template")
-    layer, out = a_layer(folder / "layer"), folder / "template"
+    layer, out = a_layer(folder / "layer", layout={"bar": "brand", "width": "centered"}), folder / "template"
     result = make(layer, out)
     assert result.returncode == 0, f"{result.stdout[-3000:]} {result.stderr[-3000:]}"
     return layer, out
@@ -90,6 +92,14 @@ def test_it_offers_english_and_the_layers_languages_alone(made):
     settings = (out / "app" / "core" / "settings.py").read_text(encoding="utf-8")
     assert 'languages: list[str] = ["en", "es"]' in settings
     assert 'default_language: str = "es"' in settings
+
+
+def test_it_starts_applications_with_the_organizations_arrangement(made):
+    _layer, out = made
+    settings = (out / "app" / "core" / "settings.py").read_text(encoding="utf-8")
+    assert 'layout_bar: Literal["plain", "brand"] = "brand"' in settings
+    assert 'layout_width: Literal["full", "centered"] = "centered"' in settings
+    assert 'layout_navigation: Literal["side", "compact", "top", "hidden"] = "side"' in settings  # not chosen: kept
 
 
 def test_it_bears_the_organizations_name_until_an_application_has_its_own(made):
@@ -158,6 +168,8 @@ def test_the_same_base_and_layer_make_the_same_template(made, tmp_path):
         ({}, {"colour": "blue"}, "unknown keys: colour"),
         ({}, {"name": 'Quote " in it'}, "name is up to 60 characters"),
         ({}, {"languages": []}, "languages is a list"),
+        ({}, {"layout": {"bar": "loud"}}, r"\[layout\] chooses among .*bar: plain, brand"),
+        ({}, {"layout": {"colour": "blue"}}, r"\[layout\] chooses among"),
     ],
 )
 def test_a_layer_that_reaches_beyond_its_place_is_refused_before_anything_is_written(tmp_path, files, settings, said):

@@ -1,4 +1,5 @@
-/* The brand. The base uses daisyUI's own light and dark themes as they come, so this file is empty.
+/* The brand. The base uses daisyUI's own light and dark themes as they come; it adds only the theme called "bar"
+   below, for the top bar and the menu when a person chooses the brand's colours for them.
    To use your colours, make a theme with https://daisyui.com/theme-generator/ , paste it below, and run tools/css.py.
    Name it "light" or "dark" to replace that theme: daisyUI keeps every value you leave out. Define both, so a person
    who works in the dark theme sees your colours too.
@@ -28,3 +29,20 @@
    @theme {
      --font-sans: "Example Sans", ui-sans-serif, system-ui, sans-serif;
    } */
+
+/* The top bar and the menu in the brand's colours (layout choice `bar`: brand), in light and dark alike. Make it with
+   the same generator: base-100 is the bar, base-200 and base-300 what sits on it (the search box, a line), neutral
+   the menu's current item. Without a theme called "bar", the brand's colours look like the page's.
+   The bar's height, the menu's width and the logo's height are yours too, here:
+   :root { --app-bar-height: 4rem; --app-nav-width: 18rem; --app-logo-height: 2.5rem; }
+   And a logo for the bar, such as a white one for a dark bar: app/brand/logo-bar.svg. Without it, logo.svg. */
+@plugin "../../tools/tailwind/daisyui-theme.mjs" {
+  name: "bar";
+  color-scheme: dark;
+  --color-base-100: #1f2937;
+  --color-base-200: #374151;
+  --color-base-300: #4b5563;
+  --color-base-content: #f9fafb;
+  --color-neutral: #f9fafb;
+  --color-neutral-content: #1f2937;
+}

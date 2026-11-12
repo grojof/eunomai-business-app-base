@@ -172,6 +172,7 @@ async def _save_preferences(
     theme: Annotated[str, Form()] = "",
     next_path: Annotated[str, Form(alias="next")] = "/",
     layout_navigation: Annotated[str, Form()] = "",
+    layout_bar: Annotated[str, Form()] = "",
     layout_sticky_header: Annotated[str, Form()] = "",
     layout_width: Annotated[str, Form()] = "",
     layout_density: Annotated[str, Form()] = "",
@@ -190,6 +191,7 @@ async def _save_preferences(
         response.set_cookie("theme", theme, **options)
     chosen = {
         "navigation": layout_navigation,
+        "bar": layout_bar,
         "sticky_header": layout_sticky_header,
         "width": layout_width,
         "density": layout_density,
@@ -224,6 +226,7 @@ async def _settings_page(request: Request) -> Response:
             _("Navigation"),
             {"side": _("Side"), "compact": _("Icons only"), "top": _("Top"), "hidden": _("Hidden")},
         ),
+        "bar": (_("Top bar and menu"), {"plain": _("Plain"), "brand": _("In the brand's colours")}),
         "sticky_header": (_("Fixed header"), {"on": _("Yes"), "off": _("No")}),
         "width": (_("Width"), {"full": _("Full"), "centered": _("Centred")}),
         "density": (_("Density"), {"normal": _("Normal"), "compact": _("Compact")}),
