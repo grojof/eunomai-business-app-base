@@ -1,12 +1,15 @@
 """Pages: Jinja2 with escaping always on, the translation functions and the locale's formatters."""
 
+import hashlib
 import json
 from collections.abc import Callable, Iterable, Sequence
 from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, cast
+from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
 from fastapi import Request
@@ -25,14 +28,31 @@ BRAND_ICONS = FileSystemLoader(UI.parent / "brand" / "icons")
 BRAND = UI.parent / "brand"
 
 
+@lru_cache(maxsize=256)
+def _stamp(file: Path, changed: int) -> str:
+    return hashlib.sha256(file.read_bytes()).hexdigest()[:12]
+
+
+def asset(address: str) -> str:
+    """The address of one of the application's own files, with a stamp of its content: a browser fetches it again as
+    soon as it changes, such as after an update, and never runs an old script with a new page."""
+    served_from = {"/static/ui/": UI / "static", "/static/brand/": BRAND}
+    prefix = next(prefix for prefix in served_from if address.startswith(prefix))
+    file = served_from[prefix] / address.removeprefix(prefix)
+    return f"{address}?v={_stamp(file, file.stat().st_mtime_ns)}"
+
+
 def _first(*names: str) -> str:
     """The first of a brand's files that exists, as it is served; `logo.svg`, which every brand has, at last."""
     return "/static/brand/" + next((name for name in names if (BRAND / name).exists()), "logo.svg")
 
 
 LOGOS = {
-    "plain": {"mark": _first("logo.svg"), "full": _first("logo-full.svg")},
-    "brand": {"mark": _first("logo-bar.svg"), "full": _first("logo-bar-full.svg", "logo-bar.svg", "logo-full.svg")},
+    "plain": {"mark": asset(_first("logo.svg")), "full": asset(_first("logo-full.svg"))},
+    "brand": {
+        "mark": asset(_first("logo-bar.svg")),
+        "full": asset(_first("logo-bar-full.svg", "logo-bar.svg", "logo-full.svg")),
+    },
 }
 """A brand's logos: the logomark, its symbol, where room is short, and the logotype, whole, where it fits; each for a
 light background (`plain`) and for the bar in the brand's colours (`brand`). Only logo.svg is required."""
@@ -41,7 +61,9 @@ _VENDORED = json.loads((ROOT / "vendor.json").read_text(encoding="utf-8"))
 
 
 def _script(entry: dict[str, Any]) -> dict[str, str]:
-    return {"src": "/static/ui/vendor/" + Path(entry["target"]).name, "integrity": "sha384-" + entry["sha384"]}
+    # Its stamp is its pinned hash: an old copy kept by a browser would fail the new integrity, and not run
+    address = "/static/ui/vendor/" + Path(entry["target"]).name + "?v=" + quote(entry["sha384"][:16], safe="")
+    return {"src": address, "integrity": "sha384-" + entry["sha384"]}
 
 
 _VENDOR_SCRIPTS = [_script(entry) for entry in _VENDORED.values() if entry.get("script") and not entry.get("on_demand")]
@@ -104,8 +126,9 @@ class PageTitle:
 _page_title: ContextVar[PageTitle | None] = ContextVar("page_title", default=None)
 environment.globals["page_title"] = lambda: _page_title.get() or PageTitle()
 """Each render has its own: a fragment never asks for the top bar, so its heading stays where it is."""
+environment.globals["asset"] = asset
 environment.globals["logos"] = LOGOS
-environment.globals["favicon"] = _first("favicon.svg")
+environment.globals["favicon"] = asset(_first("favicon.svg"))
 
 
 @dataclass(frozen=True)

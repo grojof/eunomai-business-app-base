@@ -294,7 +294,7 @@ def test_the_brands_colours_reach_the_bar_and_the_menu(open_page, navigation):
     if navigation == "side":
         assert background(page.locator("#navigation")) == BAR
     logo = page.locator("#navigation img" if navigation == "side" else "header.app-bar img").first
-    assert logo.evaluate("i => i.currentSrc").endswith("/static/brand/logo-bar-full.svg")
+    assert logo.evaluate("i => new URL(i.currentSrc).pathname") == "/static/brand/logo-bar-full.svg"
     plain = open_page("/", layout={"navigation": navigation})
     assert plain.locator("header.app-bar").get_attribute("data-theme") is None
     assert background(plain.locator("header.app-bar")) != BAR
@@ -407,7 +407,7 @@ def test_each_logo_falls_back_to_the_one_a_brand_has(tmp_path, monkeypatch):
 def test_the_whole_logo_where_it_fits_and_its_symbol_where_room_is_short(open_page, navigation, width, shown):
     page = open_page("/", layout={"navigation": navigation, "bar": "brand"}, width=width)
     place = "header.app-bar img" if navigation == "top" else "#navigation img"
-    assert page.locator(place).first.evaluate("i => i.currentSrc").endswith("/static/brand/" + shown)
+    assert page.locator(place).first.evaluate("i => new URL(i.currentSrc).pathname") == "/static/brand/" + shown
 
 
 @pages
