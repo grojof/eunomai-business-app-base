@@ -35,6 +35,14 @@ def malformed_rows(text: str) -> list[str]:
     return [line for line in text.splitlines() if ROW_START.match(line) and not ROW.fullmatch(line)]
 
 
+SAMPLES = ROOT / "tests" / ".samples"
+"""Where a test writes tests for pytest to collect. pytest walks down to a path from where it starts, listing each
+folder on the way: from the repository to here, only a few. A sample in the system's temporary folder had pytest list
+that folder, where the browser tests running beside it create and delete profiles, and one that went while it was being
+listed stopped the collection. pytest leaves out folders whose name starts with a dot, so it never collects these
+itself."""
+
+
 def collected_rules(*paths: str) -> dict[str, list[str]]:
     """Each rule with the tests that name it, from pytest's own collection: a comment or a string cannot pass as one."""
     with tempfile.TemporaryDirectory() as folder:
@@ -92,17 +100,20 @@ def test_every_automatic_rule_has_a_test_and_every_test_a_rule():
     assert tested - declared == set(), "tested, but the rule does not say so"
 
 
-def test_a_comment_or_a_string_does_not_count_as_a_test(tmp_path):
-    (tmp_path / "test_sample.py").write_text(
-        "import pytest\n\n"
-        '# @pytest.mark.rule("AAA-01")\n'
-        "TEXT = '@pytest.mark.rule(\"AAA-02\")'\n\n\n"
-        '@pytest.mark.rule("AAA-03")\n'
-        "def test_real():\n"
-        "    pass\n",
-        encoding="utf-8",
-    )
-    assert set(collected_rules(str(tmp_path))) == {"AAA-03"}
+def test_a_comment_or_a_string_does_not_count_as_a_test():
+    SAMPLES.mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=SAMPLES) as folder:
+        sample = Path(folder)
+        (sample / "test_sample.py").write_text(
+            "import pytest\n\n"
+            '# @pytest.mark.rule("AAA-01")\n'
+            "TEXT = '@pytest.mark.rule(\"AAA-02\")'\n\n\n"
+            '@pytest.mark.rule("AAA-03")\n'
+            "def test_real():\n"
+            "    pass\n",
+            encoding="utf-8",
+        )
+        assert set(collected_rules(str(sample))) == {"AAA-03"}
 
 
 def test_every_check_is_automatic_manual_or_planned():
