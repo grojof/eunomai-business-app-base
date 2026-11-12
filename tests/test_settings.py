@@ -277,29 +277,6 @@ def test_a_person_can_try_each_arrangement(open_page, navigation):
     assert not overflows_sideways(page)
 
 
-BAR = "rgb(31, 41, 55)"
-"""The base's own theme called bar: base-100 #1f2937."""
-
-
-def background(locator) -> str:
-    return locator.evaluate("element => getComputedStyle(element).backgroundColor")
-
-
-@pages
-@pytest.mark.parametrize("navigation", ["side", "top"])
-def test_the_brands_colours_reach_the_bar_and_the_menu(open_page, navigation):
-    page = open_page("/", layout={"navigation": navigation, "bar": "brand"})
-    bar = page.locator("header.app-bar")
-    assert bar.get_attribute("data-theme") == "bar" and background(bar) == BAR
-    if navigation == "side":
-        assert background(page.locator("#navigation")) == BAR
-    logo = page.locator("#navigation img" if navigation == "side" else "header.app-bar img").first
-    assert logo.evaluate("i => new URL(i.currentSrc).pathname") == "/static/brand/logo-bar-full.svg"
-    plain = open_page("/", layout={"navigation": navigation})
-    assert plain.locator("header.app-bar").get_attribute("data-theme") is None
-    assert background(plain.locator("header.app-bar")) != BAR
-
-
 @pages
 def test_the_menus_width_is_the_brands_and_icons_only_still_narrows_it(open_page):
     page = open_page("/", layout={"navigation": "side"})
@@ -308,31 +285,6 @@ def test_the_menus_width_is_the_brands_and_icons_only_still_narrows_it(open_page
     assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 288
     page = open_page("/", layout={"navigation": "compact"})
     assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 64
-
-
-@pages
-def test_the_brands_roles_reach_the_focus_the_menu_and_the_icons_only_menu(open_page):
-    page = open_page("/", layout={"navigation": "side"})
-    page.evaluate(
-        "const root = document.documentElement.style;"
-        "root.setProperty('--app-focus-color', 'rgb(255, 0, 0)'); root.setProperty('--app-focus-width', '3px');"
-        "root.setProperty('--app-selected', 'rgb(0, 128, 0)');"
-        "root.setProperty('--app-selected-content', 'rgb(0, 0, 0)')"
-    )
-    current = page.locator("#navigation a[aria-current]")
-    # daisyUI eases a menu item's colours, so the new one is read once it has arrived
-    page.wait_for_function(
-        "() => getComputedStyle(document.querySelector('#navigation a[aria-current]')).backgroundColor"
-        " === 'rgb(0, 128, 0)'"
-    )
-    current.focus()
-    page.keyboard.press("Shift+Tab")
-    page.keyboard.press("Tab")
-    focused = "() => ['outlineColor', 'outlineWidth'].map((name) => getComputedStyle(document.activeElement)[name])"
-    assert page.evaluate(focused) == ["rgb(255, 0, 0)", "3px"]
-    page = open_page("/", layout={"navigation": "compact"})
-    page.evaluate("document.documentElement.style.setProperty('--app-nav-width-compact', '5rem')")
-    assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 80
 
 
 @pages
@@ -350,37 +302,6 @@ def test_the_side_menu_folds_to_its_icons_and_back(open_page):
     with page.expect_navigation():
         fold.click()
     assert "app-nav-compact" not in (page.locator("#navigation").get_attribute("class") or "")
-
-
-@pages
-@pytest.mark.rule("A11Y-02")
-def test_an_icons_name_shows_on_hover_and_focus_and_escape_hides_it(open_page):
-    """WCAG 1.4.13: shown by the pointer or the keyboard, it stays while the pointer moves onto it; Escape hides it."""
-    page = open_page("/", layout={"navigation": "compact"})
-    tip = page.locator(".nav-tip")
-    link = page.locator("#navigation a[href='/settings']")
-    link.hover()
-    assert tip.is_visible() and tip.text_content() == "Settings"
-    tip.hover()
-    assert tip.is_visible()
-    page.keyboard.press("Escape")
-    assert not tip.is_visible()
-    link.focus()
-    assert tip.is_visible() and tip.get_attribute("aria-hidden") == "true"
-    page = open_page("/", layout={"navigation": "side"})
-    page.locator("#navigation a[href='/settings']").hover()
-    assert not page.locator(".nav-tip").is_visible()  # a wide menu shows its names already
-
-
-@pages
-def test_with_the_title_in_the_bar_the_trail_goes_there_too(open_page):
-    page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "header"})
-    trail = page.locator("header.app-bar .page-trail-bar")
-    assert trail.get_by_role("link", name="Gallery").is_visible()
-    assert page.locator("main nav.breadcrumbs").count() == 0  # not twice
-    page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "page"})
-    assert page.locator("header.app-bar .page-trail-bar").count() == 0
-    assert page.locator("main nav.breadcrumbs").count() == 1
 
 
 def test_each_logo_falls_back_to_the_one_a_brand_has(tmp_path, monkeypatch):

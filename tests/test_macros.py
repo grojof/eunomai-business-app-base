@@ -173,3 +173,17 @@ def test_the_panels_button_is_a_disclosure_and_links_stand_in_without_javascript
 
 def test_a_list_without_a_panel_has_no_button_for_one():
     assert "data-filter-toggle" not in str(MACROS.list_summary(view_of(), "120 things"))
+
+
+def test_with_the_title_in_the_bar_the_trail_goes_there_and_leaves_the_page():
+    """Its last item is the page itself, whose title the bar already shows."""
+    from app.core.templating import PageTitle, _page_title
+
+    place = PageTitle(in_header=True)
+    token = _page_title.set(place)
+    try:
+        assert str(MACROS.breadcrumbs([("Equipment", "/equipment"), ("A-1", "")])).strip() == ""
+    finally:
+        _page_title.reset(token)
+    assert place.trail == (("Equipment", "/equipment"),)
+    assert "A-1" in str(MACROS.breadcrumbs([("Equipment", "/equipment"), ("A-1", "")]))  # in the page otherwise

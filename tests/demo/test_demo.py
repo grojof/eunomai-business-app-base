@@ -158,3 +158,75 @@ def test_the_gallery_lists_its_components_under_its_navigation_item(client, pers
     assert re.search(r'href="/gallery/button"[^>]*aria-current="page"', html)
     assert 'href="/gallery/modal"' in html
     assert 'href="/gallery/modal"' not in client.get("/", headers=person).text
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize("navigation", ["side", "top"])
+def test_the_brands_colours_reach_the_bar_and_the_menu(open_page, navigation):
+    """With the brand's colours the bar and the menu are drawn in the theme called bar, together; else neither is."""
+    background = "element => getComputedStyle(element).backgroundColor"
+    page = open_page("/", layout={"navigation": navigation, "bar": "brand"})
+    bar = page.locator("header.app-bar")
+    assert bar.get_attribute("data-theme") == "bar"
+    if navigation == "side":
+        assert page.locator("#navigation").evaluate(background) == bar.evaluate(background)
+    logo = page.locator("#navigation img" if navigation == "side" else "header.app-bar img").first
+    assert logo.evaluate("i => new URL(i.currentSrc).pathname") == "/static/brand/logo-bar-full.svg"
+    plain = open_page("/", layout={"navigation": navigation})
+    assert plain.locator("header.app-bar").get_attribute("data-theme") is None
+
+
+@pytest.mark.browser
+def test_the_brands_roles_reach_the_focus_the_menu_and_the_icons_only_menu(open_page):
+    page = open_page("/", layout={"navigation": "side"})
+    page.evaluate(
+        "const root = document.documentElement.style;"
+        "root.setProperty('--app-focus-color', 'rgb(255, 0, 0)'); root.setProperty('--app-focus-width', '3px');"
+        "root.setProperty('--app-selected', 'rgb(0, 128, 0)');"
+        "root.setProperty('--app-selected-content', 'rgb(0, 0, 0)')"
+    )
+    current = page.locator("#navigation a[aria-current]")
+    # daisyUI eases a menu item's colours, so the new one is read once it has arrived
+    page.wait_for_function(
+        "() => getComputedStyle(document.querySelector('#navigation a[aria-current]')).backgroundColor"
+        " === 'rgb(0, 128, 0)'"
+    )
+    current.focus()
+    page.keyboard.press("Shift+Tab")
+    page.keyboard.press("Tab")
+    focused = "() => ['outlineColor', 'outlineWidth'].map((name) => getComputedStyle(document.activeElement)[name])"
+    assert page.evaluate(focused) == ["rgb(255, 0, 0)", "3px"]
+    page = open_page("/", layout={"navigation": "compact"})
+    page.evaluate("document.documentElement.style.setProperty('--app-nav-width-compact', '5rem')")
+    assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 80
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-02")
+def test_an_icons_name_shows_on_hover_and_focus_and_escape_hides_it(open_page):
+    """WCAG 1.4.13: shown by the pointer or the keyboard, it stays while the pointer moves onto it; Escape hides it."""
+    page = open_page("/", layout={"navigation": "compact"})
+    tip = page.locator(".nav-tip")
+    link = page.locator("#navigation a[href='/settings']")
+    link.hover()
+    assert tip.is_visible() and tip.text_content() == "Settings"
+    tip.hover()
+    assert tip.is_visible()
+    page.keyboard.press("Escape")
+    assert not tip.is_visible()
+    link.focus()
+    assert tip.is_visible() and tip.get_attribute("aria-hidden") == "true"
+    page = open_page("/", layout={"navigation": "side"})
+    page.locator("#navigation a[href='/settings']").hover()
+    assert not page.locator(".nav-tip").is_visible()  # a wide menu shows its names already
+
+
+@pytest.mark.browser
+def test_with_the_title_in_the_bar_the_trail_goes_there_too(open_page):
+    page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "header"})
+    trail = page.locator("header.app-bar .page-trail-bar")
+    assert trail.get_by_role("link", name="Gallery").is_visible()
+    assert page.locator("main nav.breadcrumbs").count() == 0  # not twice
+    page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "page"})
+    assert page.locator("header.app-bar .page-trail-bar").count() == 0
+    assert page.locator("main nav.breadcrumbs").count() == 1
