@@ -289,19 +289,30 @@ def test_the_menus_width_is_the_brands_and_icons_only_still_narrows_it(open_page
 
 @pages
 @pytest.mark.rule("A11Y-02")
-def test_the_side_menu_folds_to_its_icons_and_back(open_page):
+def test_the_side_menu_folds_to_its_icons_and_back_at_once_and_is_remembered(open_page):
     page = open_page("/", layout={"navigation": "side"})
+    menu = page.locator("#navigation")
     fold = page.get_by_role("button", name="Icons only")
     assert fold.get_attribute("aria-pressed") == "false"
-    with page.expect_navigation():
+    address = page.url
+    with page.expect_response("**/preferences"):
         fold.click()
-    assert "app-nav-compact" in (page.locator("#navigation").get_attribute("class") or "")
-    fold = page.get_by_role("button", name="Icons only")
-    assert fold.get_attribute("aria-pressed") == "true"
-    assert page.evaluate("document.activeElement.getAttribute('aria-pressed')") == "true"  # focus comes back to it
-    with page.expect_navigation():
-        fold.click()
+    assert page.url == address and "app-nav-compact" in (menu.get_attribute("class") or "")  # no new page
+    assert fold.get_attribute("aria-pressed") == "true" and fold.evaluate("b => b === document.activeElement")
+    assert menu.evaluate("n => n.getBoundingClientRect().width") == 64
+    page.reload()
+    assert "app-nav-compact" in (page.locator("#navigation").get_attribute("class") or "")  # the server kept it
+    with page.expect_response("**/preferences"):
+        page.get_by_role("button", name="Icons only").click()
     assert "app-nav-compact" not in (page.locator("#navigation").get_attribute("class") or "")
+
+
+@pages
+def test_without_a_script_the_fold_is_a_form_that_brings_the_page_back_folded(open_page):
+    page = open_page("/", layout={"navigation": "side"}, javascript=False)
+    with page.expect_navigation():
+        page.get_by_role("button", name="Icons only").click()
+    assert "app-nav-compact" in (page.locator("#navigation").get_attribute("class") or "")
 
 
 def test_each_logo_falls_back_to_the_one_a_brand_has(tmp_path, monkeypatch):
@@ -327,7 +338,7 @@ def test_each_logo_falls_back_to_the_one_a_brand_has(tmp_path, monkeypatch):
 )
 def test_the_whole_logo_where_it_fits_and_its_symbol_where_room_is_short(open_page, navigation, width, shown):
     page = open_page("/", layout={"navigation": navigation, "bar": "brand"}, width=width)
-    place = "header.app-bar img" if navigation == "top" else "#navigation img"
+    place = "header.app-bar img" if navigation == "top" else "#navigation img:visible"
     assert page.locator(place).first.evaluate("i => new URL(i.currentSrc).pathname") == "/static/brand/" + shown
 
 

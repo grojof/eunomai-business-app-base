@@ -275,7 +275,7 @@ function recall() {
 }
 document.addEventListener("submit", (event) => {
   const place = event.target.dataset.preferences;
-  if (place) {
+  if (place && !event.defaultPrevented) {
     const control = event.submitter ?? document.activeElement;
     remember(JSON.stringify([place, control?.name ?? "", event.submitter ? control.value : ""]));
   }
@@ -592,3 +592,25 @@ if (currentLink && navigation.scrollHeight > navigation.clientHeight) {
   });
   document.addEventListener("htmx:beforeSwap", hide);
 })();
+
+// The side menu folds to its icons and back at once, and the server remembers it for the next page. Without this,
+// its form sends the choice and the page comes back folded. Capturing, so it runs before focus is kept for a reload.
+document.addEventListener(
+  "submit",
+  (event) => {
+    const form = event.target.closest?.('form[data-preferences="navigation-fold"]');
+    const menu = document.getElementById("navigation");
+    if (!form || !menu) {
+      return;
+    }
+    event.preventDefault();
+    const folded = menu.classList.toggle("app-nav-compact");
+    const button = form.querySelector("button");
+    button.setAttribute("aria-pressed", String(folded));
+    button.value = folded ? "side" : "compact";
+    const data = new FormData(form);
+    data.set("layout_navigation", folded ? "compact" : "side");
+    fetch(form.action, { method: "POST", body: data, redirect: "manual", credentials: "same-origin" }).catch(() => {});
+  },
+  true,
+);

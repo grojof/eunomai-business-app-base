@@ -170,7 +170,7 @@ def test_the_brands_colours_reach_the_bar_and_the_menu(open_page, navigation):
     assert bar.get_attribute("data-theme") == "bar"
     if navigation == "side":
         assert page.locator("#navigation").evaluate(background) == bar.evaluate(background)
-    logo = page.locator("#navigation img" if navigation == "side" else "header.app-bar img").first
+    logo = page.locator("#navigation img:visible" if navigation == "side" else "header.app-bar img").first
     assert logo.evaluate("i => new URL(i.currentSrc).pathname") == "/static/brand/logo-bar-full.svg"
     plain = open_page("/", layout={"navigation": navigation})
     assert plain.locator("header.app-bar").get_attribute("data-theme") is None
@@ -238,8 +238,8 @@ def test_the_side_menus_logo_lines_up_with_the_top_bar(open_page, navigation, ba
     """The menu's logo and the bar beside it end on one line, and the logo sits in the bar's middle."""
     page = open_page("/", layout={"navigation": navigation, "bar": bar})
     top_bar = page.locator("header.app-bar").bounding_box()
-    block = page.locator("#navigation .app-nav-brand").bounding_box()
-    logo = page.locator("#navigation .app-logo").bounding_box()
+    block = page.locator("#navigation .app-nav-logo").bounding_box()
+    logo = page.locator("#navigation .app-logo:visible").bounding_box()
     assert top_bar and block and logo
     assert abs((block["y"] + block["height"]) - (top_bar["y"] + top_bar["height"])) <= 1
     assert abs((logo["y"] + logo["height"] / 2) - (top_bar["y"] + top_bar["height"] / 2)) <= 2

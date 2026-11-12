@@ -89,8 +89,8 @@ div.calendar-dot {
     max-width: 100dvw;
   }
 
-  /* The side menu's logo, as high as the top bar beside it */
-  .app-nav-brand {
+  /* The side menu's logo, on a row as high as the top bar beside it */
+  .app-nav-logo {
     min-height: var(--app-bar-height, 3.5rem);
   }
 
@@ -146,6 +146,35 @@ div.calendar-dot {
     width: auto;
     max-width: 100%;
     object-fit: contain;
+  }
+}
+
+/* The side menu's two widths: what only one of them shows, and the names it hides, still read by a screen reader,
+   when it holds icons only. Outside any layer, so a utility on the element cannot undo it; `revert-layer` gives back
+   its own display */
+.app-nav-compact-only {
+  display: none;
+}
+
+@media (width >= 64rem) {
+  .app-nav-compact .app-nav-wide-only {
+    display: none;
+  }
+
+  .app-nav-compact .app-nav-compact-only {
+    display: revert-layer;
+  }
+
+  .app-nav-compact .app-nav-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
   }
 }
 
