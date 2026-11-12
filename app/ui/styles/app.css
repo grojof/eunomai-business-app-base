@@ -135,10 +135,17 @@ div.calendar-dot {
     padding: 0.25rem 0.5rem;
     font-size: var(--text-sm);
     white-space: nowrap;
+    border: 1px solid transparent; /* an edge where Windows' high contrast draws colours of its own */
   }
 
   .nav-tip[hidden] {
     display: none;
+  }
+
+  @media print {
+    .nav-tip {
+      display: none;
+    }
   }
 
   .app-logo {

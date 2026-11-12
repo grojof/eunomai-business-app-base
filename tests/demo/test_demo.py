@@ -216,6 +216,16 @@ def test_an_icons_name_shows_on_hover_and_focus_and_escape_hides_it(open_page):
     assert not tip.is_visible()
     link.focus()
     assert tip.is_visible() and tip.get_attribute("aria-hidden") == "true"
+    page.locator("main").click(position={"x": 5, "y": 5})  # the focus leaves the link
+    link.hover()
+    page.keyboard.press("Escape")
+    link.hover(position={"x": 4, "y": 4})  # the pointer moves within the link: dismissed means dismissed
+    assert not tip.is_visible()
+    page.mouse.move(600, 400)
+    link.hover()
+    assert tip.is_visible()  # back once the pointer has left and returned
+    page.evaluate("window.scrollBy(0, 200)")
+    tip.wait_for(state="hidden")  # a scroll would leave it beside nothing
     page = open_page("/", layout={"navigation": "side"})
     page.locator("#navigation a[href='/settings']").hover()
     assert not page.locator(".nav-tip").is_visible()  # a wide menu shows its names already

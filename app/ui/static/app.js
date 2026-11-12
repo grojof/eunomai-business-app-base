@@ -542,7 +542,8 @@ if (currentLink && navigation.scrollHeight > navigation.clientHeight) {
 }
 
 // The icons-only menu: each link's name shows beside it on hover and on keyboard focus, stays while the pointer moves
-// onto it, and Escape hides it (WCAG 1.4.13). The link already has its name for a screen reader, so this one is hidden.
+// onto it, and Escape hides it until the pointer or the focus leaves that link (WCAG 1.4.13). The link already has its
+// name for a screen reader, so this one is hidden from it. It goes when the menu folds, scrolls or changes size.
 (() => {
   const tip = document.createElement("div");
   tip.className = "nav-tip";
@@ -552,16 +553,26 @@ if (currentLink && navigation.scrollHeight > navigation.clientHeight) {
   const wide = matchMedia("(width >= 64rem)");
   const linkOf = (target) => (wide.matches ? target?.closest?.(".app-nav-compact a, .app-nav-compact button") : null);
   let leaving;
+  let dismissed = null;
+  let lastPointer = [0, 0];
+  document.addEventListener("pointermove", (event) => {
+    lastPointer = [event.clientX, event.clientY];
+  });
   const hide = () => {
     clearTimeout(leaving);
     tip.hidden = true;
   };
   const show = (link) => {
     clearTimeout(leaving);
+    if (link === dismissed) {
+      return;
+    }
     const box = link.getBoundingClientRect();
+    const rightToLeft = getComputedStyle(link).direction === "rtl";
     tip.textContent = link.textContent.trim();
     tip.style.top = `${box.top + box.height / 2}px`;
-    tip.style.left = `${box.right + 8}px`;
+    tip.style.left = rightToLeft ? "" : `${box.right + 8}px`;
+    tip.style.right = rightToLeft ? `${innerWidth - box.left + 8}px` : "";
     tip.hidden = false;
   };
   document.addEventListener("pointerover", (event) => {
@@ -571,7 +582,9 @@ if (currentLink && navigation.scrollHeight > navigation.clientHeight) {
     }
   });
   document.addEventListener("pointerout", (event) => {
-    if (linkOf(event.target) && !tip.contains(event.relatedTarget)) {
+    const link = linkOf(event.target);
+    if (link && !link.contains(event.relatedTarget) && !tip.contains(event.relatedTarget)) {
+      dismissed = null;
       leaving = setTimeout(hide, 200);
     }
   });
@@ -585,12 +598,21 @@ if (currentLink && navigation.scrollHeight > navigation.clientHeight) {
       hide();
     }
   });
+  document.addEventListener("focusout", () => {
+    dismissed = null;
+  });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
+    if (event.key === "Escape" && !tip.hidden) {
+      dismissed = linkOf(document.activeElement) ?? linkOf(document.elementFromPoint(...lastPointer)) ?? null;
       hide();
     }
   });
-  document.addEventListener("htmx:beforeSwap", hide);
+  for (const gone of ["htmx:beforeSwap", "submit"]) {
+    document.addEventListener(gone, hide, true);
+  }
+  document.addEventListener("scroll", hide, true);
+  addEventListener("resize", hide);
+  wide.addEventListener("change", hide);
 })();
 
 // The side menu folds to its icons and back at once, and the server remembers it for the next page. Without this,
