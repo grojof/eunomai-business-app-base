@@ -5,5 +5,7 @@
   {{ badge(_("Stopped"), "danger") }}
   {{ badge(_("Planned"), "info") }}
   {{ badge(_("Closed")) }}
+  {{ badge(_("Urgent"), "danger", strong=true) }}
 </p>
-<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ badge(_("In service"), "success") }}{% endraw %}</code></pre>
+<pre class="example-code mt-4 rounded-box"><code>{% raw %}{{ badge(_("In service"), "success") }}
+{{ badge(_("Urgent"), "danger", strong=true) }}{% endraw %}</code></pre>

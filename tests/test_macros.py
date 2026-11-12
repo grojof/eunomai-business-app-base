@@ -42,6 +42,13 @@ def test_a_status_label_refuses_a_kind_it_does_not_have():
         MACROS.status_label("Stopped", "invented")
 
 
+def test_a_badge_stands_out_only_when_asked():
+    assert "badge-strong" not in str(MACROS.badge("Stopped", "danger"))
+    html = str(MACROS.badge("Urgent", "danger", strong=True))
+    assert "badge-error" in html
+    assert "badge-strong" in html
+
+
 def test_tabs_are_links_in_a_navigation():
     html = str(MACROS.tabs("Sections", [("a", "One", "/one"), ("b", "Two", "/two")], "b"))
     assert '<nav aria-label="Sections"' in html

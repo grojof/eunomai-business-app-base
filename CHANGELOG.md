@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2 (2026-11-12)
+
+The `badge` macro takes `strong=true` for a badge that must stand out from the others. It adds `badge-strong`, which the
+base's themes draw with bold text and a brand's theme can draw solid, for example when its normal badges are tinted.
+
 ## 0.1.1 (2026-11-12)
 
 `tools/update_application.py` needs git 2.40 or later and says so when there is none or an older one; its tests are skipped there. In a test of an application on a person's computer, which has no git on purpose, and in an assistant's sandbox, whose git is older, they failed with nine errors that were not the application's.
