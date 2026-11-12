@@ -168,6 +168,7 @@ def test_the_brands_colours_reach_the_bar_and_the_menu(open_page, navigation):
     page = open_page("/", layout={"navigation": navigation, "bar": "brand"})
     bar = page.locator("header.app-bar")
     assert bar.get_attribute("data-theme") == "bar"
+    assert bar.evaluate(background) != page.locator("main .card, main section").first.evaluate(background)
     if navigation == "side":
         assert page.locator("#navigation").evaluate(background) == bar.evaluate(background)
     logo = page.locator("#navigation img:visible" if navigation == "side" else "header.app-bar img").first
