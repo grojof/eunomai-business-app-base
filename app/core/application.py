@@ -5,7 +5,7 @@ import mimetypes
 from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Annotated
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 from fastapi import FastAPI, Form, Request
 from fastapi.exceptions import RequestValidationError
@@ -15,6 +15,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import StaleDataError
 from starlette.convertors import IntegerConvertor, register_url_convertor
 from starlette.exceptions import HTTPException
+from starlette.types import Scope
 
 from app.core import identity
 from app.core.addresses import is_local
@@ -219,6 +220,17 @@ def _settings_item() -> list[SearchItem]:
     ]
 
 
+class StampedFiles(StaticFiles):
+    """The application's own files. One asked for with its stamp (`?v=`, see templating.asset) never changes at that
+    address, so a browser keeps it for a year without asking again; without a stamp, it asks each time it needs it."""
+
+    async def get_response(self, path: str, scope: Scope) -> Response:
+        response = await super().get_response(path, scope)
+        if response.status_code == 200 and "v" in parse_qs(scope.get("query_string", b"").decode("latin-1")):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return response
+
+
 BAR_THEME = "[data-theme=bar]" in (UI / "static" / "app.css").read_text(encoding="utf-8")
 """Whether the brand has a theme called bar: without one, its colours would look like the page's, so they are not
 offered as a choice."""
@@ -285,8 +297,8 @@ def create_core(settings: Settings) -> FastAPI:
         settings.languages, settings.default_language, allow_pseudo=settings.environment == "development"
     )
     application.state.languages.add_folder(ROOT / "locales")
-    application.mount("/static/ui", StaticFiles(directory=UI / "static"), name="ui")
-    application.mount("/static/brand", StaticFiles(directory=UI.parent / "brand"), name="brand")
+    application.mount("/static/ui", StampedFiles(directory=UI / "static"), name="ui")
+    application.mount("/static/brand", StampedFiles(directory=UI.parent / "brand"), name="brand")
     application.add_api_route("/preferences", _save_preferences, methods=["POST"], include_in_schema=False)
     application.add_api_route("/search", _search, include_in_schema=False)
     if settings.layout_choices:

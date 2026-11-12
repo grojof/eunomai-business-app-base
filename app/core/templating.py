@@ -30,7 +30,8 @@ BRAND = UI.parent / "brand"
 
 
 @lru_cache(maxsize=256)
-def _stamp(file: Path, changed: int) -> str:
+def _stamp(file: Path, changed: int, size: int) -> str:
+    """Read once for each time and size the file has: Windows can give two quick writes the same time."""
     return hashlib.sha256(file.read_bytes()).hexdigest()[:12]
 
 
@@ -42,7 +43,8 @@ def asset(address: str) -> str:
     if prefix is None:
         raise ValueError(f"{address} is not one of the application's own files, under {', '.join(served_from)}")
     file = served_from[prefix] / address.removeprefix(prefix)
-    return f"{address}?v={_stamp(file, file.stat().st_mtime_ns)}"
+    found = file.stat()
+    return f"{address}?v={_stamp(file, found.st_mtime_ns, found.st_size)}"
 
 
 def _first(*names: str) -> str:

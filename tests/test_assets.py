@@ -26,3 +26,10 @@ def test_every_script_and_stylesheet_of_a_page_carries_its_stamp(person):
     linked = re.findall(r'(?:src|href)="(/static/(?:ui|brand)/[^"]+\.(?:js|css|svg)[^"]*)"', html)
     assert linked, "the page links its files"
     assert [address for address in linked if "?v=" not in address] == []
+
+
+def test_a_stamped_file_is_kept_for_a_year_and_an_unstamped_one_is_asked_for_again(person):
+    client = TestClient(create_app(build_settings()))
+    address = templating.asset("/static/ui/app.css")
+    assert client.get(address).headers["cache-control"] == "public, max-age=31536000, immutable"
+    assert "immutable" not in client.get("/static/ui/app.css").headers.get("cache-control", "")
