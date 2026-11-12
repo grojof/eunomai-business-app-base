@@ -309,6 +309,31 @@ def test_the_menus_width_is_the_brands_and_icons_only_still_narrows_it(open_page
     assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 64
 
 
+@pages
+def test_the_brands_roles_reach_the_focus_the_menu_and_the_icons_only_menu(open_page):
+    page = open_page("/", layout={"navigation": "side"})
+    page.evaluate(
+        "const root = document.documentElement.style;"
+        "root.setProperty('--app-focus-color', 'rgb(255, 0, 0)'); root.setProperty('--app-focus-width', '3px');"
+        "root.setProperty('--app-selected', 'rgb(0, 128, 0)');"
+        "root.setProperty('--app-selected-content', 'rgb(0, 0, 0)')"
+    )
+    current = page.locator("#navigation a[aria-current]")
+    # daisyUI eases a menu item's colours, so the new one is read once it has arrived
+    page.wait_for_function(
+        "() => getComputedStyle(document.querySelector('#navigation a[aria-current]')).backgroundColor"
+        " === 'rgb(0, 128, 0)'"
+    )
+    current.focus()
+    page.keyboard.press("Shift+Tab")
+    page.keyboard.press("Tab")
+    focused = "() => ['outlineColor', 'outlineWidth'].map((name) => getComputedStyle(document.activeElement)[name])"
+    assert page.evaluate(focused) == ["rgb(255, 0, 0)", "3px"]
+    page = open_page("/", layout={"navigation": "compact"})
+    page.evaluate("document.documentElement.style.setProperty('--app-nav-width-compact', '5rem')")
+    assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 80
+
+
 def test_the_bar_takes_its_own_logo_only_when_the_brand_has_one():
     from app.core import templating
 

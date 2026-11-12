@@ -32,7 +32,8 @@
 
 /* The top bar and the menu in the brand's colours (layout choice `bar`: brand), in light and dark alike. Make it with
    the same generator: base-100 is the bar, base-200 and base-300 what sits on it (the search box, a line), neutral
-   the menu's current item. Without a theme called "bar", the brand's colours look like the page's.
+   the menu's current item, primary the keyboard's focus. A value it leaves out is the page's, which may not show on
+   the bar: set each one. Without a theme called "bar", the brand's colours look like the page's.
    The bar's height, the menu's width and the logo's height are yours too, here:
    :root { --app-bar-height: 4rem; --app-nav-width: 18rem; --app-logo-height: 2.5rem; }
    And a logo for the bar, such as a white one for a dark bar: app/brand/logo-bar.svg. Without it, logo.svg. */
@@ -43,6 +44,8 @@
   --color-base-200: #374151;
   --color-base-300: #4b5563;
   --color-base-content: #f9fafb;
+  --color-primary: #93c5fd;
+  --color-primary-content: #1f2937;
   --color-neutral: #f9fafb;
   --color-neutral-content: #1f2937;
 }

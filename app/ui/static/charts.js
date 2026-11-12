@@ -22,9 +22,13 @@
   const solid = ({ red, green, blue }) => `rgb(${red}, ${green}, ${blue})`;
   const faint = ({ red, green, blue }, alpha) => `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 
+  // The four series take the brand's --app-chart-1 to 4 where its theme sets them, the theme's colours otherwise.
+  const SERIES = ["primary", "accent", "secondary", "info"];
+
   function readTheme() {
     const style = getComputedStyle(document.documentElement);
-    const read = (name) => toRgb(style.getPropertyValue(`--color-${name}`).trim());
+    const value = (name) => style.getPropertyValue(name).trim();
+    const read = (name) => toRgb(value(`--app-chart-${SERIES.indexOf(name) + 1}`) || value(`--color-${name}`));
     const found = Object.fromEntries(COLOURS.map((name) => [name, read(name)]));
     return { ...found, text: read("base-content"), surface: read("base-100"), grid: read("base-300"), font: style.fontFamily };
   }

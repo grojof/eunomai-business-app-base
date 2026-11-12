@@ -12,15 +12,33 @@ THEME = ROOT / "app" / "brand" / "theme.css"
 PAIRED = ("primary", "secondary", "accent", "neutral", "info", "success", "warning", "error")
 BASES = ("base-100", "base-200", "base-300")
 TEXT_CONTRAST = 4.5
+STATE_CONTRAST = 3.0
+"""WCAG 1.4.11: what shows a control's state, such as the keyboard's focus, against what it sits on."""
+TEXT_PAIRS = (
+    ("app-selected", "app-selected-content"),
+    ("app-event", "app-event-content"),
+    ("app-link-color", "base-100"),
+)
+STATE_PAIRS = (
+    ("primary", "base-100"),
+    ("primary", "base-200"),
+    ("app-focus-color", "base-100"),
+    ("app-focus-color", "base-200"),
+    ("app-tab-indicator", "base-100"),
+    *((f"app-chart-{n}", "base-100") for n in range(1, 5)),
+)
+"""The roles a brand may set, besides daisyUI's. A theme's value for each, where it has both, is checked."""
 
 
 def themes(css: str) -> dict[str, dict[str, str]]:
-    """Each theme's colours, by name, without `--color-`."""
+    """Each theme's colours, by name, without `--color-`, and the brand's roles, as `app-...`."""
     found = {}
     for block in re.findall(r"@plugin[^{]*\{(.*?)\}", re.sub(r"/\*.*?\*/", "", css, flags=re.S), re.S):
         name = re.search(r'^\s*name:\s*"([^"]+)"', block, re.M)
         if name:
-            found[name[1]] = dict(re.findall(r"^\s*--color-([a-z0-9-]+):\s*([^;]+);", block, re.M))
+            colours = re.findall(r"^\s*--color-([a-z0-9-]+):\s*([^;]+);", block, re.M)
+            roles = re.findall(r"^\s*--(app-[a-z0-9-]+):\s*([^;]+);", block, re.M)
+            found[name[1]] = dict(colours) | dict(roles)
     return found
 
 
@@ -61,11 +79,14 @@ def contrast(first: str, second: str) -> float:
 
 
 def failures(colours: dict[str, str]) -> list[str]:
-    pairs = [(name, f"{name}-content") for name in PAIRED] + [(base, "base-content") for base in BASES]
+    """Text against what it sits on at 4.5:1, and what shows a state at 3:1, for each pair the theme sets both of."""
+    text = [(name, f"{name}-content") for name in PAIRED] + [(base, "base-content") for base in BASES]
+    checked = [(pair, TEXT_CONTRAST) for pair in (*text, *TEXT_PAIRS)]
+    checked += [(pair, STATE_CONTRAST) for pair in STATE_PAIRS]
     return [
-        f"{back} and {text}: {contrast(colours[back], colours[text]):.2f}"
-        for back, text in pairs
-        if back in colours and text in colours and contrast(colours[back], colours[text]) < TEXT_CONTRAST
+        f"{first} and {second}: {contrast(colours[first], colours[second]):.2f}"
+        for (first, second), least in checked
+        if first in colours and second in colours and contrast(colours[first], colours[second]) < least
     ]
 
 
@@ -85,6 +106,24 @@ def test_a_theme_that_fails_is_caught():
 }"""
     colours = themes(own)["own"]
     assert [failure.split(":")[0] for failure in failures(colours)] == ["primary and primary-content"]
+
+
+@pytest.mark.rule("A11Y-05")
+def test_what_shows_a_state_is_checked_at_three_to_one():
+    """A bar theme that left out its primary showed the keyboard's focus at 1.76:1 on the bar."""
+    own = """@plugin "x" {
+  name: "bar";
+  --color-base-100: #1f2937;
+  --color-base-200: #374151;
+  --color-primary: #4338ca;
+  --app-chart-1: #e5e7eb;
+  --app-selected: #fbbf24;
+  --app-selected-content: #78350f;
+}"""
+    assert [failure.split(":")[0] for failure in failures(themes(own)["bar"])] == [
+        "primary and base-100",
+        "primary and base-200",
+    ]
 
 
 @pytest.mark.parametrize(
