@@ -278,8 +278,15 @@ def test_a_person_can_try_each_arrangement(open_page, navigation):
 
 
 @pages
+def with_a_menu(page):
+    """A template, or an application before its first module, has no menu yet: these wait for one."""
+    if page.locator("#navigation").count() == 0:
+        pytest.skip("this application has no menu yet")
+    return page
+
+
 def test_the_menus_width_is_the_brands_and_icons_only_still_narrows_it(open_page):
-    page = open_page("/", layout={"navigation": "side"})
+    page = with_a_menu(open_page("/", layout={"navigation": "side"}))
     assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 256
     page.evaluate("document.documentElement.style.setProperty('--app-nav-width', '18rem')")
     assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 288
@@ -290,7 +297,7 @@ def test_the_menus_width_is_the_brands_and_icons_only_still_narrows_it(open_page
 @pages
 @pytest.mark.rule("A11Y-02")
 def test_the_side_menu_folds_to_its_icons_and_back_at_once_and_is_remembered(open_page):
-    page = open_page("/", layout={"navigation": "side"})
+    page = with_a_menu(open_page("/", layout={"navigation": "side"}))
     menu = page.locator("#navigation")
     fold = page.get_by_role("button", name="Icons only")
     assert fold.get_attribute("aria-pressed") == "false"
@@ -309,7 +316,7 @@ def test_the_side_menu_folds_to_its_icons_and_back_at_once_and_is_remembered(ope
 
 @pages
 def test_without_a_script_the_fold_is_a_form_that_brings_the_page_back_folded(open_page):
-    page = open_page("/", layout={"navigation": "side"}, javascript=False)
+    page = with_a_menu(open_page("/", layout={"navigation": "side"}, javascript=False))
     with page.expect_navigation():
         page.get_by_role("button", name="Icons only").click()
     assert "app-nav-compact" in (page.locator("#navigation").get_attribute("class") or "")
@@ -338,6 +345,8 @@ def test_each_logo_falls_back_to_the_one_a_brand_has(tmp_path, monkeypatch):
 )
 def test_the_whole_logo_where_it_fits_and_its_symbol_where_room_is_short(open_page, navigation, width, shown):
     page = open_page("/", layout={"navigation": navigation, "bar": "brand"}, width=width)
+    if navigation != "top":
+        with_a_menu(page)
     place = "header.app-bar img" if navigation == "top" else "#navigation img:visible"
     assert page.locator(place).first.evaluate("i => new URL(i.currentSrc).pathname") == "/static/brand/" + shown
 

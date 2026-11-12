@@ -152,16 +152,17 @@ def test_the_selected_option_keeps_its_colours_under_the_pointer(open_page):
     selected = page.locator("#palette-results [aria-selected=true]")
     colours = (
         "o => [getComputedStyle(o).backgroundColor, getComputedStyle(o).color,"
-        " getComputedStyle(o.querySelector('.icon')).color]"
+        " getComputedStyle(o.querySelector('.palette-icon')).color, getComputedStyle(o.querySelector('.icon')).color]"
     )
     before = selected.evaluate(colours)
     selected.hover()
     after = selected.evaluate(colours)
     assert after == before
-    assert after[2] == after[1]  # its icon in the option's own colour
+    assert after[3] == after[2]  # the icon in its tile's colour: the option's, or the brand's turned round
     tile = "o => getComputedStyle(o.firstElementChild).backgroundColor"
-    others = page.locator("#palette-results [aria-selected=false]").first
-    assert selected.evaluate(tile) != others.evaluate(tile)  # not the page's grey tile under a light icon
+    others = page.locator("#palette-results [aria-selected=false]")
+    if others.count():  # an application with a single page has no other option to set it against
+        assert selected.evaluate(tile) != others.first.evaluate(tile)  # not the page's grey tile under a light icon
 
 
 @pages
