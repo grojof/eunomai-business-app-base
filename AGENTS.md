@@ -9,7 +9,7 @@ person or real system: it stays neutral so anyone can clone it.
 |---|---|---|
 | `app/core/` | Identity, roles, settings, the database and its column types, lists on the server, reading forms, uploads, languages, formatters, errors, health | Never imports from `app/demo/` |
 | `app/ui/` | Components as macros, the settings menu, the command palette, the stylesheet's source, the few JavaScript files, Lucide's icons, the illustrations | Screens call macros; daisyUI classes stay here where possible |
-| `app/brand/` | The light and dark themes, the logo, the fonts, the organization's own icons | The only folder an organization must change |
+| `app/brand/` | The themes (light, dark, and bar for the top bar and the menu), the brand's roles, the logos, the fonts, the organization's own icons and its arrangement (`layout.toml`): see [Your theme](docs/base/specification.md#your-theme) | The only folder an organization must change |
 | `app/demo/` | Demo screens, models, generated data, the gallery and their translations | Deleting it leaves a working application |
 | `migrations/` | Alembic's setup, and one file per change of the models | A model that changes needs its migration: a test compares them on both databases |
 
