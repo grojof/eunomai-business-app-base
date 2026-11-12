@@ -96,7 +96,7 @@ def test_points_have_their_own_table():
 
 def test_the_library_is_loaded_with_its_integrity_only_where_a_chart_is():
     html = rendered()
-    assert 'data-chart-library="/static/ui/vendor/chart.umd.min.js"' in html
+    assert re.search(r'data-chart-library="/static/ui/vendor/chart\.umd\.min\.js\?v=[^"]+"', html)
     assert re.search(r'data-chart-integrity="sha384-[\w+/=]+"', html)
     layout = (ROOT / "app" / "ui" / "templates" / "layout.html").read_text(encoding="utf-8")
     assert "chart.umd" not in layout

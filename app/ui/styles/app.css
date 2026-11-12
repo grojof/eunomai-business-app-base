@@ -33,8 +33,8 @@
   --fc-classic-button-foreground: var(--color-base-content);
   --fc-classic-primary: var(--color-primary);
   --fc-classic-primary-foreground: var(--color-primary-content);
-  --fc-classic-event: color-mix(in oklab, var(--color-primary) 22%, var(--color-base-100));
-  --fc-classic-event-contrast: var(--color-base-content);
+  --fc-classic-event: var(--app-event, color-mix(in oklab, var(--color-primary) 22%, var(--color-base-100)));
+  --fc-classic-event-contrast: var(--app-event-content, var(--color-base-content));
   --fc-classic-highlight: color-mix(in oklab, var(--color-primary) 15%, transparent);
   --fc-classic-today: color-mix(in oklab, var(--color-warning) 14%, transparent);
   --fc-classic-now: var(--color-error);
@@ -76,6 +76,126 @@ div.calendar-dot {
   text-align: center;
 }
 
+/* The top bar's height, the side menu's width and the logo's height, which a brand may set in its theme.css. Outside
+   any layer, so the bar's own minimum gives way to the brand's; the menu's width is a component, so "icons only" still
+   narrows it. A logo of any proportion keeps it, within the room it has */
+.app-bar {
+  min-height: var(--app-bar-height, 3.75rem);
+}
+
+@layer components {
+  .app-nav {
+    width: var(--app-nav-width, 16rem);
+    max-width: 100dvw;
+  }
+
+  /* The side menu's logo, on a row as high as the top bar beside it */
+  .app-nav-logo {
+    min-height: var(--app-bar-height, 3.75rem);
+  }
+
+  .app-nav-compact {
+    @variant lg {
+      width: var(--app-nav-width-compact, 4rem);
+    }
+  }
+
+  /* The colour of daisyUI's .link, the brand's to set: not of menus, breadcrumbs or plain links. Where a link is told
+     from the text by its colour alone, inside a sentence, it keeps its underline */
+  .link {
+    color: var(--app-link-color, inherit);
+  }
+
+  /* The trail before the page's title in the top bar: quieter than the title it leads to */
+  /* A trail that leads into the title beside it ends in the mark daisyUI draws between its items */
+  .page-trail-to-title > ul::after {
+    content: "";
+    display: block;
+    inline-size: 0.375rem;
+    block-size: 0.375rem;
+    margin-inline: 0.5rem 0.75rem;
+    border-block-start: 1px solid;
+    border-inline-end: 1px solid;
+    opacity: 0.4;
+    rotate: 45deg;
+  }
+
+  .page-trail-to-title > ul:dir(rtl)::after {
+    rotate: -45deg;
+  }
+
+  /* The name beside an icons-only menu's link (app.js places it) */
+  .nav-tip {
+    position: fixed;
+    z-index: 60;
+    translate: 0 -50%;
+    border-radius: var(--radius-field);
+    background-color: var(--color-neutral);
+    color: var(--color-neutral-content);
+    padding: 0.25rem 0.5rem;
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    border: 1px solid transparent; /* an edge where Windows' high contrast draws colours of its own */
+  }
+
+  .nav-tip[hidden] {
+    display: none;
+  }
+
+  @media print {
+    .nav-tip {
+      display: none;
+    }
+  }
+
+  .app-logo {
+    height: var(--app-logo-height, 2rem);
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
+}
+
+/* The side menu's two widths: what only one of them shows, and the names it hides, still read by a screen reader,
+   when it holds icons only. Outside any layer, so a utility on the element cannot undo it; `revert-layer` gives back
+   its own display */
+.app-nav-compact-only {
+  display: none;
+}
+
+@media (width >= 64rem) {
+  .app-nav-compact .app-nav-wide-only {
+    display: none;
+  }
+
+  .app-nav-compact .app-nav-compact-only {
+    display: revert-layer;
+  }
+
+  .app-nav-compact .app-nav-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+/* The menu's current item and the current tab's line, the brand's to set (--app-selected, --app-selected-content,
+   --app-tab-indicator). Outside any layer, as daisyUI declares its own in the utilities layer */
+.menu {
+  --menu-active-bg: var(--app-selected, var(--color-base-content));
+  --menu-active-fg: var(--app-selected-content, var(--color-base-100));
+}
+
+.tabs-border > .tab::before {
+  border-top-color: var(--app-tab-indicator, currentColor);
+}
+
 /* A badge that must stand out (the macro's `strong`). daisyUI puts its colour classes in the utilities layer, so a
    brand's theme can draw it solid there too */
 @layer utilities {
@@ -84,9 +204,10 @@ div.calendar-dot {
   }
 }
 
-/* Outside any layer, so no component can hide it: daisyUI's menu marks focus only with a background */
+/* Outside any layer, so no component can hide it: daisyUI's menu marks focus only with a background. Its colour, width
+   are the brand's to set (--app-focus-color, --app-focus-width) */
 :where(a, button, summary, input, select, textarea):focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: var(--app-focus-width, 2px) solid var(--app-focus-color, var(--color-primary));
   outline-offset: 2px;
 }
 
@@ -117,13 +238,13 @@ div.calendar-dot {
 
 /* A table's box takes the keyboard so it can scroll, and shows it inside: the box touches the edge of its panel */
 .table-scroll:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
+  outline: var(--app-focus-width, 2px) solid var(--app-focus-color, var(--color-primary));
+  outline-offset: calc(-1 * var(--app-focus-width, 2px));
 }
 
 /* A swap hides its box, so its label shows the focus */
 .swap:has(input:focus-visible) {
-  outline: 2px solid var(--color-primary);
+  outline: var(--app-focus-width, 2px) solid var(--app-focus-color, var(--color-primary));
   outline-offset: 2px;
 }
 
@@ -168,6 +289,8 @@ div.calendar-dot {
     display: block;
     border: 0;
     padding: 0;
+    background: none;
+    color: CanvasText;
   }
 
   header:has(> .page-title-bar) > :not(.page-title-bar) {
@@ -198,11 +321,17 @@ div.calendar-dot {
 @layer base {
   /* What the keyboard reaches, and any #link, stops clear of the sticky header: WCAG 2.4.11 */
   html {
-    scroll-padding-top: 5rem;
+    scroll-padding-top: calc(max(var(--app-bar-height, 3.75rem), 4rem) + 1rem);
   }
 
   body {
     overflow-wrap: anywhere;
+  }
+
+  /* The headings' font is the brand's to set: --app-heading-font. With no weight at all, so a brand's own rule for
+     its headings still wins, wherever its file puts it */
+  :where(h1, h2) {
+    font-family: var(--app-heading-font, inherit);
   }
 
   h1 {
@@ -269,6 +398,7 @@ div.calendar-dot {
 
   .table-pin-first thead tr > :first-child {
     z-index: 2;
+    background-color: var(--app-table-head, var(--color-base-100));
   }
 
   /* A group's header stays under the table's while its rows go past */
@@ -394,7 +524,7 @@ div.calendar-dot {
   }
 
   [aria-sort] .sort-link {
-    color: var(--color-base-content);
+    color: var(--app-table-head-content, var(--color-base-content));
     font-weight: var(--font-weight-semibold);
   }
 
@@ -413,27 +543,35 @@ div.calendar-dot {
     }
   }
 
-  /* A searchable select's options: the one the arrow keys are on, as in the palette */
-  [data-combobox] [role="option"][aria-selected="true"] > span {
-    background-color: var(--color-neutral);
-    color: var(--color-neutral-content);
-  }
-
+  /* The option the arrow keys are on, in the palette and a searchable select, is the role the menu's current item is
+     too: selected (--app-selected, --app-selected-content). By default the page's colours turned round, which show
+     on every theme. The pointer on another option is hover (--app-hover, --app-hover-content); the selected one keeps
+     its colours under it */
+  [data-combobox] [role="option"][aria-selected="true"] > span,
   #palette-results [role="option"][aria-selected="true"] {
-    background-color: var(--color-neutral);
-    color: var(--color-neutral-content);
+    background-color: var(--app-selected, var(--color-base-content));
+    color: var(--app-selected-content, var(--color-base-100));
   }
 
-  #palette-results [role="option"]:hover {
-    background-color: var(--color-base-200);
+  #palette-results [role="option"]:not([aria-selected="true"]):hover {
+    background-color: var(--app-hover, var(--color-base-200));
+    color: var(--app-hover-content, inherit);
   }
 
-  #palette-results [role="option"][aria-selected="true"] span span {
+  #palette-results [role="option"]:is([aria-selected="true"], :hover) span span {
     color: inherit;
   }
 
-  #palette-results [role="option"][aria-selected="true"] .icon {
-    color: var(--color-base-content);
+  /* An option's icon on a tile (--app-icon-tile, and the icon's colour --app-icon-tile-content). On the selected
+     option the two turn round; without them, it is a veil of the option's own colour there */
+  .palette-icon {
+    background-color: var(--app-icon-tile, var(--color-base-200));
+    color: var(--app-icon-tile-content, inherit);
+  }
+
+  #palette-results [role="option"][aria-selected="true"] .palette-icon {
+    background-color: var(--app-icon-tile-content, color-mix(in oklab, currentColor 18%, transparent));
+    color: var(--app-icon-tile, inherit);
   }
 
   #palette-results mark {
@@ -449,6 +587,15 @@ div.calendar-dot {
 @layer utilities {
   .table.table-pin-rows thead {
     z-index: 2;
+  }
+
+  /* A table's header, the brand's to set (--app-table-head, --app-table-head-content); daisyUI's own without them */
+  .table thead th {
+    background-color: var(--app-table-head, transparent);
+  }
+
+  .table thead {
+    color: var(--app-table-head-content, color-mix(in oklab, var(--color-base-content) 60%, transparent));
   }
 
   /* Dense rows leave room for columns that otherwise wait for a wide screen, and for more rows in the box */

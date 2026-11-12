@@ -16,6 +16,8 @@ LAYOUTS = [
     {"navigation": "hidden"},
     {"sticky_header": "off", "width": "centered"},
     {"density": "compact"},
+    {"bar": "brand"},
+    {"navigation": "top", "bar": "brand"},
 ]
 ALLOWED = ("Business App", "Demo Person", "Mar 15, 2027", "Nov 20, 2026", "Jan 12, 2027", "Nov 9, 2026", "May 3, 2027")
 
@@ -156,3 +158,107 @@ def test_the_gallery_lists_its_components_under_its_navigation_item(client, pers
     assert re.search(r'href="/gallery/button"[^>]*aria-current="page"', html)
     assert 'href="/gallery/modal"' in html
     assert 'href="/gallery/modal"' not in client.get("/", headers=person).text
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize("navigation", ["side", "top"])
+def test_the_brands_colours_reach_the_bar_and_the_menu(open_page, navigation):
+    """With the brand's colours the bar and the menu are drawn in the theme called bar, together; else neither is."""
+    background = "element => getComputedStyle(element).backgroundColor"
+    page = open_page("/", layout={"navigation": navigation, "bar": "brand"})
+    bar = page.locator("header.app-bar")
+    assert bar.get_attribute("data-theme") == "bar"
+    assert bar.evaluate(background) != page.locator("main .card, main section").first.evaluate(background)
+    if navigation == "side":
+        assert page.locator("#navigation").evaluate(background) == bar.evaluate(background)
+    logo = page.locator("#navigation img:visible" if navigation == "side" else "header.app-bar img").first
+    assert logo.evaluate("i => new URL(i.currentSrc).pathname") == "/static/brand/logo-bar-full.svg"
+    plain = open_page("/", layout={"navigation": navigation})
+    assert plain.locator("header.app-bar").get_attribute("data-theme") is None
+
+
+@pytest.mark.browser
+def test_the_brands_roles_reach_the_focus_the_menu_and_the_icons_only_menu(open_page):
+    page = open_page("/", layout={"navigation": "side"})
+    page.evaluate(
+        "const root = document.documentElement.style;"
+        "root.setProperty('--app-focus-color', 'rgb(255, 0, 0)'); root.setProperty('--app-focus-width', '3px');"
+        "root.setProperty('--app-selected', 'rgb(0, 128, 0)');"
+        "root.setProperty('--app-selected-content', 'rgb(0, 0, 0)')"
+    )
+    current = page.locator("#navigation a[aria-current]")
+    # daisyUI eases a menu item's colours, so the new one is read once it has arrived
+    page.wait_for_function(
+        "() => getComputedStyle(document.querySelector('#navigation a[aria-current]')).backgroundColor"
+        " === 'rgb(0, 128, 0)'"
+    )
+    current.focus()
+    page.keyboard.press("Shift+Tab")
+    page.keyboard.press("Tab")
+    focused = "() => ['outlineColor', 'outlineWidth'].map((name) => getComputedStyle(document.activeElement)[name])"
+    assert page.evaluate(focused) == ["rgb(255, 0, 0)", "3px"]
+    page = open_page("/", layout={"navigation": "compact"})
+    page.evaluate("document.documentElement.style.setProperty('--app-nav-width-compact', '5rem')")
+    assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 80
+
+
+@pytest.mark.browser
+@pytest.mark.rule("A11Y-02")
+def test_an_icons_name_shows_on_hover_and_focus_and_escape_hides_it(open_page):
+    """WCAG 1.4.13: shown by the pointer or the keyboard, it stays while the pointer moves onto it; Escape hides it."""
+    page = open_page("/", layout={"navigation": "compact"})
+    tip = page.locator(".nav-tip")
+    link = page.locator("#navigation a[href='/settings']")
+    link.hover()
+    assert tip.is_visible() and tip.text_content() == "Settings"
+    tip.hover()
+    assert tip.is_visible()
+    page.keyboard.press("Escape")
+    assert not tip.is_visible()
+    link.focus()
+    assert tip.is_visible() and tip.get_attribute("aria-hidden") == "true"
+    page.locator("main").click(position={"x": 5, "y": 5})  # the focus leaves the link
+    link.hover()
+    page.keyboard.press("Escape")
+    link.hover(position={"x": 4, "y": 4})  # the pointer moves within the link: dismissed means dismissed
+    assert not tip.is_visible()
+    page.mouse.move(600, 400)
+    link.hover()
+    assert tip.is_visible()  # back once the pointer has left and returned
+    page.evaluate("window.scrollBy(0, 200)")
+    tip.wait_for(state="hidden")  # a scroll would leave it beside nothing
+    page = open_page("/", layout={"navigation": "side"})
+    page.locator("#navigation a[href='/settings']").hover()
+    assert not page.locator(".nav-tip").is_visible()  # a wide menu shows its names already
+
+
+@pytest.mark.browser
+def test_with_the_title_in_the_bar_the_trail_goes_there_too(open_page):
+    page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "header"})
+    trail = page.locator("header.app-bar nav.breadcrumbs")
+    assert trail.get_by_role("link", name="Gallery").is_visible()
+    assert not page.locator("main nav.breadcrumbs").is_visible()  # not twice
+    page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "page"})
+    assert page.locator("header.app-bar nav.breadcrumbs").count() == 0
+    assert page.locator("main nav.breadcrumbs").is_visible()
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize(("navigation", "bar"), [("side", "plain"), ("side", "brand"), ("compact", "brand")])
+def test_the_side_menus_logo_lines_up_with_the_top_bar(open_page, navigation, bar):
+    """The menu's logo and the bar beside it end on one line, and the logo sits in the bar's middle."""
+    page = open_page("/", layout={"navigation": navigation, "bar": bar})
+    top_bar = page.locator("header.app-bar").bounding_box()
+    block = page.locator("#navigation .app-nav-logo").bounding_box()
+    logo = page.locator("#navigation .app-logo:visible").bounding_box()
+    assert top_bar and block and logo
+    assert abs((block["y"] + block["height"]) - (top_bar["y"] + top_bar["height"])) <= 1
+    assert abs((logo["y"] + logo["height"] / 2) - (top_bar["y"] + top_bar["height"] / 2)) <= 2
+
+
+@pytest.mark.browser
+def test_on_a_phone_the_trail_stays_in_the_page(open_page):
+    """The bar has no room for it there: it is never lost, nor shown twice."""
+    page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "header"}, width=375)
+    assert page.locator("main nav.breadcrumbs").is_visible()
+    assert not page.locator("header.app-bar nav.breadcrumbs").is_visible()

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eunomai-business-app-base VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-05 13:32+0100\n"
+"POT-Creation-Date: 2026-11-12 19:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -341,6 +341,9 @@ msgstr "Icono"
 msgid "Icons only"
 msgstr "Solo iconos"
 
+msgid "In the brand's colours"
+msgstr "Con los colores de la marca"
+
 msgid "In the page"
 msgstr "En la página"
 
@@ -504,6 +507,9 @@ msgstr "Título de la página"
 
 msgid "Pages"
 msgstr "Páginas"
+
+msgid "Plain"
+msgstr "Sencilla"
 
 msgid "Preferences"
 msgstr "Preferencias"
@@ -729,6 +735,9 @@ msgstr "Interruptor"
 
 msgid "Top"
 msgstr "Superior"
+
+msgid "Top bar and menu"
+msgstr "Barra superior y menú"
 
 msgid "Try another word, or a shorter one."
 msgstr "Prueba con otra palabra, o con una más corta."

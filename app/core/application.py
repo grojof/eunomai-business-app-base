@@ -5,7 +5,7 @@ import mimetypes
 from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Annotated
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 from fastapi import FastAPI, Form, Request
 from fastapi.exceptions import RequestValidationError
@@ -15,6 +15,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import StaleDataError
 from starlette.convertors import IntegerConvertor, register_url_convertor
 from starlette.exceptions import HTTPException
+from starlette.types import Scope
 
 from app.core import identity
 from app.core.addresses import is_local
@@ -172,6 +173,7 @@ async def _save_preferences(
     theme: Annotated[str, Form()] = "",
     next_path: Annotated[str, Form(alias="next")] = "/",
     layout_navigation: Annotated[str, Form()] = "",
+    layout_bar: Annotated[str, Form()] = "",
     layout_sticky_header: Annotated[str, Form()] = "",
     layout_width: Annotated[str, Form()] = "",
     layout_density: Annotated[str, Form()] = "",
@@ -190,6 +192,7 @@ async def _save_preferences(
         response.set_cookie("theme", theme, **options)
     chosen = {
         "navigation": layout_navigation,
+        "bar": layout_bar,
         "sticky_header": layout_sticky_header,
         "width": layout_width,
         "density": layout_density,
@@ -217,6 +220,22 @@ def _settings_item() -> list[SearchItem]:
     ]
 
 
+class StampedFiles(StaticFiles):
+    """The application's own files. One asked for with its stamp (`?v=`, see templating.asset) never changes at that
+    address, so a browser keeps it for a year without asking again; without a stamp, it asks each time it needs it."""
+
+    async def get_response(self, path: str, scope: Scope) -> Response:
+        response = await super().get_response(path, scope)
+        if response.status_code == 200 and "v" in parse_qs(scope.get("query_string", b"").decode("latin-1")):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return response
+
+
+BAR_THEME = "[data-theme=bar]" in (UI / "static" / "app.css").read_text(encoding="utf-8")
+"""Whether the brand has a theme called bar: without one, its colours would look like the page's, so they are not
+offered as a choice."""
+
+
 async def _settings_page(request: Request) -> Response:
     """Everything a person may change about how the application looks, each choice shown as it would be applied."""
     groups = {
@@ -224,6 +243,7 @@ async def _settings_page(request: Request) -> Response:
             _("Navigation"),
             {"side": _("Side"), "compact": _("Icons only"), "top": _("Top"), "hidden": _("Hidden")},
         ),
+        "bar": (_("Top bar and menu"), {"plain": _("Plain"), "brand": _("In the brand's colours")}),
         "sticky_header": (_("Fixed header"), {"on": _("Yes"), "off": _("No")}),
         "width": (_("Width"), {"full": _("Full"), "centered": _("Centred")}),
         "density": (_("Density"), {"normal": _("Normal"), "compact": _("Compact")}),
@@ -235,7 +255,7 @@ async def _settings_page(request: Request) -> Response:
     options = [
         (field, title, [(value, labels[value]) for value in LAYOUTS[field]])
         for field, (title, labels) in groups.items()
-        if field in choices
+        if field in choices and (field != "bar" or BAR_THEME)
     ]
     return render(
         request,
@@ -277,8 +297,8 @@ def create_core(settings: Settings) -> FastAPI:
         settings.languages, settings.default_language, allow_pseudo=settings.environment == "development"
     )
     application.state.languages.add_folder(ROOT / "locales")
-    application.mount("/static/ui", StaticFiles(directory=UI / "static"), name="ui")
-    application.mount("/static/brand", StaticFiles(directory=UI.parent / "brand"), name="brand")
+    application.mount("/static/ui", StampedFiles(directory=UI / "static"), name="ui")
+    application.mount("/static/brand", StampedFiles(directory=UI.parent / "brand"), name="brand")
     application.add_api_route("/preferences", _save_preferences, methods=["POST"], include_in_schema=False)
     application.add_api_route("/search", _search, include_in_schema=False)
     if settings.layout_choices:

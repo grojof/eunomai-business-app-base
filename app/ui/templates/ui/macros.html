@@ -178,9 +178,11 @@
 <span class="inline-flex items-center gap-2 whitespace-nowrap"><span class="status {{ classes[kind] }}" aria-hidden="true"></span>{{ text }}</span>
 {% endmacro %}
 
-{#- `items`: (label, address). The last one is where a person is, and needs no address. -#}
+{#- `items`: (label, address), ending in this page with no address. With the page's title in the top bar, the trail
+    goes there too, and the title takes the place of its last item. -#}
 {% macro breadcrumbs(items) %}
-<nav class="breadcrumbs text-sm print:hidden" aria-label="{{ _('Breadcrumbs') }}">
+{#- With the trail in the top bar, a medium screen and up shows it there; a phone, whose bar has no room, here -#}
+<nav class="breadcrumbs text-sm print:hidden{{ ' md:hidden' if page_title().take_trail(items) else '' }}" aria-label="{{ _('Breadcrumbs') }}">
   <ul>
     {% for label, href in items %}
     <li>{% if href %}<a href="{{ href }}">{{ label }}</a>{% else %}<span{% if loop.last %} aria-current="page"{% endif %}>{{ label }}</span>{% endif %}</li>

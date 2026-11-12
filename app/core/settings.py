@@ -1,16 +1,19 @@
 """Settings, read from the environment (APP_*) or a local .env file. See .env.example."""
 
+import tomllib
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal, Self
+from typing import Any, Literal, Self
 
 from pydantic import SecretStr, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic.fields import FieldInfo
+from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 from sqlalchemy import make_url
 from sqlalchemy.exc import ArgumentError
 
 LAYOUTS: dict[str, tuple[str, ...]] = {
     "navigation": ("side", "compact", "top", "hidden"),
+    "bar": ("plain", "brand"),
     "sticky_header": ("on", "off"),
     "width": ("full", "centered"),
     "density": ("normal", "compact"),
@@ -23,11 +26,32 @@ LAYOUTS: dict[str, tuple[str, ...]] = {
 """What the settings menu offers, and the only values the server accepts. See docs/base/specification.md#layouts"""
 SERVED = Path(__file__).resolve().parent.parent
 """The application's own folders, some of them served as they are: no upload ever goes here."""
+BRAND_LAYOUT = SERVED / "brand" / "layout.toml"
+"""The organization's arrangement, which its layer brings: what its applications start with. Optional."""
 ONE_MEGABYTE = 1024 * 1024
 
 
 SIGNED_IN = "signed_in"
 """The role of everyone the proxy identified: a module open to them all asks for it."""
+
+
+class _BrandLayout(PydanticBaseSettingsSource):
+    """app/brand/layout.toml, below the environment and .env, so an application changes what it needs and the rest stays
+    the organization's. Each key is a layout's name, such as `bar = "brand"`; `choices` lists what each person may
+    change. A value the settings do not offer stops the application, as one in the environment does."""
+
+    def get_field_value(self, field: FieldInfo, field_name: str) -> tuple[Any, str, bool]:
+        return None, field_name, False  # read whole, in __call__
+
+    def __call__(self) -> dict[str, Any]:
+        if not BRAND_LAYOUT.is_file():
+            return {}
+        chosen = tomllib.loads(BRAND_LAYOUT.read_text(encoding="utf-8"))
+        unknown = sorted(set(chosen) - {*LAYOUTS, "choices"})
+        if unknown:
+            known = ", ".join(["choices", *LAYOUTS])
+            raise ValueError(f"app/brand/layout.toml: unknown {', '.join(unknown)}; it takes {known}")
+        return {"layout_choices" if key == "choices" else f"layout_{key}": value for key, value in chosen.items()}
 
 
 class Settings(BaseSettings):
@@ -53,6 +77,8 @@ class Settings(BaseSettings):
 
     # How the application is arranged. See docs/base/specification.md#layouts
     layout_navigation: Literal["side", "compact", "top", "hidden"] = "side"
+    # The top bar and the menu: as the page, or in the brand's colours (the theme called "bar" in app/brand/theme.css).
+    layout_bar: Literal["plain", "brand"] = "plain"
     layout_sticky_header: bool = True
     layout_width: Literal["full", "centered"] = "full"
     layout_density: Literal["normal", "compact"] = "normal"
@@ -81,6 +107,18 @@ class Settings(BaseSettings):
     # Local work only: a person without a proxy. Refuses to start outside development.
     fake_identity: bool = False
     fake_groups: list[str] = []
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        """The organization's arrangement comes after the environment and .env, and before the base's defaults."""
+        return init_settings, env_settings, dotenv_settings, _BrandLayout(settings_cls), file_secret_settings
 
     @model_validator(mode="after")
     def check(self) -> Self:

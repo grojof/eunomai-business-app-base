@@ -66,8 +66,9 @@ when started by hand: *Actions*, *Tests*, *Run workflow*, or `gh workflow run te
 publishing, and after a change to the database layer.
 
 An organization makes its template from this with `tools/make_template.py` and its brand, as
-[An organization's template](docs/base/specification.md#an-organizations-template) says, and starts each application
-from that template. To try the base alone, clone this, then run `uv run --frozen python tools/remove_demo.py` and
+[An organization's template](docs/base/specification.md#an-organizations-template) says: its themes, logos, roles and
+arrangement in `app/brand/`, each colour checked for contrast ([Your theme](docs/base/specification.md#your-theme)).
+It starts each application from that template. To try the base alone, clone this, then run `uv run --frozen python tools/remove_demo.py` and
 `uv run --frozen python tools/css.py`. The first is what turns the clone into an application: the demo goes, and
 `AGENTS.md` stops describing a neutral base and describes an application, so real work belongs there. `README.md` becomes
 the application's own map, and this documentation stays in `docs/base/`. Fill in *What this application is* at the top

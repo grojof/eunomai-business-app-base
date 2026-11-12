@@ -275,7 +275,7 @@ function recall() {
 }
 document.addEventListener("submit", (event) => {
   const place = event.target.dataset.preferences;
-  if (place) {
+  if (place && !event.defaultPrevented) {
     const control = event.submitter ?? document.activeElement;
     remember(JSON.stringify([place, control?.name ?? "", event.submitter ? control.value : ""]));
   }
@@ -540,3 +540,99 @@ const currentLink = navigation?.querySelector("[aria-current]");
 if (currentLink && navigation.scrollHeight > navigation.clientHeight) {
   navigation.scrollTop = currentLink.offsetTop - navigation.clientHeight / 2;
 }
+
+// The icons-only menu: each link's name shows beside it on hover and on keyboard focus, stays while the pointer moves
+// onto it, and Escape hides it until the pointer or the focus leaves that link (WCAG 1.4.13). The link already has its
+// name for a screen reader, so this one is hidden from it. It goes when the menu folds, scrolls or changes size.
+(() => {
+  const tip = document.createElement("div");
+  tip.className = "nav-tip";
+  tip.setAttribute("aria-hidden", "true");
+  tip.hidden = true;
+  document.body.append(tip);
+  const wide = matchMedia("(width >= 64rem)");
+  const linkOf = (target) => (wide.matches ? target?.closest?.(".app-nav-compact a, .app-nav-compact button") : null);
+  let leaving;
+  let dismissed = null;
+  let lastPointer = [0, 0];
+  document.addEventListener("pointermove", (event) => {
+    lastPointer = [event.clientX, event.clientY];
+  });
+  const hide = () => {
+    clearTimeout(leaving);
+    tip.hidden = true;
+  };
+  const show = (link) => {
+    clearTimeout(leaving);
+    if (link === dismissed) {
+      return;
+    }
+    const box = link.getBoundingClientRect();
+    const rightToLeft = getComputedStyle(link).direction === "rtl";
+    tip.textContent = link.textContent.trim();
+    tip.style.top = `${box.top + box.height / 2}px`;
+    tip.style.left = rightToLeft ? "" : `${box.right + 8}px`;
+    tip.style.right = rightToLeft ? `${innerWidth - box.left + 8}px` : "";
+    tip.hidden = false;
+  };
+  document.addEventListener("pointerover", (event) => {
+    const link = linkOf(event.target);
+    if (link) {
+      show(link);
+    }
+  });
+  document.addEventListener("pointerout", (event) => {
+    const link = linkOf(event.target);
+    if (link && !link.contains(event.relatedTarget) && !tip.contains(event.relatedTarget)) {
+      dismissed = null;
+      leaving = setTimeout(hide, 200);
+    }
+  });
+  tip.addEventListener("pointerenter", () => clearTimeout(leaving));
+  tip.addEventListener("pointerleave", hide);
+  document.addEventListener("focusin", (event) => {
+    const link = linkOf(event.target);
+    if (link) {
+      show(link);
+    } else {
+      hide();
+    }
+  });
+  document.addEventListener("focusout", () => {
+    dismissed = null;
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !tip.hidden) {
+      dismissed = linkOf(document.activeElement) ?? linkOf(document.elementFromPoint(...lastPointer)) ?? null;
+      hide();
+    }
+  });
+  for (const gone of ["htmx:beforeSwap", "submit"]) {
+    document.addEventListener(gone, hide, true);
+  }
+  document.addEventListener("scroll", hide, true);
+  addEventListener("resize", hide);
+  wide.addEventListener("change", hide);
+})();
+
+// The side menu folds to its icons and back at once, and the server remembers it for the next page. Without this,
+// its form sends the choice and the page comes back folded. Capturing, so it runs before focus is kept for a reload.
+document.addEventListener(
+  "submit",
+  (event) => {
+    const form = event.target.closest?.('form[data-preferences="navigation-fold"]');
+    const menu = document.getElementById("navigation");
+    if (!form || !menu) {
+      return;
+    }
+    event.preventDefault();
+    const folded = menu.classList.toggle("app-nav-compact");
+    const button = form.querySelector("button");
+    button.setAttribute("aria-pressed", String(folded));
+    button.value = folded ? "side" : "compact";
+    const data = new FormData(form);
+    data.set("layout_navigation", folded ? "compact" : "side");
+    fetch(form.action, { method: "POST", body: data, redirect: "manual", credentials: "same-origin" }).catch(() => {});
+  },
+  true,
+);

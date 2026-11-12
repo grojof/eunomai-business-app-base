@@ -330,7 +330,7 @@ def test_vendored_files_match_their_recorded_hash():
 
 def test_scripts_carry_their_integrity(client, person):
     html = client.get("/", headers=person).text
-    assert re.search(r'htmx\.min\.js" integrity="sha384-[\w+/=]+"', html)
+    assert re.search(r'htmx\.min\.js\?v=[^"]+" integrity="sha384-[\w+/=]+"', html)
 
 
 def test_the_core_never_imports_the_demo():

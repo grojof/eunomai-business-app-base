@@ -1,12 +1,15 @@
 """Pages: Jinja2 with escaping always on, the translation functions and the locale's formatters."""
 
+import hashlib
 import json
 from collections.abc import Callable, Iterable, Sequence
 from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, cast
+from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
 from fastapi import Request
@@ -23,11 +26,48 @@ ROOT = UI.parent.parent
 _loaders: list[FileSystemLoader] = [FileSystemLoader(UI / "templates")]
 BRAND_ICONS = FileSystemLoader(UI.parent / "brand" / "icons")
 """The organization's own icons, as `brand-icons/<name>.svg`. Only the icon macro includes them, as it does Lucide's."""
+BRAND = UI.parent / "brand"
+
+
+@lru_cache(maxsize=256)
+def _stamp(file: Path, changed: int, size: int) -> str:
+    """Read once for each time and size the file has: Windows can give two quick writes the same time."""
+    return hashlib.sha256(file.read_bytes()).hexdigest()[:12]
+
+
+def asset(address: str) -> str:
+    """The address of one of the application's own files, with a stamp of its content: a browser fetches it again as
+    soon as it changes, such as after an update, and never runs an old script with a new page."""
+    served_from = {"/static/ui/": UI / "static", "/static/brand/": BRAND}
+    prefix = next((prefix for prefix in served_from if address.startswith(prefix)), None)
+    if prefix is None:
+        raise ValueError(f"{address} is not one of the application's own files, under {', '.join(served_from)}")
+    file = served_from[prefix] / address.removeprefix(prefix)
+    found = file.stat()
+    return f"{address}?v={_stamp(file, found.st_mtime_ns, found.st_size)}"
+
+
+def _first(*names: str) -> str:
+    """The first of a brand's files that exists, as it is served; `logo.svg`, which every brand has, at last."""
+    return "/static/brand/" + next((name for name in names if (BRAND / name).exists()), "logo.svg")
+
+
+LOGOS = {
+    "plain": {"mark": asset(_first("logo.svg")), "full": asset(_first("logo-full.svg"))},
+    "brand": {
+        "mark": asset(_first("logo-bar.svg")),
+        "full": asset(_first("logo-bar-full.svg", "logo-bar.svg", "logo-full.svg")),
+    },
+}
+"""A brand's logos: the logomark, its symbol, where room is short, and the logotype, whole, where it fits; each for a
+light background (`plain`) and for the bar in the brand's colours (`brand`). Only logo.svg is required."""
 _VENDORED = json.loads((ROOT / "vendor.json").read_text(encoding="utf-8"))
 
 
 def _script(entry: dict[str, Any]) -> dict[str, str]:
-    return {"src": "/static/ui/vendor/" + Path(entry["target"]).name, "integrity": "sha384-" + entry["sha384"]}
+    # Its stamp is its pinned hash: an old copy kept by a browser would fail the new integrity, and not run
+    address = "/static/ui/vendor/" + Path(entry["target"]).name + "?v=" + quote(entry["sha384"][:16], safe="")
+    return {"src": address, "integrity": "sha384-" + entry["sha384"]}
 
 
 _VENDOR_SCRIPTS = [_script(entry) for entry in _VENDORED.values() if entry.get("script") and not entry.get("on_demand")]
@@ -62,10 +102,12 @@ environment.filters["filesize"] = formatters.format_file_size
 @dataclass
 class PageTitle:
     """Where a page's h1 goes. The layout asks for the top bar before it draws the content, `page_heading` then leaves
-    its title here instead of in the page, and the top bar writes it, still as the page's one h1."""
+    its title here instead of in the page, and the top bar writes it, still as the page's one h1. The page's breadcrumb
+    trail goes with it, so the bar shows where the page is and what it is."""
 
     in_header: bool = False
     text: str = ""
+    trail: tuple[tuple[str, str], ...] = ()
 
     def ask(self, in_header: bool) -> str:
         self.in_header = in_header
@@ -77,10 +119,21 @@ class PageTitle:
             return True
         return False
 
+    def take_trail(self, items: list[tuple[str, str]]) -> bool:
+        """The page's trail, for the bar to show from a medium screen up. Its last item is the page itself: the bar
+        leaves it out when the title is there, and shows it otherwise."""
+        if self.in_header and not self.trail:
+            self.trail = tuple(items)
+            return True
+        return False
+
 
 _page_title: ContextVar[PageTitle | None] = ContextVar("page_title", default=None)
 environment.globals["page_title"] = lambda: _page_title.get() or PageTitle()
 """Each render has its own: a fragment never asks for the top bar, so its heading stays where it is."""
+environment.globals["asset"] = asset
+environment.globals["logos"] = LOGOS
+environment.globals["favicon"] = asset(_first("favicon.svg"))
 
 
 @dataclass(frozen=True)
@@ -179,6 +232,7 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
             person=person,
             navigation=visible_navigation(request),
             settings_menu=bool(state.settings.layout_choices),
+            layout_choices=state.settings.layout_choices,
             theme_options=[
                 ("system", i18n._("As the system"), "monitor"),
                 ("light", i18n._("Light"), "sun"),

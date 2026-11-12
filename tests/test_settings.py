@@ -270,10 +270,76 @@ def test_a_toggle_follows_the_system_when_the_theme_does(browser, base_url):
 def test_a_person_can_try_each_arrangement(open_page, navigation):
     page = open_page("/settings", layout={"navigation": "side" if navigation != "side" else "top"})
     names = {"side": "Side", "compact": "Icons only", "top": "Top", "hidden": "Hidden"}
+    choice = page.locator("#layout").get_by_role("button", name=names[navigation], exact=True)
     with page.expect_navigation():
-        page.get_by_role("button", name=names[navigation], exact=True).click()
-    assert page.get_by_role("button", name=names[navigation], exact=True).get_attribute("aria-pressed") == "true"
+        choice.click()
+    assert choice.get_attribute("aria-pressed") == "true"
     assert not overflows_sideways(page)
+
+
+@pages
+def test_the_menus_width_is_the_brands_and_icons_only_still_narrows_it(open_page):
+    page = open_page("/", layout={"navigation": "side"})
+    assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 256
+    page.evaluate("document.documentElement.style.setProperty('--app-nav-width', '18rem')")
+    assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 288
+    page = open_page("/", layout={"navigation": "compact"})
+    assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 64
+
+
+@pages
+@pytest.mark.rule("A11Y-02")
+def test_the_side_menu_folds_to_its_icons_and_back_at_once_and_is_remembered(open_page):
+    page = open_page("/", layout={"navigation": "side"})
+    menu = page.locator("#navigation")
+    fold = page.get_by_role("button", name="Icons only")
+    assert fold.get_attribute("aria-pressed") == "false"
+    address = page.url
+    with page.expect_response("**/preferences"):
+        fold.click()
+    assert page.url == address and "app-nav-compact" in (menu.get_attribute("class") or "")  # no new page
+    assert fold.get_attribute("aria-pressed") == "true" and fold.evaluate("b => b === document.activeElement")
+    assert menu.evaluate("n => n.getBoundingClientRect().width") == 64
+    page.reload()
+    assert "app-nav-compact" in (page.locator("#navigation").get_attribute("class") or "")  # the server kept it
+    with page.expect_response("**/preferences"):
+        page.get_by_role("button", name="Icons only").click()
+    assert "app-nav-compact" not in (page.locator("#navigation").get_attribute("class") or "")
+
+
+@pages
+def test_without_a_script_the_fold_is_a_form_that_brings_the_page_back_folded(open_page):
+    page = open_page("/", layout={"navigation": "side"}, javascript=False)
+    with page.expect_navigation():
+        page.get_by_role("button", name="Icons only").click()
+    assert "app-nav-compact" in (page.locator("#navigation").get_attribute("class") or "")
+
+
+def test_each_logo_falls_back_to_the_one_a_brand_has(tmp_path, monkeypatch):
+    from app.core import templating
+
+    monkeypatch.setattr(templating, "BRAND", tmp_path)
+    (tmp_path / "logo.svg").write_text("<svg/>")
+    assert templating._first("logo-bar-full.svg", "logo-bar.svg", "logo-full.svg") == "/static/brand/logo.svg"
+    (tmp_path / "logo-full.svg").write_text("<svg/>")
+    assert templating._first("logo-bar-full.svg", "logo-bar.svg", "logo-full.svg") == "/static/brand/logo-full.svg"
+    assert templating._first("favicon.svg") == "/static/brand/logo.svg"
+
+
+@pages
+@pytest.mark.parametrize(
+    ("navigation", "width", "shown"),
+    [
+        ("top", 1280, "logo-bar-full.svg"),
+        ("top", 375, "logo-bar.svg"),
+        ("compact", 1280, "logo-bar.svg"),
+        ("side", 1280, "logo-bar-full.svg"),
+    ],
+)
+def test_the_whole_logo_where_it_fits_and_its_symbol_where_room_is_short(open_page, navigation, width, shown):
+    page = open_page("/", layout={"navigation": navigation, "bar": "brand"}, width=width)
+    place = "header.app-bar img" if navigation == "top" else "#navigation img:visible"
+    assert page.locator(place).first.evaluate("i => new URL(i.currentSrc).pathname") == "/static/brand/" + shown
 
 
 @pages
@@ -374,3 +440,38 @@ def test_a_title_in_the_top_bar_stays_on_paper(open_page):
     page.emulate_media(media="print")
     assert page.locator("h1").is_visible()
     assert not page.get_by_role("button", name="Open menu").is_visible()
+
+
+def test_the_organizations_arrangement_is_where_its_applications_start(tmp_path, monkeypatch):
+    """app/brand/layout.toml, which its layer brings, below the environment: an application changes what it needs."""
+    from app.core import settings as module
+
+    layout = tmp_path / "layout.toml"
+    layout.write_text('bar = "brand"\nsticky_header = false\nchoices = ["navigation", "bar"]\n', encoding="utf-8")
+    monkeypatch.setattr(module, "BRAND_LAYOUT", layout)
+    chosen = build_settings()
+    assert (chosen.layout_bar, chosen.layout_sticky_header) == ("brand", False)
+    assert chosen.layout_choices == ["navigation", "bar"]
+    monkeypatch.setenv("APP_LAYOUT_BAR", "plain")
+    assert build_settings().layout_bar == "plain"
+
+
+@pytest.mark.parametrize(("text", "said"), [('bar = "loud"', "layout_bar"), ('colour = "blue"', "unknown colour")])
+def test_an_arrangement_the_settings_do_not_offer_stops_the_application(tmp_path, monkeypatch, text, said):
+    from app.core import settings as module
+
+    layout = tmp_path / "layout.toml"
+    layout.write_text(text + "\n", encoding="utf-8")
+    monkeypatch.setattr(module, "BRAND_LAYOUT", layout)
+    with pytest.raises(Exception, match=said):
+        build_settings()
+
+
+def test_the_brands_colours_are_offered_only_where_the_brand_has_a_bar_theme(person, monkeypatch):
+    from app.core import application
+
+    client = TestClient(create_app(build_settings()))
+    monkeypatch.setattr(application, "BAR_THEME", True)
+    assert 'name="layout_bar"' in client.get("/settings", headers=person).text
+    monkeypatch.setattr(application, "BAR_THEME", False)
+    assert 'name="layout_bar"' not in client.get("/settings", headers=person).text
