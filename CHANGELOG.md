@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3 (2026-11-12)
+
+A test of the rule report wrote its sample in the system's temporary folder. pytest lists each folder on its way to a
+path, so it listed that folder too, where the browser tests running beside it create and delete profiles: when one went
+while it was being listed, the collection stopped and the test failed. It failed every time in an application's suite,
+which has fewer tests to spread them. The sample is now written in `tests/.samples/`, inside the repository.
+
 ## 0.1.2 (2026-11-12)
 
 The `badge` macro takes `strong=true` for a badge that must stand out from the others. It adds `badge-strong`, which the
