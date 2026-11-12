@@ -804,15 +804,15 @@ the bar uses.
 | Variable | Default | Where | Checked against |
 |---|---|---|---|
 | `--app-focus-color` | `primary` | The keyboard's focus | `base-100`, `base-200` at 3:1 |
-| `--app-focus-width`, `--app-focus-offset` | `2px`, `2px` | The focus's line | — |
+| `--app-focus-width` | `2px` | The focus's line | — |
 | `--app-selected`, `--app-selected-content` | `neutral`, `neutral-content` | The menu's current item, the option the arrow keys are on | Each other at 4.5:1 |
 | `--app-tab-indicator` | The tab's text | The current tab's line | `base-100` at 3:1 |
 | `--app-event`, `--app-event-content` | `primary` at 22% on `base-100`, `base-content` | Calendar events | Each other at 4.5:1 |
 | `--app-chart-1` to `--app-chart-4` | `primary`, `accent`, `secondary`, `info` | A chart's series, in order | `base-100` at 3:1 |
 | `--app-link-color` | The text's | Links | `base-100` at 4.5:1 |
-| `--app-heading-font`, `--app-heading-weight` | The text's font; bold and semibold | `h1` and `h2` | — |
 
-**Sizes**, on `:root`: `--app-bar-height` (the bar's own), `--app-nav-width` (16rem), `--app-nav-width-compact`
+**On `:root`**, for every theme: `--app-heading-font`, the headings' font (a list of fonts, which Tailwind would split
+inside a theme's block); `--app-bar-height` (the bar's least height, 3.5rem, which the side menu's logo shares, so the two line up), `--app-nav-width` (16rem), `--app-nav-width-compact`
 (4rem), `--app-logo-height` (2rem). The bar is `.app-bar`, the menu `.app-nav`, the logo `.app-logo`, for anything
 else a brand adds to them.
 

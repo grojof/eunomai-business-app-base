@@ -80,21 +80,28 @@ div.calendar-dot {
    any layer, so the bar's own minimum gives way to the brand's; the menu's width is a component, so "icons only" still
    narrows it. A logo of any proportion keeps it, within the room it has */
 .app-bar {
-  min-height: var(--app-bar-height, 0);
+  min-height: var(--app-bar-height, 3.5rem);
 }
 
 @layer components {
   .app-nav {
     width: var(--app-nav-width, 16rem);
+    max-width: 100dvw;
   }
 
-  @variant lg {
-    .app-nav-compact {
+  /* The side menu's logo, as high as the top bar beside it */
+  .app-nav-brand {
+    min-height: var(--app-bar-height, 3.5rem);
+  }
+
+  .app-nav-compact {
+    @variant lg {
       width: var(--app-nav-width-compact, 4rem);
     }
   }
 
-  /* A link's colour, the brand's to set; daisyUI's underline stays as each place asks for it */
+  /* The colour of daisyUI's .link, the brand's to set: not of menus, breadcrumbs or plain links. Where a link is told
+     from the text by its colour alone, inside a sentence, it keeps its underline */
   .link {
     color: var(--app-link-color, inherit);
   }
@@ -136,7 +143,7 @@ div.calendar-dot {
   --menu-active-fg: var(--app-selected-content, var(--color-neutral-content));
 }
 
-.tabs-border > .tab:is(.tab-active, [aria-current="page"])::before {
+.tabs-border > .tab::before {
   border-top-color: var(--app-tab-indicator, currentColor);
 }
 
@@ -149,10 +156,10 @@ div.calendar-dot {
 }
 
 /* Outside any layer, so no component can hide it: daisyUI's menu marks focus only with a background. Its colour, width
-   and offset are the brand's to set (--app-focus-color, --app-focus-width, --app-focus-offset) */
+   are the brand's to set (--app-focus-color, --app-focus-width) */
 :where(a, button, summary, input, select, textarea):focus-visible {
   outline: var(--app-focus-width, 2px) solid var(--app-focus-color, var(--color-primary));
-  outline-offset: var(--app-focus-offset, 2px);
+  outline-offset: 2px;
 }
 
 /* The palette's text box is the only thing that can be typed in, and its row shows that it has focus */
@@ -189,7 +196,7 @@ div.calendar-dot {
 /* A swap hides its box, so its label shows the focus */
 .swap:has(input:focus-visible) {
   outline: var(--app-focus-width, 2px) solid var(--app-focus-color, var(--color-primary));
-  outline-offset: var(--app-focus-offset, 2px);
+  outline-offset: 2px;
 }
 
 /* On paper a table has no box to scroll in, its header repeats on each page, and a row stays whole */
@@ -233,6 +240,8 @@ div.calendar-dot {
     display: block;
     border: 0;
     padding: 0;
+    background: none;
+    color: CanvasText;
   }
 
   header:has(> .page-title-bar) > :not(.page-title-bar) {
@@ -263,28 +272,28 @@ div.calendar-dot {
 @layer base {
   /* What the keyboard reaches, and any #link, stops clear of the sticky header: WCAG 2.4.11 */
   html {
-    scroll-padding-top: 5rem;
+    scroll-padding-top: calc(max(var(--app-bar-height, 3.5rem), 4rem) + 1rem);
   }
 
   body {
     overflow-wrap: anywhere;
   }
 
-  /* The headings' font and weight are the brand's to set: --app-heading-font, --app-heading-weight. The font with no
-     weight at all, so a brand's own rule for its headings still wins, wherever its file puts it */
+  /* The headings' font is the brand's to set: --app-heading-font. With no weight at all, so a brand's own rule for
+     its headings still wins, wherever its file puts it */
   :where(h1, h2) {
     font-family: var(--app-heading-font, inherit);
   }
 
   h1 {
     font-size: var(--text-3xl);
-    font-weight: var(--app-heading-weight, var(--font-weight-bold));
+    font-weight: var(--font-weight-bold);
     letter-spacing: var(--tracking-tight);
   }
 
   h2 {
     font-size: var(--text-lg);
-    font-weight: var(--app-heading-weight, var(--font-weight-semibold));
+    font-weight: var(--font-weight-semibold);
   }
 
   [tabindex="-1"]:focus {
@@ -438,7 +447,7 @@ div.calendar-dot {
   /* Where a dragged card would land */
   .board-ghost {
     opacity: 0.5;
-    outline: var(--app-focus-width, 2px) dashed var(--app-focus-color, var(--color-primary));
+    outline: 2px dashed var(--color-primary);
   }
 
   /* The page's h1 in the top bar takes the bar's size, not a page's */

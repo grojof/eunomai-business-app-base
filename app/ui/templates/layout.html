@@ -21,7 +21,6 @@
   {% from "ui/macros.html" import icon %}
   {% set side = navigation and layout.navigation in ("side", "compact") %}
   {% set menu_button = "" if layout.navigation == "hidden" else "lg:hidden" %}
-  {#- The bar and the menu take the theme called "bar" when the brand's colours are chosen. -#}
   {#- The content is drawn first, so that its heading can go to the top bar when a person asks for that. -#}
   {% set title_place = page_title() %}
   {{- title_place.ask(layout.page_title == "header" and layout.navigation != "top") -}}
@@ -29,6 +28,7 @@
   {%- if false %}{% block content %}{% endblock %}{% endif %}
   <a class="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:start-2 focus:top-2 focus:z-50 print:hidden" href="#main">{{ _("Skip to content") }}</a>
   <div class="flex min-h-dvh">
+    {#- The bar and the menu take the theme called "bar" when the brand's colours are chosen -#}
     {% if side %}<div class="contents lg:block lg:shrink-0 lg:border-e lg:border-base-300 lg:bg-base-100 print:hidden"{% if layout.bar == "brand" %} data-theme="bar"{% endif %}>{% include "ui/navigation.html" %}</div>{% endif %}
     <div class="flex min-w-0 flex-1 flex-col">
       <header class="app-bar navbar z-20 flex-wrap gap-2 border-b border-base-300 bg-base-100 px-4 py-2 print:hidden{{ ' sticky top-0' if layout.sticky_header else '' }}"{% if layout.bar == "brand" %} data-theme="bar"{% endif %}>

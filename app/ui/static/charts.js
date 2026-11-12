@@ -23,12 +23,13 @@
   const faint = ({ red, green, blue }, alpha) => `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 
   // The four series take the brand's --app-chart-1 to 4 where its theme sets them, the theme's colours otherwise.
-  const SERIES = ["primary", "accent", "secondary", "info"];
+  const SERIES = { primary: 1, accent: 2, secondary: 3, info: 4 };
 
   function readTheme() {
     const style = getComputedStyle(document.documentElement);
     const value = (name) => style.getPropertyValue(name).trim();
-    const read = (name) => toRgb(value(`--app-chart-${SERIES.indexOf(name) + 1}`) || value(`--color-${name}`));
+    const own = (name) => (name in SERIES ? value(`--app-chart-${SERIES[name]}`) : "");
+    const read = (name) => toRgb(own(name) || value(`--color-${name}`));
     const found = Object.fromEntries(COLOURS.map((name) => [name, read(name)]));
     return { ...found, text: read("base-content"), surface: read("base-100"), grid: read("base-300"), font: style.fontFamily };
   }

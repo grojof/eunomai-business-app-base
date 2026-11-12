@@ -230,3 +230,16 @@ def test_with_the_title_in_the_bar_the_trail_goes_there_too(open_page):
     page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "page"})
     assert page.locator("header.app-bar .page-trail-bar").count() == 0
     assert page.locator("main nav.breadcrumbs").count() == 1
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize(("navigation", "bar"), [("side", "plain"), ("side", "brand"), ("compact", "brand")])
+def test_the_side_menus_logo_lines_up_with_the_top_bar(open_page, navigation, bar):
+    """The menu's logo and the bar beside it end on one line, and the logo sits in the bar's middle."""
+    page = open_page("/", layout={"navigation": navigation, "bar": bar})
+    top_bar = page.locator("header.app-bar").bounding_box()
+    block = page.locator("#navigation .app-nav-brand").bounding_box()
+    logo = page.locator("#navigation .app-logo").bounding_box()
+    assert top_bar and block and logo
+    assert abs((block["y"] + block["height"]) - (top_bar["y"] + top_bar["height"])) <= 1
+    assert abs((logo["y"] + logo["height"] / 2) - (top_bar["y"] + top_bar["height"] / 2)) <= 2

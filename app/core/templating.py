@@ -25,6 +25,7 @@ UI = Path(__file__).resolve().parent.parent / "ui"
 ROOT = UI.parent.parent
 _loaders: list[FileSystemLoader] = [FileSystemLoader(UI / "templates")]
 BRAND_ICONS = FileSystemLoader(UI.parent / "brand" / "icons")
+"""The organization's own icons, as `brand-icons/<name>.svg`. Only the icon macro includes them, as it does Lucide's."""
 BRAND = UI.parent / "brand"
 
 
@@ -37,7 +38,9 @@ def asset(address: str) -> str:
     """The address of one of the application's own files, with a stamp of its content: a browser fetches it again as
     soon as it changes, such as after an update, and never runs an old script with a new page."""
     served_from = {"/static/ui/": UI / "static", "/static/brand/": BRAND}
-    prefix = next(prefix for prefix in served_from if address.startswith(prefix))
+    prefix = next((prefix for prefix in served_from if address.startswith(prefix)), None)
+    if prefix is None:
+        raise ValueError(f"{address} is not one of the application's own files, under {', '.join(served_from)}")
     file = served_from[prefix] / address.removeprefix(prefix)
     return f"{address}?v={_stamp(file, file.stat().st_mtime_ns)}"
 
@@ -56,7 +59,6 @@ LOGOS = {
 }
 """A brand's logos: the logomark, its symbol, where room is short, and the logotype, whole, where it fits; each for a
 light background (`plain`) and for the bar in the brand's colours (`brand`). Only logo.svg is required."""
-"""The organization's own icons, as `brand-icons/<name>.svg`. Only the icon macro includes them, as it does Lucide's."""
 _VENDORED = json.loads((ROOT / "vendor.json").read_text(encoding="utf-8"))
 
 
