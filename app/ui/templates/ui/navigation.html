@@ -8,9 +8,9 @@
 <nav id="navigation" popover="auto" aria-label="{{ _('Main') }}"
      class="app-nav fixed inset-y-0 start-0 m-0 h-dvh {{ 'app-nav-compact' if compact else '' }} overflow-y-auto overscroll-contain border-0 border-e border-base-300 bg-base-100 px-3 pb-3 text-base-content lg:border-e-0 {{ shown }}">
   {% if not top %}
-  {#- The logo on a row as high as the top bar beside it, so the two line up; the application's name beneath, where a
-      whole logo leaves it room -#}
-  <a class="mb-3 flex flex-col rounded-field px-2 pb-1 text-lg leading-tight font-bold" href="/">
+  {#- The logo on a row as high as the top bar beside it, so the two line up, and in the column the menu's icons start
+      in; the application's name beneath, as far below the bar as the page's content starts -#}
+  <a class="mb-3 flex flex-col rounded-field px-3 text-lg leading-tight font-bold" href="/">
     <span class="app-nav-logo flex items-center">
       {#- The whole logo where the menu is wide; its symbol where it holds icons only -#}
       {% with logo = logos[layout.bar] %}
@@ -18,7 +18,7 @@
       <img class="app-logo app-nav-compact-only" src="{{ logo.mark }}" alt="">
       {% endwith %}
     </span>
-    <span class="app-nav-label">{{ app_name }}</span>
+    <span class="app-nav-label pt-4 lg:pt-8">{{ app_name }}</span>
   </a>
   {% endif %}
   <ul class="menu w-full gap-0.5 p-0{% if top %} lg:menu-horizontal{% endif %}">

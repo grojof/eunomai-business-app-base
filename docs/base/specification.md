@@ -818,7 +818,7 @@ the bar uses.
 | `--app-table-head`, `--app-table-head-content` | daisyUI's: none, the text at 60% | A table's header, its pinned first cell and its sorted column | Each other at 4.5:1 |
 
 **On `:root`**, for every theme: `--app-heading-font`, the headings' font (a list of fonts, which Tailwind would split
-inside a theme's block); `--app-bar-height` (the bar's least height, 3.5rem, which the side menu's logo shares, so the two line up), `--app-nav-width` (16rem), `--app-nav-width-compact`
+inside a theme's block); `--app-bar-height` (the bar's least height, 3.75rem, which the side menu's logo shares, so the two line up), `--app-nav-width` (16rem), `--app-nav-width-compact`
 (4rem), `--app-logo-height` (2rem). The bar is `.app-bar`, the menu `.app-nav`, the logo `.app-logo`, for anything
 else a brand adds to them.
 

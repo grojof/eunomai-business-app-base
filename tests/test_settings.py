@@ -471,6 +471,7 @@ def test_the_brands_colours_are_offered_only_where_the_brand_has_a_bar_theme(per
     from app.core import application
 
     client = TestClient(create_app(build_settings()))
-    assert "Top bar and menu" in client.get("/settings", headers=person).text
+    monkeypatch.setattr(application, "BAR_THEME", True)
+    assert 'name="layout_bar"' in client.get("/settings", headers=person).text
     monkeypatch.setattr(application, "BAR_THEME", False)
-    assert "Top bar and menu" not in client.get("/settings", headers=person).text
+    assert 'name="layout_bar"' not in client.get("/settings", headers=person).text

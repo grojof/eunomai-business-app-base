@@ -80,7 +80,7 @@ div.calendar-dot {
    any layer, so the bar's own minimum gives way to the brand's; the menu's width is a component, so "icons only" still
    narrows it. A logo of any proportion keeps it, within the room it has */
 .app-bar {
-  min-height: var(--app-bar-height, 3.5rem);
+  min-height: var(--app-bar-height, 3.75rem);
 }
 
 @layer components {
@@ -91,7 +91,7 @@ div.calendar-dot {
 
   /* The side menu's logo, on a row as high as the top bar beside it */
   .app-nav-logo {
-    min-height: var(--app-bar-height, 3.5rem);
+    min-height: var(--app-bar-height, 3.75rem);
   }
 
   .app-nav-compact {
@@ -321,7 +321,7 @@ div.calendar-dot {
 @layer base {
   /* What the keyboard reaches, and any #link, stops clear of the sticky header: WCAG 2.4.11 */
   html {
-    scroll-padding-top: calc(max(var(--app-bar-height, 3.5rem), 4rem) + 1rem);
+    scroll-padding-top: calc(max(var(--app-bar-height, 3.75rem), 4rem) + 1rem);
   }
 
   body {
