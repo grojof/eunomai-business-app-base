@@ -270,9 +270,10 @@ def test_a_toggle_follows_the_system_when_the_theme_does(browser, base_url):
 def test_a_person_can_try_each_arrangement(open_page, navigation):
     page = open_page("/settings", layout={"navigation": "side" if navigation != "side" else "top"})
     names = {"side": "Side", "compact": "Icons only", "top": "Top", "hidden": "Hidden"}
+    choice = page.locator("#layout").get_by_role("button", name=names[navigation], exact=True)
     with page.expect_navigation():
-        page.get_by_role("button", name=names[navigation], exact=True).click()
-    assert page.get_by_role("button", name=names[navigation], exact=True).get_attribute("aria-pressed") == "true"
+        choice.click()
+    assert choice.get_attribute("aria-pressed") == "true"
     assert not overflows_sideways(page)
 
 
@@ -332,6 +333,54 @@ def test_the_brands_roles_reach_the_focus_the_menu_and_the_icons_only_menu(open_
     page = open_page("/", layout={"navigation": "compact"})
     page.evaluate("document.documentElement.style.setProperty('--app-nav-width-compact', '5rem')")
     assert page.locator("#navigation").evaluate("n => n.getBoundingClientRect().width") == 80
+
+
+@pages
+@pytest.mark.rule("A11Y-02")
+def test_the_side_menu_folds_to_its_icons_and_back(open_page):
+    page = open_page("/", layout={"navigation": "side"})
+    fold = page.get_by_role("button", name="Icons only")
+    assert fold.get_attribute("aria-pressed") == "false"
+    with page.expect_navigation():
+        fold.click()
+    assert "app-nav-compact" in (page.locator("#navigation").get_attribute("class") or "")
+    fold = page.get_by_role("button", name="Icons only")
+    assert fold.get_attribute("aria-pressed") == "true"
+    assert page.evaluate("document.activeElement.getAttribute('aria-pressed')") == "true"  # focus comes back to it
+    with page.expect_navigation():
+        fold.click()
+    assert "app-nav-compact" not in (page.locator("#navigation").get_attribute("class") or "")
+
+
+@pages
+@pytest.mark.rule("A11Y-02")
+def test_an_icons_name_shows_on_hover_and_focus_and_escape_hides_it(open_page):
+    """WCAG 1.4.13: shown by the pointer or the keyboard, it stays while the pointer moves onto it; Escape hides it."""
+    page = open_page("/", layout={"navigation": "compact"})
+    tip = page.locator(".nav-tip")
+    link = page.locator("#navigation a[href='/settings']")
+    link.hover()
+    assert tip.is_visible() and tip.text_content() == "Settings"
+    tip.hover()
+    assert tip.is_visible()
+    page.keyboard.press("Escape")
+    assert not tip.is_visible()
+    link.focus()
+    assert tip.is_visible() and tip.get_attribute("aria-hidden") == "true"
+    page = open_page("/", layout={"navigation": "side"})
+    page.locator("#navigation a[href='/settings']").hover()
+    assert not page.locator(".nav-tip").is_visible()  # a wide menu shows its names already
+
+
+@pages
+def test_with_the_title_in_the_bar_the_trail_goes_there_too(open_page):
+    page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "header"})
+    trail = page.locator("header.app-bar .page-trail-bar")
+    assert trail.get_by_role("link", name="Gallery").is_visible()
+    assert page.locator("main nav.breadcrumbs").count() == 0  # not twice
+    page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "page"})
+    assert page.locator("header.app-bar .page-trail-bar").count() == 0
+    assert page.locator("main nav.breadcrumbs").count() == 1
 
 
 def test_each_logo_falls_back_to_the_one_a_brand_has(tmp_path, monkeypatch):

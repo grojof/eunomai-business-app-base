@@ -540,3 +540,55 @@ const currentLink = navigation?.querySelector("[aria-current]");
 if (currentLink && navigation.scrollHeight > navigation.clientHeight) {
   navigation.scrollTop = currentLink.offsetTop - navigation.clientHeight / 2;
 }
+
+// The icons-only menu: each link's name shows beside it on hover and on keyboard focus, stays while the pointer moves
+// onto it, and Escape hides it (WCAG 1.4.13). The link already has its name for a screen reader, so this one is hidden.
+(() => {
+  const tip = document.createElement("div");
+  tip.className = "nav-tip";
+  tip.setAttribute("aria-hidden", "true");
+  tip.hidden = true;
+  document.body.append(tip);
+  const wide = matchMedia("(width >= 64rem)");
+  const linkOf = (target) => (wide.matches ? target?.closest?.(".app-nav-compact a, .app-nav-compact button") : null);
+  let leaving;
+  const hide = () => {
+    clearTimeout(leaving);
+    tip.hidden = true;
+  };
+  const show = (link) => {
+    clearTimeout(leaving);
+    const box = link.getBoundingClientRect();
+    tip.textContent = link.textContent.trim();
+    tip.style.top = `${box.top + box.height / 2}px`;
+    tip.style.left = `${box.right + 8}px`;
+    tip.hidden = false;
+  };
+  document.addEventListener("pointerover", (event) => {
+    const link = linkOf(event.target);
+    if (link) {
+      show(link);
+    }
+  });
+  document.addEventListener("pointerout", (event) => {
+    if (linkOf(event.target) && !tip.contains(event.relatedTarget)) {
+      leaving = setTimeout(hide, 200);
+    }
+  });
+  tip.addEventListener("pointerenter", () => clearTimeout(leaving));
+  tip.addEventListener("pointerleave", hide);
+  document.addEventListener("focusin", (event) => {
+    const link = linkOf(event.target);
+    if (link) {
+      show(link);
+    } else {
+      hide();
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      hide();
+    }
+  });
+  document.addEventListener("htmx:beforeSwap", hide);
+})();

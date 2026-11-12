@@ -76,10 +76,12 @@ environment.filters["filesize"] = formatters.format_file_size
 @dataclass
 class PageTitle:
     """Where a page's h1 goes. The layout asks for the top bar before it draws the content, `page_heading` then leaves
-    its title here instead of in the page, and the top bar writes it, still as the page's one h1."""
+    its title here instead of in the page, and the top bar writes it, still as the page's one h1. The page's breadcrumb
+    trail goes with it, so the bar shows where the page is and what it is."""
 
     in_header: bool = False
     text: str = ""
+    trail: tuple[tuple[str, str], ...] = ()
 
     def ask(self, in_header: bool) -> str:
         self.in_header = in_header
@@ -91,12 +93,19 @@ class PageTitle:
             return True
         return False
 
+    def take_trail(self, items: list[tuple[str, str]]) -> bool:
+        """The trail up to this page: its last item is the page itself, which the title already names."""
+        if self.in_header and not self.trail:
+            self.trail = tuple(items[:-1])
+            return True
+        return False
+
 
 _page_title: ContextVar[PageTitle | None] = ContextVar("page_title", default=None)
 environment.globals["page_title"] = lambda: _page_title.get() or PageTitle()
+"""Each render has its own: a fragment never asks for the top bar, so its heading stays where it is."""
 environment.globals["logos"] = LOGOS
 environment.globals["favicon"] = _first("favicon.svg")
-"""Each render has its own: a fragment never asks for the top bar, so its heading stays where it is."""
 
 
 @dataclass(frozen=True)
@@ -195,6 +204,7 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
             person=person,
             navigation=visible_navigation(request),
             settings_menu=bool(state.settings.layout_choices),
+            layout_choices=state.settings.layout_choices,
             theme_options=[
                 ("system", i18n._("As the system"), "monitor"),
                 ("light", i18n._("Light"), "sun"),

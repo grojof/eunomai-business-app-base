@@ -99,6 +99,28 @@ div.calendar-dot {
     color: var(--app-link-color, inherit);
   }
 
+  /* The trail before the page's title in the top bar: quieter than the title it leads to */
+  .page-trail-bar {
+    color: color-mix(in oklab, currentColor 80%, transparent);
+  }
+
+  /* The name beside an icons-only menu's link (app.js places it) */
+  .nav-tip {
+    position: fixed;
+    z-index: 60;
+    translate: 0 -50%;
+    border-radius: var(--radius-field);
+    background-color: var(--color-neutral);
+    color: var(--color-neutral-content);
+    padding: 0.25rem 0.5rem;
+    font-size: var(--text-sm);
+    white-space: nowrap;
+  }
+
+  .nav-tip[hidden] {
+    display: none;
+  }
+
   .app-logo {
     height: var(--app-logo-height, 2rem);
     width: auto;

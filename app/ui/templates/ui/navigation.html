@@ -33,4 +33,14 @@
     {% endif %}
     {% endfor %}
   </ul>
+  {#- A wide screen folds the side menu to its icons and back, as the settings do: a form, so it needs no script -#}
+  {% if not top and layout.navigation != "hidden" and "navigation" in layout_choices %}
+  <form class="mt-3 hidden border-t border-base-300 pt-3 lg:block print:hidden" method="post" action="/preferences" data-preferences="navigation-fold">
+    <input type="hidden" name="next" value="{{ here }}">
+    <button class="btn btn-ghost btn-sm w-full justify-start gap-2 font-normal" type="submit" name="layout_navigation" value="{{ 'side' if compact else 'compact' }}" aria-pressed="{{ 'true' if compact else 'false' }}">
+      {{- icon("panel-left-open" if compact else "panel-left-close", "size-4") -}}
+      <span{% if compact %} class="lg:sr-only"{% endif %}>{{ _("Icons only") }}</span>
+    </button>
+  </form>
+  {% endif %}
 </nav>

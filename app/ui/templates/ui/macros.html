@@ -179,7 +179,10 @@
 {% endmacro %}
 
 {#- `items`: (label, address). The last one is where a person is, and needs no address. -#}
+{#- `items`: (label, address), ending in this page with no address. With the page's title in the top bar, the trail
+    goes there too, and the title takes the place of its last item. -#}
 {% macro breadcrumbs(items) %}
+{% if not page_title().take_trail(items) %}
 <nav class="breadcrumbs text-sm print:hidden" aria-label="{{ _('Breadcrumbs') }}">
   <ul>
     {% for label, href in items %}
@@ -187,6 +190,7 @@
     {% endfor %}
   </ul>
 </nav>
+{% endif %}
 {% endmacro %}
 
 {#- `items`: (term, description). A description may be another macro's result. -#}
