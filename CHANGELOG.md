@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 (2026-11-12)
+
+`tools/translations.py update` changes a catalogue only when its texts change, and keeps the date in its header. A
+module's new texts used to give every catalogue, the base's included, a new date: an application's catalogues then
+differed from its template's, and an update of the template found a change on both sides that nobody had made, so it
+could not come in on its own.
+
 ## 0.2.1 (2026-11-12)
 
 Two tests that failed in an organization's template, though nothing was wrong:
