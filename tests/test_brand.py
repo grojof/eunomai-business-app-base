@@ -24,6 +24,7 @@ ROLES = {
     "app-tab-indicator": "base-content",
     "app-link-color": "base-content",
     "app-event-content": "base-content",
+    "app-table-head-content": "base-content",
 }
 """Each role and what the base's stylesheet falls back to without it, as the page draws it."""
 COMBINATIONS = {"light": ("light",), "dark": ("dark",), "light, bar": ("light", "bar"), "dark, bar": ("dark", "bar")}
@@ -95,6 +96,7 @@ def failures(colours: dict[str, str], where: str = "", bar: bool = False) -> lis
     text += [("app-selected", "app-selected-content")]
     text += [("app-hover", "app-hover-content")] if has("app-hover") else []
     text += [("app-event", "app-event-content")] if has("app-event") else []
+    text += [("app-table-head-content", "app-table-head")] if has("app-table-head") else []
     text += [("app-link-color", base) for base in ("base-100", "base-200")] if has("app-link-color") else []
     state = [("app-focus-color", base) for base in ("base-100", "base-200")]
     state += [("app-selected", "base-100")]

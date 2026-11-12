@@ -815,6 +815,7 @@ the bar uses.
 | `--app-event`, `--app-event-content` | `primary` at 22% on `base-100`, `base-content` | Calendar events | Each other at 4.5:1 |
 | `--app-chart-1` to `--app-chart-4` | `primary`, `accent`, `secondary`, `info` | A chart's series, in order | `base-100` at 3:1, where the brand sets them: daisyUI's own are not, and a chart's table carries its numbers |
 | `--app-link-color` | The text's | daisyUI's `.link`; not menus, breadcrumbs or plain links | `base-100`, `base-200` at 4.5:1 |
+| `--app-table-head`, `--app-table-head-content` | daisyUI's: none, the text at 60% | A table's header, its pinned first cell and its sorted column | Each other at 4.5:1 |
 
 **On `:root`**, for every theme: `--app-heading-font`, the headings' font (a list of fonts, which Tailwind would split
 inside a theme's block); `--app-bar-height` (the bar's least height, 3.5rem, which the side menu's logo shares, so the two line up), `--app-nav-width` (16rem), `--app-nav-width-compact`

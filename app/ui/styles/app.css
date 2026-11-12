@@ -398,6 +398,7 @@ div.calendar-dot {
 
   .table-pin-first thead tr > :first-child {
     z-index: 2;
+    background-color: var(--app-table-head, var(--color-base-100));
   }
 
   /* A group's header stays under the table's while its rows go past */
@@ -523,7 +524,7 @@ div.calendar-dot {
   }
 
   [aria-sort] .sort-link {
-    color: var(--color-base-content);
+    color: var(--app-table-head-content, var(--color-base-content));
     font-weight: var(--font-weight-semibold);
   }
 
@@ -586,6 +587,15 @@ div.calendar-dot {
 @layer utilities {
   .table.table-pin-rows thead {
     z-index: 2;
+  }
+
+  /* A table's header, the brand's to set (--app-table-head, --app-table-head-content); daisyUI's own without them */
+  .table thead th {
+    background-color: var(--app-table-head, transparent);
+  }
+
+  .table thead {
+    color: var(--app-table-head-content, color-mix(in oklab, var(--color-base-content) 60%, transparent));
   }
 
   /* Dense rows leave room for columns that otherwise wait for a wide screen, and for more rows in the box */

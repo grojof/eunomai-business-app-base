@@ -21,7 +21,7 @@ every colour it sets has its contrast checked. See [Your theme](docs/base/specif
   brand sets. It found daisyUI's dark primary button at 4.14:1: its text is now white (4.65:1). The base's own bar
   theme sets its primary, so the focus shows on it.
 - **Selected, by default, is the page turned round**, which shows on every theme; daisyUI's neutral nearly matched
-  the dark theme's background. A brand also sets hover and an option's icon tile.
+  the dark theme's background. A brand also sets hover, an option's icon tile and a table's header.
 - **The side menu folds to its icons and back**, from a button in the menu, remembered like the other choices.
   In the icons-only menu, a link's name shows on hover and on keyboard focus, and Escape hides it (WCAG 1.4.13).
 - **The breadcrumb trail goes to the top bar** with the page's title, when the title is there.
