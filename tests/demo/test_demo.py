@@ -224,12 +224,12 @@ def test_an_icons_name_shows_on_hover_and_focus_and_escape_hides_it(open_page):
 @pytest.mark.browser
 def test_with_the_title_in_the_bar_the_trail_goes_there_too(open_page):
     page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "header"})
-    trail = page.locator("header.app-bar .page-trail-bar")
+    trail = page.locator("header.app-bar nav.breadcrumbs")
     assert trail.get_by_role("link", name="Gallery").is_visible()
-    assert page.locator("main nav.breadcrumbs").count() == 0  # not twice
+    assert not page.locator("main nav.breadcrumbs").is_visible()  # not twice
     page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "page"})
-    assert page.locator("header.app-bar .page-trail-bar").count() == 0
-    assert page.locator("main nav.breadcrumbs").count() == 1
+    assert page.locator("header.app-bar nav.breadcrumbs").count() == 0
+    assert page.locator("main nav.breadcrumbs").is_visible()
 
 
 @pytest.mark.browser
@@ -243,3 +243,11 @@ def test_the_side_menus_logo_lines_up_with_the_top_bar(open_page, navigation, ba
     assert top_bar and block and logo
     assert abs((block["y"] + block["height"]) - (top_bar["y"] + top_bar["height"])) <= 1
     assert abs((logo["y"] + logo["height"] / 2) - (top_bar["y"] + top_bar["height"] / 2)) <= 2
+
+
+@pytest.mark.browser
+def test_on_a_phone_the_trail_stays_in_the_page(open_page):
+    """The bar has no room for it there: it is never lost, nor shown twice."""
+    page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "header"}, width=375)
+    assert page.locator("main nav.breadcrumbs").is_visible()
+    assert not page.locator("header.app-bar nav.breadcrumbs").is_visible()

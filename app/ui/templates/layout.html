@@ -38,10 +38,11 @@
         {% if not side %}
         <a class="flex items-center gap-2 font-semibold" href="/">{% with logo = logos[layout.bar] %}<picture><source media="(width >= 48rem)" srcset="{{ logo.full }}"><img class="app-logo" src="{{ logo.mark }}" alt=""></picture>{% endwith %} <span{% if title_place.text %} class="sr-only md:not-sr-only"{% endif %}>{{ app_name }}</span></a>
         {% endif %}
-        {#- The trail ends in daisyUI's own separator, an empty item, so it leads into the title beside it -#}
-        {% if title_place.trail %}
-        <nav class="page-trail-bar breadcrumbs hidden shrink-0 py-0 text-sm md:block" aria-label="{{ _('Breadcrumbs') }}">
-          <ul>{% for label, href in title_place.trail %}<li>{% if href %}<a href="{{ href }}">{{ label }}</a>{% else %}{{ label }}{% endif %}</li>{% endfor %}<li aria-hidden="true"></li></ul>
+        {#- The page's trail, up to its title when the title is here too, or whole -#}
+        {% set trail = title_place.trail[:-1] if title_place.text else title_place.trail %}
+        {% if trail %}
+        <nav class="breadcrumbs hidden shrink-0 py-1 text-sm md:block{{ ' page-trail-to-title' if title_place.text else '' }}" aria-label="{{ _('Breadcrumbs') }}">
+          <ul>{% for label, href in trail %}<li>{% if href %}<a class="inline-flex min-h-6 items-center" href="{{ href }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}</li>{% endfor %}</ul>
         </nav>
         {% endif %}
         {% if title_place.text %}<h1 class="page-title-bar min-w-0 flex-1 truncate">{{ title_place.text }}</h1>{% endif %}

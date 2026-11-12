@@ -175,15 +175,16 @@ def test_a_list_without_a_panel_has_no_button_for_one():
     assert "data-filter-toggle" not in str(MACROS.list_summary(view_of(), "120 things"))
 
 
-def test_with_the_title_in_the_bar_the_trail_goes_there_and_leaves_the_page():
-    """Its last item is the page itself, whose title the bar already shows."""
+def test_with_the_title_in_the_bar_the_trail_goes_there_and_stays_in_the_page_for_a_phone():
+    """The bar takes it whole and decides what to show; the page keeps it for a phone, whose bar has no room."""
     from app.core.templating import PageTitle, _page_title
 
     place = PageTitle(in_header=True)
     token = _page_title.set(place)
     try:
-        assert str(MACROS.breadcrumbs([("Equipment", "/equipment"), ("A-1", "")])).strip() == ""
+        html = str(MACROS.breadcrumbs([("Equipment", "/equipment"), ("A-1", "")]))
     finally:
         _page_title.reset(token)
-    assert place.trail == (("Equipment", "/equipment"),)
-    assert "A-1" in str(MACROS.breadcrumbs([("Equipment", "/equipment"), ("A-1", "")]))  # in the page otherwise
+    assert place.trail == (("Equipment", "/equipment"), ("A-1", ""))
+    assert "md:hidden" in html
+    assert "md:hidden" not in str(MACROS.breadcrumbs([("Equipment", "/equipment"), ("A-1", "")]))  # otherwise

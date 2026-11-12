@@ -118,9 +118,10 @@ class PageTitle:
         return False
 
     def take_trail(self, items: list[tuple[str, str]]) -> bool:
-        """The trail up to this page: its last item is the page itself, which the title already names."""
+        """The page's trail, for the bar to show from a medium screen up. Its last item is the page itself: the bar
+        leaves it out when the title is there, and shows it otherwise."""
         if self.in_header and not self.trail:
-            self.trail = tuple(items[:-1])
+            self.trail = tuple(items)
             return True
         return False
 
