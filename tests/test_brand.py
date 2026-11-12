@@ -146,3 +146,11 @@ def test_the_organizations_fonts_go_out_with_their_own_type_on_every_system():
 
     for extension, kind in FONT_TYPES.items():
         assert mimetypes.guess_type(f"brand{extension}")[0] == kind
+
+
+def test_a_brands_own_font_for_its_headings_wins_over_the_base():
+    """The brand's theme.css comes before the base's rules: had the base named the headings' font with any weight, a
+    brand's own `h1 { font-family: ... }` would have lost to it."""
+    built = (ROOT / "app" / "ui" / "static" / "app.css").read_text(encoding="utf-8")
+    assert ":where(h1,h2){font-family:var(--app-heading-font,inherit)}" in built
+    assert not re.search(r"(?<![\w:(,-])h[12]\{[^}]*font-family", built)

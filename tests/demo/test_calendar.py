@@ -428,7 +428,7 @@ def test_without_javascript_the_agenda_moves_through_the_days(open_filled):
 @pytest.mark.browser
 def test_without_the_library_the_agenda_stays(open_filled):
     page = open_filled("/", bypass_csp=True)
-    page.route("**/fullcalendar.js", lambda route: route.abort())
+    page.route("**/fullcalendar.js?*", lambda route: route.abort())
     page.goto(page.url.rstrip("/") + WEEK)
     page.wait_for_load_state("networkidle")
     assert page.locator("[data-calendar-fallback]").is_visible()

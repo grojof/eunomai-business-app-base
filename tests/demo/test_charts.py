@@ -181,7 +181,7 @@ def test_the_library_loads_with_its_integrity(open_page):
 @pytest.mark.rule("A11Y-10")
 def test_without_the_library_the_table_takes_over(open_page):
     page = open_page("/settings")
-    page.route("**/chart.umd.min.js", lambda route: route.abort())
+    page.route("**/chart.umd.min.js?*", lambda route: route.abort())
     page.goto(page.url.replace("/settings", "/gallery/chart"))
     until(page, "document.querySelector('[data-chart] details').open")
     assert not page.locator("[data-chart-box]").first.is_visible()

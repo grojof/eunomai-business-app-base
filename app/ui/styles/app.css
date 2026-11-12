@@ -270,16 +270,19 @@ div.calendar-dot {
     overflow-wrap: anywhere;
   }
 
-  /* The headings' font and weight are the brand's to set: --app-heading-font, --app-heading-weight */
-  h1 {
+  /* The headings' font and weight are the brand's to set: --app-heading-font, --app-heading-weight. The font with no
+     weight at all, so a brand's own rule for its headings still wins, wherever its file puts it */
+  :where(h1, h2) {
     font-family: var(--app-heading-font, inherit);
+  }
+
+  h1 {
     font-size: var(--text-3xl);
     font-weight: var(--app-heading-weight, var(--font-weight-bold));
     letter-spacing: var(--tracking-tight);
   }
 
   h2 {
-    font-family: var(--app-heading-font, inherit);
     font-size: var(--text-lg);
     font-weight: var(--app-heading-weight, var(--font-weight-semibold));
   }
