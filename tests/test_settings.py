@@ -440,3 +440,37 @@ def test_a_title_in_the_top_bar_stays_on_paper(open_page):
     page.emulate_media(media="print")
     assert page.locator("h1").is_visible()
     assert not page.get_by_role("button", name="Open menu").is_visible()
+
+
+def test_the_organizations_arrangement_is_where_its_applications_start(tmp_path, monkeypatch):
+    """app/brand/layout.toml, which its layer brings, below the environment: an application changes what it needs."""
+    from app.core import settings as module
+
+    layout = tmp_path / "layout.toml"
+    layout.write_text('bar = "brand"\nsticky_header = false\nchoices = ["navigation", "bar"]\n', encoding="utf-8")
+    monkeypatch.setattr(module, "BRAND_LAYOUT", layout)
+    chosen = build_settings()
+    assert (chosen.layout_bar, chosen.layout_sticky_header) == ("brand", False)
+    assert chosen.layout_choices == ["navigation", "bar"]
+    monkeypatch.setenv("APP_LAYOUT_BAR", "plain")
+    assert build_settings().layout_bar == "plain"
+
+
+@pytest.mark.parametrize(("text", "said"), [('bar = "loud"', "layout_bar"), ('colour = "blue"', "unknown colour")])
+def test_an_arrangement_the_settings_do_not_offer_stops_the_application(tmp_path, monkeypatch, text, said):
+    from app.core import settings as module
+
+    layout = tmp_path / "layout.toml"
+    layout.write_text(text + "\n", encoding="utf-8")
+    monkeypatch.setattr(module, "BRAND_LAYOUT", layout)
+    with pytest.raises(Exception, match=said):
+        build_settings()
+
+
+def test_the_brands_colours_are_offered_only_where_the_brand_has_a_bar_theme(person, monkeypatch):
+    from app.core import application
+
+    client = TestClient(create_app(build_settings()))
+    assert "Top bar and menu" in client.get("/settings", headers=person).text
+    monkeypatch.setattr(application, "BAR_THEME", False)
+    assert "Top bar and menu" not in client.get("/settings", headers=person).text

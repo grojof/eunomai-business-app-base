@@ -219,6 +219,11 @@ def _settings_item() -> list[SearchItem]:
     ]
 
 
+BAR_THEME = "[data-theme=bar]" in (UI / "static" / "app.css").read_text(encoding="utf-8")
+"""Whether the brand has a theme called bar: without one, its colours would look like the page's, so they are not
+offered as a choice."""
+
+
 async def _settings_page(request: Request) -> Response:
     """Everything a person may change about how the application looks, each choice shown as it would be applied."""
     groups = {
@@ -238,7 +243,7 @@ async def _settings_page(request: Request) -> Response:
     options = [
         (field, title, [(value, labels[value]) for value in LAYOUTS[field]])
         for field, (title, labels) in groups.items()
-        if field in choices
+        if field in choices and (field != "bar" or BAR_THEME)
     ]
     return render(
         request,

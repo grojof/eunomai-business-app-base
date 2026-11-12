@@ -460,7 +460,8 @@ A visitor without identity gets the 401 page, with no navigation, version or use
 
 ## Layouts
 
-An application chooses its arrangement in its settings. The [settings menu](#settings-menu) shows each one live.
+An application chooses its arrangement in its settings, starting from its organization's (see
+[Your theme](#your-theme)). The [settings menu](#settings-menu) shows each one live.
 
 | Setting | Options | Typical use |
 |---|---|---|
@@ -832,8 +833,18 @@ short: the icons-only menu and a phone. The application's name follows the logo.
 **Arrangement.** The side menu folds to its icons and back from a button at its foot, which is the same choice as the
 settings menu's. In the icons-only menu a link's name shows beside it on hover and on keyboard focus, stays while the
 pointer moves onto it, and Escape hides it. With the page's title in the top bar, its breadcrumb trail goes there
-too, and the title takes the place of the trail's last item, the page itself. An organization sets the arrangement
-its applications start with in `layer.toml` (see [An organization's template](#an-organizations-template)).
+too, and the title takes the place of the trail's last item, the page itself; a phone keeps the trail in the page.
+
+**The organization's arrangement**, in `app/brand/layout.toml`: each key a layout's name, and `choices`, what each
+person may change; a value the settings do not offer stops the application. The settings read it below the
+environment and `.env`, so an application changes what it needs and keeps the rest. "In the brand's colours" is
+offered only where the brand has a `bar` theme.
+
+```toml
+bar = "brand"            # the top bar and the menu in the brand's colours
+page_title = "header"    # the page's title, with its trail, in the top bar
+choices = ["navigation", "bar", "width", "density", "theme_control", "language_control", "page_title", "list_width", "list_density"]
+```
 
 **Files are linked with a stamp of their content** (`app.css?v=…`): a browser fetches one again as soon as it
 changes and never keeps an old script after an update. The copied libraries take their pinned hash as their stamp:
@@ -897,7 +908,7 @@ uv run --frozen python tools/make_template.py --layer ../our-layer --out ../our-
 
 | Part | What it holds |
 |---|---|
-| `layer.toml` | `name`, which applications show until they are given their own; `languages`, kept besides English; `default_language`, optional; `[layout]`, optional: the arrangement applications start with, as the settings' defaults, such as `bar = "brand"` for the top bar in the brand's colours. Each key is a `layout_*` setting with options, and a value it does not offer is refused |
+| `layer.toml` | `name`, which applications show until they are given their own; `languages`, kept besides English; `default_language`, optional |
 | `files/` | Copied onto the template, under `app/brand/` (themes, logo, fonts, icons) and a CI folder (`.gitea/`, `.github/`, `.forgejo/`) only. A file anywhere else is refused, before anything is written |
 
 Each run starts from an empty folder, or from a clone of the template's repository with nothing uncommitted, which keeps

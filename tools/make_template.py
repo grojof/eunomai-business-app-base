@@ -8,8 +8,6 @@ The layer is a small folder the organization keeps, and the only thing it edits:
     layer.toml   name = "Our applications"     the name an application shows until it is given its own
                  languages = ["es"]            kept besides English, which is always offered
                  default_language = "es"       optional: the last resort, English otherwise
-                 [layout]                      optional: the arrangement applications start with, such as
-                 bar = "brand"                 the top bar in the brand's colours (app/core/settings.py, layout_*)
     files/       copied onto the template, only under app/brand/ (themes, logo, fonts, icons) and a CI folder
                  (.gitea/, .github/, .forgejo/)
 
@@ -33,10 +31,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LAYER_KEYS = {"name", "languages", "default_language", "layout"}
-SETTINGS = Path("app") / "core" / "settings.py"
-LAYOUT_SETTING = re.compile(r'^(    layout_(\w+): Literal\[(.*?)\] = )"\w*"$', re.MULTILINE)
-"""A layout setting with its options, as the settings declare it: what a layer's [layout] may choose."""
+LAYER_KEYS = {"name", "languages", "default_language"}
 LAYER_FOLDERS = ("app/brand/", ".gitea/", ".github/", ".forgejo/")
 """Where a layer may write. Everything else is the base's, and changes there go to the base, for every organization."""
 NAME = re.compile(r'[^\x00-\x1f\x7f"\\]{1,60}')
@@ -61,13 +56,7 @@ class Layer:
     name: str
     languages: list[str]
     default_language: str
-    layout: dict[str, str]
     files: list[Path]
-
-
-def layout_options(settings: str) -> dict[str, list[str]]:
-    """Each layout setting a layer may choose, with its options."""
-    return {found[2]: re.findall(r'"([^"]*)"', found[3]) for found in LAYOUT_SETTING.finditer(settings)}
 
 
 def read_layer(layer: Path) -> Layer:
@@ -88,11 +77,6 @@ def read_layer(layer: Path) -> Layer:
     default_language = settings.get("default_language", "")
     if not isinstance(default_language, str):
         raise Refused("layer.toml: default_language is a code, such as es")
-    layout = settings.get("layout", {})
-    options = layout_options((ROOT / SETTINGS).read_text(encoding="utf-8"))
-    if not isinstance(layout, dict) or any(value not in options.get(key, []) for key, value in layout.items()):
-        offered = "; ".join(f"{key}: {', '.join(values)}" for key, values in options.items())
-        raise Refused(f"layer.toml: [layout] chooses among {offered}")
     files = []
     folder = layer / "files"
     for path in sorted(folder.rglob("*")) if folder.is_dir() else []:
@@ -106,7 +90,7 @@ def read_layer(layer: Path) -> Layer:
                     "the base, for every organization"
                 )
             files.append(path)
-    return Layer(layer, name, languages, default_language, layout, files)
+    return Layer(layer, name, languages, default_language, files)
 
 
 def layer_hash(layer: Layer) -> str:
@@ -195,18 +179,6 @@ def name_it(out: Path, name: str) -> None:
     declaration.write_text(text.replace(anchor, f'{anchor}APP_NAME = "{name}"\n', 1), encoding="utf-8", newline="\n")
 
 
-def lay_out(out: Path, layout: dict[str, str]) -> None:
-    """The organization's arrangement as the settings' defaults: what an application shows until it sets its own, on
-    any server, with nothing to remember in its environment."""
-    path = out / SETTINGS
-    text = path.read_text(encoding="utf-8")
-    missing = sorted(set(layout) - set(layout_options(text)))
-    if missing:
-        raise Refused(f"layer.toml: this version of the base has no layout setting {', '.join(missing)}")
-    text = LAYOUT_SETTING.sub(lambda found: f'{found[1]}"{layout[found[2]]}"' if found[2] in layout else found[0], text)
-    path.write_text(text, encoding="utf-8", newline="\n")
-
-
 def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
     layer = read_layer(folder)
     prepare_out(out)
@@ -228,7 +200,6 @@ def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
     name_it(out, layer.name)
-    lay_out(out, layer.layout)
     for check in CHECKS:
         run(out, *check)
     if tests:

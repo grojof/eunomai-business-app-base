@@ -21,8 +21,10 @@ every colour it sets has its contrast checked. See [Your theme](docs/base/specif
 - **The side menu folds to its icons and back**, from a button in the menu, remembered like the other choices.
   In the icons-only menu, a link's name shows on hover and on keyboard focus, and Escape hides it (WCAG 1.4.13).
 - **The breadcrumb trail goes to the top bar** with the page's title, when the title is there.
-- **An organization's default arrangement.** A `[layout]` table in `layer.toml` (such as `bar = "brand"`):
-  `tools/make_template.py` writes it as the settings' defaults, so it holds on any server.
+- **An organization's arrangement.** `app/brand/layout.toml`, which a layer brings like the rest of the brand, sets
+  what its applications start with (such as `bar = "brand"`) and what each person may change (`choices`). The
+  settings read it below the environment, so an application still changes what it needs. "In the brand's colours"
+  is offered only where the brand has a `bar` theme.
 - **Files linked with a stamp of their content.** The application's scripts, stylesheet and logos, and the copied
   libraries, so a browser never keeps an old one after an update; an old library would even fail its new integrity.
 - **Fixed:** the command palette's selected option kept the page's light grey under the pointer, behind its light
