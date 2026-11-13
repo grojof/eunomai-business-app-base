@@ -203,7 +203,7 @@ def base_files(out: Path) -> dict[str, str]:
     return found
 
 
-def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
+def make(folder: Path, out: Path, ref: str | None, tests: bool, keep_demo: bool = False) -> None:
     layer = read_layer(folder)
     prepare_out(out)
     commit, changes = export(ref, out)
@@ -212,7 +212,7 @@ def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
     languages = ["--languages", ",".join(layer.languages)]
     if layer.default_language:
         languages += ["--default-language", layer.default_language]
-    run(out, "tools/remove_demo.py", *languages)
+    run(out, "tools/remove_demo.py", *languages, *(["--keep-demo"] if keep_demo else []))
     shutil.rmtree(out / ".github" / "workflows", ignore_errors=True)
     (out / BASE_CI_TESTS).unlink(missing_ok=True)
     for name in BASE_ONLY:
@@ -246,8 +246,10 @@ def main(arguments: list[str] | None = None) -> None:
     parser.add_argument("--out", type=Path, required=True, help="an empty folder, or a clean clone of the template")
     parser.add_argument("--ref", help="a version of the base, such as a tag; without it, this folder as it is")
     parser.add_argument("--skip-tests", action="store_true", help="leave the template's own tests for its CI")
+    parser.add_argument("--keep-demo", action="store_true",
+                        help="keep the demo, in the layer's look and languages: a demonstration application to try")
     options = parser.parse_args(arguments)
-    make(options.layer.resolve(), options.out.resolve(), options.ref, not options.skip_tests)
+    make(options.layer.resolve(), options.out.resolve(), options.ref, not options.skip_tests, options.keep_demo)
     print(f"Template made in {options.out}: review it there, then commit it through a pull request.")
 
 

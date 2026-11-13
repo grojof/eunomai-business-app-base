@@ -5,6 +5,7 @@ tools/css.py, and write what the application is at the top of AGENTS.md and READ
 uv run --frozen python tools/remove_demo.py
 uv run --frozen python tools/remove_demo.py --languages es          # keeps Spanish alone; English is always there
 uv run --frozen python tools/remove_demo.py --languages es,ca --default-language ca
+uv run --frozen python tools/remove_demo.py --keep-demo --languages es,ca      # only the languages: a demonstration
 """
 
 import argparse
@@ -216,6 +217,18 @@ def chosen_languages(languages: str | None, default: str | None) -> tuple[list[s
     return kept, chosen
 
 
+DEMO_ROWS = 5_000
+"""What a demonstration generates on a person's computer: enough for pages, filters and charts, ready in seconds. The
+base's own demo makes 50,000, to prove the lists at that size."""
+
+
+def demo_rows(declaration: Path) -> None:
+    changed(declaration, ((
+        'setup = [["python", "-m", "app.demo.generate", "--if-empty"]]',
+        f'setup = [["python", "-m", "app.demo.generate", "--if-empty", "--rows", "{DEMO_ROWS}"]]',
+    ),))
+
+
 def keep_languages(kept: list[str], default: str) -> None:
     """Every other folder under locales/ goes, and the settings offer English and those, with that default."""
     for folder in (ROOT / "locales").iterdir():
@@ -234,10 +247,17 @@ def main(arguments: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Deletes the demo, once, and leaves a clean application.")
     parser.add_argument("--languages", help="the languages to keep besides English, comma-separated, such as es,ca")
     parser.add_argument("--default-language", help="the last resort when a browser asks for none of them")
+    parser.add_argument("--keep-demo", action="store_true",
+                        help="keep the demo and change only the languages: an organization's demonstration application")
     options = parser.parse_args(arguments)
     if not (ROOT / "app" / "demo").exists():
         raise SystemExit("There is no demo here: this is an application already, and nothing was changed.")
     languages = chosen_languages(options.languages, options.default_language)
+    if options.keep_demo:
+        if languages is not None:
+            keep_languages(*languages)
+        demo_rows(ROOT / ".eunomai" / "project.toml")
+        return
 
     for folder in (ROOT / "app" / "demo", ROOT / "tests" / "demo", ROOT / "app" / "ui" / "static" / "placeholders"):
         if folder.exists():

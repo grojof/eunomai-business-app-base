@@ -163,3 +163,17 @@ def test_the_promised_way_to_add_a_component_passes_the_checks_with_the_demo(tmp
     specimen = copy / "app" / "demo" / "templates" / "demo" / "gallery" / "specimens" / "signature.html"
     specimen.write_text('<p>{{ _("Save") }}</p>\n', encoding="utf-8", newline="\n")
     check_the_added_component(copy, "tests/test_components.py", "tests/demo/test_gallery.py")
+
+
+def test_a_demonstration_keeps_the_demo_and_changes_only_the_languages(tmp_path):
+    """An organization shows what an application can do with the demo in its own look: its languages, fewer rows to
+    generate on a person's computer, and everything else as the base has it."""
+    copy = repository_copy(tmp_path / "demonstration")
+    succeeded(run_in(copy, "tools/remove_demo.py", "--keep-demo", "--languages", "es"), "tools/remove_demo.py")
+    assert (copy / "app" / "demo").is_dir() and (copy / "tests" / "demo").is_dir()
+    assert sorted(folder.name for folder in (copy / "locales").iterdir() if folder.is_dir()) == ["es"]
+    declaration = tomllib.loads((copy / ".eunomai" / "project.toml").read_text(encoding="utf-8"))
+    assert declaration["preview"]["setup"] == [
+        ["python", "-m", "app.demo.generate", "--if-empty", "--rows", str(remove_demo.DEMO_ROWS)]]
+    assert (copy / "README.md").read_text(encoding="utf-8") == (ROOT / "README.md").read_text(encoding="utf-8")
+
