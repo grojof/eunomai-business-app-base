@@ -164,7 +164,8 @@ def test_tabs_work_without_javascript(open_filled):
 
 @pytest.mark.browser
 def test_paper_shows_both_tabs_and_none_of_the_shell(open_filled):
-    page = open_filled("/equipment/1", theme="dark")
+    """With the title on the page: a title kept in the top bar keeps that part of the bar on paper, by design."""
+    page = open_filled("/equipment/1", theme="dark", layout={"page_title": "page"})
     page.emulate_media(media="print")
     assert page.locator("tfoot").is_visible()
     assert page.get_by_text("Maintenance to date").is_visible()

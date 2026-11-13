@@ -173,13 +173,14 @@ def test_the_brands_colours_reach_the_bar_and_the_menu(open_page, navigation):
         assert page.locator("#navigation").evaluate(background) == bar.evaluate(background)
     logo = page.locator("#navigation img:visible" if navigation == "side" else "header.app-bar img").first
     assert logo.evaluate("i => new URL(i.currentSrc).pathname") == "/static/brand/logo-bar-full.svg"
-    plain = open_page("/", layout={"navigation": navigation})
+    plain = open_page("/", layout={"navigation": navigation, "bar": "plain"})
     assert plain.locator("header.app-bar").get_attribute("data-theme") is None
 
 
 @pytest.mark.browser
 def test_the_brands_roles_reach_the_focus_the_menu_and_the_icons_only_menu(open_page):
-    page = open_page("/", layout={"navigation": "side"})
+    """On the page's own colours: a brand's bar theme sets its roles again for the menu."""
+    page = open_page("/", layout={"navigation": "side", "bar": "plain"})
     page.evaluate(
         "const root = document.documentElement.style;"
         "root.setProperty('--app-focus-color', 'rgb(255, 0, 0)'); root.setProperty('--app-focus-width', '3px');"

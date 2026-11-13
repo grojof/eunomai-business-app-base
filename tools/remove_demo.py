@@ -5,7 +5,7 @@ tools/css.py, and write what the application is at the top of AGENTS.md and READ
 uv run --frozen python tools/remove_demo.py
 uv run --frozen python tools/remove_demo.py --languages es          # keeps Spanish alone; English is always there
 uv run --frozen python tools/remove_demo.py --languages es,ca --default-language ca
-uv run --frozen python tools/remove_demo.py --keep-demo --languages es,ca      # only the languages: a demonstration
+uv run --frozen python tools/remove_demo.py --keep-demo --languages es,ca      # a demonstration: English stays last
 """
 
 import argparse
@@ -262,8 +262,10 @@ def main(arguments: list[str] | None = None) -> None:
         raise SystemExit("There is no demo here: this is an application already, and nothing was changed.")
     languages = chosen_languages(options.languages, options.default_language)
     if options.keep_demo:
+        # English stays the last resort: a browser that asks for the layer's languages gets them, and the demo's tests,
+        # which ask for none and type English numbers, still read English.
         if languages is not None:
-            keep_languages(*languages)
+            keep_languages(languages[0], SOURCE_LANGUAGE)
         demo_rows(ROOT / ".eunomai" / "project.toml")
         return
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.1 (2026-11-13)
+
+A demonstration made with `tools/make_template.py --keep-demo` passes its own tests. English stays its last resort, so
+a browser that asks for the layer's languages gets them while the demo's tests, which ask for none and type English
+numbers, still read English; and the tests of its preview count the rows it declares (5,000) instead of the base's
+50,000. Three tests of the demo say the arrangement they prove (the plain bar, the title on the page) instead of taking
+the organization's, and the gallery's code panel tells its parts apart by weight and style in its own pair of
+colours: information, warning and success on the panel's neutral were never checked, and a navy neutral made them
+unreadable. Applications are not affected: they hold no demo.
+
 ## 0.3.0 (2026-11-13)
 
 A lighter application: what an assistant reads and what a person's computer runs, with what the business says filed
