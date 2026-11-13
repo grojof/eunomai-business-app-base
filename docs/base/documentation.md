@@ -12,9 +12,9 @@ which whoever builds a screen reads, offline. An application documents itself ap
 
 | Part | Where | Rule |
 |---|---|---|
-| The base's reference | `docs/base/`: this specification, the [standards](standards.md), the [decisions](decisions.md), the component pages | An application never edits it: an update of its organization's template replaces it. Its pages link to it instead of restating it |
+| The base's reference | `docs/base/`: the [specification](specification.md), an index of one page per topic, the [standards](standards.md), the [decisions](decisions.md), the component pages | An application never edits it: an update of its organization's template replaces it. Its pages link to it instead of restating it. Each page says in its `description` what it holds, so a reader or an assistant opens the page and the section a link names, not all of them |
 | The application's map | `README.md`, which `tools/remove_demo.py` writes with places to fill in | What the application is, for whom and why, a diagram where it helps, how to run it and its tests, and a link to every page |
-| The application's pages | Any other file under `docs/`, in the application's documentation language | Each starts with frontmatter, `type` (`tutorial`, `how-to`, `reference`, `explanation` or `decision`), `title` and `description`; the README links to it; when behaviour changes, the page and the README change with it |
+| The application's pages | Any other file under `docs/`, in the application's documentation language | Each starts with frontmatter, `type` (`tutorial`, `how-to`, `reference`, `explanation` or `decision`), `title`, `description` and, if it has them, `tags`: lowercase words joined by hyphens, on one line. What the business said has a page per kind, marked by a tag: `context`, `glossary`, `decision`, `open-question`. The README reaches every page, directly or through the page a folder is named after: a page that grows becomes the index of a folder of its name. When behaviour changes, the page and the README change with it |
 
 `tests/test_docs.py` checks every relative link of `README.md`, `AGENTS.md` and `docs/`, headings included, and, in an
 application, each page's frontmatter and its link from the README.

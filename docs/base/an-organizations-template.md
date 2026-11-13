@@ -12,7 +12,13 @@ layer. The template is what IT starts each project from; nobody edits it by hand
 
 ```bash
 uv run --frozen python tools/make_template.py --layer ../our-layer --out ../our-template --ref <a tag of the base>
+uv run --frozen python tools/make_template.py --layer ../our-layer --out ../our-demo --keep-demo   # to show it
 ```
+
+The template carries `tests/base_files.json`, the fingerprint of each file of the base it holds: an application made
+from it runs only the tests it can break (`tools/test.py --application`), and a test checks those files are as the
+template left them. `--keep-demo` makes a demonstration instead: the demo in the layer's look and languages, generating
+5,000 rows on a person's computer, for people to try what an application can do.
 
 | Part | What it holds |
 |---|---|
