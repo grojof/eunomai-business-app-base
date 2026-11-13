@@ -86,6 +86,10 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.code-attribute {
+  color: var(--color-neutral-content);
+}
+
 .code-value {
   font-style: italic;
 }
