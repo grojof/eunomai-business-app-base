@@ -213,3 +213,15 @@ def test_the_languages_kept_and_the_default_are_read_from_the_options():
     assert remove_demo.chosen_languages(None, None) is None
     assert remove_demo.chosen_languages("es", None) == (["es"], "en")
     assert remove_demo.chosen_languages("en, ca,ca", "ca") == (["ca"], "ca")
+
+
+def test_a_demonstration_keeps_the_demo_and_every_link_it_has(tmp_path):
+    """A demonstration keeps the base's README, which links the base's security policy: what it links stays."""
+    from tests.test_docs import broken_links
+
+    layer, out = a_layer(tmp_path / "layer"), tmp_path / "demonstration"
+    result = make(layer, out, "--keep-demo")
+    assert result.returncode == 0, f"{result.stdout[-3000:]} {result.stderr[-3000:]}"
+    assert (out / "app" / "demo").is_dir() and (out / "SECURITY.md").is_file()
+    assert broken_links(out) == []
+    assert (out / make_template.BASE_FILES).is_file()

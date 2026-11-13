@@ -95,7 +95,7 @@ def _refuse_inexact(_connection: Any, statement: Any, *_rest: Any) -> None:
         if _is_inexact(element):
             raise InexactQuery(
                 f"SQLite keeps decimals as text, so this would not be exact: {element}. "
-                "Use total() or exact_sum(), or do it in Python. See docs/base/data/README.md#data"
+                "Use total() or exact_sum(), or do it in Python. See docs/base/data/decimals-on-sqlite.md"
             )
 
 

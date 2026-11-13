@@ -130,6 +130,7 @@ def test_pytests_own_options_go_after_a_double_dash(monkeypatch: pytest.MonkeyPa
     )
     monkeypatch.setenv("TEST_DATABASE_URL", "postgresql://example.test/x")
     assert runner.main(["--", "--ignore=tests/demo/test_template.py", "-x"]) == 0
+    monkeypatch.setattr(runner, "only_the_applications", lambda application: application)  # an unchanged base
     assert runner.main(["--application"]) == 0
     assert calls == [([], ["--ignore=tests/demo/test_template.py", "-x"], False), ([], [], True)]
 

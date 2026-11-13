@@ -55,7 +55,8 @@ uv run --frozen python -m app.demo.generate
 ```
 
 For PostgreSQL, set `APP_DATABASE_URL` and apply the migrations, then generate if you want the rows. The database tests
-run on it too if `TEST_DATABASE_URL` gives one. [Data](docs/base/data/README.md#data) says how the two differ.
+run on it too if `TEST_DATABASE_URL` gives one. [Where the two databases differ](docs/base/data/where-the-two-databases-differ.md#where-the-two-databases-differ)
+says how.
 
 ```bash
 uv run --frozen alembic upgrade head

@@ -64,7 +64,7 @@ def test_the_preview_needs_the_migrations_and_each_modules_sample_data(applicati
 
 
 def test_a_persons_computer_runs_what_the_application_can_break(application):
-    """The base's own tests ran in the template; a person's computer runs the rest, guarded by tests/base_files.py."""
+    """The base's own tests ran in the template; a person's computer runs the rest, while the base is unchanged."""
     declaration = tomllib.loads((application / ".eunomai" / "project.toml").read_text(encoding="utf-8"))
     assert declaration["tests"] == {
         "run": ["python", "tools/test.py", "--application"],

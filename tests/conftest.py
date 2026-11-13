@@ -81,7 +81,6 @@ BASE_TESTS = frozenset(
         "test_macros.py",
         "test_new_module.py",
         "test_palette.py",
-        "test_preview.py",
         "test_settings.py",
         "test_tables.py",
         "test_test_runner.py",
@@ -91,9 +90,10 @@ BASE_TESTS = frozenset(
     }
 )
 """The files whose tests prove the base's own machinery: the shell, the macros, the data helpers, the tools. An
-application does not change them (tests/test_base_files.py checks it), and the template it was made from ran them, so
-`tools/test.py --application`, which a connector runs on a person's computer, leaves them out. The tests that read the
-whole application (its templates, texts, models, migrations, rules, documentation) are not here."""
+application does not change them, and the template it was made from ran them, so `tools/test.py --application`,
+which a connector runs on a person's computer, leaves them out while the base is as the template left it. The tests
+that read the whole application (its templates, texts, models, migrations, rules, documentation, its preview) are not
+here."""
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:

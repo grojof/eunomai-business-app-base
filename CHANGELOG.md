@@ -16,8 +16,9 @@ in the application's own pages.
   the page the folder is named after, and checks that `tags` are lowercase words joined by hyphens.
 - **An application runs only the tests it can break.** The tests of the base's own machinery are marked `base`;
   `tools/test.py --application` leaves them out of both passes, and an application's `[tests]` uses it: on a person's
-  computer, about a fifth of the time. `tools/make_template.py` writes `tests/base_files.json`, and
-  `tests/test_base_files.py` fails if an application changed one of those files.
+  computer, about a fifth of the time. `tools/make_template.py` writes `tests/base_files.json`, the fingerprints of
+  the base's files and the versions of the packages it locks; when an application changed one, as its documentation
+  allows for its own components, every test runs and the runner says why, so it costs time, never a failure.
 - **Fewer browser scans for the same coverage.** The theme and language controls are scanned once per look (4 cases,
   not 12), and a title in the bar for each menu in both themes (8, not 16).
 - **A demonstration application.** `tools/make_template.py --keep-demo` keeps the demo in the layer's look and

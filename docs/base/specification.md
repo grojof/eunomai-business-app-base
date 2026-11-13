@@ -8,8 +8,9 @@ related: [standards.md, decisions.md]
 
 # Specification
 
-`eunomai-business-app-base` is a working application that demonstrates its own components. An organization clones it once and
-adds its brand; each new application is then a clone of that copy, with the demo deleted.
+`eunomai-business-app-base` is a working application that demonstrates its own components. An organization makes its
+application template from it with a small layer of its own; each new application starts from that template, with the
+demo deleted.
 
 Success means three things, each testable:
 
@@ -35,21 +36,34 @@ Each section is a page of its own: read the section a link names, not every page
 
 ## Data
 
-<a id="column-types"></a>
-<a id="decimals-on-sqlite"></a>
-<a id="where-the-two-databases-differ"></a>
-<a id="lists-on-the-server"></a>
-<a id="charts"></a>
-<a id="boards"></a>
-<a id="timelines"></a>
-<a id="calendars"></a>
-<a id="groups-and-editing-a-row"></a>
-<a id="two-people-on-one-row"></a>
-<a id="forms"></a>
-<a id="uploads"></a>
-<a id="excel"></a>
-
 [Data](data/README.md): The databases (PostgreSQL in production, SQLite for the demo and previews), their settings, migrations, and an index of the data pages.
+
+<a id="column-types"></a>
+- [Column types](data/column-types.md): Which column type to use in a model for money, quantities, dates, times and text, and what each becomes on both databases.
+<a id="decimals-on-sqlite"></a>
+- [Decimals on SQLite](data/decimals-on-sqlite.md): Why exact numbers need care on SQLite, and what to use instead of SUM or a sort that would go wrong.
+<a id="where-the-two-databases-differ"></a>
+- [Where the two databases differ](data/where-the-two-databases-differ.md): Where PostgreSQL and SQLite behave differently, with the cost of each difference.
+<a id="lists-on-the-server"></a>
+- [Lists on the server](data/lists-on-the-server.md): How to build a long list with search, filters, sorting and pages on the server: ListView and its macros.
+<a id="charts"></a>
+- [Charts](data/charts.md): How to draw a chart: the numbers worked out on the server, the chart macro, its table and its colours.
+<a id="boards"></a>
+- [Boards](data/boards.md): How to show cards in columns, such as work orders by state, moved on the server.
+<a id="timelines"></a>
+- [Timelines](data/timelines.md): How to show rows on a calendar as bars beside their table: the gantt macro.
+<a id="calendars"></a>
+- [Calendars](data/calendars.md): How to show events by month, week or agenda with the calendar macro, over what the server sends.
+<a id="groups-and-editing-a-row"></a>
+- [Groups and editing a row](data/groups-and-editing-a-row.md): How to group rows and edit one among thousands with a native table and form, instead of a grid.
+<a id="two-people-on-one-row"></a>
+- [Two people on one row](data/two-people-on-one-row.md): How a row keeps the version it was read at, so a save by one person never overwrites another's.
+<a id="forms"></a>
+- [Forms](data/forms.md): How to build a form to add or change a row: field macros, validation, errors and what is kept after a failed save.
+<a id="uploads"></a>
+- [Uploads](data/uploads.md): How an attached file is checked and stored: allowed kinds, signatures, sizes and where files live.
+<a id="excel"></a>
+- [Excel](data/excel.md): How to export a list to Excel with its filters and order, row by row, for large lists.
 
 ## Identity
 

@@ -101,10 +101,10 @@ uv run --frozen pytest -q -m "not browser" tests/demo
         "need\n  Tailwind's executable, which `tools/css.py` downloads to `.cache/`. Without it and without network, "
         "add an\n  `--ignore=` for each and say so.\n",
         """Everything
-but the browser tests, which fits; if it is cut, split it by file:
+but the browser tests and the base's own, which its template ran, which fits; if it is cut, split it by file:
 
 ```bash
-uv run --frozen pytest -q -m "not browser"
+uv run --frozen pytest -q -m "not browser and not base"
 ```
 
 """,

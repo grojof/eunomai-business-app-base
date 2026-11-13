@@ -21,7 +21,7 @@ Before using a component, read [`docs/base/components/README.md`](docs/base/comp
 file. Prefer `approved` components; an approved component needs a macro. Those pages are generated: change
 `app/ui/catalog.py`, then run `tools/components.py`. `app/demo/examples/` is generated too, from daisyUI's documentation:
 never edit it, run `tools/gallery.py`. To see a component live, open `/gallery/<name>` in the demo.
-Add your own components as [the specification](docs/base/adapting-it.md#adapting-it) says.
+Add your own components as [Adapting it](docs/base/adapting-it.md#adapting-it) says.
 
 ## Rules
 
@@ -53,8 +53,8 @@ Add your own components as [the specification](docs/base/adapting-it.md#adapting
 - Each screen handles its empty, loading, error and no-permission states.
 - A new component needs its page in the demo and its tests, in the same change.
 - Money and quantities are `Mapped[Decimal]`, moments `Mapped[datetime]` with their time zone. Never a float. On SQLite,
-  a sum in SQL raises `InexactQuery`: use `total()`. [Data](docs/base/data/README.md#data) says how the two databases
-  differ.
+  a sum in SQL raises `InexactQuery`: use `total()`. [Where the two databases
+  differ](docs/base/data/where-the-two-databases-differ.md#where-the-two-databases-differ) says how.
 - A route that uses the database takes `DatabaseSession`, is declared with `def`, and commits itself.
 - A long list uses `ListView` from `app/core/tables.py`, whose values are checked against lists, never text from the
   address in SQL: read [Lists on the server](docs/base/data/lists-on-the-server.md#lists-on-the-server). Charts come from
@@ -87,7 +87,7 @@ uv run --frozen python tools/icons.py check          # icons, their names, and e
 uv run --frozen python tools/translations.py check   # after changing texts: tools/translations.py update
 uv run --frozen python tools/test.py --affected      # while working: what the changes against main can break, and why
 uv run --frozen python tools/test.py                 # before merging: every test, in parallel, then those marked serial
-uv run --frozen python tools/test.py --application   # what an application can break: what a connector runs
+uv run --frozen python tools/test.py --application   # what an application can break; all, if its base changed
 ```
 
 With `TEST_DATABASE_URL` set to a PostgreSQL kept for tests (an address with its password, kept in the person's own

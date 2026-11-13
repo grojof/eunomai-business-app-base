@@ -1,7 +1,7 @@
 ---
 type: reference
 title: The demo
-description: "The demo's fictional company and its screens, what each exercises, and that deleting app/demo leaves a working application"
+description: "The demo's fictional company and its screens, and what each exercises"
 tags: [base, the-demo]
 ---
 
