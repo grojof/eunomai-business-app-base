@@ -791,8 +791,8 @@ still runs.
 
 Everything a brand sets lives in `app/brand/`, and nothing else changes: daisyUI's themes, a few CSS variables, the
 logos and the fonts. `tests/test_brand.py` checks what the browser draws: the built stylesheet's themes, daisyUI's
-values with the brand's, and the bar on each page theme, as it inherits what it leaves out, each role as the stylesheet
-falls back without it. Text at 4.5:1 and what shows a state at 3:1. A colour is written as `#rrggbb`, `#rgb`,
+values with the brand's, the default theme under the others, and the bar on each page theme, as it inherits what it
+leaves out, each role as the stylesheet falls back without it. Text at 4.5:1 and what shows a state at 3:1. A colour is written as `#rrggbb`, `#rgb`,
 `oklch(L C H)` or `var(--color-...)`.
 
 **Themes**, made with [daisyUI's theme generator](https://daisyui.com/theme-generator/) and pasted into
@@ -802,7 +802,10 @@ theme also holds daisyUI's radii (`--radius-field`, `--radius-box`, `--radius-se
 `--radius-field: 0rem` in `bar`. A value a theme leaves out is the page's, which may not show on the bar: set each one
 the bar uses.
 
-**Roles**, CSS variables a theme may set for itself, inside its block, so each theme has its own:
+**Roles**, CSS variables a theme sets inside its block. The default theme's block is also the page's (`:root`), so a
+role it sets reaches every other theme that does not set it again: give each theme its own, or `initial` to take the
+role away there and fall back to the default below.
+
 
 | Variable | Default | Where | Checked against |
 |---|---|---|---|

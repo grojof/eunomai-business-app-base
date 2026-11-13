@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.3 (2026-11-13)
+
+`tests/test_brand.py` checks each theme on top of the default one, as the browser draws it. daisyUI writes the default
+theme for the page itself too, so a role a brand set only there, such as navy links in `light`, also reached `dark`,
+where it did not show; the check took each theme alone and passed. A theme takes a role away with `initial`. The
+specification's *Your theme* says so.
+
 ## 0.2.2 (2026-11-12)
 
 `tools/translations.py update` changes a catalogue only when its texts change, and keeps the date in its header. A
