@@ -80,16 +80,14 @@
   white-space: pre-wrap;
 }
 
+/* The code is told apart by weight and style, in the one pair of colours the brand's check holds on this panel:
+   info, warning or success on neutral were never checked, and a brand's navy neutral made them unreadable. */
 .code-tag {
-  color: var(--color-info);
-}
-
-.code-attribute {
-  color: var(--color-warning);
+  font-weight: var(--font-weight-semibold);
 }
 
 .code-value {
-  color: var(--color-success);
+  font-style: italic;
 }
 
 .code-comment {
