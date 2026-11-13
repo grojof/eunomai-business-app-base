@@ -172,6 +172,8 @@ def test_a_demonstration_keeps_the_demo_and_changes_only_the_languages(tmp_path)
     succeeded(run_in(copy, "tools/remove_demo.py", "--keep-demo", "--languages", "es"), "tools/remove_demo.py")
     assert (copy / "app" / "demo").is_dir() and (copy / "tests" / "demo").is_dir()
     assert sorted(folder.name for folder in (copy / "locales").iterdir() if folder.is_dir()) == ["es"]
+    settings = (copy / "app" / "core" / "settings.py").read_text(encoding="utf-8")
+    assert 'default_language: str = "en"' in settings and '["en", "es"]' in settings  # English, the last resort
     declaration = tomllib.loads((copy / ".eunomai" / "project.toml").read_text(encoding="utf-8"))
     assert declaration["preview"]["setup"] == [
         ["python", "-m", "app.demo.generate", "--if-empty", "--rows", str(remove_demo.DEMO_ROWS)]

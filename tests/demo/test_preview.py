@@ -9,9 +9,15 @@ from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
 from app.core.database import create_database_engine
-from app.demo.generate import equipment_row
+from app.demo.generate import EQUIPMENT_ROWS, equipment_row
 from app.demo.models import Equipment
-from tests.helpers import fetch, preview_running, repository_copy
+from tests.helpers import ROOT, fetch, preview_running, preview_section, repository_copy
+
+
+def declared_rows() -> int:
+    """The rows `[preview]` generates: the base's 50,000, or fewer where a demonstration asks for them."""
+    words = preview_section(ROOT)["setup"][0]
+    return int(words[words.index("--rows") + 1]) if "--rows" in words else EQUIPMENT_ROWS
 
 
 @pytest.fixture(scope="module")
@@ -29,7 +35,7 @@ def port(first: tuple[Path, int]) -> int:
 def test_the_list_has_its_rows(port):
     status, html = fetch(port, "/equipment")
     assert status == 200
-    assert "50,000 pieces of equipment" in html
+    assert f"{declared_rows():,} pieces of equipment" in html
     assert "EQ-000001" in html
 
 
@@ -67,7 +73,7 @@ def test_a_new_version_keeps_what_was_saved(first, tmp_path):
     folder, _port = first
     engine = create_database_engine(f"sqlite:///{(folder / 'kept' / 'preview.db').as_posix()}")
     with Session(engine) as session:
-        row = equipment_row(50_000)
+        row = equipment_row(declared_rows())
         del row["id"]
         session.execute(insert(Equipment), [row])
         session.commit()
@@ -75,4 +81,4 @@ def test_a_new_version_keeps_what_was_saved(first, tmp_path):
     with preview_running(repository_copy(tmp_path / "application"), folder / "kept") as port:
         status, html = fetch(port, "/equipment")
     assert status == 200
-    assert "50,001 pieces of equipment" in html
+    assert f"{declared_rows() + 1:,} pieces of equipment" in html
