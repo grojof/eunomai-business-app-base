@@ -183,8 +183,9 @@ def summary(counts: dict[str, int], seconds: float) -> str:
     return f"{words or 'no tests ran'} in {seconds:.2f}s (both passes)"
 
 
-def run(files: list[str], workers: int | None = None, options: list[str] | None = None,
-        application: bool = False) -> int:
+def run(
+    files: list[str], workers: int | None = None, options: list[str] | None = None, application: bool = False
+) -> int:
     """Two passes over the same selection: in parallel without `serial`, at a low priority, then `serial` alone, at the
     normal one, since those tests measure time. Then one line for both. `application` leaves out the tests marked
     `base`, in both passes: pytest keeps only the last `-m`, so it cannot come from the options."""
@@ -206,8 +207,11 @@ def main(arguments: list[str] | None = None) -> int:
     parser.add_argument("--affected", action="store_true", help="only what the changes against main can break")
     parser.add_argument("--list", action="store_true", help="say what --affected would run, and run nothing")
     parser.add_argument("--workers", type=int, help="tests at once (default: what the cores and free memory allow)")
-    parser.add_argument("--application", action="store_true",
-                        help="only what an application can break: the tests marked base ran in its template")
+    parser.add_argument(
+        "--application",
+        action="store_true",
+        help="only what an application can break: the tests marked base ran in its template",
+    )
     parser.add_argument("pytest", nargs="*", help="pytest's own options, after --")
     options = parser.parse_args(arguments)
     alone = "TEST_DATABASE_URL is not set: the database tests run on SQLite alone, not on PostgreSQL."

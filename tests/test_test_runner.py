@@ -123,8 +123,11 @@ def test_workers_follow_the_cores_and_the_free_memory(
 
 def test_pytests_own_options_go_after_a_double_dash(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[tuple] = []
-    monkeypatch.setattr(runner, "run", lambda files, workers=None, options=None, application=False:
-                        calls.append((files, options, application)) or 0)
+    monkeypatch.setattr(
+        runner,
+        "run",
+        lambda files, workers=None, options=None, application=False: calls.append((files, options, application)) or 0,
+    )
     monkeypatch.setenv("TEST_DATABASE_URL", "postgresql://example.test/x")
     assert runner.main(["--", "--ignore=tests/demo/test_template.py", "-x"]) == 0
     assert runner.main(["--application"]) == 0

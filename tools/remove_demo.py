@@ -49,8 +49,8 @@ what an assistant must respect before anything else.
   the application's documentation language. The README is a map: what the application is, for whom and why, how to
   run it, and a link to every page.
 - `docs/base/` is how the base works: read what this file says to read, as it says, and anything else by the page and
-  the section a link names; never edit it, since an update of the template replaces it. Link to it instead of restating it: one fact,
-  one home.
+  the section a link names; never edit it, since an update of the template replaces it. Link to it instead of
+  restating it: one fact, one home.
 - When behaviour changes, update the README and the page it affects in the same change. A new page gets its link in
   the README's index, or in the page whose folder it is in, which the README links. A page that grows past about 8,000
   characters becomes the index of a folder of the same name (`docs/decisions.md` and `docs/decisions/<subject>.md`),
@@ -223,10 +223,15 @@ base's own demo makes 50,000, to prove the lists at that size."""
 
 
 def demo_rows(declaration: Path) -> None:
-    changed(declaration, ((
-        'setup = [["python", "-m", "app.demo.generate", "--if-empty"]]',
-        f'setup = [["python", "-m", "app.demo.generate", "--if-empty", "--rows", "{DEMO_ROWS}"]]',
-    ),))
+    changed(
+        declaration,
+        (
+            (
+                'setup = [["python", "-m", "app.demo.generate", "--if-empty"]]',
+                f'setup = [["python", "-m", "app.demo.generate", "--if-empty", "--rows", "{DEMO_ROWS}"]]',
+            ),
+        ),
+    )
 
 
 def keep_languages(kept: list[str], default: str) -> None:
@@ -247,8 +252,11 @@ def main(arguments: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Deletes the demo, once, and leaves a clean application.")
     parser.add_argument("--languages", help="the languages to keep besides English, comma-separated, such as es,ca")
     parser.add_argument("--default-language", help="the last resort when a browser asks for none of them")
-    parser.add_argument("--keep-demo", action="store_true",
-                        help="keep the demo and change only the languages: an organization's demonstration application")
+    parser.add_argument(
+        "--keep-demo",
+        action="store_true",
+        help="keep the demo and change only the languages: an organization's demonstration application",
+    )
     options = parser.parse_args(arguments)
     if not (ROOT / "app" / "demo").exists():
         raise SystemExit("There is no demo here: this is an application already, and nothing was changed.")

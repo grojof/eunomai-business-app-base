@@ -174,6 +174,6 @@ def test_a_demonstration_keeps_the_demo_and_changes_only_the_languages(tmp_path)
     assert sorted(folder.name for folder in (copy / "locales").iterdir() if folder.is_dir()) == ["es"]
     declaration = tomllib.loads((copy / ".eunomai" / "project.toml").read_text(encoding="utf-8"))
     assert declaration["preview"]["setup"] == [
-        ["python", "-m", "app.demo.generate", "--if-empty", "--rows", str(remove_demo.DEMO_ROWS)]]
+        ["python", "-m", "app.demo.generate", "--if-empty", "--rows", str(remove_demo.DEMO_ROWS)]
+    ]
     assert (copy / "README.md").read_text(encoding="utf-8") == (ROOT / "README.md").read_text(encoding="utf-8")
-

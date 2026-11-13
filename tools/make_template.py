@@ -14,7 +14,8 @@ The layer is a small folder the organization keeps, and the only thing it edits:
 Each run makes the whole template again: the same base and the same layer give the same files. The base's own
 workflows, which maintain it on GitHub, are left out, so the layer brings the organization's CI if it wants one. The
 result is checked, then it is left in --out for a person: it never commits or pushes. Review it there, commit it to the
-template's repository, and merge it through a pull request. See docs/base/an-organizations-template.md#an-organizations-template
+template's repository, and merge it through a pull request.
+See docs/base/an-organizations-template.md#an-organizations-template
 """
 
 import argparse
@@ -182,9 +183,10 @@ def name_it(out: Path, name: str) -> None:
 
 BASE_FILES = "tests/base_files.json"
 OWNED = ("app/core", "app/ui", "app/brand", "tools", "docs/base", "migrations", "tests")
-NOT_OWNED = ("app/ui/static/app.css",)
+NOT_OWNED = ("app/ui/static/app.css", "migrations/env.py")
 """What an application keeps as the template left it: its own code lives in its folders of app/, its own tests in new
-files. The stylesheet is generated from every template, and catalogues of texts are written by tools/translations.py."""
+files. The stylesheet is generated from every template, `tools/new_module.py` adds each module to migrations/env.py,
+and catalogues of texts are written by tools/translations.py."""
 
 
 def digest(path: Path) -> str:
@@ -197,8 +199,13 @@ def base_files(out: Path) -> dict[str, str]:
     for top in OWNED:
         for path in sorted((out / top).rglob("*")):
             name = path.relative_to(out).as_posix()
-            if (path.is_file() and "__pycache__" not in path.parts and name not in NOT_OWNED
-                    and path.suffix not in (".po", ".mo", ".pot") and name != BASE_FILES):
+            if (
+                path.is_file()
+                and "__pycache__" not in path.parts
+                and name not in NOT_OWNED
+                and path.suffix not in (".po", ".mo", ".pot")
+                and name != BASE_FILES
+            ):
                 found[name] = digest(path)
     return found
 
@@ -224,8 +231,9 @@ def make(folder: Path, out: Path, ref: str | None, tests: bool, keep_demo: bool 
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
     name_it(out, layer.name)
-    (out / BASE_FILES).write_text(json.dumps(base_files(out), indent=0, sort_keys=True) + "\n", encoding="utf-8",
-                                  newline="\n")
+    (out / BASE_FILES).write_text(
+        json.dumps(base_files(out), indent=0, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
+    )
     for check in CHECKS:
         run(out, *check)
     if tests:
@@ -246,8 +254,11 @@ def main(arguments: list[str] | None = None) -> None:
     parser.add_argument("--out", type=Path, required=True, help="an empty folder, or a clean clone of the template")
     parser.add_argument("--ref", help="a version of the base, such as a tag; without it, this folder as it is")
     parser.add_argument("--skip-tests", action="store_true", help="leave the template's own tests for its CI")
-    parser.add_argument("--keep-demo", action="store_true",
-                        help="keep the demo, in the layer's look and languages: a demonstration application to try")
+    parser.add_argument(
+        "--keep-demo",
+        action="store_true",
+        help="keep the demo, in the layer's look and languages: a demonstration application to try",
+    )
     options = parser.parse_args(arguments)
     make(options.layer.resolve(), options.out.resolve(), options.ref, not options.skip_tests, options.keep_demo)
     print(f"Template made in {options.out}: review it there, then commit it through a pull request.")

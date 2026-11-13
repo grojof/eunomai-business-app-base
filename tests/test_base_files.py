@@ -35,7 +35,8 @@ def test_the_bases_files_are_as_the_template_left_them():
         pytest.skip("the base itself, or a template made before 0.3.0: every test runs")
     assert changed_base_files(ROOT) == [], (
         "these files are the base's: put them back as the template has them, or run every test (tools/test.py) and "
-        "ask IT, since the tests that prove them are left out of tools/test.py --application")
+        "ask IT, since the tests that prove them are left out of tools/test.py --application"
+    )
 
 
 def test_a_changed_or_missing_file_is_named_and_line_endings_do_not_count(tmp_path):

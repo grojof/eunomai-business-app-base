@@ -124,7 +124,8 @@ def test_every_page_of_the_applications_own_is_in_the_readme_with_its_frontmatte
 def test_the_bases_documentation_is_in_one_folder():
     """Beside `docs/base/`, only the application's own pages, or folders that hold them."""
     docs = ROOT / "docs"
-    assert {path.name for path in docs.iterdir()} <= {"base", *(page.relative_to(docs).parts[0] for page in own_pages(ROOT))}
+    own = {page.relative_to(docs).parts[0] for page in own_pages(ROOT)}
+    assert {path.name for path in docs.iterdir()} <= {"base", *own}
     assert (docs / "base" / "specification.md").is_file() and (docs / "base" / "standards.md").is_file()
 
 
@@ -199,20 +200,30 @@ def test_a_kind_that_grew_is_a_folder_reached_through_its_index(application):
     nothing is deleted, and the README keeps linking it."""
     folder = application / "docs" / "decisions"
     folder.mkdir()
-    (application / "docs" / "decisions.md").write_text(page("Decisions") + "\n[Closing](decisions/closing.md)\n",
-                                                       encoding="utf-8")
+    (application / "docs" / "decisions.md").write_text(
+        page("Decisions") + "\n[Closing](decisions/closing.md)\n", encoding="utf-8"
+    )
     (folder / "closing.md").write_text(page("Closing", "decision"), encoding="utf-8")
     (folder / "orphan.md").write_text(page("Orphan", "decision"), encoding="utf-8")
     (application / "README.md").write_text("# App\n\n[Decisions](docs/decisions.md)\n", encoding="utf-8")
     assert own_page_problems(application) == [
-        "docs/decisions/orphan.md: README.md does not reach it, directly or through the index of its folder"]
+        "docs/decisions/orphan.md: README.md does not reach it, directly or through the index of its folder"
+    ]
 
 
-@pytest.mark.parametrize(("tags", "right"), [("[context]", True), ("[decision, order-intake]", True), ("[]", True),
-                                             ("[Context]", False), ("context", False), ("[order intake]", False)])
+@pytest.mark.parametrize(
+    ("tags", "right"),
+    [
+        ("[context]", True),
+        ("[decision, order-intake]", True),
+        ("[]", True),
+        ("[Context]", False),
+        ("context", False),
+        ("[order intake]", False),
+    ],
+)
 def test_tags_are_lowercase_words_joined_by_hyphens(application, tags, right):
     text = page("Context", "explanation").replace("description:", f"tags: {tags}\ndescription:")
     (application / "docs" / "context.md").write_text(text, encoding="utf-8")
     (application / "README.md").write_text("# App\n\n[Context](docs/context.md)\n", encoding="utf-8")
     assert (own_page_problems(application) == []) is right
-

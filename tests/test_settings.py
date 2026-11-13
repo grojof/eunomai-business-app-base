@@ -135,8 +135,10 @@ def test_the_settings_pass_the_scan_with_every_control_on_the_page(open_page, th
     assert run_axe(open_page("/settings", theme=theme, width=width, bypass_csp=True)) == []
 
 
-CONTROL_PAIRS = [(THEME_CONTROLS[n % len(THEME_CONTROLS)], LANGUAGE_CONTROLS[n % len(LANGUAGE_CONTROLS)])
-                 for n in range(max(len(THEME_CONTROLS), len(LANGUAGE_CONTROLS)))]
+CONTROL_PAIRS = [
+    (THEME_CONTROLS[n % len(THEME_CONTROLS)], LANGUAGE_CONTROLS[n % len(LANGUAGE_CONTROLS)])
+    for n in range(max(len(THEME_CONTROLS), len(LANGUAGE_CONTROLS)))
+]
 """Each look of each control once: the two controls are drawn apart, so every pair of them would scan the same thing
 again, twelve times instead of four."""
 
