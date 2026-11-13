@@ -27,7 +27,8 @@ AGENTS_CHANGES = (
         """# AGENTS.md — eunomai-business-app-base
 
 For anyone working in this repository, person or AI assistant. The repository is in English and names no organization,
-person or real system: it stays neutral so anyone can clone it.
+person or real system: it stays neutral so anyone can clone it. `docs/base/` is a reference: open the page and the
+section a link names, never a whole page.
 """,
         """# AGENTS.md
 
@@ -35,20 +36,26 @@ For anyone working in this repository, person or AI assistant.
 
 ## What this application is
 
-Not written yet. Whoever owns this application says here, in a few lines, what it does, for whom, and which real systems
-it reads or writes. It belongs to its organization: its names, its systems and its real work belong in it.
+What it is, for whom and why: [README.md](README.md). What the business said (who uses it and how the work is done
+today, its words, its decisions and their reasons, its open questions) is in its own pages under `docs/`, each marked in
+its frontmatter by `type` and a tag: `context`, `glossary`, `decision`, `open-question`. What it must do, each rule with
+its source: `openspec/specs/`. Read the README first, then only the page and section a task needs. IT adds here only
+what an assistant must respect before anything else.
 
 ## Documentation
 
 - This application's documentation is [README.md](README.md) and its own pages in `docs/`, outside `docs/base/`, in
   the application's documentation language. The README is a map: what the application is, for whom and why, how to
   run it, and a link to every page.
-- `docs/base/` is how the base works: read it to build, never edit it, since an update of the template replaces it. Link
-  to it instead of restating it: one fact, one home.
+- `docs/base/` is how the base works: a reference, read by the page and the section a link names, never a whole
+  page; never edit it, since an update of the template replaces it. Link to it instead of restating it: one fact,
+  one home.
 - When behaviour changes, update the README and the page it affects in the same change. A new page gets its link in
-  the README's index.
+  the README's index, or in the index page of its folder, which the README links. A kind of page that grows past about
+  8,000 characters becomes a folder of the same name, one subject per page, named after it.
 - Each page of the application's own starts with frontmatter: `type` (`tutorial`, `how-to`, `reference`,
-  `explanation` or `decision`), `title` and `description`. `tests/test_docs.py` checks it, and every link.
+  `explanation` or `decision`), `title`, `description` and, for what the business said, `tags` with its kind.
+  `tests/test_docs.py` checks it, and every link.
 """,
     ),
     ("| Never imports from `app/demo/` |", "| Never imports from the application's own folders |"),
@@ -137,6 +144,10 @@ uv run --frozen python tools/test.py              # every test, in parallel
 ```
 
 ## Documentation
+
+<!-- This index reaches every page of docs/ outside docs/base/, and openspec/specs/ once it exists. What the business
+said has a page per kind, added with its row when it has something to say: docs/context.md, docs/glossary.md,
+docs/decisions.md, docs/open-questions.md. -->
 
 | Page | What it contains |
 |---|---|
