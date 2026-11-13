@@ -7,7 +7,7 @@ uv run --frozen python tools/new_module.py --spec module.toml
 It writes `app/<package>/`, its migration and `tests/test_<package>.py`, adds the module to `app/main.py` and to
 `migrations/env.py`, and adds its texts to every catalogue, where a person translates them. It never overwrites: a
 package that exists is refused. What it writes follows the rules of docs/base/standards.md and passes the
-application's checks, once its texts are translated. See docs/base/specification.md#a-new-module
+application's checks, once its texts are translated. See docs/base/a-new-module.md#a-new-module
 """
 
 import argparse
@@ -694,7 +694,7 @@ def routes_code(module: Module) -> str:
     joined = [f for f in listed if f.target]
     lines = [
         f'"""{module.title}: the list with search and filters, a page for each one, and the form to add or change one.',
-        "Made by tools/new_module.py: change it as this application needs. See docs/base/specification.md#a-new-module",
+        "Made by tools/new_module.py: change it as this application needs. See docs/base/a-new-module.md#a-new-module",
         '"""',
         "",
         "import re",

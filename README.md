@@ -27,7 +27,7 @@ flowchart LR
 > their tables, and a planning screen that groups rows and edits one at a time. Milestone 3, in review: every form field,
 > a work order form with validation at the edge, file upload, a confirmation dialog, and two people on one row finding
 > out. Milestone 4, in progress: lists that a person can make dense and as wide as the screen, the page's title in
-> the top bar, filters in a side panel that can be hidden, charts whose parts filter a list, a board of work orders, a timeline in Planning, and a calendar of visits and work orders. The rest is in the [milestones](docs/base/specification.md#milestones).
+> the top bar, filters in a side panel that can be hidden, charts whose parts filter a list, a board of work orders, a timeline in Planning, and a calendar of visits and work orders. The rest is in the [milestones](docs/base/milestones.md#milestones).
 
 <a id="run-it"></a>
 
@@ -55,7 +55,7 @@ uv run --frozen python -m app.demo.generate
 ```
 
 For PostgreSQL, set `APP_DATABASE_URL` and apply the migrations, then generate if you want the rows. The database tests
-run on it too if `TEST_DATABASE_URL` gives one. [Data](docs/base/specification.md#data) says how the two differ.
+run on it too if `TEST_DATABASE_URL` gives one. [Data](docs/base/data/README.md#data) says how the two differ.
 
 ```bash
 uv run --frozen alembic upgrade head
@@ -66,8 +66,8 @@ when started by hand: *Actions*, *Tests*, *Run workflow*, or `gh workflow run te
 publishing, and after a change to the database layer.
 
 An organization makes its template from this with `tools/make_template.py` and its brand, as
-[An organization's template](docs/base/specification.md#an-organizations-template) says: its themes, logos, roles and
-arrangement in `app/brand/`, each colour checked for contrast ([Your theme](docs/base/specification.md#your-theme)).
+[An organization's template](docs/base/an-organizations-template.md#an-organizations-template) says: its themes, logos, roles and
+arrangement in `app/brand/`, each colour checked for contrast ([Your theme](docs/base/your-theme.md#your-theme)).
 It starts each application from that template. To try the base alone, clone this, then run `uv run --frozen python tools/remove_demo.py` and
 `uv run --frozen python tools/css.py`. The first is what turns the clone into an application: the demo goes, and
 `AGENTS.md` stops describing a neutral base and describes an application, so real work belongs there. `README.md` becomes
@@ -75,7 +75,7 @@ the application's own map, and this documentation stays in `docs/base/`. Fill in
 of `AGENTS.md` before anything else: every assistant reads it first. The step runs once, and a second
 run changes nothing, so what you wrote stays. Each module of screens then starts with `tools/new_module.py`, which
 writes its list, its pages, its form, its migration and its tests from a short description, as
-[A new module](docs/base/specification.md#a-new-module) says.
+[A new module](docs/base/a-new-module.md#a-new-module) says.
 
 ## Documentation
 

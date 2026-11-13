@@ -11,7 +11,7 @@ tags: [component, actions, available]
 
 A native `<dialog>` with `role="alertdialog"`. The link that opens it is a real link: with htmx its address fills the
 dialog, and without JavaScript the same address is a page of its own, with the same words and the same form. So the
-route answers one address in two ways, as the [planning editor](../specification.md#groups-and-editing-a-row) does.
+route answers one address in two ways, as the [planning editor](../data/groups-and-editing-a-row.md#groups-and-editing-a-row) does.
 
 ```jinja
 {{ confirm_link(_("Delete"), address, "confirm") }}

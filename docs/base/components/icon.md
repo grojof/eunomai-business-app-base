@@ -49,4 +49,4 @@ what it is for.
 Never draw an icon inline, and never use another collection: a test refuses an `<svg>` in a template, code, script or
 stylesheet, an SVG file outside these places, and a name that does not exist. Illustrations are not icons: they are
 files in `app/ui/static/illustrations/`, shown with `<img>`, as
-[the specification](../specification.md#icons-and-illustrations) says.
+[the specification](../components-in-screens.md#icons-and-illustrations) says.

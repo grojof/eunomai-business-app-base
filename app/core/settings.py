@@ -23,7 +23,7 @@ LAYOUTS: dict[str, tuple[str, ...]] = {
     "list_width": ("page", "wide"),
     "list_density": ("normal", "dense"),
 }
-"""What the settings menu offers, and the only values the server accepts. See docs/base/specification.md#layouts"""
+"""What the settings menu offers, and the only values the server accepts. See docs/base/layouts.md#layouts"""
 SERVED = Path(__file__).resolve().parent.parent
 """The application's own folders, some of them served as they are: no upload ever goes here."""
 BRAND_LAYOUT = SERVED / "brand" / "layout.toml"
@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     database_url: SecretStr = SecretStr("sqlite:///.data/app.db")
 
     # Uploads: where they are kept, the largest file, and the largest request of any kind. The folder is outside
-    # anything served and, by default, under .data/, which git ignores. See docs/base/specification.md#uploads
+    # anything served and, by default, under .data/, which git ignores. See docs/base/data/uploads.md#uploads
     upload_folder: Path = Path(".data/uploads")
     upload_max_bytes: int = 10 * ONE_MEGABYTE
     request_max_bytes: int = 32 * ONE_MEGABYTE
@@ -75,7 +75,7 @@ class Settings(BaseSettings):
     languages: list[str] = ["en", "es", "ca"]
     time_zone: str = "UTC"
 
-    # How the application is arranged. See docs/base/specification.md#layouts
+    # How the application is arranged. See docs/base/layouts.md#layouts
     layout_navigation: Literal["side", "compact", "top", "hidden"] = "side"
     # The top bar and the menu: as the page, or in the brand's colours (the theme called "bar" in app/brand/theme.css).
     layout_bar: Literal["plain", "brand"] = "plain"

@@ -1,4 +1,4 @@
-"""The equipment list: the server table, on the generated rows. See docs/base/specification.md#the-demo"""
+"""The equipment list: the server table, on the generated rows. See docs/base/the-demo.md#the-demo"""
 
 from collections.abc import Iterable, Mapping
 from typing import Any

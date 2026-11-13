@@ -1,6 +1,6 @@
 # Security policy
 
-eunomai-business-app-base is a base for internal web applications: an organization makes its template from it, and each application starts from that template. It trusts a reverse proxy for identity and has no login of its own; see [Identity](docs/base/specification.md#identity) and [Standards](docs/base/standards.md).
+eunomai-business-app-base is a base for internal web applications: an organization makes its template from it, and each application starts from that template. It trusts a reverse proxy for identity and has no login of its own; see [Identity](docs/base/identity.md#identity) and [Standards](docs/base/standards.md).
 
 ## Supported versions
 

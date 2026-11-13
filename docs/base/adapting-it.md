@@ -1,0 +1,42 @@
+---
+type: reference
+title: Adapting it
+description: "What to change, and where, to adapt the base: colours, logos, names, languages, roles, settings and your own components"
+tags: [base, adapting-it]
+---
+
+# Adapting it
+
+| To do this | Change |
+|---|---|
+| Your colours, radius and logos | The base uses daisyUI's `light` and `dark` themes as they come. To change them, paste what [daisyUI's theme generator](https://daisyui.com/theme-generator/) gives you into `app/brand/theme.css`, in hex or oklch, as a theme named `light` and one named `dark`, and run `tools/css.py`. The comment in that file shows both. A value left out keeps daisyUI's, and `dark` follows the system's choice with `prefersdark: true`. Contrast of your themes' text colours is then computed |
+| Your top bar, menu, logos and roles | [Your theme](your-theme.md#your-theme) |
+| Your icons | SVG files in `app/brand/icons/`, drawn as [Icons and illustrations](components-in-screens.md#icons-and-illustrations) says, and their words in `app/brand/icons/tags.json`. Use a name Lucide does not have. Then `tools/icons.py check` |
+| Your fonts | The files in `app/brand/fonts/`, which the application serves at `/static/brand/fonts/`, so the policy's `font-src 'self'` allows them and nothing is loaded from another server. In `app/brand/theme.css`, an `@font-face` for each file and `--font-sans` in `@theme`, with a fallback after it, as the file's comment shows; then `tools/css.py`. Check that the font's licence lets you serve it |
+| Your illustrations | Files in `app/ui/static/illustrations/`, from your own tools, shown with `<img src>` or as a CSS background. Then `tools/icons.py check` |
+| Another CSS library | `app/ui/`: the macros and the stylesheet's source; screens do not change |
+| Your languages | Each folder under `locales/` is a required language: add yours, run `tools/translations.py update` and translate it. Change `APP_LANGUAGES` too. To offer fewer, `tools/remove_demo.py --languages es` keeps those folders alone and makes the settings offer English and them; English is the language of the code, so it is always there, and at least one other is kept, which the translation checks need. `--default-language` sets the last resort, English otherwise |
+| Your screens' texts | Each package of `app/` other than `core`, `ui` and `brand`, such as `app/demo/`, keeps its texts in its own `locales/`: `tools/translations.py update` finds its Python and its `templates/` with nothing to register, and its `install` adds the folder with `application.state.languages.add_folder` |
+| Your time zone | `APP_TIME_ZONE`; the default is UTC |
+| Your database | `APP_DATABASE_URL`, then `alembic upgrade head`. See [Data](data/README.md#data) |
+| Your uploads | `APP_UPLOAD_FOLDER`, `APP_UPLOAD_MAX_BYTES`, `APP_REQUEST_MAX_BYTES`, and `KINDS` in `app/core/uploads.py`. Read [what production needs](data/uploads.md#uploads) |
+| Add a module of screens | `tools/new_module.py`, as [A new module](a-new-module.md#a-new-module) says |
+| Add a table | A model on `Base`, its module imported in `migrations/env.py`, then `alembic revision --autogenerate` and read what it wrote: the exact types are written as they are made, so it runs, and its file takes the next number (`0012_...`), with or without `--autogenerate`, so the folder reads in the order they apply. A test compares models and migrations |
+| Sample data for a module | `app/<module>/sample_data.py` with `holds_rows(session)`, whether its tables hold any row, and `fill(session)`, which replaces its rows with made-up ones; the caller commits. A module whose rows point to another's says so in `AFTER`, which fills first, and has `empty(session)`, which runs, last module first, before everything is made again. `uv run --frozen python -m app.core.sample_data --if-empty` applies the migrations, then fills each module that holds no rows, with nothing to register, and only in development. An application's preview runs exactly that, so a module brings its own rows without a change to `.eunomai/project.toml`, which IT keeps. No real people or companies |
+| Your identity proxy | Settings: `APP_TRUSTED_PROXIES`, `APP_HEADER_*`, `APP_GROUPS_SEPARATOR`, `APP_ROLE_GROUPS`; a worked example in [Deployment](deployment.md#5-the-identity-proxy) |
+| Start an application | Clone your copy and run `tools/remove_demo.py`, then `tools/css.py`; `--languages` keeps fewer languages, as *Your languages* says. It deletes the demo with its tests, its models and first migration, the gallery's source and placeholders, `tools/make_template.py`, renames `demo-admins` in `.env.example` and in the preview, turns the rules only the demo proved to *By hand*, makes `AGENTS.md` describe an application, with a place at its top for what yours is, and replaces `README.md` with the application's own, as [Documentation](documentation.md#documentation) says. Fill those in first. A base that edited `AGENTS.md` is told which changes it must make by hand. It runs once: a second run refuses, so it can never overwrite what was written. The application keeps the settings menu, the palette, every icon, Lucide's and the organization's, the illustrations, `app/core/`'s database and Alembic with no migrations, ready for its own, and its stylesheet shrinks by more than a quarter. Run it before adding a migration, which would otherwise follow the demo's. `tools/gallery.py` stays, with nothing to do |
+| See it on a person's computer | `[preview]` in `.eunomai/project.toml`, which a connector reads from the main branch: `setup` on every version, then `run`, each after `uv run --frozen`, in an export of the repository with no `.env`, with `[preview.environment]`. That gives a made-up person with the admin role, so nobody signs in, and the database and attached files in `{data}`, a folder the connector keeps from one version to the next. `setup` generates the rows with `--if-empty`, so only the first version waits for them and what a person saved stays. Everything it needs is in the main dependencies: the connector installs without development tools. `tools/remove_demo.py` changes `setup` to `app.core.sample_data --if-empty`: the migrations, then each module's sample data. An application adds its first rows in its modules' `sample_data.py`, not here |
+| Run the tests on a person's computer | `[tests]` in the same file, where IT allows it: `tools/test.py`, in parallel, with the browser in `APP_BROWSER_CHANNEL`, Edge on Windows, since nothing is downloaded there. One test at a time, an application's suite did not fit in the time a connector gives it. The demo's tests of a clean application and of a template download Tailwind's executable, so they are left to CI; `tools/remove_demo.py` deletes them |
+| Add your own component | A macro in `app/ui/`, its line in `app/ui/catalog.py`, and a page in `docs/base/components/`. Only `description` is required in the page's frontmatter; do not put the `Generated by tools/components.py` marker in it. `tools/components.py` keeps your page and adds it to the index. An approved component needs `macro=` in its line. In your organization's base, add `app/demo/templates/demo/gallery/specimens/<name>.html` and it appears on its gallery page; applications have no gallery |
+| Fix or hide the settings menu | `APP_LAYOUT_*` for the look, `APP_LAYOUT_CHOICES` for what people may change; `[]` hides the menu |
+| Add to the search | `register_search`, as [the palette](command-palette.md#command-palette) shows |
+| Make your organization's template | `tools/make_template.py` with your layer: see [An organization's template](an-organizations-template.md#an-organizations-template) |
+| Bring an application up to a newer template | `tools/update_application.py`: see [Updating an application](updating-an-application.md#updating-an-application) |
+
+An application that needs something different changes it: the code belongs to whoever cloned it. An organization's
+template is made again from the base, as the next section says, so the projects it starts begin with the improvements,
+and an application made from it takes them with `tools/update_application.py`, on a branch a person reviews: see
+[Updating an application](updating-an-application.md#updating-an-application).
+
+`AGENTS.md`, the documentation and the checks travel with every clone. Any of them can be removed and the application
+still runs.

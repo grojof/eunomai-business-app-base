@@ -1,6 +1,6 @@
 """The database: its connection, a session per request, and what keeps SQLite honest.
 
-See docs/base/specification.md#data
+See docs/base/data/README.md#data
 """
 
 import re
@@ -95,7 +95,7 @@ def _refuse_inexact(_connection: Any, statement: Any, *_rest: Any) -> None:
         if _is_inexact(element):
             raise InexactQuery(
                 f"SQLite keeps decimals as text, so this would not be exact: {element}. "
-                "Use total() or exact_sum(), or do it in Python. See docs/base/specification.md#data"
+                "Use total() or exact_sum(), or do it in Python. See docs/base/data/README.md#data"
             )
 
 
@@ -166,7 +166,7 @@ def saved(session: Session, change: Callable[[], object] | None = None) -> bool:
     """Makes `change`, commits, and says whether it could. False means a row with a version column changed, or went,
     since it was read: the database's own `WHERE version`, the only check two people saving at once cannot pass
     together. Nothing was saved, and the route says so to the person.
-    See docs/base/specification.md#two-people-on-one-row.
+    See docs/base/data/two-people-on-one-row.md#two-people-on-one-row.
 
     A change that loads anything flushes what came before it, and the check fires there, not at the commit, so changes
     made through several steps belong in `change`.

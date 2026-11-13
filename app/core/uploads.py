@@ -5,7 +5,7 @@ name of ours, with no extension, in a folder the application does not serve, and
 `nosniff`. Its own name is kept as data, for showing.
 
 This is the floor, not the whole answer: a real PDF can carry something harmful. What a clone must add for production is
-in docs/base/specification.md#uploads.
+in docs/base/data/uploads.md#uploads.
 """
 
 import logging

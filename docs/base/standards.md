@@ -139,7 +139,7 @@ applies anyway.
 | Business data | As stored, unless the model declares it translatable |
 | Logs and audit codes | The source language, so they can be searched |
 
-A **glossary** per organization is [planned](specification.md#milestones). The demo ships in English, Spanish and
+A **glossary** per organization is [planned](milestones.md#milestones). The demo ships in English, Spanish and
 Catalan.
 
 ### How language is checked
@@ -158,11 +158,11 @@ Catalan.
 | COMP-02 | Every component has a page with frontmatter and a description; each official page shows its status; one with problems says why | Project decision | Automatic |
 | COMP-03 | The gallery shows every component with its status and every official example, counted from daisyUI's documentation, and generated data matches that documentation. A macro appears on the page of its component | Project decision | Automatic |
 | COMP-04 | A class in use must exist, read from real pages, macro arguments, `{% set %}` values and the catalogue; values such as `[color:#ff0000]` are refused. Component classes outside what Tailwind reads are caught; Tailwind utilities in Python files are not | Project decision | Automatic |
-| COMP-05 | An icon comes from Lucide's pinned set or the organization's own, only through the `icon` macro: no SVG is drawn inline in a template, code, script or stylesheet, and no SVG file lies outside its place. Every name a template or the code asks for exists, no name is in both sets, and the organization's icons are drawn like Lucide's: 24 by 24, in `currentColor`, with no colour, style, id or size of their own. The one exception is the `gantt` macro's picture, a chart of data drawn on the server, which holds nothing that runs or loads either: see [Timelines](specification.md#timelines) | Project decision | Automatic |
+| COMP-05 | An icon comes from Lucide's pinned set or the organization's own, only through the `icon` macro: no SVG is drawn inline in a template, code, script or stylesheet, and no SVG file lies outside its place. Every name a template or the code asks for exists, no name is in both sets, and the organization's icons are drawn like Lucide's: 24 by 24, in `currentColor`, with no colour, style, id or size of their own. The one exception is the `gantt` macro's picture, a chart of data drawn on the server, which holds nothing that runs or loads either: see [Timelines](data/timelines.md#timelines) | Project decision | Automatic |
 
 ## Data
 
-Where the two databases [differ](specification.md#where-the-two-databases-differ) is stated in the specification. These
+Where the two databases [differ](data/where-the-two-databases-differ.md#where-the-two-databases-differ) is stated in the specification. These
 rules are what holds on both. The tests of `DATA-02` to `DATA-06` and `LANG-15` run on SQLite everywhere, and on PostgreSQL
 in the Ubuntu job.
 
