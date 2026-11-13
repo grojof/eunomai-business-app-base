@@ -14,7 +14,7 @@ and, when its rows point to another module's, two more things:
     AFTER = ("audits",)                             # the modules whose rows must be there first
     def empty(session: Session) -> None: ...        # takes its rows away, before the modules it points to refill
 
-The caller commits. The rows are invented: no real people or companies. See docs/base/specification.md#adapting-it
+The caller commits. The rows are invented: no real people or companies. See docs/base/adapting-it.md#adapting-it
 """
 
 import argparse

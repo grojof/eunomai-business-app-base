@@ -11,7 +11,7 @@ tags: [component, feedback, available]
 
 The form comes back with what was typed, and this at the top, with focus on it. `changes` is a list of (label, what is
 saved now), for the fields that differ from what the person sent, so they can decide without another screen. The
-[specification](../specification.md#two-people-on-one-row) says how a route finds out.
+[specification](../data/two-people-on-one-row.md#two-people-on-one-row) says how a route finds out.
 
 ```jinja
 {% if conflict %}{{ conflict_notice(title, advice, conflict) }}{% endif %}

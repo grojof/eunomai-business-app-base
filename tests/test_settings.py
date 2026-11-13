@@ -135,10 +135,17 @@ def test_the_settings_pass_the_scan_with_every_control_on_the_page(open_page, th
     assert run_axe(open_page("/settings", theme=theme, width=width, bypass_csp=True)) == []
 
 
+CONTROL_PAIRS = [
+    (THEME_CONTROLS[n % len(THEME_CONTROLS)], LANGUAGE_CONTROLS[n % len(LANGUAGE_CONTROLS)])
+    for n in range(max(len(THEME_CONTROLS), len(LANGUAGE_CONTROLS)))
+]
+"""Each look of each control once: the two controls are drawn apart, so every pair of them would scan the same thing
+again, twelve times instead of four."""
+
+
 @pages
 @pytest.mark.rule("A11Y-01")
-@pytest.mark.parametrize("control", THEME_CONTROLS)
-@pytest.mark.parametrize("language", LANGUAGE_CONTROLS)
+@pytest.mark.parametrize(("control", "language"), CONTROL_PAIRS, ids=str)
 def test_each_look_of_the_controls_passes_the_scan_in_the_shell(open_page, control, language):
     layout = {"theme_control": control, "language_control": language}
     assert run_axe(open_page("/", layout=layout, bypass_csp=True)) == []
@@ -419,13 +426,18 @@ TITLE_LAYOUTS = [
     for navigation in ("side", "compact", "top", "hidden")
     for sticky in ("on", "off")
 ]
+TITLE_LOOKS = [
+    ({"navigation": navigation, "page_title": "header", "sticky_header": "on" if theme == "light" else "off"}, theme)
+    for navigation in ("side", "compact", "top", "hidden")
+    for theme in ("light", "dark")
+]
+"""Each menu in both themes, and the header fixed or not in each: whether it stays fixed changes no colour."""
 
 
 @pages
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
-@pytest.mark.parametrize("layout", TITLE_LAYOUTS)
-@pytest.mark.parametrize("theme", ["light", "dark"])
+@pytest.mark.parametrize(("layout", "theme"), TITLE_LOOKS, ids=str)
 def test_a_title_in_the_top_bar_passes_the_scan(open_page, layout, theme):
     page = open_page("/settings", theme=theme, layout=layout, bypass_csp=True)
     assert page.locator("h1").count() == 1

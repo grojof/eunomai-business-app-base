@@ -5,6 +5,7 @@ tools/css.py, and write what the application is at the top of AGENTS.md and READ
 uv run --frozen python tools/remove_demo.py
 uv run --frozen python tools/remove_demo.py --languages es          # keeps Spanish alone; English is always there
 uv run --frozen python tools/remove_demo.py --languages es,ca --default-language ca
+uv run --frozen python tools/remove_demo.py --keep-demo --languages es,ca      # only the languages: a demonstration
 """
 
 import argparse
@@ -27,7 +28,8 @@ AGENTS_CHANGES = (
         """# AGENTS.md — eunomai-business-app-base
 
 For anyone working in this repository, person or AI assistant. The repository is in English and names no organization,
-person or real system: it stays neutral so anyone can clone it.
+person or real system: it stays neutral so anyone can clone it. `docs/base/` is a reference: read what this file says
+to read, as it says, and anything else by the page and the section a link names.
 """,
         """# AGENTS.md
 
@@ -35,20 +37,27 @@ For anyone working in this repository, person or AI assistant.
 
 ## What this application is
 
-Not written yet. Whoever owns this application says here, in a few lines, what it does, for whom, and which real systems
-it reads or writes. It belongs to its organization: its names, its systems and its real work belong in it.
+What it is, for whom and why: [README.md](README.md). What the business said (who uses it and how the work is done
+today, its words, its decisions and their reasons, its open questions) is in its own pages under `docs/`, each marked in
+its frontmatter by `type` and a tag: `context`, `glossary`, `decision`, `open-question`. What it must do, each rule with
+its source: `openspec/specs/`. Read the README first, then only the page and section a task needs. IT adds here only
+what an assistant must respect before anything else.
 
 ## Documentation
 
 - This application's documentation is [README.md](README.md) and its own pages in `docs/`, outside `docs/base/`, in
   the application's documentation language. The README is a map: what the application is, for whom and why, how to
   run it, and a link to every page.
-- `docs/base/` is how the base works: read it to build, never edit it, since an update of the template replaces it. Link
-  to it instead of restating it: one fact, one home.
+- `docs/base/` is how the base works: read what this file says to read, as it says, and anything else by the page and
+  the section a link names; never edit it, since an update of the template replaces it. Link to it instead of
+  restating it: one fact, one home.
 - When behaviour changes, update the README and the page it affects in the same change. A new page gets its link in
-  the README's index.
+  the README's index, or in the page whose folder it is in, which the README links. A page that grows past about 8,000
+  characters becomes the index of a folder of the same name (`docs/decisions.md` and `docs/decisions/<subject>.md`),
+  one subject per page, named after it.
 - Each page of the application's own starts with frontmatter: `type` (`tutorial`, `how-to`, `reference`,
-  `explanation` or `decision`), `title` and `description`. `tests/test_docs.py` checks it, and every link.
+  `explanation` or `decision`), `title`, `description` and, for what the business said, `tags` with its kind.
+  `tests/test_docs.py` checks it, and every link.
 """,
     ),
     ("| Never imports from `app/demo/` |", "| Never imports from the application's own folders |"),
@@ -92,10 +101,10 @@ uv run --frozen pytest -q -m "not browser" tests/demo
         "need\n  Tailwind's executable, which `tools/css.py` downloads to `.cache/`. Without it and without network, "
         "add an\n  `--ignore=` for each and say so.\n",
         """Everything
-but the browser tests, which fits; if it is cut, split it by file:
+but the browser tests and the base's own, which its template ran, which fits; if it is cut, split it by file:
 
 ```bash
-uv run --frozen pytest -q -m "not browser"
+uv run --frozen pytest -q -m "not browser and not base"
 ```
 
 """,
@@ -138,6 +147,10 @@ uv run --frozen python tools/test.py              # every test, in parallel
 
 ## Documentation
 
+<!-- This index reaches every page of docs/ outside docs/base/, and openspec/specs/ once it exists. What the business
+said has a page per kind, added with its row when it has something to say: docs/context.md, docs/glossary.md,
+docs/decisions.md, docs/open-questions.md. -->
+
 | Page | What it contains |
 |---|---|
 | [How the base works](docs/base/specification.md) | The base this application is built on: its data, components, \
@@ -158,7 +171,8 @@ PREVIEW_CHANGES = (
         'setup = [["python", "-m", "app.core.sample_data", "--if-empty"]]',
     ),
     ("demo-admins", "admins"),
-    (f"run = {DEMO_TESTS}  # {DEMO_TESTS_WHY}", 'run = ["python", "tools/test.py"]'),
+    (f"run = {DEMO_TESTS}  # {DEMO_TESTS_WHY}", 'run = ["python", "tools/test.py", "--application"]'),
+    ('some = ["python", "tools/test.py", "--"]', 'some = ["python", "tools/test.py", "--application", "--"]'),
 )
 """The base's generated rows go with the demo: the migrations, then each module's own sample data, are what an
 application's first run needs. Nor is there a demo test that downloads."""
@@ -203,6 +217,23 @@ def chosen_languages(languages: str | None, default: str | None) -> tuple[list[s
     return kept, chosen
 
 
+DEMO_ROWS = 5_000
+"""What a demonstration generates on a person's computer: enough for pages, filters and charts, ready in seconds. The
+base's own demo makes 50,000, to prove the lists at that size."""
+
+
+def demo_rows(declaration: Path) -> None:
+    changed(
+        declaration,
+        (
+            (
+                'setup = [["python", "-m", "app.demo.generate", "--if-empty"]]',
+                f'setup = [["python", "-m", "app.demo.generate", "--if-empty", "--rows", "{DEMO_ROWS}"]]',
+            ),
+        ),
+    )
+
+
 def keep_languages(kept: list[str], default: str) -> None:
     """Every other folder under locales/ goes, and the settings offer English and those, with that default."""
     for folder in (ROOT / "locales").iterdir():
@@ -221,10 +252,20 @@ def main(arguments: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Deletes the demo, once, and leaves a clean application.")
     parser.add_argument("--languages", help="the languages to keep besides English, comma-separated, such as es,ca")
     parser.add_argument("--default-language", help="the last resort when a browser asks for none of them")
+    parser.add_argument(
+        "--keep-demo",
+        action="store_true",
+        help="keep the demo and change only the languages: an organization's demonstration application",
+    )
     options = parser.parse_args(arguments)
     if not (ROOT / "app" / "demo").exists():
         raise SystemExit("There is no demo here: this is an application already, and nothing was changed.")
     languages = chosen_languages(options.languages, options.default_language)
+    if options.keep_demo:
+        if languages is not None:
+            keep_languages(*languages)
+        demo_rows(ROOT / ".eunomai" / "project.toml")
+        return
 
     for folder in (ROOT / "app" / "demo", ROOT / "tests" / "demo", ROOT / "app" / "ui" / "static" / "placeholders"):
         if folder.exists():

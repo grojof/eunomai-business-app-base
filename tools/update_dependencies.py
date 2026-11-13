@@ -1,5 +1,5 @@
 """Weekly dependency maintenance: the newest versions the rules allow, nothing else.
-See docs/base/specification.md#dependencies
+See docs/base/dependencies.md#dependencies
 
     uv run --frozen python tools/update_dependencies.py --summary summary.md --problems problems.md
 

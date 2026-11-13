@@ -1,7 +1,8 @@
 # AGENTS.md — eunomai-business-app-base
 
 For anyone working in this repository, person or AI assistant. The repository is in English and names no organization,
-person or real system: it stays neutral so anyone can clone it.
+person or real system: it stays neutral so anyone can clone it. `docs/base/` is a reference: read what this file says
+to read, as it says, and anything else by the page and the section a link names.
 
 ## What goes where
 
@@ -9,7 +10,7 @@ person or real system: it stays neutral so anyone can clone it.
 |---|---|---|
 | `app/core/` | Identity, roles, settings, the database and its column types, lists on the server, reading forms, uploads, languages, formatters, errors, health | Never imports from `app/demo/` |
 | `app/ui/` | Components as macros, the settings menu, the command palette, the stylesheet's source, the few JavaScript files, Lucide's icons, the illustrations | Screens call macros; daisyUI classes stay here where possible |
-| `app/brand/` | The themes (light, dark, and bar for the top bar and the menu), the brand's roles, the logos, the fonts, the organization's own icons and its arrangement (`layout.toml`): see [Your theme](docs/base/specification.md#your-theme) | The only folder an organization must change |
+| `app/brand/` | The themes (light, dark, and bar for the top bar and the menu), the brand's roles, the logos, the fonts, the organization's own icons and its arrangement (`layout.toml`): see [Your theme](docs/base/your-theme.md#your-theme) | The only folder an organization must change |
 | `app/demo/` | Demo screens, models, generated data, the gallery and their translations | Deleting it leaves a working application |
 | `migrations/` | Alembic's setup, and one file per change of the models | A model that changes needs its migration: a test compares them on both databases |
 
@@ -20,7 +21,7 @@ Before using a component, read [`docs/base/components/README.md`](docs/base/comp
 file. Prefer `approved` components; an approved component needs a macro. Those pages are generated: change
 `app/ui/catalog.py`, then run `tools/components.py`. `app/demo/examples/` is generated too, from daisyUI's documentation:
 never edit it, run `tools/gallery.py`. To see a component live, open `/gallery/<name>` in the demo.
-Add your own components as [the specification](docs/base/specification.md#adapting-it) says.
+Add your own components as [Adapting it](docs/base/adapting-it.md#adapting-it) says.
 
 ## Rules
 
@@ -36,7 +37,7 @@ Add your own components as [the specification](docs/base/specification.md#adapti
   it in TOML (`uv run --frozen python tools/new_module.py --example` prints a commented description), run it with
   `--spec`, then change what this application needs. It writes the model, the migration, the routes, the templates,
   the sample data, the texts and the tests, which pass every check once a person translates the texts:
-  [A new module](docs/base/specification.md#a-new-module). A row that belongs to another module's row is a
+  [A new module](docs/base/a-new-module.md#a-new-module). A row that belongs to another module's row is a
   `reference` field to that module, made first; a board, a calendar or a timeline of a module's rows is its `[board]`,
   `[calendar]` or `[timeline]`. Describe them there instead of writing those screens by hand, and read the base only
   for what it did not write.
@@ -46,24 +47,24 @@ Add your own components as [the specification](docs/base/specification.md#adapti
 - An icon comes from Lucide's set or the organization's own icons in `app/brand/icons/`, and only through the `icon`
   macro or a macro that takes an icon's name. Find one with `uv run --frozen python tools/icons.py search <words>`, in
   English, Spanish or Catalan. Never draw an SVG inline, never bring another collection, never edit Lucide's folder:
-  `tools/vendor.py` keeps it, as [Icons and illustrations](docs/base/specification.md#icons-and-illustrations) says.
+  `tools/vendor.py` keeps it, as [Icons and illustrations](docs/base/components-in-screens.md#icons-and-illustrations) says.
 - An illustration is a file in `app/ui/static/illustrations/`, made with the organization's own tools if it has them,
   and shown with `<img src>` or as a CSS background, never inline.
 - Each screen handles its empty, loading, error and no-permission states.
 - A new component needs its page in the demo and its tests, in the same change.
 - Money and quantities are `Mapped[Decimal]`, moments `Mapped[datetime]` with their time zone. Never a float. On SQLite,
-  a sum in SQL raises `InexactQuery`: use `total()`. [Data](docs/base/specification.md#data) says how the two databases
-  differ.
+  a sum in SQL raises `InexactQuery`: use `total()`. [Where the two databases
+  differ](docs/base/data/where-the-two-databases-differ.md#where-the-two-databases-differ) says how.
 - A route that uses the database takes `DatabaseSession`, is declared with `def`, and commits itself.
 - A long list uses `ListView` from `app/core/tables.py`, whose values are checked against lists, never text from the
-  address in SQL: read [Lists on the server](docs/base/specification.md#lists-on-the-server). Charts come from
+  address in SQL: read [Lists on the server](docs/base/data/lists-on-the-server.md#lists-on-the-server). Charts come from
   `app/core/charts.py` and the `chart` macro, always with a summary. Excel comes from `app/core/excel.py`. A board
   comes from `app/core/boards.py`, a timeline from `app/core/gantt.py` and a calendar from `app/core/calendars.py`,
   each with its macro: the server decides every move. A card's link and actions come from `BoardCard` (`href`,
   `lines`, `actions`), which the board draws as buttons a finger can hit, never as bare small links.
 - A form uses the field macros and reads every value with `app/core/forms.py`, at the edge: read
-  [Forms](docs/base/specification.md#forms). It is `novalidate`, and a failed save keeps what was typed.
-- Add a dependency only if the [stack](docs/base/specification.md#stack) needs it. Pin it and check it for known
+  [Forms](docs/base/data/forms.md#forms). It is `novalidate`, and a failed save keeps what was typed.
+- Add a dependency only if the [stack](docs/base/stack.md#stack) needs it. Pin it and check it for known
   vulnerabilities.
 - No secrets in the repository, and no real people or companies in demo data.
 - Made-up rows to try a module's screens go in `app/<module>/sample_data.py`, with `holds_rows(session)` and
@@ -86,6 +87,7 @@ uv run --frozen python tools/icons.py check          # icons, their names, and e
 uv run --frozen python tools/translations.py check   # after changing texts: tools/translations.py update
 uv run --frozen python tools/test.py --affected      # while working: what the changes against main can break, and why
 uv run --frozen python tools/test.py                 # before merging: every test, in parallel, then those marked serial
+uv run --frozen python tools/test.py --application   # what an application can break; all, if its base changed
 ```
 
 With `TEST_DATABASE_URL` set to a PostgreSQL kept for tests (an address with its password, kept in the person's own

@@ -1,5 +1,5 @@
 """The calendar: the inspection team's visits at their times, and work orders over their days. See
-docs/base/specification.md#calendars
+docs/base/data/calendars.md#calendars
 
 A visit moves by dragging, or through its own form; a work order by dragging, or through Planning's editor. Either way
 the server checks the role, reads the new moment with its time zone, and compares the version, so a move that comes

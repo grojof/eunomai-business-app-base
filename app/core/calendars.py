@@ -1,4 +1,4 @@
-"""Calendars: events on the server, drawn in the browser by FullCalendar. See docs/base/specification.md#calendars
+"""Calendars: events on the server, drawn in the browser by FullCalendar. See docs/base/data/calendars.md#calendars
 
 The server owns the events and the words. It sends events as JSON with their moments in UTC, FullCalendar shows them in
 the application's time zone, and a drop sends back the new moment with its offset, read here into UTC again. Every word

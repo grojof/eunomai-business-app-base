@@ -1,4 +1,4 @@
-"""The board: work orders by state, moved on the server. See docs/base/specification.md#boards
+"""The board: work orders by state, moved on the server. See docs/base/data/boards.md#boards
 
 A card moves by its own form, by keyboard and without JavaScript, or by dragging, which sends that same form. The
 server checks the person may move it, that the column and the card it follows are what the page said, and that nobody

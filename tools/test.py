@@ -4,6 +4,7 @@
     uv run --frozen python tools/test.py --affected   only what the files changed against main can break (RULES)
     uv run --frozen python tools/test.py --list       says what --affected would run, and runs nothing
     uv run --frozen python tools/test.py -- -k board  pytest's own options after --, for both passes
+    uv run --frozen python tools/test.py --application   what an application can break, unless its base changed
 
 The tests run with pytest-xdist, as many at a time as the computer has cores and free memory for (`--workers` sets
 it), except those marked `serial`, which run after, one at a time: they need the computer to themselves. Idle workers
@@ -16,10 +17,13 @@ time. Standard library only.
 
 import argparse
 import ctypes
+import hashlib
+import json
 import os
 import re
 import subprocess
 import sys
+import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -183,14 +187,74 @@ def summary(counts: dict[str, int], seconds: float) -> str:
     return f"{words or 'no tests ran'} in {seconds:.2f}s (both passes)"
 
 
-def run(files: list[str], workers: int | None = None, options: list[str] | None = None) -> int:
+BASE_FILES = "tests/base_files.json"
+
+
+def digest(path: Path) -> str:
+    """A file's fingerprint, whatever line endings a checkout gave it, as tools/make_template.py writes it."""
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def locked(lock: Path) -> dict[str, str]:
+    """Each package `uv.lock` pins, and its version."""
+    if not lock.is_file():
+        return {}
+    packages = tomllib.loads(lock.read_text(encoding="utf-8")).get("package", [])
+    return {str(package["name"]): str(package.get("version", "")) for package in packages}
+
+
+def base_changes(root: Path = ROOT) -> list[str] | None:
+    """What of the base is not as the template left it: its files, by fingerprint, and the versions of the packages its
+    tests proved. None when there is no `tests/base_files.json` to tell (the base itself, or an older template)."""
+    manifest = root / BASE_FILES
+    if not manifest.is_file():
+        return None
+    expected = json.loads(manifest.read_text(encoding="utf-8"))
+    changes = []
+    for name, fingerprint in sorted(expected.get("files", {}).items()):
+        path = root / name
+        if not path.is_file():
+            changes.append(f"{name}: missing")
+        elif digest(path) != fingerprint:
+            changes.append(f"{name}: changed")
+    now = locked(root / "uv.lock")
+    for name, version in sorted(expected.get("packages", {}).items()):
+        if now.get(name) != version:
+            changes.append(f"uv.lock: {name} {version} -> {now.get(name, 'removed')}")
+    return changes
+
+
+def only_the_applications(application: bool, root: Path = ROOT) -> bool:
+    """`--application` leaves out the tests of the base's machinery, which its template ran, only while the base is as
+    the template left it. Otherwise every test runs, and it says why: an application may change the base where its
+    documentation says so (its own component, a kind of upload, words for icons), and a changed package may change how
+    the base behaves. That costs time, never a failure."""
+    if not application:
+        return False
+    changes = base_changes(root)
+    if changes is None:
+        print(f"No {BASE_FILES}: every test runs, the base's own included.")
+        return False
+    if changes:
+        print("The base is not as its template left it, so every test runs, the base's own included:")
+        for line in changes[:20]:
+            print("  " + line)
+        return False
+    return True
+
+
+def run(
+    files: list[str], workers: int | None = None, options: list[str] | None = None, application: bool = False
+) -> int:
     """Two passes over the same selection: in parallel without `serial`, at a low priority, then `serial` alone, at the
-    normal one, since those tests measure time. Then one line for both."""
+    normal one, since those tests measure time. Then one line for both. `application` leaves out the tests marked
+    `base`, in both passes: pytest keeps only the last `-m`, so it cannot come from the options."""
     count = str(workers or default_workers())
     extra = options or []
-    parallel = [*PYTEST, "-n", count, "--dist", "worksteal", "-m", "not serial", *extra, *files]
+    without = " and not base" if application else ""
+    parallel = [*PYTEST, "-n", count, "--dist", "worksteal", "-m", f"not serial{without}", *extra, *files]
     first, counts, seconds = _run(parallel, low_priority=True)
-    second, more, more_seconds = _run([*PYTEST, "-m", "serial", *extra, *files])
+    second, more, more_seconds = _run([*PYTEST, "-m", f"serial{without}", *extra, *files])
     for word, number in more.items():
         counts[word] = counts.get(word, 0) + number
     counts.pop("deselected", None)  # each pass leaves out what the other runs
@@ -203,13 +267,19 @@ def main(arguments: list[str] | None = None) -> int:
     parser.add_argument("--affected", action="store_true", help="only what the changes against main can break")
     parser.add_argument("--list", action="store_true", help="say what --affected would run, and run nothing")
     parser.add_argument("--workers", type=int, help="tests at once (default: what the cores and free memory allow)")
+    parser.add_argument(
+        "--application",
+        action="store_true",
+        help="only what an application can break: the tests marked base ran in its template",
+    )
     parser.add_argument("pytest", nargs="*", help="pytest's own options, after --")
     options = parser.parse_args(arguments)
     alone = "TEST_DATABASE_URL is not set: the database tests run on SQLite alone, not on PostgreSQL."
+    application = only_the_applications(options.application) if not options.list else options.application
     if not (options.affected or options.list):
         if not os.environ.get("TEST_DATABASE_URL"):
             print(alone)
-        return run([], options.workers, options.pytest)
+        return run([], options.workers, options.pytest, application)
     paths = changed_files()
     chosen = select(paths)
     if (chosen.database or chosen.everything) and not os.environ.get("TEST_DATABASE_URL"):
@@ -221,7 +291,7 @@ def main(arguments: list[str] | None = None) -> int:
     print("Runs: the whole suite." if chosen.everything else f"Runs: {', '.join(files) or 'no test'}.")
     if options.list or not (chosen.everything or files):
         return 0
-    return run([] if chosen.everything else files, options.workers, options.pytest)
+    return run([] if chosen.everything else files, options.workers, options.pytest, application)
 
 
 if __name__ == "__main__":

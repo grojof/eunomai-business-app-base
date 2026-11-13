@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.0 (2026-11-13)
+
+A lighter application: what an assistant reads and what a person's computer runs, with what the business says filed
+in the application's own pages.
+
+- **How the base works, split by topic.** `docs/base/specification.md` was one page of about 105,000 characters, which
+  an assistant could read whole. Each section is now a page of its own, `Data` a folder of pages, each with a
+  `description` that says what it holds. `specification.md` is their index and keeps a named anchor for every earlier
+  section, so links from applications and from other repositories still resolve; the base's own links go straight
+  to the page. `AGENTS.md`: `docs/base/` is read as it says, and anything else by the page and section a link names.
+- **An application's knowledge, by kind.** Its `AGENTS.md` points to the README and to its own pages of what the
+  business said, each marked by `type` and a tag (`context`, `glossary`, `decision`, `open-question`), and to
+  `openspec/specs/` for what it must do. `tests/test_docs.py` accepts a page that grew into a folder, reached through
+  the page the folder is named after, and checks that `tags` are lowercase words joined by hyphens.
+- **An application runs only the tests it can break.** The tests of the base's own machinery are marked `base`;
+  `tools/test.py --application` leaves them out of both passes, and an application's `[tests]` uses it: on a person's
+  computer, about a fifth of the time. `tools/make_template.py` writes `tests/base_files.json`, the fingerprints of
+  the base's files and the versions of the packages it locks; when an application changed one, as its documentation
+  allows for its own components, every test runs and the runner says why, so it costs time, never a failure.
+- **Fewer browser scans for the same coverage.** The theme and language controls are scanned once per look (4 cases,
+  not 12), and a title in the bar for each menu in both themes (8, not 16).
+- **A demonstration application.** `tools/make_template.py --keep-demo` keeps the demo in the layer's look and
+  languages, generating 5,000 rows on a person's computer instead of 50,000.
+
 ## 0.2.4 (2026-11-13)
 
 `opentelemetry-api` 1.45.2, which limits the `traceparent` header it reads to 512 characters: 1.45.1 parsed it in

@@ -9,7 +9,7 @@ tags: [component, data-display, available]
 
 **Status:** available. **Category:** data-display. **In the demo:** `/gallery/chart`.
 
-The [specification](../specification.md#charts) says how it works and which types to use.
+The [specification](../data/charts.md#charts) says how it works and which types to use.
 
 ```python
 data = chart_data(months, [Series(_("Planned"), planned), Series(_("Worked"), worked)], _("Month"), unit=_("h"))

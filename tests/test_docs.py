@@ -1,8 +1,9 @@
 """The documentation: every relative link leads somewhere, and an application's own pages are a map the README reaches.
 
 The base's documentation lives in `docs/base/`, which every application keeps as it is: how the base works, read to
-build. An application's own pages are the other files under `docs/`, each with its frontmatter, each linked from the
-README. See docs/base/specification.md#documentation
+build. An application's own pages are the other files under `docs/`, in folders of their own when a kind of page grows,
+each with its frontmatter, each reached from the README, directly or through the index page of its folder. See
+docs/base/specification.md#documentation
 """
 
 import re
@@ -21,6 +22,9 @@ NAMED = re.compile(r'<a\s+(?:id|name)="([^"]+)"\s*>\s*</a>')
 """An anchor that stays when the heading after it is translated: `<a id="run-it"></a>`."""
 TYPES = {"tutorial", "how-to", "reference", "explanation", "decision"}
 FRONTMATTER = re.compile(r"\A---\n(.*?)\n---\n", re.S)
+TAGS = re.compile(r"\[\s*(?:[a-z0-9]+(?:-[a-z0-9]+)*(?:\s*,\s*[a-z0-9]+(?:-[a-z0-9]+)*)*)?\s*\]")
+"""A page's `tags`: a list of lowercase words joined by hyphens, such as [context, order-intake], so they can be
+gathered across applications."""
 
 
 def pages(root: Path) -> list[Path]:
@@ -74,9 +78,24 @@ def own_pages(root: Path) -> list[Path]:
     return [page for page in sorted(docs.rglob("*.md")) if not page.is_relative_to(docs / "base")]
 
 
+def reached(root: Path) -> set[Path]:
+    """The application's own pages a reader gets to from the README, following links through its own pages: a folder's
+    index page, linked from the README, reaches the pages of that folder."""
+    own = {page.resolve() for page in own_pages(root)}
+    found: set[Path] = set()
+    waiting = [root / "README.md"]
+    while waiting:
+        page = waiting.pop()
+        for link in LINK.findall(prose(page.read_text(encoding="utf-8"))):
+            target = (page.parent / link.partition("#")[0]).resolve()
+            if target in own and target not in found:
+                found.add(target)
+                waiting.append(target)
+    return found
+
+
 def own_page_problems(root: Path) -> list[str]:
-    readme = (root / "README.md").read_text(encoding="utf-8")
-    linked = {(root / link.partition("#")[0]).resolve() for link in LINK.findall(prose(readme))}
+    linked = reached(root)
     problems = []
     for page in own_pages(root):
         name = page.relative_to(root).as_posix()
@@ -86,8 +105,10 @@ def own_page_problems(root: Path) -> list[str]:
             problems.append(f"{name}: frontmatter needs a type, one of {', '.join(sorted(TYPES))}")
         missing = [field for field in ("title", "description") if not fields.get(field)]
         problems += [f"{name}: frontmatter needs a {field}" for field in missing]
+        if "tags" in fields and not TAGS.fullmatch(fields["tags"]):
+            problems.append(f"{name}: tags must be a list of lowercase words joined by hyphens, such as [context]")
         if page.resolve() not in linked:
-            problems.append(f"{name}: README.md does not link to it")
+            problems.append(f"{name}: README.md does not reach it, directly or through the index of its folder")
     return problems
 
 
@@ -101,8 +122,10 @@ def test_every_page_of_the_applications_own_is_in_the_readme_with_its_frontmatte
 
 
 def test_the_bases_documentation_is_in_one_folder():
+    """Beside `docs/base/`, only the application's own pages, or folders that hold them."""
     docs = ROOT / "docs"
-    assert {path.name for path in docs.iterdir()} <= {"base", *(page.name for page in own_pages(ROOT))}
+    own = {page.relative_to(docs).parts[0] for page in own_pages(ROOT)}
+    assert {path.name for path in docs.iterdir()} <= {"base", *own}
     assert (docs / "base" / "specification.md").is_file() and (docs / "base" / "standards.md").is_file()
 
 
@@ -129,7 +152,7 @@ def test_a_page_the_readme_does_not_reach_or_without_frontmatter_is_named(applic
     (application / "docs" / "roles.md").write_text(page("Roles", "guide"), encoding="utf-8")
     (application / "README.md").write_text("# App\n\n[Roles](docs/roles.md)\n", encoding="utf-8")
     problems = own_page_problems(application)
-    assert "docs/data.md: README.md does not link to it" in problems
+    assert "docs/data.md: README.md does not reach it, directly or through the index of its folder" in problems
     assert any(problem.startswith("docs/data.md: frontmatter needs a type") for problem in problems)
     assert any(problem.startswith("docs/roles.md: frontmatter needs a type") for problem in problems)
     assert not any(problem.startswith("docs/roles.md: README") for problem in problems)
@@ -170,3 +193,37 @@ def test_a_named_anchor_stays_when_its_heading_is_translated(application):
 def test_agents_reaches_the_readmes_run_section_by_a_named_anchor():
     assert "README.md#run-it" in (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     assert "run-it" in anchors(ROOT / "README.md")
+
+
+def test_a_kind_that_grew_is_a_folder_reached_through_its_index(application):
+    """A large application splits its decisions by subject: the page becomes the index of a folder of its name, so
+    nothing is deleted, and the README keeps linking it."""
+    folder = application / "docs" / "decisions"
+    folder.mkdir()
+    (application / "docs" / "decisions.md").write_text(
+        page("Decisions") + "\n[Closing](decisions/closing.md)\n", encoding="utf-8"
+    )
+    (folder / "closing.md").write_text(page("Closing", "decision"), encoding="utf-8")
+    (folder / "orphan.md").write_text(page("Orphan", "decision"), encoding="utf-8")
+    (application / "README.md").write_text("# App\n\n[Decisions](docs/decisions.md)\n", encoding="utf-8")
+    assert own_page_problems(application) == [
+        "docs/decisions/orphan.md: README.md does not reach it, directly or through the index of its folder"
+    ]
+
+
+@pytest.mark.parametrize(
+    ("tags", "right"),
+    [
+        ("[context]", True),
+        ("[decision, order-intake]", True),
+        ("[]", True),
+        ("[Context]", False),
+        ("context", False),
+        ("[order intake]", False),
+    ],
+)
+def test_tags_are_lowercase_words_joined_by_hyphens(application, tags, right):
+    text = page("Context", "explanation").replace("description:", f"tags: {tags}\ndescription:")
+    (application / "docs" / "context.md").write_text(text, encoding="utf-8")
+    (application / "README.md").write_text("# App\n\n[Context](docs/context.md)\n", encoding="utf-8")
+    assert (own_page_problems(application) == []) is right

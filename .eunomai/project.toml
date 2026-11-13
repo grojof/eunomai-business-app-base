@@ -8,7 +8,7 @@ technologies = ["Python", "FastAPI", "Pydantic", "SQLAlchemy", "Alembic", "Postg
 
 # The application on a person's computer, from a fresh export with no .env. Each command runs after `uv run --frozen`,
 # in the export, with the environment below: `setup` on every version, then `run`. `{data}` is a folder the connector
-# keeps from one version to the next. See docs/base/specification.md#adapting-it
+# keeps from one version to the next. See docs/base/adapting-it.md#adapting-it
 [preview]
 setup = [["python", "-m", "app.demo.generate", "--if-empty"]]
 run = ["uvicorn", "app.main:app", "--no-proxy-headers", "--host", "127.0.0.1", "--port", "{port}"]

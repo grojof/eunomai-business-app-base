@@ -14,12 +14,14 @@ The layer is a small folder the organization keeps, and the only thing it edits:
 Each run makes the whole template again: the same base and the same layer give the same files. The base's own
 workflows, which maintain it on GitHub, are left out, so the layer brings the organization's CI if it wants one. The
 result is checked, then it is left in --out for a person: it never commits or pushes. Review it there, commit it to the
-template's repository, and merge it through a pull request. See docs/base/specification.md#an-organizations-template
+template's repository, and merge it through a pull request.
+See docs/base/an-organizations-template.md#an-organizations-template
 """
 
 import argparse
 import hashlib
 import io
+import json
 import os
 import re
 import shutil
@@ -179,7 +181,51 @@ def name_it(out: Path, name: str) -> None:
     declaration.write_text(text.replace(anchor, f'{anchor}APP_NAME = "{name}"\n', 1), encoding="utf-8", newline="\n")
 
 
-def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
+BASE_FILES = "tests/base_files.json"
+OWNED = ("app/core", "app/ui", "app/brand", "tools", "docs/base", "migrations", "tests")
+NOT_OWNED = ("app/ui/static/app.css", "migrations/env.py")
+OWNED_FILES = (".gitignore", ".gitattributes")
+"""Files at the root that tests of the base read: what git keeps out (people's uploads) and its line endings."""
+"""What an application keeps as the template left it: its own code lives in its folders of app/, its own tests in new
+files. The stylesheet is generated from every template, `tools/new_module.py` adds each module to migrations/env.py,
+and catalogues of texts are written by tools/translations.py."""
+
+
+def digest(path: Path) -> str:
+    """A file's fingerprint, the same whatever line endings a checkout gave it."""
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def locked(lock: Path) -> dict[str, str]:
+    """Each package `uv.lock` pins, and its version: tools/test.py reads it the same way."""
+    if not lock.is_file():
+        return {}
+    packages = tomllib.loads(lock.read_text(encoding="utf-8")).get("package", [])
+    return {str(package["name"]): str(package.get("version", "")) for package in packages}
+
+
+def manifest(out: Path) -> dict[str, dict[str, str]]:
+    """What tools/test.py --application compares before it leaves the base's own tests out."""
+    return {"files": base_files(out), "packages": locked(out / "uv.lock")}
+
+
+def base_files(out: Path) -> dict[str, str]:
+    found = {name: digest(out / name) for name in OWNED_FILES if (out / name).is_file()}
+    for top in OWNED:
+        for path in sorted((out / top).rglob("*")):
+            name = path.relative_to(out).as_posix()
+            if (
+                path.is_file()
+                and "__pycache__" not in path.parts
+                and name not in NOT_OWNED
+                and path.suffix not in (".po", ".mo", ".pot")
+                and name != BASE_FILES
+            ):
+                found[name] = digest(path)
+    return found
+
+
+def make(folder: Path, out: Path, ref: str | None, tests: bool, keep_demo: bool = False) -> None:
     layer = read_layer(folder)
     prepare_out(out)
     commit, changes = export(ref, out)
@@ -188,10 +234,10 @@ def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
     languages = ["--languages", ",".join(layer.languages)]
     if layer.default_language:
         languages += ["--default-language", layer.default_language]
-    run(out, "tools/remove_demo.py", *languages)
+    run(out, "tools/remove_demo.py", *languages, *(["--keep-demo"] if keep_demo else []))
     shutil.rmtree(out / ".github" / "workflows", ignore_errors=True)
     (out / BASE_CI_TESTS).unlink(missing_ok=True)
-    for name in BASE_ONLY:
+    for name in () if keep_demo else BASE_ONLY:  # a demonstration keeps the base's README, which links them
         (out / name).unlink(missing_ok=True)
     if (out / ".github").is_dir() and not any((out / ".github").iterdir()):
         (out / ".github").rmdir()
@@ -200,6 +246,9 @@ def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
     name_it(out, layer.name)
+    (out / BASE_FILES).write_text(
+        json.dumps(manifest(out), indent=0, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
+    )
     for check in CHECKS:
         run(out, *check)
     if tests:
@@ -220,8 +269,13 @@ def main(arguments: list[str] | None = None) -> None:
     parser.add_argument("--out", type=Path, required=True, help="an empty folder, or a clean clone of the template")
     parser.add_argument("--ref", help="a version of the base, such as a tag; without it, this folder as it is")
     parser.add_argument("--skip-tests", action="store_true", help="leave the template's own tests for its CI")
+    parser.add_argument(
+        "--keep-demo",
+        action="store_true",
+        help="keep the demo, in the layer's look and languages: a demonstration application to try",
+    )
     options = parser.parse_args(arguments)
-    make(options.layer.resolve(), options.out.resolve(), options.ref, not options.skip_tests)
+    make(options.layer.resolve(), options.out.resolve(), options.ref, not options.skip_tests, options.keep_demo)
     print(f"Template made in {options.out}: review it there, then commit it through a pull request.")
 
 

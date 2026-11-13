@@ -3,7 +3,7 @@
 The table is what a screen reader and a keyboard use, and it holds every action. The picture shows when: each task's
 bar, the weekends, today, and an arrow from a task to the one that waits for it. Its geometry is worked out here and
 written as SVG attributes; its colours are classes, read from the theme. Nothing runs in the browser. See
-docs/base/specification.md#timelines
+docs/base/data/timelines.md#timelines
 """
 
 from collections.abc import Callable, Sequence

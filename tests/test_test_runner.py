@@ -123,10 +123,25 @@ def test_workers_follow_the_cores_and_the_free_memory(
 
 def test_pytests_own_options_go_after_a_double_dash(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[tuple] = []
-    monkeypatch.setattr(runner, "run", lambda files, workers=None, options=None: calls.append((files, options)) or 0)
+    monkeypatch.setattr(
+        runner,
+        "run",
+        lambda files, workers=None, options=None, application=False: calls.append((files, options, application)) or 0,
+    )
     monkeypatch.setenv("TEST_DATABASE_URL", "postgresql://example.test/x")
     assert runner.main(["--", "--ignore=tests/demo/test_template.py", "-x"]) == 0
-    assert calls == [([], ["--ignore=tests/demo/test_template.py", "-x"])]
+    monkeypatch.setattr(runner, "only_the_applications", lambda application: application)  # an unchanged base
+    assert runner.main(["--application"]) == 0
+    assert calls == [([], ["--ignore=tests/demo/test_template.py", "-x"], False), ([], [], True)]
+
+
+def test_an_application_leaves_out_the_bases_own_tests_in_both_passes(monkeypatch: pytest.MonkeyPatch) -> None:
+    """pytest keeps only the last `-m`: the marker joins each pass's own, or the passes would mix."""
+    commands: list[list[str]] = []
+    monkeypatch.setattr(runner, "_run", lambda command, low_priority=False: commands.append(command) or (0, {}, 0.0))
+    runner.run([], 2, [], application=True)
+    markers = [command[len(command) - command[::-1].index("-m")] for command in commands]  # pytest's, not python's
+    assert markers == ["not serial and not base", "serial and not base"]
 
 
 def test_a_test_that_waits_on_the_clock_is_serial_and_this_one_is_not(request: pytest.FixtureRequest) -> None:
