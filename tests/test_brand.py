@@ -56,11 +56,22 @@ def built_themes(css: str) -> dict[str, dict[str, str]]:
     return found
 
 
-def effective(found: dict[str, dict[str, str]], combination: tuple[str, ...]) -> dict[str, str]:
-    colours: dict[str, str] = {}
+def default_theme(css: str) -> str | None:
+    """The theme daisyUI also writes for `:root`, the page itself: what it sets reaches every other theme that does not
+    set it again."""
+    found = re.search(r":where\(:root\)[^{}]*\[data-theme=([\w-]+)\]", css)
+    return found[1] if found else None
+
+
+def effective(
+    found: dict[str, dict[str, str]], combination: tuple[str, ...], default: str | None = None
+) -> dict[str, str]:
+    """What a combination draws: the default theme under it, then each theme on the one before. A role set to
+    `initial` is taken away, and the stylesheet falls back as it would without it."""
+    colours = dict(found.get(default, {})) if default else {}
     for name in combination:
         colours |= found.get(name, {})
-    return colours
+    return {key: value for key, value in colours.items() if value.strip() != "initial"}
 
 
 def resolve(colours: dict[str, str], value: str, where: str) -> str:
@@ -164,14 +175,17 @@ def contrast(first: str, second: str) -> float:
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.parametrize("combination", COMBINATIONS)
 def test_every_colour_the_page_draws_keeps_its_contrast(combination):
-    """What the browser draws: the built stylesheet's themes, daisyUI's values with the brand's, and the bar on each
-    page theme, as it inherits what it leaves out. Each role as the stylesheet falls back without it."""
-    found = built_themes(BUILT.read_text(encoding="utf-8"))
+    """What the browser draws: the built stylesheet's themes, daisyUI's values with the brand's, the default theme
+    under the others, and the bar on each page theme, as it inherits what it leaves out. Each role as the stylesheet
+    falls back without it."""
+    built = BUILT.read_text(encoding="utf-8")
+    found = built_themes(built)
     if "bar" in COMBINATIONS[combination] and "bar" not in found:
         pytest.skip("the brand has no theme called bar")
     where = f"the {combination} theme"
     bar = "bar" in COMBINATIONS[combination]
-    assert failures(effective(found, COMBINATIONS[combination]), where, bar=bar) == [], where
+    colours = effective(found, COMBINATIONS[combination], default_theme(built))
+    assert failures(colours, where, bar=bar) == [], where
 
 
 @pytest.mark.rule("A11Y-05")
@@ -203,6 +217,25 @@ def test_the_bar_is_checked_with_what_it_takes_from_the_page():
         "app-focus-color and base-200",
         "app-selected and base-100",
     ]
+
+
+@pytest.mark.rule("A11Y-05")
+def test_a_role_the_default_theme_sets_reaches_the_other_themes():
+    """A brand gave its light theme navy links and left them out of dark: the browser drew them navy on the dark page,
+    since the default theme's block is also the page's, and this check, theme by theme, did not see it."""
+    light = (
+        ":where(:root),[data-theme=light]{--color-base-100:#ffffff;--color-base-200:#f4f6fa;--color-base-content:#000;"
+        "--app-link-color:#263a77}"
+    )
+    dark = "[data-theme=dark]{--color-base-100:#1d232a;--color-base-200:#191e24;--color-base-content:#ecf0f4%s}"
+    built = light + dark % ""
+    assert default_theme(built) == "light"
+    assert [failure.split(":")[0] for failure in failures(effective(built_themes(built), ("dark",), "light"))] == [
+        "app-link-color and base-100",
+        "app-link-color and base-200",
+    ]
+    for own in (";--app-link-color:#7cc4ec", ";--app-link-color:initial"):
+        assert failures(effective(built_themes(light + dark % own), ("dark",), "light")) == []
 
 
 def test_a_role_names_a_colour_of_its_theme_and_short_hex_reads():
