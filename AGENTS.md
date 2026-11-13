@@ -1,8 +1,8 @@
 # AGENTS.md — eunomai-business-app-base
 
 For anyone working in this repository, person or AI assistant. The repository is in English and names no organization,
-person or real system: it stays neutral so anyone can clone it. `docs/base/` is a reference: open the page and the
-section a link names, never a whole page.
+person or real system: it stays neutral so anyone can clone it. `docs/base/` is a reference: read what this file says
+to read, as it says, and anything else by the page and the section a link names.
 
 ## What goes where
 

@@ -27,8 +27,8 @@ AGENTS_CHANGES = (
         """# AGENTS.md — eunomai-business-app-base
 
 For anyone working in this repository, person or AI assistant. The repository is in English and names no organization,
-person or real system: it stays neutral so anyone can clone it. `docs/base/` is a reference: open the page and the
-section a link names, never a whole page.
+person or real system: it stays neutral so anyone can clone it. `docs/base/` is a reference: read what this file says
+to read, as it says, and anything else by the page and the section a link names.
 """,
         """# AGENTS.md
 
@@ -47,12 +47,13 @@ what an assistant must respect before anything else.
 - This application's documentation is [README.md](README.md) and its own pages in `docs/`, outside `docs/base/`, in
   the application's documentation language. The README is a map: what the application is, for whom and why, how to
   run it, and a link to every page.
-- `docs/base/` is how the base works: a reference, read by the page and the section a link names, never a whole
-  page; never edit it, since an update of the template replaces it. Link to it instead of restating it: one fact,
+- `docs/base/` is how the base works: read what this file says to read, as it says, and anything else by the page and
+  the section a link names; never edit it, since an update of the template replaces it. Link to it instead of restating it: one fact,
   one home.
 - When behaviour changes, update the README and the page it affects in the same change. A new page gets its link in
-  the README's index, or in the index page of its folder, which the README links. A kind of page that grows past about
-  8,000 characters becomes a folder of the same name, one subject per page, named after it.
+  the README's index, or in the page whose folder it is in, which the README links. A page that grows past about 8,000
+  characters becomes the index of a folder of the same name (`docs/decisions.md` and `docs/decisions/<subject>.md`),
+  one subject per page, named after it.
 - Each page of the application's own starts with frontmatter: `type` (`tutorial`, `how-to`, `reference`,
   `explanation` or `decision`), `title`, `description` and, for what the business said, `tags` with its kind.
   `tests/test_docs.py` checks it, and every link.

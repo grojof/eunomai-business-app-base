@@ -195,13 +195,15 @@ def test_agents_reaches_the_readmes_run_section_by_a_named_anchor():
 
 
 def test_a_kind_that_grew_is_a_folder_reached_through_its_index(application):
-    """A large application splits its decisions by subject: the README links the index, the index each page."""
+    """A large application splits its decisions by subject: the page becomes the index of a folder of its name, so
+    nothing is deleted, and the README keeps linking it."""
     folder = application / "docs" / "decisions"
     folder.mkdir()
-    (folder / "README.md").write_text(page("Decisions") + "\n[Closing](closing.md)\n", encoding="utf-8")
+    (application / "docs" / "decisions.md").write_text(page("Decisions") + "\n[Closing](decisions/closing.md)\n",
+                                                       encoding="utf-8")
     (folder / "closing.md").write_text(page("Closing", "decision"), encoding="utf-8")
     (folder / "orphan.md").write_text(page("Orphan", "decision"), encoding="utf-8")
-    (application / "README.md").write_text("# App\n\n[Decisions](docs/decisions/README.md)\n", encoding="utf-8")
+    (application / "README.md").write_text("# App\n\n[Decisions](docs/decisions.md)\n", encoding="utf-8")
     assert own_page_problems(application) == [
         "docs/decisions/orphan.md: README.md does not reach it, directly or through the index of its folder"]
 
