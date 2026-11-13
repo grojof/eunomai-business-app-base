@@ -65,9 +65,23 @@ and then wrong. It is marked `serial` by what its body calls, so a new one is to
 others, alone. `@pytest.mark.serial` marks any other test that must not share the computer."""
 
 
+BASE_TESTS = frozenset({
+    "test_assets.py", "test_boards.py", "test_brand.py", "test_calendars.py", "test_charts.py", "test_components.py",
+    "test_excel.py", "test_form_macros.py", "test_gantt.py", "test_identity.py", "test_input.py", "test_macros.py",
+    "test_new_module.py", "test_palette.py", "test_preview.py", "test_settings.py", "test_tables.py", "test_test_runner.py",
+    "test_tools.py", "test_update_application.py", "test_uploads.py",
+})
+"""The files whose tests prove the base's own machinery: the shell, the macros, the data helpers, the tools. An
+application does not change them (tests/test_base_files.py checks it), and the template it was made from ran them, so
+`tools/test.py --application`, which a connector runs on a person's computer, leaves them out. The tests that read the
+whole application (its templates, texts, models, migrations, rules, documentation) are not here."""
+
+
 def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
     waits: dict[Any, bool] = {}
     for item in items:
+        if item.path.name in BASE_TESTS and item.path.parent.name == "tests":
+            item.add_marker(pytest.mark.base)
         function = getattr(item, "function", None)
         if function is None:
             continue

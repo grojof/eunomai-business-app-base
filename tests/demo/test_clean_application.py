@@ -63,11 +63,12 @@ def test_the_preview_needs_the_migrations_and_each_modules_sample_data(applicati
     assert preview_section(application)["setup"] == [["python", "-m", "app.core.sample_data", "--if-empty"]]
 
 
-def test_the_tests_run_whole_on_a_persons_computer(application):
+def test_a_persons_computer_runs_what_the_application_can_break(application):
+    """The base's own tests ran in the template; a person's computer runs the rest, guarded by tests/base_files.py."""
     declaration = tomllib.loads((application / ".eunomai" / "project.toml").read_text(encoding="utf-8"))
     assert declaration["tests"] == {
-        "run": ["python", "tools/test.py"],
-        "some": ["python", "tools/test.py", "--"],
+        "run": ["python", "tools/test.py", "--application"],
+        "some": ["python", "tools/test.py", "--application", "--"],
         "environment": {"APP_BROWSER_CHANNEL": "msedge"},
     }
     assert "demo" not in (application / ".eunomai" / "project.toml").read_text(encoding="utf-8")

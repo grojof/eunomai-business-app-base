@@ -170,7 +170,8 @@ PREVIEW_CHANGES = (
         'setup = [["python", "-m", "app.core.sample_data", "--if-empty"]]',
     ),
     ("demo-admins", "admins"),
-    (f"run = {DEMO_TESTS}  # {DEMO_TESTS_WHY}", 'run = ["python", "tools/test.py"]'),
+    (f"run = {DEMO_TESTS}  # {DEMO_TESTS_WHY}", 'run = ["python", "tools/test.py", "--application"]'),
+    ('some = ["python", "tools/test.py", "--"]', 'some = ["python", "tools/test.py", "--application", "--"]'),
 )
 """The base's generated rows go with the demo: the migrations, then each module's own sample data, are what an
 application's first run needs. Nor is there a demo test that downloads."""

@@ -183,14 +183,17 @@ def summary(counts: dict[str, int], seconds: float) -> str:
     return f"{words or 'no tests ran'} in {seconds:.2f}s (both passes)"
 
 
-def run(files: list[str], workers: int | None = None, options: list[str] | None = None) -> int:
+def run(files: list[str], workers: int | None = None, options: list[str] | None = None,
+        application: bool = False) -> int:
     """Two passes over the same selection: in parallel without `serial`, at a low priority, then `serial` alone, at the
-    normal one, since those tests measure time. Then one line for both."""
+    normal one, since those tests measure time. Then one line for both. `application` leaves out the tests marked
+    `base`, in both passes: pytest keeps only the last `-m`, so it cannot come from the options."""
     count = str(workers or default_workers())
     extra = options or []
-    parallel = [*PYTEST, "-n", count, "--dist", "worksteal", "-m", "not serial", *extra, *files]
+    without = " and not base" if application else ""
+    parallel = [*PYTEST, "-n", count, "--dist", "worksteal", "-m", f"not serial{without}", *extra, *files]
     first, counts, seconds = _run(parallel, low_priority=True)
-    second, more, more_seconds = _run([*PYTEST, "-m", "serial", *extra, *files])
+    second, more, more_seconds = _run([*PYTEST, "-m", f"serial{without}", *extra, *files])
     for word, number in more.items():
         counts[word] = counts.get(word, 0) + number
     counts.pop("deselected", None)  # each pass leaves out what the other runs
@@ -203,13 +206,15 @@ def main(arguments: list[str] | None = None) -> int:
     parser.add_argument("--affected", action="store_true", help="only what the changes against main can break")
     parser.add_argument("--list", action="store_true", help="say what --affected would run, and run nothing")
     parser.add_argument("--workers", type=int, help="tests at once (default: what the cores and free memory allow)")
+    parser.add_argument("--application", action="store_true",
+                        help="only what an application can break: the tests marked base ran in its template")
     parser.add_argument("pytest", nargs="*", help="pytest's own options, after --")
     options = parser.parse_args(arguments)
     alone = "TEST_DATABASE_URL is not set: the database tests run on SQLite alone, not on PostgreSQL."
     if not (options.affected or options.list):
         if not os.environ.get("TEST_DATABASE_URL"):
             print(alone)
-        return run([], options.workers, options.pytest)
+        return run([], options.workers, options.pytest, options.application)
     paths = changed_files()
     chosen = select(paths)
     if (chosen.database or chosen.everything) and not os.environ.get("TEST_DATABASE_URL"):

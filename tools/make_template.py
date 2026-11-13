@@ -20,6 +20,7 @@ template's repository, and merge it through a pull request. See docs/base/an-org
 import argparse
 import hashlib
 import io
+import json
 import os
 import re
 import shutil
@@ -179,6 +180,29 @@ def name_it(out: Path, name: str) -> None:
     declaration.write_text(text.replace(anchor, f'{anchor}APP_NAME = "{name}"\n', 1), encoding="utf-8", newline="\n")
 
 
+BASE_FILES = "tests/base_files.json"
+OWNED = ("app/core", "app/ui", "app/brand", "tools", "docs/base", "migrations", "tests")
+NOT_OWNED = ("app/ui/static/app.css",)
+"""What an application keeps as the template left it: its own code lives in its folders of app/, its own tests in new
+files. The stylesheet is generated from every template, and catalogues of texts are written by tools/translations.py."""
+
+
+def digest(path: Path) -> str:
+    """A file's fingerprint, the same whatever line endings a checkout gave it."""
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def base_files(out: Path) -> dict[str, str]:
+    found = {}
+    for top in OWNED:
+        for path in sorted((out / top).rglob("*")):
+            name = path.relative_to(out).as_posix()
+            if (path.is_file() and "__pycache__" not in path.parts and name not in NOT_OWNED
+                    and path.suffix not in (".po", ".mo", ".pot") and name != BASE_FILES):
+                found[name] = digest(path)
+    return found
+
+
 def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
     layer = read_layer(folder)
     prepare_out(out)
@@ -200,6 +224,8 @@ def make(folder: Path, out: Path, ref: str | None, tests: bool) -> None:
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
     name_it(out, layer.name)
+    (out / BASE_FILES).write_text(json.dumps(base_files(out), indent=0, sort_keys=True) + "\n", encoding="utf-8",
+                                  newline="\n")
     for check in CHECKS:
         run(out, *check)
     if tests:

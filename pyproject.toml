@@ -56,6 +56,7 @@ pythonpath = ["."]
 filterwarnings = ["error::DeprecationWarning"]
 addopts = "--strict-markers"
 markers = [
+    "base: proves the base's own machinery, which an application does not change: tools/test.py --application leaves it out",
     "browser: needs a real browser",
     "long: takes minutes; tools/test.py starts it first, one at the head of each worker's share",
     "rule(identifier): the rule of docs/base/standards.md this test proves",
