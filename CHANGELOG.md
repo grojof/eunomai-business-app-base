@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.4 (2026-11-13)
+
+`opentelemetry-api` 1.45.2, which limits the `traceparent` header it reads to 512 characters: 1.45.1 parsed it in
+quadratic time, a denial of service (GHSA-mf5v-w3w3-f6cg, published 2026-11-13). Nothing else changes.
+
 ## 0.2.3 (2026-11-13)
 
 `tests/test_brand.py` checks each theme on top of the default one, as the browser draws it. daisyUI writes the default
