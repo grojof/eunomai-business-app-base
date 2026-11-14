@@ -9,7 +9,11 @@ uv run --frozen python tools/update_application.py --template <template reposito
 `.template-source` says which version it was made from: that version is found in the template's history, and the
 change from it to the newest (or `--to`) is applied here with a three-way merge. A file the application never touched
 takes the template's new version; one it changed is merged; where both changed the same lines, the file is left with
-conflict markers for a person. The application's own files are not touched.
+conflict markers for a person. The application's own files are not touched, and neither is its README.md, which
+describes the application and not the template.
+
+The report also names the versions on the application's server (its `origin` branches) that change files the update
+changes: the person working on each will stop for IT when they bring the update, so IT knows before merging it.
 
 `--check` changes nothing: it says which version the application is on, which is newest, which of the template's files
 the application has changed, and which files the update would change, merge cleanly or leave in conflict.
@@ -113,6 +117,12 @@ def origin(wanted: tuple[str, str], newest: str, cwd: Path) -> str:
     )
 
 
+APPLICATIONS_OWN = ("README.md",)
+"""Files a template made, and the application then made its own: an update never changes them. Its README describes
+the application; a template's change to it met every person who had written theirs, on their own computer."""
+NOT_VERSIONS = ("main", "master", "HEAD")
+
+
 @dataclass
 class Plan:
     origin: str
@@ -122,6 +132,7 @@ class Plan:
     clean: list[str] = field(default_factory=list)
     conflicts: list[str] = field(default_factory=list)
     started_from: str = ""
+    versions: dict[str, list[str]] = field(default_factory=dict)
 
 
 def lines(text: str) -> list[str]:
@@ -140,7 +151,25 @@ def merge(plan: Plan, cwd: Path) -> tuple[str, list[str]]:
     if done.returncode not in (0, 1):
         raise Refused(f"git merge-tree: {done.stderr.decode(errors='replace').strip()}")
     tree, *conflicts = lines(done.stdout.decode(errors="replace"))
-    return tree, sorted(set(conflicts))
+    return tree, sorted(set(conflicts) - set(APPLICATIONS_OWN))
+
+
+def versions_meeting(plan: Plan, cwd: Path) -> dict[str, list[str]]:
+    """The versions on the application's server, its `origin` branches other than the main one and the updates', that
+    change files this update changes, with those files. A version only on a person's computer is not seen."""
+    found = {}
+    for name in lines(git("for-each-ref", "--format=%(refname:short)", "refs/remotes/origin/", cwd=cwd)):
+        short = name.removeprefix("origin/")
+        if short in NOT_VERSIONS or short.startswith("template-") or name == "origin":
+            continue
+        base = git("merge-base", "HEAD", name, cwd=cwd, check=False).strip()
+        if not base:
+            continue
+        touched = set(lines(git("diff", "--name-only", base, name, cwd=cwd)))
+        shared = sorted(touched & set(plan.changes))
+        if shared:
+            found[short] = shared
+    return found
 
 
 def plan_update(template: str, ref: str, cwd: Path = ROOT) -> Plan:
@@ -157,11 +186,14 @@ def plan_update(template: str, ref: str, cwd: Path = ROOT) -> Plan:
         if path in in_template and path != SOURCE
     ]
     found.changes = [
-        path for path in lines(git("diff", "--name-only", found.origin, newest, cwd=cwd)) if path != SOURCE
+        path
+        for path in lines(git("diff", "--name-only", found.origin, newest, cwd=cwd))
+        if path != SOURCE and path not in APPLICATIONS_OWN
     ]
     if found.changes:
         found.conflicts = merge(found, cwd)[1]
         found.clean = [path for path in found.changes if path not in found.conflicts]
+        found.versions = versions_meeting(found, cwd)
     return found
 
 
@@ -185,6 +217,12 @@ def report(plan: Plan, cwd: Path = ROOT) -> str:
     if plan.conflicts:
         out.append("In conflict, for a person to resolve:")
         out += [f"  {path}" for path in plan.conflicts]
+    if plan.versions:
+        out.append(
+            "Versions on the server that change the same files: the person on each will stop for IT when they bring "
+            "this update, unless it waits until their version is merged:"
+        )
+        out += [f"  {name}: {', '.join(files)}" for name, files in sorted(plan.versions.items())]
     return "\n".join(out)
 
 
@@ -200,6 +238,9 @@ def update(template: str, ref: str, cwd: Path = ROOT) -> tuple[Plan, str]:
     git("switch", "--quiet", "--create", branch, cwd=cwd)
     try:
         git("read-tree", "-m", "-u", "HEAD", tree, cwd=cwd)  # the working tree and the index become the merged tree
+        own = [path for path in APPLICATIONS_OWN if git("ls-tree", "--name-only", "HEAD", "--", path, cwd=cwd).strip()]
+        if own:  # what the template changed in them stays out: the application's are kept as they are
+            git("checkout", "HEAD", "--", *own, cwd=cwd)
         if plan.conflicts:  # left out of the index, so `git diff` shows the markers and `git add` marks one resolved
             git("reset", "--quiet", "--", *plan.conflicts, cwd=cwd)
         else:

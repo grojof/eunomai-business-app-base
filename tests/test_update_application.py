@@ -206,3 +206,34 @@ def test_the_branch_says_where_it_starts_and_a_stop_part_way_says_how_to_undo_it
     monkeypatch.setattr(tool, "git", failing)
     with pytest.raises(tool.PartWay, match=f"made from main and stopped part way.*git branch -D {branch}"):
         tool.update(str(template), "HEAD", application)
+
+
+def test_the_applications_readme_is_its_own_whatever_the_template_changes(template, application):
+    """A template's change to its README met every person who had written theirs, on their own computer."""
+    commit(template, {**V1, "README.md": "# The template\n"}, "template v1, with its README")
+    commit(template, {**V2, "README.md": "# The template\n\n<!-- a better index -->\n"}, "template v2")
+    own = dict(V1)
+    own["README.md"] = "# Training\n\nWhat this application is.\n"
+    own["app/core/settings.py"] = "first\nsecond\nthird\nname = training\n"
+    commit(application, own, "the application describes itself")
+    plan, branch = tool.update(str(template), "HEAD", application)
+    assert "README.md" not in plan.changes and "README.md" not in plan.conflicts and branch
+    assert (application / "README.md").read_text(encoding="utf-8") == "# Training\n\nWhat this application is.\n"
+    assert run("status", "--porcelain", cwd=application) == ""
+
+
+def test_the_versions_on_the_server_that_change_the_same_files_are_named(template, application):
+    """IT sees, before merging an update, which person will stop for it on bringing it."""
+    run("switch", "--quiet", "--create", "holidays", cwd=application)
+    on_main = {**V1, "app/courses/routes.py": "courses\n", "app/core/identity.py": "roles = exact, and departments\n"}
+    commit(
+        application,
+        {**on_main, "app/core/settings.py": "first\nsecond\nthird\nmine\n", "app/holidays.py": "x\n"},
+        "the person's version",
+    )
+    run("update-ref", "refs/remotes/origin/holidays", "HEAD", cwd=application)
+    run("update-ref", "refs/remotes/origin/template-1111111", "HEAD", cwd=application)  # an update: not a version
+    run("switch", "--quiet", "main", cwd=application)
+    plan = tool.plan_update(str(template), "HEAD", application)
+    assert plan.versions == {"holidays": ["app/core/settings.py"]}
+    assert "  holidays: app/core/settings.py" in tool.report(plan, application)

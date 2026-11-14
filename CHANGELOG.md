@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.1 (2026-11-14)
+
+An update of the template no longer meets a person's work where it should not. A template's change to its README
+reached an application whose person had written theirs, and stopped them for IT on their own computer: an
+application's `README.md` describes the application, so `tools/update_application.py` now leaves it as the
+application has it, whatever the template changed. And before an update reaches the main branch, its report names
+the versions on the application's server that change the same files, so IT knows whose work it will meet: it may wait
+until that version is merged, or join the two on the person's computer.
+
 ## 0.4.0 (2026-11-14)
 
 Python 3.14, the newest version with every fix: 3.13, which applications ran on, receives security fixes only since
