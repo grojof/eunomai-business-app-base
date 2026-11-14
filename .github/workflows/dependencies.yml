@@ -35,7 +35,7 @@ jobs:
       - name: Update within the rules
         run: |
           mkdir -p "$RUNNER_TEMP/out"
-          uv run --frozen --python 3.12 python tools/update_dependencies.py \
+          uv run --frozen python tools/update_dependencies.py \
             --summary "$RUNNER_TEMP/out/summary.md" --problems "$RUNNER_TEMP/out/problems.md"
 
       - name: Test the update
@@ -45,7 +45,7 @@ jobs:
         run: |
           if [ -z "$(git status --porcelain)" ]; then echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0; fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
-          uv sync --frozen --python 3.12
+          uv sync --frozen
           uv run --frozen python tools/gallery.py
           uv run --frozen python tools/css.py
           uv run --frozen python tools/components.py

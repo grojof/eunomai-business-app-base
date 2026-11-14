@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 (2026-11-14)
+
+Python 3.14, the newest version with every fix: 3.13, which applications ran on, receives security fixes only since
+its bug-fix stage ended, and 3.14 has been out long enough for every compiled package the lock holds to publish wheels
+for it. The number lives in one place, `.python-version`: uv, CI and every application made from the base read it
+there (CI ran on 3.12 until now, while applications ran on 3.13), and `requires-python` and mypy follow it. The lock
+changes only its wheels; no package changes version. An application brought up to date gets 3.14 with it, and uv
+downloads it the first time. Why, and how the next move is made: [decisions](docs/base/decisions.md#decisions).
+
 ## 0.3.2 (2026-11-14)
 
 `tools/make_template.py --keep-demo` checks a demonstration with the suite it declares, as a person's computer runs it.
