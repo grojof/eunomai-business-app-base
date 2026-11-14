@@ -55,9 +55,62 @@ def test_the_template_writes_what_the_runner_reads():
     from tools import make_template
 
     assert make_template.digest(maker) == runner.digest(maker)
+    icons = ROOT / "app" / "ui" / "templates" / "ui" / "icons"
+    assert make_template.folder_digest(icons) == runner.folder_digest(icons)
     assert make_template.locked(ROOT / "uv.lock") == runner.locked(ROOT / "uv.lock") != {}
     written = make_template.manifest(ROOT)
     assert "app/core/database.py" in written["files"] and ".gitignore" in written["files"]
+    assert "app/ui/templates/ui/icons/" in written["files"]  # Lucide's icons, one fingerprint for the folder
+    assert not any(name.startswith("app/ui/templates/ui/icons/") and name.endswith(".svg") for name in written["files"])
     assert "app/ui/static/app.css" not in written["files"] and "migrations/env.py" not in written["files"]
     assert not any(name.endswith(".po") for name in written["files"])
     assert written["packages"]["fastapi"]
+
+
+def test_a_changed_file_keeps_the_base_tests_it_can_break_and_says_why(tmp_path, capsys, monkeypatch):
+    """An application's own component or kind of upload changes a file of the base: only the base's tests that file
+    can break run besides the application's, chosen as --affected chooses them, not every test for good."""
+    monkeypatch.delenv(runner.KEPT, raising=False)
+    (tmp_path / "app" / "core").mkdir(parents=True)
+    (tmp_path / "app" / "core" / "calendars.py").write_bytes(b"one\n")
+    (tmp_path / runner.BASE_FILES).parent.mkdir(exist_ok=True)
+    (tmp_path / runner.BASE_FILES).write_text(
+        json.dumps({"files": {"app/core/calendars.py": "0" * 64}, "packages": {}}), encoding="utf-8"
+    )
+    assert runner.only_the_applications(True, tmp_path) is True
+    kept = runner.os.environ[runner.KEPT].split(",")
+    assert "tests/test_calendars.py" in kept and all(name.startswith("tests/") for name in kept)
+    said = capsys.readouterr().out
+    assert "the base's own that this can break" in said and "app/core/calendars.py" in said
+
+
+def test_a_file_every_test_rests_on_still_runs_every_test(tmp_path, capsys, monkeypatch):
+    monkeypatch.delenv(runner.KEPT, raising=False)
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / "conftest.py").write_bytes(b"x\n")
+    (tmp_path / runner.BASE_FILES).write_text(
+        json.dumps({"files": {"tests/conftest.py": "0" * 64}, "packages": {}}), encoding="utf-8"
+    )
+    assert runner.only_the_applications(True, tmp_path) is False
+    assert "every test runs" in capsys.readouterr().out and runner.KEPT not in runner.os.environ
+
+
+def test_one_fingerprint_for_the_icon_folder_still_sees_one_icon_changed_or_gone(tmp_path, capsys, monkeypatch):
+    """Lucide's icons are most of the base's files: the folder has one fingerprint, and any icon still counts."""
+    monkeypatch.delenv(runner.KEPT, raising=False)
+    icons = tmp_path / "app" / "ui" / "templates" / "ui" / "icons"
+    icons.mkdir(parents=True)
+    for name in ("a.svg", "b.svg"):
+        (icons / name).write_bytes(b"<svg/>\n")
+    (tmp_path / runner.BASE_FILES).parent.mkdir(exist_ok=True)
+    (tmp_path / runner.BASE_FILES).write_text(
+        json.dumps({"files": {"app/ui/templates/ui/icons/": runner.folder_digest(icons)}, "packages": {}}),
+        encoding="utf-8",
+    )
+    assert runner.base_changes(tmp_path) == []
+    (icons / "b.svg").write_bytes(b"<svg>changed</svg>\n")
+    assert runner.base_changes(tmp_path) == ["app/ui/templates/ui/icons/: changed"]
+    assert runner.only_the_applications(True, tmp_path) is True
+    assert "tests/test_icons.py" in runner.os.environ[runner.KEPT].split(",")
+    (icons / "b.svg").unlink()
+    assert runner.base_changes(tmp_path) == ["app/ui/templates/ui/icons/: changed"]

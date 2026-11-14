@@ -198,6 +198,8 @@ BASE_FILES = "tests/base_files.json"
 OWNED = ("app/core", "app/ui", "app/brand", "tools", "docs/base", "migrations", "tests")
 NOT_OWNED = ("app/ui/static/app.css", "migrations/env.py")
 OWNED_FILES = (".gitignore", ".gitattributes")
+WHOLE_FOLDERS = ("app/ui/templates/ui/icons/",)
+"""Folders recorded with one fingerprint: Lucide's icons are some 1,900 of the base's files."""
 """Files at the root that tests of the base read: what git keeps out (people's uploads) and its line endings."""
 """What an application keeps as the template left it: its own code lives in its folders of app/, its own tests in new
 files. The stylesheet is generated from every template, `tools/new_module.py` adds each module to migrations/env.py,
@@ -207,6 +209,14 @@ and catalogues of texts are written by tools/translations.py."""
 def digest(path: Path) -> str:
     """A file's fingerprint, the same whatever line endings a checkout gave it."""
     return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def folder_digest(folder: Path) -> str:
+    """A folder's fingerprint: each file's name and fingerprint, in order. A file changed, added or gone changes it."""
+    found = hashlib.sha256()
+    for path in sorted(path for path in folder.rglob("*") if path.is_file() and "__pycache__" not in path.parts):
+        found.update(f"{path.relative_to(folder).as_posix()}\0{digest(path)}\n".encode())
+    return found.hexdigest()
 
 
 def locked(lock: Path) -> dict[str, str]:
@@ -230,11 +240,15 @@ def base_files(out: Path) -> dict[str, str]:
             if (
                 path.is_file()
                 and "__pycache__" not in path.parts
+                and not name.startswith(WHOLE_FOLDERS)
                 and name not in NOT_OWNED
                 and path.suffix not in (".po", ".mo", ".pot")
                 and name != BASE_FILES
             ):
                 found[name] = digest(path)
+    for folder in WHOLE_FOLDERS:
+        if (out / folder).is_dir():
+            found[folder] = folder_digest(out / folder)
     return found
 
 

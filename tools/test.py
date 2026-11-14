@@ -4,7 +4,8 @@
     uv run --frozen python tools/test.py --affected   only what the files changed against main can break (RULES)
     uv run --frozen python tools/test.py --list       says what --affected would run, and runs nothing
     uv run --frozen python tools/test.py -- -k board  pytest's own options after --, for both passes
-    uv run --frozen python tools/test.py --application   what an application can break, unless its base changed
+    uv run --frozen python tools/test.py --application   what an application can break, and what a change of its
+                                                         base can (RULES)
 
 The tests run with pytest-xdist, as many at a time as the computer has cores and free memory for (`--workers` sets
 it), except those marked `serial`, which run after, one at a time: they need the computer to themselves. Idle workers
@@ -44,6 +45,7 @@ RULES = (
     ),
     (r"migrations/.*|app/core/(database|columns)\.py|app/(\w+/)*models\.py", "every database test, on both engines"),
     (r"(app/(\w+/)*locales|locales)/.*|tools/translations\.py", "every test that reads the translations"),
+    (r"app/ui/templates/ui/icons/.*", "every test that reads the icons"),
     (r"app/(\w+/)*(\w+)\.py", "test_<module>.py and every test that names the module"),
     (r"docs/.*|[^/]+\.md", "every test that reads the documentation"),
     (r"tools/(\w+)\.py", "every test that names the tool"),
@@ -97,6 +99,8 @@ def select(paths: list[str]) -> Selection:
                 chosen.database, tests = True, _tests_naming(DATABASE)
             elif rule == "every test that reads the translations":
                 tests = _tests_naming(r"locales|translations")
+            elif rule == "every test that reads the icons":
+                tests = _tests_naming(r"\bicons\b")
             elif rule.startswith("test_<module>"):
                 module = match[2]
                 tests = _tests_naming(rf"\b{module}\b") | set(TESTS.rglob(f"test_{module}.py"))
@@ -203,6 +207,14 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
+def folder_digest(folder: Path) -> str:
+    """A folder's fingerprint: each file's name and fingerprint, in order. A file changed, added or gone changes it."""
+    found = hashlib.sha256()
+    for path in sorted(path for path in folder.rglob("*") if path.is_file() and "__pycache__" not in path.parts):
+        found.update(f"{path.relative_to(folder).as_posix()}\0{digest(path)}\n".encode())
+    return found.hexdigest()
+
+
 def locked(lock: Path) -> dict[str, str]:
     """Each package `uv.lock` pins, and its version."""
     if not lock.is_file():
@@ -221,9 +233,10 @@ def base_changes(root: Path = ROOT) -> list[str] | None:
     changes = []
     for name, fingerprint in sorted(expected.get("files", {}).items()):
         path = root / name
-        if not path.is_file():
+        whole = name.endswith("/")  # a folder recorded with one fingerprint
+        if not (path.is_dir() if whole else path.is_file()):
             changes.append(f"{name}: missing")
-        elif digest(path) != fingerprint:
+        elif (folder_digest(path) if whole else digest(path)) != fingerprint:
             changes.append(f"{name}: changed")
     now = locked(root / "uv.lock")
     for name, version in sorted(expected.get("packages", {}).items()):
@@ -232,22 +245,38 @@ def base_changes(root: Path = ROOT) -> list[str] | None:
     return changes
 
 
+KEPT = "APP_BASE_TESTS_KEPT"
+"""The base's test files an application's run keeps, for tests/conftest.py: comma-separated, relative to the root."""
+
+
 def only_the_applications(application: bool, root: Path = ROOT) -> bool:
-    """`--application` leaves out the tests of the base's machinery, which its template ran, only while the base is as
-    the template left it. Otherwise every test runs, and it says why: an application may change the base where its
-    documentation says so (its own component, a kind of upload, words for icons), and a changed package may change how
-    the base behaves. That costs time, never a failure."""
+    """`--application` leaves out the tests of the base's machinery, which its template ran. When the base is not as
+    the template left it, as an application's documentation allows (its own component, a kind of upload, words for
+    icons), it keeps the base's tests those files can break, chosen by RULES as `--affected` chooses them, and says
+    why. A changed package, or a file every test rests on, runs every test. That costs time, never a failure."""
+    os.environ.pop(KEPT, None)
     if not application:
         return False
     changes = base_changes(root)
     if changes is None:
         print(f"No {BASE_FILES}: every test runs, the base's own included.")
         return False
-    if changes:
-        print("The base is not as its template left it, so every test runs, the base's own included:")
+    if not changes:
+        return True
+    packages = [line for line in changes if line.startswith("uv.lock: ")]
+    chosen = select([line.rsplit(": ", 1)[0] for line in changes if line not in packages])
+    if packages or chosen.everything:
+        print("The base is not as its template left it, and every test rests on what changed, so every test runs:")
         for line in changes[:20]:
             print("  " + line)
         return False
+    kept = sorted(path.relative_to(ROOT).as_posix() for path in chosen.files)
+    print(
+        "The base is not as its template left it: the application's tests run, and the base's own that this can break:"
+    )
+    for line in chosen.why[:20]:
+        print("  " + line)
+    os.environ[KEPT] = ",".join(kept)
     return True
 
 

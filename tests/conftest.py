@@ -96,10 +96,16 @@ that read the whole application (its templates, texts, models, migrations, rules
 here."""
 
 
+KEPT = {name for name in os.environ.get("APP_BASE_TESTS_KEPT", "").split(",") if name}
+"""The base's test files an application's run keeps, as tools/test.py --application chose them for a changed base."""
+
+
 def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
     waits: dict[Any, bool] = {}
     for item in items:
-        if item.path.name in BASE_TESTS and item.path.parent.name == "tests":
+        if item.path.relative_to(Path(__file__).resolve().parent.parent).as_posix() in KEPT:
+            item.own_markers[:] = [mark for mark in item.own_markers if mark.name != "base"]
+        elif item.path.name in BASE_TESTS and item.path.parent.name == "tests":
             item.add_marker(pytest.mark.base)
         function = getattr(item, "function", None)
         if function is None:
