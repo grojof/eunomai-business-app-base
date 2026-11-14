@@ -225,3 +225,12 @@ def test_a_demonstration_keeps_the_demo_and_every_link_it_has(tmp_path):
     assert (out / "app" / "demo").is_dir() and (out / "SECURITY.md").is_file()
     assert broken_links(out) == []
     assert (out / make_template.BASE_FILES).is_file()
+    assert make_template.own_tests(out, keep_demo=True) == [
+        "tools/test.py",
+        "--",
+        *(
+            f"--ignore=tests/demo/{name}"
+            for name in ("test_clean_application.py", "test_template.py", "test_new_module.py")
+        ),
+    ], "a demonstration runs what it declares, as a person's computer does"
+    assert make_template.own_tests(out, keep_demo=False) == ["tools/test.py", "--"]

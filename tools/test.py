@@ -111,7 +111,9 @@ def select(paths: list[str]) -> Selection:
     return chosen
 
 
-SUMMARY = re.compile(r"(?:=+ )?(.{1,300}?) in ([\d.]+)s(?: \([^)]{0,40}\))?(?: =+)?")
+SUMMARY = re.compile(r"(?:=+ )?((?:no tests ran|\d).{0,300}?) in ([\d.]+)s(?: \([^)]{0,40}\))?(?: =+)?")
+"""pytest's last line. It starts with a count: a line a test printed, such as another suite's total quoted in a
+failure, starts with its own text and is not this run's."""
 COUNT = re.compile(r"(\d+) (passed|failed|errors?|skipped|xfailed|xpassed|deselected|warnings?)\b")
 
 

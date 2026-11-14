@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.2 (2026-11-14)
+
+`tools/make_template.py --keep-demo` checks a demonstration with the suite it declares, as a person's computer runs it.
+The whole suite included the base's tests that make an application or a template from the folder they run in: in a
+demonstration, made already, they made one again from a copy and failed, so the tool refused a sound demonstration.
+`tools/test.py` reads only pytest's own total: a suite run inside a test printed its total in a failure's detail, and
+the runner took it for its own. A template is checked as before, with every test it holds.
+
 ## 0.3.1 (2026-11-13)
 
 A demonstration made with `tools/make_template.py --keep-demo` passes its own tests. English stays its last resort, so

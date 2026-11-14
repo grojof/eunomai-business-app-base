@@ -17,8 +17,10 @@ uv run --frozen python tools/make_template.py --layer ../our-layer --out ../our-
 
 The template carries `tests/base_files.json`: the fingerprint of each file of the base it holds and the version of each
 package it locks. An application made from it runs only the tests it can break (`tools/test.py --application`) while
-those are unchanged, and every test otherwise. `--keep-demo` makes a demonstration instead: the demo in the layer's look and languages, generating
-5,000 rows on a person's computer, for people to try what an application can do.
+those are unchanged, and every test otherwise. `--keep-demo` makes a demonstration instead: the demo in the layer's
+look and languages, generating 5,000 rows on a person's computer, for people to try what an application can do. A
+template is checked with every test it holds; a demonstration with the suite it declares, as a person's computer runs
+it.
 
 | Part | What it holds |
 |---|---|
