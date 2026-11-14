@@ -22,7 +22,10 @@ uv run --frozen python tools/update_application.py --template <template reposito
 the template's history and merges the change from it to the newest (or `--to`) into the application, with git's own
 three-way merge and that version as the base. A file the application never touched takes the new version; one it
 changed is merged; where both changed the same lines, the file keeps conflict markers for a person. The application's
-own files are not touched. `--check` changes nothing and says what would happen: the versions, the template's files
+own files are not touched, and neither is its `README.md`, which describes the application: a template's change to
+it would meet every person who had written theirs. The report also names the versions on the application's server
+that change files the update changes: when the update reaches the main branch, the person on each stops for IT on
+bringing it, so IT may wait until that version is merged, or join the two on the person's computer. `--check` changes nothing and says what would happen: the versions, the template's files
 the application changed, and which files would merge cleanly or not. Without it the update goes on a new branch,
 `template-<base>`, committed when nothing is in conflict. It never pushes. An application made before the tool
 existed runs it from a newer template's folder, with `--application` naming its own. It needs git 2.40 or later (`git merge-tree --merge-base`), as IT's computers have;
