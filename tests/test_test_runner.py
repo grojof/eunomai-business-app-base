@@ -190,3 +190,13 @@ def test_the_long_tests_head_each_workers_share_one_each():
     assert sorted(names) == sorted(item.name for item in items)
     assert names.index("a") == 0 and names.index("b") == 4  # the heads of the first two shares of four
     assert [item.name for item in long_first(items, workers=1)][:2] == ["a", "b"]
+
+
+def test_without_git_or_a_main_branch_the_whole_suite_runs_and_says_why(monkeypatch, capsys) -> None:
+    def no_git(*args, **kwargs):
+        raise runner.subprocess.CalledProcessError(128, args[0])
+
+    monkeypatch.setattr(runner.subprocess, "run", no_git)
+    assert runner.changed_files() is None
+    assert runner.main(["--list"]) == 0
+    assert "git cannot say what changed against main" in capsys.readouterr().out

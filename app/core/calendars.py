@@ -87,7 +87,7 @@ class Period:
     day: date
 
     @classmethod
-    def read(cls, params: Any, today: date, limits: Limits = LIMITS) -> "Period":
+    def read(cls, params: Any, today: date, limits: Limits = LIMITS) -> Period:
         view = params.get("view", "")
         text = params.get("date", "")
         day = date.fromisoformat(text) if _DAY.fullmatch(text) and _valid(text) else today

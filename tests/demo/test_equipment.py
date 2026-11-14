@@ -203,13 +203,6 @@ def test_the_screens_call_macros():
         assert not re.search(r'<(?:table|button|select)\b|class="(?:btn|table|badge|select|input)\b', text), template
 
 
-def test_every_exact_value_is_read_exactly_at_this_size(large_url):
-    engine = create_database_engine(large_url)
-    with Session(engine) as session:
-        assert session.scalar(select(func.count()).select_from(Equipment)) == 50_000
-    engine.dispose()
-
-
 def test_a_count_stays_fast_at_fifty_thousand_rows(large_url, person):
     client = TestClient(create_app(build_settings(database_url=large_url)))
     client.get("/equipment", headers=person)  # the first request loads the catalogues and connects

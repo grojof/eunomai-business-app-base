@@ -338,6 +338,7 @@ def test_every_synonym_points_at_a_real_current_icon():
                 assert not catalogue[name].deprecated, (language, word, name)
 
 
+@pytest.mark.base  # the base's own machinery: an application cannot change it while the base is as made
 def test_lucides_english_tags_alone_find_few_spanish_or_catalan_words():
     """Why the synonyms exist: without them, most common business words find nothing useful."""
     synonyms = json.loads(icons.SYNONYMS.read_text(encoding="utf-8"))
@@ -438,6 +439,7 @@ ANIMATED = {
 
 @pytest.mark.browser
 @pytest.mark.rule("SEC-16")
+@pytest.mark.base  # the base's own machinery: an application cannot change it while the base is as made
 def test_an_animated_illustration_moves_in_a_page_under_the_policy(browser, tmp_path):
     """Served as the application serves its static files, with the same policy on the page and on the SVG. An image
     never runs scripts, and Chrome applies the page's policy to it, not the SVG's: SMIL and a <style> block animate."""

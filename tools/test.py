@@ -65,15 +65,21 @@ def _tests_naming(pattern: str) -> set[Path]:
     return {path for path in TESTS.rglob("test_*.py") if found.search(path.read_text(encoding="utf-8"))}
 
 
-def changed_files() -> list[str]:
-    """What differs from main: committed on this branch, staged, changed and new, as git names them."""
+def changed_files() -> list[str] | None:
+    """What differs from main: committed on this branch, staged, changed and new, as git names them. None when git
+    cannot say: no git here, or no main branch, local or `origin/main`, to compare with."""
 
     def names(*arguments: str) -> list[str]:
         done = subprocess.run(["git", *arguments], cwd=ROOT, capture_output=True, text=True, check=True)
         return [line for line in done.stdout.splitlines() if line]
 
-    base = names("merge-base", "main", "HEAD")[0]
-    return sorted(set(names("diff", "--name-only", base) + names("ls-files", "--others", "--exclude-standard")))
+    for main in ("main", "origin/main"):
+        try:
+            base = names("merge-base", main, "HEAD")[0]
+            return sorted(set(names("diff", "--name-only", base) + names("ls-files", "--others", "--exclude-standard")))
+        except OSError, subprocess.CalledProcessError, IndexError:
+            continue
+    return None
 
 
 def select(paths: list[str]) -> Selection:
@@ -172,7 +178,7 @@ def free_memory() -> int | None:
         return status.free if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)) else None
     try:
         return os.sysconf("SC_AVPHYS_PAGES") * os.sysconf("SC_PAGE_SIZE")
-    except (ValueError, OSError, AttributeError):
+    except ValueError, OSError, AttributeError:
         return None
 
 
@@ -283,6 +289,9 @@ def main(arguments: list[str] | None = None) -> int:
             print(alone)
         return run([], options.workers, options.pytest, application)
     paths = changed_files()
+    if paths is None:
+        print("git cannot say what changed against main (no git here, or no main branch): the whole suite runs.")
+        return 0 if options.list else run([], options.workers, options.pytest, application)
     chosen = select(paths)
     if (chosen.database or chosen.everything) and not os.environ.get("TEST_DATABASE_URL"):
         print(alone)

@@ -39,6 +39,10 @@ GIT_NEEDED = (2, 40)
 """`git merge-tree --merge-base`, which the update needs, is in git 2.40 and later."""
 
 
+class PartWay(Exception):
+    """A stop after the update's branch was made: said as such, with how to undo it."""
+
+
 class Refused(Exception):
     pass
 
@@ -117,6 +121,7 @@ class Plan:
     changes: list[str] = field(default_factory=list)
     clean: list[str] = field(default_factory=list)
     conflicts: list[str] = field(default_factory=list)
+    started_from: str = ""
 
 
 def lines(text: str) -> list[str]:
@@ -162,7 +167,10 @@ def plan_update(template: str, ref: str, cwd: Path = ROOT) -> Plan:
 
 def report(plan: Plan, cwd: Path = ROOT) -> str:
     def base(commit: str) -> str:
-        return source(git("show", f"{commit}:{SOURCE}", cwd=cwd))[0][:7]
+        text = git("show", f"{commit}:{SOURCE}", cwd=cwd)
+        version = re.search(r'^base_version = "([^"]+)"', text, re.MULTILINE)
+        short = source(text)[0][:7]
+        return f"{version[1]} ({short})" if version else short
 
     if not plan.changes:
         return f"Up to date: the application is on the template's newest version (base {base(plan.origin)})."
@@ -188,12 +196,21 @@ def update(template: str, ref: str, cwd: Path = ROOT) -> tuple[Plan, str]:
         return plan, ""
     branch = f"template-{source(git('show', f'{plan.newest}:{SOURCE}', cwd=cwd))[0][:7]}"
     tree, plan.conflicts = merge(plan, cwd)
+    plan.started_from = git("branch", "--show-current", cwd=cwd).strip() or "a commit with no branch"
     git("switch", "--quiet", "--create", branch, cwd=cwd)
-    git("read-tree", "-m", "-u", "HEAD", tree, cwd=cwd)  # the working tree and the index become the merged tree
-    if plan.conflicts:  # left out of the index, so `git diff` shows the markers and `git add` marks one resolved
-        git("reset", "--quiet", "--", *plan.conflicts, cwd=cwd)
-    else:
-        git("commit", "--quiet", "--message", f"Template made from base {branch.removeprefix('template-')}", cwd=cwd)
+    try:
+        git("read-tree", "-m", "-u", "HEAD", tree, cwd=cwd)  # the working tree and the index become the merged tree
+        if plan.conflicts:  # left out of the index, so `git diff` shows the markers and `git add` marks one resolved
+            git("reset", "--quiet", "--", *plan.conflicts, cwd=cwd)
+        else:
+            git(
+                "commit", "--quiet", "--message", f"Template made from base {branch.removeprefix('template-')}", cwd=cwd
+            )
+    except Refused as problem:
+        raise PartWay(
+            f"{problem}. The branch {branch} was made from {plan.started_from} and stopped part way: "
+            f"`git switch {plan.started_from}` and `git branch -D {branch}` undo it"
+        ) from None
     return plan, branch
 
 
@@ -212,10 +229,15 @@ def main(argv: list[str] | None = None) -> int:
             print(report(plan_update(arguments.template, arguments.to, folder), folder))
             return 0
         plan, branch = update(arguments.template, arguments.to, folder)
+    except PartWay as problem:
+        print(f"Stopped: {problem}", file=sys.stderr)
+        return 1
     except Refused as problem:
         print(f"Nothing was changed: {problem}", file=sys.stderr)
         return 1
     print(report(plan, folder))
+    if branch:
+        print(f"The branch {branch} starts from {plan.started_from}.")
     if not branch:
         return 0
     if plan.conflicts:

@@ -30,6 +30,5 @@ Also planned, outside any milestone:
 |---|---|
 | A screen reader pass on the shell | A scan cannot tell how it sounds: the [standards](standards.md#accessibility) ask for this by hand |
 | A glossary per organization, fixing key terms and tone | It belongs to each organization's copy |
-| Release notes, saying what changed and how to apply it | Nothing has been released |
 | The organization's own MCP server | The pages and `catalog.json` may be enough. If not, a small server can serve the same files |
 | The gallery as an application of its own | It is this demo, deployed behind the organization's identity proxy: people browse and ask their assistant by name. It is also a first real case for registration |

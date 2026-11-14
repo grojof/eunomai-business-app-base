@@ -234,3 +234,31 @@ def test_a_demonstration_keeps_the_demo_and_every_link_it_has(tmp_path):
         ),
     ], "a demonstration runs what it declares, as a person's computer does"
     assert make_template.own_tests(out, keep_demo=False) == ["tools/test.py", "--"]
+
+
+@pytest.mark.parametrize(
+    ("settings", "said"),
+    [({"languages": ["fr"]}, "languages fr have no folder under locales/"), ({"default_language": "ca"}, "must be en")],
+)
+def test_a_language_the_base_does_not_hold_is_refused_before_the_clone_is_touched(tmp_path, settings, said):
+    """It was found after the clone was emptied: the clone lost its files and the message said nothing changed."""
+    clone = tmp_path / "clone"
+    subprocess.run(["git", "init", "-q", str(clone)], check=True)
+    (clone / "kept.txt").write_text("from the last template", encoding="utf-8")
+    subprocess.run(["git", "-C", str(clone), "add", "."], check=True)
+    subprocess.run(
+        ["git", "-C", str(clone), "-c", "user.name=Test", "-c", "user.email=test@example.test", "commit", "-qm", "x"],
+        check=True,
+    )
+    with pytest.raises(make_template.Refused, match=said):
+        make_template.make(a_layer(tmp_path / "layer", **settings), clone, None, tests=False)
+    assert (clone / "kept.txt").exists()
+
+
+def test_a_version_of_the_base_is_its_tag_and_nothing_between_versions():
+    tags = make_template.git("tag", "--list", "v*").split()
+    if not tags:
+        pytest.skip("this clone of the base has no tags")
+    tagged = make_template.git("rev-list", "-n", "1", tags[-1]).strip()
+    assert make_template.version_of(tagged) == tags[-1]
+    assert make_template.version_of("0" * 40) == ""

@@ -95,6 +95,7 @@ def test_production_is_the_default_and_refuses_the_default_database(monkeypatch)
 
 
 @pytest.mark.rule("DATA-01")
+@pytest.mark.base  # the base's own machinery: an application cannot change it while the base is as made
 def test_the_application_really_does_not_start_on_sqlite_in_production(tmp_path):
     """As a server would load it, in a folder with no .env file."""
     environment = {key: value for key, value in os.environ.items() if not key.startswith("APP_")}
@@ -491,6 +492,7 @@ def test_a_linux_job_cannot_pass_without_postgresql_by_accident(environment, ref
     assert postgresql_is_missing(environment) is refused
 
 
+@pytest.mark.base  # the base's own machinery: an application cannot change it while the base is as made
 def test_the_run_fails_when_it_is_missing():
     # Only the Dependencies workflow sets TESTS_ON_SQLITE_ALONE; this run must look like any other Linux job
     left_out = {"TEST_DATABASE_URL", "TESTS_ON_SQLITE_ALONE"}

@@ -49,8 +49,9 @@ what an assistant must respect before anything else.
   the application's documentation language. The README is a map: what the application is, for whom and why, how to
   run it, and a link to every page.
 - `docs/base/` is how the base works: read what this file says to read, as it says, and anything else by the page and
-  the section a link names; never edit it, since an update of the template replaces it. Link to it instead of
-  restating it: one fact, one home.
+  the section a link names; never edit it, since an update of the template replaces it (a component of the
+  application's own adds its page in `docs/base/components/`, as `docs/base/adapting-it.md` says). Link to it instead
+  of restating it: one fact, one home.
 - When behaviour changes, update the README and the page it affects in the same change. A new page gets its link in
   the README's index, or in the page whose folder it is in, which the README links. A page that grows past about 8,000
   characters becomes the index of a folder of the same name (`docs/decisions.md` and `docs/decisions/<subject>.md`),

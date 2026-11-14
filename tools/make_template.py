@@ -238,9 +238,53 @@ def base_files(out: Path) -> dict[str, str]:
     return found
 
 
+def languages_of(ref: str | None) -> set[str]:
+    """The languages the version to export holds: the folders under its locales/."""
+    if ref is None:
+        return {path.name for path in (ROOT / "locales").iterdir() if path.is_dir()}
+    try:
+        listed = git("ls-tree", "-d", "--name-only", f"{ref}^{{commit}}:locales")
+    except subprocess.CalledProcessError:
+        raise Refused(f"--ref {ref} is not a version of this base: nothing was changed") from None
+    return {name for name in listed.splitlines() if name}
+
+
+def check_languages(layer: Layer, ref: str | None) -> None:
+    available = languages_of(ref)
+    unknown = [code for code in layer.languages if code != "en" and code not in available]
+    if unknown:
+        raise Refused(
+            f"layer.toml: languages {', '.join(unknown)} have no folder under locales/ in this version of the base "
+            f"({', '.join(sorted(available))}); nothing was changed"
+        )
+    if layer.default_language and layer.default_language not in ("en", *layer.languages):
+        raise Refused("layer.toml: default_language must be en or one of languages; nothing was changed")
+
+
+def version_of(commit: str) -> str:
+    """The base's version: the tag on its commit, or nothing for one between versions."""
+    found = subprocess.run(
+        ["git", "-C", str(ROOT), "describe", "--tags", "--exact-match", commit], capture_output=True, text=True
+    )
+    return found.stdout.strip() if found.returncode == 0 else ""
+
+
 def make(folder: Path, out: Path, ref: str | None, tests: bool, keep_demo: bool = False) -> None:
     layer = read_layer(folder)
+    check_languages(layer, ref)
     prepare_out(out)
+    try:
+        _make(layer, folder, out, ref, tests, keep_demo)
+    except Refused as problem:
+        restore = (
+            f" In a clone, `git -C {out} reset --hard` and `git -C {out} clean -fd` bring it back."
+            if (out / ".git").exists()
+            else ""
+        )
+        raise Refused(f"{problem}\n{out} was left half made.{restore}") from None
+
+
+def _make(layer: Layer, folder: Path, out: Path, ref: str | None, tests: bool, keep_demo: bool) -> None:
     commit, changes = export(ref, out)
     if (ROOT / ".cache").is_dir() and not (out / ".cache").exists():  # Tailwind's executable: 100 MB, only read
         shutil.copytree(ROOT / ".cache", out / ".cache", copy_function=link_or_copy)
@@ -269,7 +313,8 @@ def make(folder: Path, out: Path, ref: str | None, tests: bool, keep_demo: bool 
     (out / SOURCE_FILE).write_text(
         "# Made by tools/make_template.py from eunomai-business-app-base: run it again, never edit this template.\n"
         f'base_commit = "{commit}"\n'
-        f"base_had_uncommitted_changes = {'true' if changes else 'false'}\n"
+        + (f'base_version = "{version}"\n' if (version := version_of(commit)) and not changes else "")
+        + f"base_had_uncommitted_changes = {'true' if changes else 'false'}\n"
         f'layer = "{layer_hash(layer)}"\n',
         encoding="utf-8",
         newline="\n",

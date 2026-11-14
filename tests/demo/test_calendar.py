@@ -261,9 +261,12 @@ def test_fullcalendar_and_its_theme_are_pinned_and_past_the_two_week_rule():
 @pytest.mark.rule("A11Y-01")
 @pytest.mark.rule("A11Y-05")
 @pytest.mark.rule("A11Y-06")
-@pytest.mark.parametrize("view", ["month", "week", "agenda"])
-@pytest.mark.parametrize("language", ["en", "es", "ca"])
+@pytest.mark.parametrize(
+    "view, language",
+    [("month", "en"), ("week", "en"), ("agenda", "en"), ("month", "es"), ("month", "ca")],
+)
 def test_the_calendar_passes_the_scan(open_filled, view, language):
+    """Each view once; the longest words, in the month's narrow cells, in the other languages too."""
     page = open_filled(f"/calendar?view={view}&date=2026-10-28", language=language, bypass_csp=True)
     until(page, READY)
     assert run_axe_in_both_themes(page) == []
