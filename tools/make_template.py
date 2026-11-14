@@ -166,6 +166,19 @@ def run(out: Path, *arguments: str) -> None:
         raise Refused(f"{' '.join(arguments)} failed in {out}:\n{done.stdout[-3000:]}\n{done.stderr[-2000:]}")
 
 
+def own_tests(out: Path, keep_demo: bool) -> list[str]:
+    """What proves what was made. A template runs every test it holds, the base's own included: they leave it once
+    proved, as tools/test.py --application says. A demonstration runs the suite it declares, as a person's computer
+    does: the base's tests that make an application or a template from the folder they run in prove the base, and in
+    a demonstration, made already, they would only make one again from a copy."""
+    if not keep_demo:
+        return ["tools/test.py", "--"]
+    declared = tomllib.loads((out / ".eunomai" / "project.toml").read_text(encoding="utf-8"))["tests"]["run"]
+    if declared[0] != "python":
+        raise Refused(f"the demonstration declares its tests as {declared}: they must start with python")
+    return [str(argument) for argument in declared[1:]]
+
+
 def name_it(out: Path, name: str) -> None:
     """The organization's name until an application is given its own: for local work and for a preview."""
     example = out / ".env.example"
@@ -252,7 +265,7 @@ def make(folder: Path, out: Path, ref: str | None, tests: bool, keep_demo: bool 
     for check in CHECKS:
         run(out, *check)
     if tests:
-        run(out, "tools/test.py", "--", "-q", "-p", "no:cacheprovider")
+        run(out, *own_tests(out, keep_demo), "-p", "no:cacheprovider")
     (out / SOURCE_FILE).write_text(
         "# Made by tools/make_template.py from eunomai-business-app-base: run it again, never edit this template.\n"
         f'base_commit = "{commit}"\n'

@@ -104,6 +104,30 @@ def test_the_line_for_both_passes_reads_as_pytests_own(monkeypatch: pytest.Monke
     assert found and {word: int(n) for n, word in runner.COUNT.findall(found[1])} == {"failed": 2, "passed": 13}
 
 
+@pytest.mark.parametrize(
+    "line",
+    [
+        "E         1 failed, 1426 passed, 5 skipped, 9 error in 186.54s (both passes)",
+        "assert 'x' == 'y' where 3 passed in 1.00s",
+    ],
+)
+def test_a_total_a_test_printed_is_not_the_runs(line: str) -> None:
+    """A suite run inside a test (tests/demo/test_new_module.py runs one) prints its total in a failure's detail."""
+    assert runner.SUMMARY.fullmatch(line) is None
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "===== 2 failed, 13 passed in 25.00s =====",
+        "13 passed, 1 skipped in 25.00s (both passes)",
+        "no tests ran in 0.01s",
+    ],
+)
+def test_pytests_own_totals_are_read(line: str) -> None:
+    assert runner.SUMMARY.fullmatch(line)
+
+
 def test_a_failed_pass_fails_the_run(monkeypatch: pytest.MonkeyPatch) -> None:
     passes = iter([(1, {"failed": 1}, 1.0), (0, {"passed": 1}, 1.0)])
     monkeypatch.setattr(runner, "_run", lambda command, low_priority=False: next(passes))
