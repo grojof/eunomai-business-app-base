@@ -16,6 +16,16 @@ which whoever builds a screen reads, offline. An application documents itself ap
 | The application's map | `README.md`, which `tools/remove_demo.py` writes with places to fill in | What the application is, for whom and why, a diagram where it helps, how to run it and its tests, and a link to every page |
 | The application's pages | Any other file under `docs/`, in the application's documentation language | Each starts with frontmatter, `type` (`tutorial`, `how-to`, `reference`, `explanation` or `decision`), `title`, `description` and, if it has them, `tags`: lowercase words joined by hyphens, on one line. What the business said has a page per kind, marked by a tag: `context`, `glossary`, `decision`, `open-question`. The README reaches every page, directly or through the page a folder is named after: a page that grows becomes the index of a folder of its name. When behaviour changes, the page and the README change with it |
 
+What the business said, by kind, as eunomai-business's specialist files it: one page per kind, which becomes a folder
+when it grows.
+
+| Kind | Starts in | `type` | Tag |
+|---|---|---|---|
+| Who uses it, today's process, the systems it touches, what is left out or for later | `docs/context.md` | `explanation` | `context` |
+| A word of the business and what it means here; a document or regulation the rules cite | `docs/glossary.md` | `reference` | `glossary` |
+| A choice between options: chosen, why, rejected, which role decided | `docs/decisions.md` | `decision` | `decision` |
+| An open question, and the assumption built meanwhile | `docs/open-questions.md` | `reference` | `open-question` |
+
 `tests/test_docs.py` checks every relative link of `README.md`, `AGENTS.md` and `docs/`, headings included, and, in an
 application, each page's frontmatter and its link from the README.
 

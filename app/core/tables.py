@@ -125,7 +125,7 @@ class ListView:
         searched: Sequence[Any] = (),
         search_label: str = "",
         panelled: bool = False,
-    ) -> "ListView":
+    ) -> ListView:
         """Every value is checked here, and only here: what passes is one of the listed options or a whole number.
 
         `panelled` puts the filters in a side panel that can be hidden, with its state in the address as `panel`."""

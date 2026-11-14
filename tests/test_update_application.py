@@ -178,3 +178,31 @@ def test_without_a_git_that_can_merge_with_a_base_it_says_so_and_changes_nothing
     monkeypatch.setattr(tool, "git_version", lambda: found)
     with pytest.raises(tool.Refused, match=said):
         tool.check_git()
+
+
+def test_the_report_names_the_bases_version_when_the_template_says_it(template, application):
+    versioned = dict(V2)
+    versioned[".template-source"] = SOURCE_V2.replace("layer = ", 'base_version = "v9.9.0"\nlayer = ')
+    commit(template, versioned, "template v2, from a tagged base")
+    text = tool.report(tool.plan_update(str(template), "HEAD", application), application)
+    assert "base 1111111" in text and "base v9.9.0 (2222222)" in text
+
+
+def test_the_branch_says_where_it_starts_and_a_stop_part_way_says_how_to_undo_it(template, application, monkeypatch):
+    own = dict(V1)
+    own["app/core/settings.py"] = "first\nsecond\nthird\nname = training\n"
+    commit(application, own, "identity back as the template had it")
+    plan, branch = tool.update(str(template), "HEAD", application)
+    assert plan.started_from == "main" and branch == "template-2222222"
+    run("switch", "--quiet", "main", cwd=application)
+    run("branch", "-D", branch, cwd=application)
+    real = tool.git
+
+    def failing(*args, **kwargs):
+        if args[0] == "commit":
+            raise tool.Refused("git commit: no identity")
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(tool, "git", failing)
+    with pytest.raises(tool.PartWay, match=f"made from main and stopped part way.*git branch -D {branch}"):
+        tool.update(str(template), "HEAD", application)

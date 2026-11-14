@@ -3,7 +3,7 @@ name = "eunomai-business-app-base"
 version = "0.1.0"
 description = "A demo business application to clone and adapt."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 license = "MIT"
 license-files = ["LICENSE*"]
 dependencies = [
@@ -65,7 +65,6 @@ markers = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "S", "C4", "RUF"]
@@ -76,6 +75,6 @@ select = ["E", "F", "I", "B", "UP", "S", "C4", "RUF"]
 "migrations/versions/*" = ["F401"]  # the template imports the exact types, and not every migration uses them
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.14"
 strict = true
 files = ["app", "tools", "migrations/env.py"]

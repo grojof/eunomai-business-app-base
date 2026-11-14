@@ -7,10 +7,11 @@ tags: [base, updating-an-application]
 
 # Updating an application
 
-From 0.3.0, a template carries `tests/base_files.json`, and its `AGENTS.md` describes the application by pointing to
-its README and its own pages: an application whose `AGENTS.md` had filled in that first section keeps its text and
-takes the new paragraph by hand when the update meets both. A file of the base the application had changed makes
-`tools/test.py --application` run every test, which costs time and nothing else.
+A template carries `tests/base_files.json`, the fingerprint of each file of the base it holds, and an `AGENTS.md` that
+describes the application by pointing to its README and its own pages. An update brings both: an application that
+changed a file of the base makes `tools/test.py --application` run every test, which costs time and nothing else; one
+whose `AGENTS.md` filled in its first section keeps its text, and takes a new paragraph by hand when the update meets
+both.
 
 ```bash
 uv run --frozen python tools/update_application.py --template <template repository> --check
@@ -26,6 +27,10 @@ the application changed, and which files would merge cleanly or not. Without it 
 `template-<base>`, committed when nothing is in conflict. It never pushes. An application made before the tool
 existed runs it from a newer template's folder, with `--application` naming its own. It needs git 2.40 or later (`git merge-tree --merge-base`), as IT's computers have;
 without it, it says so and changes nothing, and its tests are skipped: a person's computer has no git on purpose.
+
+An update may change `.python-version`, when the base moves to a newer Python. uv downloads that version the first
+time it is needed; where downloads are off (a server, or computers where IT installs Python), IT installs it first
+(`uv python install <version>`), and `uv sync --frozen` makes the environment again.
 
 | Decision | Why | Instead of |
 |---|---|---|

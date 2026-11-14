@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.4.0 (2026-11-14)
+
+Python 3.14, the newest version with every fix: 3.13, which applications ran on, receives security fixes only since
+its bug-fix stage ended, and 3.14 has been out long enough for every compiled package the lock holds to publish wheels
+for it. The number lives in one place, `.python-version`: uv, CI and every application made from the base read it
+there (CI ran on 3.12 until now, while applications ran on 3.13), and `requires-python`, mypy and ruff follow it, as a
+test checks. The lock changes only its wheels; no package changes version. An application brought up to date gets
+3.14 with it: uv downloads it the first time, or IT installs it first where downloads are off, as
+[updating an application](docs/base/updating-an-application.md#updating-an-application) now says. Why, and how the
+next move is made: [decisions](docs/base/decisions.md#decisions).
+
+Also, from an independent review:
+
+- **A person's computer waits less.** Five tests of the base's own machinery (the icon words, the standards'
+  checker, two start-up checks of the database, an animated illustration) are marked `base`, so an application's run
+  leaves them out while the base is as made. A test that only counted the 50,000 rows, already counted elsewhere, is
+  gone; the two class checks share one crawl of every page; the calendar's scan covers each view once and the month in
+  every language (5 cases, not 9).
+- **The tools say what happened.** `tools/make_template.py` checks the layer's languages against the version it
+  exports before it touches the template's clone (a wrong one used to empty the clone and say nothing changed), says
+  how to bring a clone back when a run stops part way, and writes the base's version (its tag) into
+  `.template-source`. `tools/update_application.py` names that version in its report, says which branch the update
+  starts from, and a stop after its branch exists is told as such, with how to undo it. `tools/test.py --affected`
+  without git, or without a main branch, runs everything and says why, instead of a traceback.
+- **Docs.** Where each kind of knowledge starts, with its `type` and tag, is in
+  [documentation](docs/base/documentation.md#documentation); an application's own component is the one page it adds
+  under `docs/base/`; the template's clone loses what git ignores too; stale statements are gone.
+
 ## 0.3.2 (2026-11-14)
 
 `tools/make_template.py --keep-demo` checks a demonstration with the suite it declares, as a person's computer runs it.

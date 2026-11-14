@@ -100,6 +100,7 @@ def test_every_automatic_rule_has_a_test_and_every_test_a_rule():
     assert tested - declared == set(), "tested, but the rule does not say so"
 
 
+@pytest.mark.base  # the base's own machinery: an application cannot change it while the base is as made
 def test_a_comment_or_a_string_does_not_count_as_a_test():
     SAMPLES.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(dir=SAMPLES) as folder:
@@ -198,13 +199,11 @@ def test_the_crawl_visits_each_kind_of_page_once_whatever_the_values():
 
 
 @pytest.mark.rule("COMP-04")
-def test_every_class_in_use_really_exists():
-    assert classes.invented(every_class(), CSS) == set()
-
-
-@pytest.mark.rule("COMP-04")
-def test_no_class_smuggles_in_a_value():
-    assert classes.invented_values(every_class()) == set()
+def test_every_class_in_use_really_exists_and_smuggles_in_no_value():
+    """One crawl of every page for both: each worker would make its own."""
+    found = every_class()
+    assert classes.invented(found, CSS) == set()
+    assert classes.invented_values(found) == set()
 
 
 @pytest.mark.rule("COMP-04")

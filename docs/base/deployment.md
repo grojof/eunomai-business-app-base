@@ -28,7 +28,7 @@ flowchart LR
 
 | Need | Why |
 |---|---|
-| [uv](https://docs.astral.sh/uv/) | It installs the locked packages, `uv.lock`, and the Python the project names |
+| [uv](https://docs.astral.sh/uv/) | It installs the locked packages, `uv.lock`, and the Python the project names in `.python-version`: with downloads off, install that version first (`uv python install`), and again when an update changes it |
 | PostgreSQL | Production never runs on SQLite: the application refuses to start |
 | A reverse proxy that signs people in | The application has no login of its own ([Identity](identity.md#identity)) |
 | A folder for uploaded files, outside the application's folder | Nothing a person sends can be served or run |

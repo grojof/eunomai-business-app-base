@@ -38,7 +38,7 @@ class Equipment(Base):
     cost: Mapped[Decimal] = mapped_column(index=True)
     updated_at: Mapped[datetime]
 
-    work_orders: Mapped[list["WorkOrder"]] = relationship(back_populates="equipment", passive_deletes=True)
+    work_orders: Mapped[list[WorkOrder]] = relationship(back_populates="equipment", passive_deletes=True)
 
 
 class WorkOrder(Base):
@@ -71,7 +71,7 @@ class WorkOrder(Base):
     __mapper_args__ = {"version_id_col": version}  # noqa: RUF012  # how SQLAlchemy asks for it
 
     equipment: Mapped[Equipment] = relationship(back_populates="work_orders")
-    files: Mapped[list["WorkOrderFile"]] = relationship(
+    files: Mapped[list[WorkOrderFile]] = relationship(
         back_populates="work_order", cascade="all, delete-orphan", passive_deletes=True, order_by="WorkOrderFile.id"
     )
 

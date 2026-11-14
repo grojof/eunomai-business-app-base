@@ -682,3 +682,17 @@ def test_a_held_package_stays_below_the_version_a_person_named(monkeypatch):
     monkeypatch.setattr(vendor, "vulnerabilities", lambda name, version: [])
     assert vendor.newest_allowed("chart.js", "4.5.1") == "4.6.1"
     assert vendor.newest_allowed("chart.js", "4.5.1", below="4.6.0") == "4.5.1"
+
+
+def test_python_is_named_in_one_place_and_everything_else_follows_it():
+    """`.python-version` decides (docs/base/decisions.md): uv and CI read it; requires-python and mypy agree with it,
+    and ruff reads requires-python, so a move is one number and the lock."""
+    import tomllib
+
+    version = (ROOT / ".python-version").read_text(encoding="utf-8").strip()
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    assert project["project"]["requires-python"] == f">={version}"
+    assert project["tool"]["mypy"]["python_version"] == version
+    assert "target-version" not in project["tool"]["ruff"]
+    for workflow in (ROOT / ".github" / "workflows").glob("*.yml"):
+        assert "--python" not in workflow.read_text(encoding="utf-8"), workflow.name

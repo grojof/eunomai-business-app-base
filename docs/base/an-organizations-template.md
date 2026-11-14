@@ -28,7 +28,8 @@ it.
 | `files/` | Copied onto the template, under `app/brand/` (themes, logo, fonts, icons) and a CI folder (`.gitea/`, `.github/`, `.forgejo/`) only. A file anywhere else is refused, before anything is written |
 
 Each run starts from an empty folder, or from a clone of the template's repository with nothing uncommitted, which keeps
-its history. It exports the base at `--ref`, or this folder as it is without one, runs `tools/remove_demo.py` with the
+its history; everything else in that clone goes, what git ignores too (a `.env`, `.venv` or `.data`), so the clone is
+one made for this. It exports the base at `--ref`, or this folder as it is without one, runs `tools/remove_demo.py` with the
 layer's languages, leaves out the base's own workflows, changelog and security policy (the licence and the third-party
 notices stay), copies the layer, writes the name into `.env.example` and the
 preview, builds the stylesheet, runs the icon and translation checks and the template's own tests, unless
