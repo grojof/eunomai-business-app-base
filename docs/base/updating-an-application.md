@@ -9,7 +9,8 @@ tags: [base, updating-an-application]
 
 A template carries `tests/base_files.json`, the fingerprint of each file of the base it holds, and an `AGENTS.md` that
 describes the application by pointing to its README and its own pages. An update brings both: an application that
-changed a file of the base makes `tools/test.py --application` run every test, which costs time and nothing else; one
+changed a file of the base makes `tools/test.py --application` run, besides its own tests, the base's tests that
+file can break, which costs time and nothing else; one
 whose `AGENTS.md` filled in its first section keeps its text, and takes a new paragraph by hand when the update meets
 both.
 

@@ -79,7 +79,7 @@ def test_the_files_it_changes_keep_their_line_endings(application):
         "app/main.py",
         "migrations/env.py",
         ".env.example",
-        "docs/base/standards.md",
+        "docs/base/standards/accessibility.md",
         ".eunomai/project.toml",
         "README.md",
     )
@@ -88,8 +88,8 @@ def test_the_files_it_changes_keep_their_line_endings(application):
 
 
 def test_a_rule_only_the_demo_proved_says_it_is_checked_by_hand(application):
-    text = (application / "docs" / "base" / "standards.md").read_text(encoding="utf-8")
-    rows = {row["id"]: row["check"] for row in ROW.finditer(text)}
+    pages = sorted((application / "docs" / "base" / "standards").glob("*.md"))
+    rows = {row["id"]: row["check"] for page in pages for row in ROW.finditer(page.read_text(encoding="utf-8"))}
     assert {rows[rule] for rule in remove_demo.ONLY_ON_DEMO} == {"By hand"}
 
 

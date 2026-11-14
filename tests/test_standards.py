@@ -20,6 +20,14 @@ from tests.helpers import ROOT
 from tools import vendor
 
 STANDARDS = ROOT / "docs" / "base" / "standards.md"
+STANDARDS_PAGES = (STANDARDS, *sorted((ROOT / "docs" / "base" / "standards").glob("*.md")))
+"""The index and a page for each family of rules."""
+
+
+def standards_text() -> str:
+    return "\n".join(page.read_text(encoding="utf-8") for page in STANDARDS_PAGES)
+
+
 ROW = re.compile(r"^\| (?P<id>[A-Z0-9]+-\d{2}) \| (?P<rule>.+?) \| (?P<source>.+?) \| (?P<check>.+?) \|$", re.M)
 ROW_START = re.compile(r"^\|\s*[A-Z][A-Z0-9]*-\d+\s*\|")
 WITH_DEMO = (ROOT / "tests" / "demo").exists()
@@ -28,7 +36,7 @@ CSS = (ROOT / "app" / "ui" / "static" / "app.css").read_text(encoding="utf-8")
 
 
 def rules() -> list[re.Match[str]]:
-    return list(ROW.finditer(STANDARDS.read_text(encoding="utf-8")))
+    return list(ROW.finditer(standards_text()))
 
 
 def malformed_rows(text: str) -> list[str]:
@@ -77,7 +85,7 @@ def test_rule_identifiers_are_unique():
 
 
 def test_every_row_that_looks_like_a_rule_is_read_as_one():
-    assert malformed_rows(STANDARDS.read_text(encoding="utf-8")) == []
+    assert malformed_rows(standards_text()) == []
 
 
 @pytest.mark.parametrize(

@@ -301,8 +301,7 @@ def main(arguments: list[str] | None = None) -> None:
     example = ROOT / ".env.example"
     rewrite(example, example.read_text(encoding="utf-8").replace("demo-admins", "admins"))
 
-    standards = ROOT / "docs" / "base" / "standards.md"
-    if standards.exists():
+    for standards in sorted((ROOT / "docs" / "base" / "standards").glob("*.md")):  # a page for each family of rules
         text = standards.read_text(encoding="utf-8")
         for rule in sorted(ONLY_ON_DEMO):
             text = re.sub(rf"^(\| {rule} \|.*\| )Automatic( \|)$", r"\1By hand\2", text, flags=re.M)

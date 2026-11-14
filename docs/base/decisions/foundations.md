@@ -1,0 +1,28 @@
+---
+type: reference
+title: "Decisions: Foundations and checks"
+description: "Why the base is cloned and owned, built from standards, made on the server, checked by tests and tools rather than instructions, and on which Python."
+tags: [decisions, foundations]
+---
+
+# Foundations and checks
+
+| Decision | Why | Rejected |
+|---|---|---|
+| Clone and own, not a dependency | Each organization and application is free to change anything, with nothing to stay tied to | A versioned component package: updates reach everyone, but it ties applications to the package and limits changes |
+| One repository is both demo and starting point | Simple: clone it and delete one folder | A separate demo and template: two things to keep in step |
+| The demo is deleted, the components stay | An application keeps no screens it does not use, and a small set of macros costs little | Copying components on demand: slower, and easy to miss one |
+| Built from zero against published standards | Existing applications differ from each other, so copying them would copy the differences | Deriving the component list from existing applications |
+| No Alpine.js: `app.js` is enough | The stack named Alpine in its CSP build for milestone 3, so the hardest case was tried first without it. ARIA's combobox is about 160 lines of plain JavaScript, it works by keyboard, and it falls back to a plain select. Nothing else in the forms needs behaviour in the browser: htmx does the requests and the browser's `dialog` keeps the keyboard. Alpine's CSP build runs no `eval`, so anything past a simple expression would stay in a script, the same code in another place, for one more copied file on every page and a second way to write behaviour. A screen with a lot of state in the browser may still bring it: that needs a decision here, the two-week rule, and a run in real Chrome with no policy violation | Alpine.js in its CSP build, as the stack first said |
+| Python: the newest version with full support, in `.python-version` | A version past its bug-fix stage gets security fixes only, and each new one is faster. The newest one in the *bugfix* stage of [Python's table](https://devguide.python.org/versions/) that has been out about six months, so every compiled package the lock holds has wheels for it. One number, in `.python-version`: uv, CI and every application made from the base read it there, and `requires-python` and mypy follow it. Moving to the next is a release: the number, the lock resolved again, every compiled package checked for a wheel on Windows and Linux, and the whole suite on both databases | The oldest version still supported; the newest the day it is out; a number in each file that runs Python |
+| Pages made on the server | One language, no npm and a small supply chain; AI assistants produce reviewable code | A React client: a large npm tree, and more than most internal applications need |
+| Tests run on pull requests, not again on `main` | Merging through a pull request with tests already passed makes a second run a repeat of about 10 minutes on each system. Nothing enforces this on a private repository without a paid plan: changes reach `main` only by pull request as a working rule. A public repository should require pull requests, passing tests and an up-to-date branch | Running them again on every push to `main` |
+| Checks over instructions | Long instructions are followed unevenly; a failing check is not | Extensive rule documents |
+| `--no-proxy-headers` as a flag on the start command | Uvicorn reads it before the application loads, so no code setting can reach it. Forgetting it fails closed, with 401 for everyone, and a test checks every documented command | A start script of our own: one more file, for one flag |
+| `ONLY_ON_DEMO` rows become *By hand* in a clone | Deleting the demo deletes their only proof, and *Automatic* must keep meaning a test exists | Leaving them *Automatic*, which the tracing test would refuse; keeping demo tests in every application |
+| `AGENTS.md`, and skills only if a procedure needs one | The rules and procedures work with any assistant, and can be removed freely | Binding the repository to one assistant or method |
+| Rules in one page, each with its official source and its check | Quality follows published standards, not an assistant's judgement, and every rule can be traced to its test. What no source requires says *Project decision* | Sources kept in skills: they load only sometimes and can be removed |
+| Browser tests on the installed Chrome | Nothing is downloaded | Playwright's own browsers |
+| The tests run on a computer before each push, and on GitHub by hand | The whole suite runs on Windows before anything is pushed, so GitHub's Ubuntu job, with PostgreSQL, confirms now and then instead of finding mistakes; the Dependencies workflow starts it for each of its updates. GitHub's free minutes go fast: on 2026-11-03 three days of pull requests had spent about 770, Windows counting double | The tests on every pull request, on Ubuntu, and Windows by hand |
+| One Ubuntu job with PostgreSQL, through a service whose image is empty on Windows | The runner skips a service with an empty image, so the matrix stays one job and one list of steps | A separate job for PostgreSQL, which repeats its setup; starting a container from a step |
+| psycopg, under LGPL-3.0 | The usual driver, and the default of SQLAlchemy 2.1. It is installed as a package, neither copied into the repository nor changed. An organization that distributes an application to others should read that licence. Everything else added is MIT | psycopg2: its successor is psycopg 3. pg8000: pure Python, with a smaller user base |

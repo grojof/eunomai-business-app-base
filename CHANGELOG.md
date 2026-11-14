@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.2 (2026-11-14)
+
+What a person's computer runs, and what an assistant reads, gets lighter; a highlighted row looks whole.
+
+- **A changed file of the base no longer runs every test for good.** An application that changes the base where its
+  documentation allows (its own component, a kind of upload, words for icons) used to run all of the base's tests on
+  every run. `tools/test.py --application` now runs the application's tests and, of the base's, those the changed
+  files can break, chosen by the same rules as `--affected`, and says why; a changed package, or a file every test
+  rests on, still runs every test.
+- **The standards and the decisions are folders.** `docs/base/standards.md` (about 23,000 characters) and
+  `docs/base/decisions.md` (about 38,000) were past the 8,000 the base gives an application's own pages, and an
+  assistant read them whole for one rule or one row. Each is now the index of a folder of the same name, one family a
+  page; every link and anchor still leads where it did, and the rules are read from all the pages.
+- **One fingerprint for Lucide's icons.** `tests/base_files.json` held some 1,900 fingerprints for the icon folder out
+  of 2,180: the folder now has one, over its names and contents, so an icon changed, added or gone is still seen, and
+  a change there runs the tests that read the icons.
+- **A highlighted row highlights its pinned first cell too.** That cell is opaque, so the row scrolls under it, and it
+  hid the row's hover colour; it now takes it, in light and dark.
+
 ## 0.4.1 (2026-11-14)
 
 An update of the template no longer meets a person's work where it should not. A template's change to its README

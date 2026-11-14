@@ -526,3 +526,20 @@ def test_the_actions_header_lines_up_with_what_is_under_it(open_filled, path, wi
         return [header.getBoundingClientRect().right, parts.at(-1).getBoundingClientRect().right];
     }""")
     assert abs(edges[0] - edges[1]) <= 1
+
+
+@pytest.mark.browser
+@pytest.mark.parametrize("theme", ["light", "dark"])
+def test_a_highlighted_row_highlights_its_pinned_first_cell_too(open_filled, theme):
+    """The pinned first cell is opaque so the row scrolls under it: it hid the row's highlight on that one cell."""
+    page = open_filled("/equipment", theme=theme)
+    row = page.locator("#equipment-results tbody tr").first
+    colours = "r => [getComputedStyle(r).backgroundColor, getComputedStyle(r.firstElementChild).backgroundColor]"
+    before_row, before_cell = row.evaluate(colours)
+    row.locator("td").last.hover()
+    until(
+        page,
+        f"getComputedStyle(document.querySelector('#equipment-results tbody tr')).backgroundColor !== {before_row!r}",
+    )
+    after_row, after_cell = row.evaluate(colours)
+    assert after_cell == after_row != before_cell
