@@ -49,6 +49,8 @@ LUCIDE_LISTING = "package/tags.json"
 """Every icon lucide-static offers, by name. Its icons/ folder also has each old name as a copy: those stay out."""
 LUCIDE_ICON = re.compile(r"icons/([a-z0-9-]+)\.json")
 LUCIDE_CATEGORY = re.compile(r"categories/([a-z0-9-]+)\.json")
+LUCIDE_GROUP = re.compile(r"groups/([a-z0-9-]+)\.json")
+LUCIDE_EXTENDS, LUCIDE_GROUP_MARK = "$extends:", "$group:"
 
 
 class Refused(RuntimeError):
@@ -239,27 +241,66 @@ def index_text(version: str, licence: str, categories: dict[str, str], icons: di
     return head + f' "categories": {{\n{lines(categories)}\n }},\n "icons": {{\n{lines(icons)}\n }}\n}}\n'
 
 
+def lucide_resolved(
+    version: str,
+    metadata: dict[str, dict[str, Any]],
+    groups: dict[str, list[str]],
+    name: str,
+    field: str,
+    seen: frozenset[str] = frozenset(),
+) -> list[str]:
+    """An icon's tags or categories with Lucide's markers expanded as its own build does (resolveMetadataExtends in
+    tools/build-helpers): `$extends:<icon>` becomes that icon's values, `$group:<group>` in tags the group's, each in
+    its place, and the first of a repeated value stays. A marker to nothing, to itself, in a cycle or a group outside
+    the tags is refused, as Lucide refuses it."""
+    if name in seen:
+        raise Refused(f"lucide-index {version}: {name} extends itself in a cycle")
+    values: list[str] = []
+    for value in metadata[name].get(field, []):
+        if value.startswith(LUCIDE_EXTENDS):
+            parent = value.removeprefix(LUCIDE_EXTENDS)
+            if parent not in metadata or parent == name:
+                raise Refused(f"lucide-index {version}: {name} extends {parent!r}, which is not another icon")
+            values += lucide_resolved(version, metadata, groups, parent, field, seen | {name})
+        elif value.startswith(LUCIDE_GROUP_MARK):
+            group = value.removeprefix(LUCIDE_GROUP_MARK)
+            if field != "tags" or group not in groups:
+                raise Refused(f"lucide-index {version}: {name} uses group {group!r} in its {field}")
+            values += groups[group]
+        else:
+            values.append(value)
+    return list(dict.fromkeys(values))
+
+
 def lucide_index(version: str, url: str) -> bytes:
     """Each icon's tags, categories, old names and whether it is deprecated, from the version's tag."""
-    icons: dict[str, dict[str, Any]] = {}
+    metadata: dict[str, dict[str, Any]] = {}
+    groups: dict[str, list[str]] = {}
     categories: dict[str, str] = {}
     licence = ""
     for path, content in archive_files(url.format(version=version)):
         icon = LUCIDE_ICON.fullmatch(path)
         category = LUCIDE_CATEGORY.fullmatch(path)
+        group = LUCIDE_GROUP.fullmatch(path)
         if icon:
-            data = json.loads(content)
-            aliases = sorted(alias["name"] if isinstance(alias, dict) else alias for alias in data.get("aliases", []))
-            entry: dict[str, Any] = {"tags": data.get("tags", []), "categories": data.get("categories", [])}
-            if aliases:
-                entry["aliases"] = aliases
-            if data.get("deprecated"):
-                entry["deprecated"] = True
-            icons[icon[1]] = entry
+            metadata[icon[1]] = json.loads(content)
         elif category:
             categories[category[1]] = json.loads(content)["title"]
+        elif group:
+            groups[group[1]] = json.loads(content)["tags"]
         elif path == "LICENSE":
             licence = content.decode("utf-8")
+    icons: dict[str, dict[str, Any]] = {}
+    for name, data in metadata.items():
+        aliases = sorted(alias["name"] if isinstance(alias, dict) else alias for alias in data.get("aliases", []))
+        entry: dict[str, Any] = {
+            field: lucide_resolved(version, metadata, groups, name, field) for field in ("tags", "categories")
+        }
+        if aliases:
+            entry["aliases"] = aliases
+        if data.get("deprecated"):
+            entry["deprecated"] = True
+        icons[name] = entry
     unknown = sorted({name for icon in icons.values() for name in icon["categories"]} - set(categories))
     if not icons or not categories or not licence or unknown:
         raise Refused(f"lucide-index {version}: icons, categories {unknown} or licence not where they were")
