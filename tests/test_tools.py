@@ -503,6 +503,63 @@ def test_an_icon_index_without_its_categories_is_refused(monkeypatch):
         vendor.lucide_index("1.0.0", "https://x/{version}")
 
 
+def lucide_with_markers(clock_check: dict) -> bytes:
+    """Lucide from 1.66: an icon names its base icon (`$extends:`) and what its variant means (`$group:`)."""
+    clock = {"tags": ["$group:time", "morning"], "categories": ["time", "devices"]}
+    files = {
+        "LICENSE": b"ISC License",
+        "icons/alarm-clock.json": json.dumps(clock).encode(),
+        "icons/alarm-clock-check.json": json.dumps(clock_check).encode(),
+        "groups/time.json": b'{"description": "Time", "tags": ["hour", "minute"]}',
+        "groups/check.json": b'{"description": "Done", "tags": ["done", "morning"]}',
+        "categories/time.json": b'{"title": "Time"}',
+        "categories/devices.json": b'{"title": "Devices"}',
+    }
+    return archive_of({f"lucide-1.66.0/{name}": content for name, content in files.items()})
+
+
+def test_lucides_markers_are_expanded_as_lucide_builds_them(monkeypatch):
+    """lucide-index 1.66.0 was refused: its categories read `$extends:alarm-clock`, which the tool took for a category
+    that does not exist."""
+    check = {"tags": ["$extends:alarm-clock", "$group:check", "wake-up"], "categories": ["$extends:alarm-clock"]}
+    monkeypatch.setattr(vendor, "download", lambda url: lucide_with_markers(check))
+    icons = json.loads(vendor.lucide_index("1.66.0", "https://x/{version}"))["icons"]
+    assert icons["alarm-clock"] == {"tags": ["hour", "minute", "morning"], "categories": ["time", "devices"]}
+    assert icons["alarm-clock-check"] == {
+        "tags": ["hour", "minute", "morning", "done", "wake-up"],
+        "categories": ["time", "devices"],
+    }
+
+
+@pytest.mark.parametrize(
+    "check, why",
+    [
+        ({"tags": [], "categories": ["$extends:alarm"]}, "not another icon"),
+        ({"tags": [], "categories": ["$extends:alarm-clock-check"]}, "not another icon"),
+        ({"tags": ["$group:nothing"], "categories": []}, "uses group"),
+        ({"tags": [], "categories": ["$group:check"]}, "uses group"),
+    ],
+)
+def test_a_marker_lucide_would_refuse_is_refused(monkeypatch, check, why):
+    monkeypatch.setattr(vendor, "download", lambda url: lucide_with_markers(check))
+    with pytest.raises(vendor.Refused, match=why):
+        vendor.lucide_index("1.66.0", "https://x/{version}")
+
+
+def test_icons_that_extend_each_other_are_refused(monkeypatch):
+    files = {
+        "LICENSE": b"ISC",
+        "categories/time.json": b'{"title": "Time"}',
+        "icons/a.json": b'{"tags": [], "categories": ["$extends:b"]}',
+        "icons/b.json": b'{"tags": [], "categories": ["$extends:a"]}',
+    }
+    monkeypatch.setattr(
+        vendor, "download", lambda url: archive_of({f"lucide-1/{name}": content for name, content in files.items()})
+    )
+    with pytest.raises(vendor.Refused, match="cycle"):
+        vendor.lucide_index("1", "https://x/{version}")
+
+
 def test_lucides_files_move_together():
     entries = vendor.read_entries()
     assert entries["lucide-index"]["package"] == "lucide-static"

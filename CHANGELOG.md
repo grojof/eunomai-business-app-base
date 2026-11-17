@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- **Lucide's index from 1.66 on.** An icon now names its base icon and what its variant means with markers
+  (`$extends:alarm-clock`, `$group:check`) in its tags and categories, and `tools/vendor.py` refused the index, taking
+  them for categories that do not exist (issue #51). It expands them as Lucide's own build does, refusing what Lucide
+  refuses (a marker to no icon, to itself, in a cycle, or a group outside the tags). Lucide is 1.67.0, its icons and
+  their index together.
+- **Dependencies:** anyio 4.16.0, mypy 2.4.1, pydantic 2.14.2, pydantic-core 2.50.2, pydantic-settings 2.16.2,
+  python-multipart 0.0.33, XlsxWriter 3.3.1 (#52) and Tailwind CSS 4.3.4. None fixes a published advisory.
+
 ## 0.4.2 (2026-11-14)
 
 What a person's computer runs, and what an assistant reads, gets lighter; a highlighted row looks whole.
