@@ -7,6 +7,9 @@
   them for categories that do not exist (issue #51). It expands them as Lucide's own build does, refusing what Lucide
   refuses (a marker to no icon, to itself, in a cycle, or a group outside the tags). Lucide is 1.67.0, its icons and
   their index together.
+- **At most 8 PostgreSQL connections a process.** SQLAlchemy's default allowed 15 (5 kept open and 10 more at a
+  peak), above the limit a server usually gives each application's user: at a peak, a request failed. Now 5 and 3: a
+  peak waits for a connection, and a limit of 10 leaves room for a migration while the application runs.
 - **Dependencies:** anyio 4.16.0, mypy 2.4.1, pydantic 2.14.2, pydantic-core 2.50.2, pydantic-settings 2.16.2,
   python-multipart 0.0.33, XlsxWriter 3.3.1 (#52) and Tailwind CSS 4.3.4. None fixes a published advisory.
 
