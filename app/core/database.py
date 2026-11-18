@@ -51,6 +51,10 @@ NAMING = {
 """Constraints with names, the same on both databases: a batch migration on SQLite can only change a named one."""
 SAFE_ON_TEXT = {"count", "max", "min"}
 """Functions that give the right answer on SQLite: `count` reads no value, `max` and `min` follow the collation."""
+POOL_SIZE = 5
+"""PostgreSQL connections a process keeps open, shared by every request."""
+POOL_OVERFLOW = 3
+"""More at a peak, closed when given back: at most 8 a process, then a request waits for one."""
 ARITHMETIC = {
     operators.add,
     operators.sub,
@@ -134,8 +138,12 @@ def _prepare_sqlite(connection: sqlite3.Connection, _record: Any) -> None:
 
 
 def create_database_engine(url: str) -> Engine:
-    """Nothing connects yet: the first query does, so an application that uses no database needs none."""
-    engine = create_engine(url, pool_pre_ping=True)
+    """Nothing connects yet: the first query does, so an application that uses no database needs none.
+
+    On PostgreSQL a request takes a connection for its queries and gives it back. With a limit for the application's
+    user on the server (10, say), a peak waits instead of failing, and there is room for a migration while it runs."""
+    pool = {"pool_size": POOL_SIZE, "max_overflow": POOL_OVERFLOW} if url.startswith("postgresql") else {}
+    engine = create_engine(url, pool_pre_ping=True, **pool)
     if engine.dialect.name == "sqlite":
         database = engine.url.database
 

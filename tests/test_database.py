@@ -59,6 +59,14 @@ class Child(Tables):
     sample_id: Mapped[int] = mapped_column(ForeignKey("sample.id", ondelete="CASCADE"))
 
 
+def test_postgresql_opens_at_most_eight_connections_a_process():
+    # Nothing connects: the pool is built empty.
+    engine = create_database_engine("postgresql+psycopg://localhost/application")
+    assert engine.pool.size() == 5
+    assert engine.pool._max_overflow == 3  # the pool says it nowhere else
+    engine.dispose()
+
+
 @pytest.fixture
 def session(database_url: str) -> Iterator[Session]:
     engine = create_database_engine(database_url)
