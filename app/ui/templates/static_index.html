@@ -1,0 +1,27 @@
+{#- The first page of an application exported as files, at the root of its site: each language is a folder, and this
+    page sends a person to theirs. preferences.js reads `data-languages` and goes to the language the browser kept, or
+    the first of the browser's own that is offered, or the default; without JavaScript the links below do it.
+    tools/export_static.py writes it, once: no route serves it. Each language is named in itself, so no text here
+    needs a translation. -#}
+<!doctype html>
+<html lang="{{ default_language }}" data-languages="{{ languages|map(attribute=0)|join(' ') }}" data-default-language="{{ default_language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ app_name }}</title>
+  <link rel="icon" href="{{ favicon }}">
+  <link rel="stylesheet" href="{{ asset('/static/ui/app.css') }}">
+  <script src="{{ asset('/static/ui/preferences.js') }}"></script>
+</head>
+<body class="min-h-dvh bg-base-200 text-base-content">
+  <main class="mx-auto flex max-w-md flex-col items-center gap-4 p-8 text-center">
+    <img class="app-logo" src="{{ logos.plain.full }}" alt="">
+    <h1>{{ app_name }}</h1>
+    <ul class="menu w-full rounded-box border border-base-300 bg-base-100" data-language-control>
+      {% for tag, label in languages %}
+      <li><a class="justify-center" href="/{{ tag }}/" hreflang="{{ tag }}" lang="{{ tag }}">{{ label }}</a></li>
+      {% endfor %}
+    </ul>
+  </main>
+</body>
+</html>

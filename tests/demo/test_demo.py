@@ -6,7 +6,14 @@ from fastapi.testclient import TestClient
 from app.core.i18n import PSEUDO
 from app.main import create_app
 from tests.conftest import build_settings
-from tests.helpers import ROOT, overflows_sideways, repository_text_files, run_axe_in_both_themes, untranslated
+from tests.helpers import (
+    ROOT,
+    overflows_sideways,
+    repository_text_files,
+    run_axe_in_both_themes,
+    run_in,
+    untranslated,
+)
 
 PAGES = ["/", "/settings", "/administration"]
 LAYOUTS = [
@@ -263,3 +270,13 @@ def test_on_a_phone_the_trail_stays_in_the_page(open_page):
     page = open_page("/gallery/badge", layout={"navigation": "side", "page_title": "header"}, width=375)
     assert page.locator("main nav.breadcrumbs").is_visible()
     assert not page.locator("header.app-bar nav.breadcrumbs").is_visible()
+
+
+@pytest.mark.rule("SEC-17")
+def test_the_demo_needs_its_server_so_the_export_refuses_it_and_writes_nothing(tmp_path):
+    """The command a person runs, on an application that reads a database, sends forms and asks for roles."""
+    done = run_in(ROOT, "tools/export_static.py", str(tmp_path / "exported"))
+    assert done.returncode == 1 and not (tmp_path / "exported").exists()
+    assert "/equipment: it reads the database" in done.stderr.splitlines()
+    assert "/administration: it asks for the role admin" in done.stderr
+    assert done.stdout == ""

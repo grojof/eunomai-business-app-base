@@ -8,7 +8,8 @@ related: [specification.md, standards.md]
 
 # Deployment
 
-An application runs on a Linux server behind a reverse proxy that signs people in. The application never sees a
+An application runs on a Linux server behind a reverse proxy that signs people in; one that needs no server
+is [published as files](#an-application-with-no-server) behind the same proxy. The application never sees a
 password: the proxy says who the person is in headers, and the application believes them only from the proxy's
 address. This page is the shortest path that holds; an organization's own way of shipping (containers, a deployment
 tool) does the same steps.
@@ -133,3 +134,36 @@ After the first start, through the proxy:
 | The same address with no proxy in between, from another computer | Nothing: Uvicorn listens on `127.0.0.1` only |
 | A request to `127.0.0.1:8000` with an identity header and no proxy, on the server | 401 if the server's own address is not in `APP_TRUSTED_PROXIES`; with it, anyone on the server can claim an identity, so the server's users are as trusted as the proxy |
 | A screen asking for a role, as someone without its group | 403 |
+
+<a id="an-application-with-no-server"></a>
+
+## 7. An application with no server
+
+An application whose pages need nothing from a server is published as files, with no service, no database and no
+settings on the server: [A static application](a-static-application.md#a-static-application) says which can be, and
+what the export holds. Where the application is built, with the settings of step 3 that it shows (`APP_NAME`,
+`APP_TIME_ZONE`, the languages) in the environment:
+
+```bash
+uv run --frozen python tools/export_static.py static-export
+```
+
+It writes `static-export/site/` and `static-export/headers.json`, or nothing and the reasons. Then, on the server:
+
+| Step | Why |
+|---|---|
+| Serve `site/` at the root of a host of its own, such as `https://labels.example.org/` | Every address in its pages starts at `/`: under a path of another site, nothing would be found |
+| Send every header of `headers.json` with every answer | They are the ones the application sends itself: the Content Security Policy, `X-Content-Type-Options` and `Referrer-Policy`. Files alone carry none |
+| Sign people in at the proxy, in front of every address | The files name nobody and check nothing: who may open them is the proxy's to decide, as for any application. No identity header is needed behind it |
+| Answer a missing address with `/404.html` and the status 404 | The application's own page for it, in the default language: one address, as a proxy's own setting for it takes. Each language's folder has its own `404.html` too, for a proxy that can choose by the address |
+| Let a browser keep for a year what is asked for with `?v=` | Optional. That address changes whenever the file does, as `Cache-Control: public, max-age=31536000, immutable` says for an application with a server |
+| Never hand it out to open from the disk | As `file://` the addresses lead nowhere, and no header is sent |
+
+A new version is a new export: replace `site/` whole. `headers.json` changes only when the base's policy does.
+
+| Check | Expected |
+|---|---|
+| The host's address in a browser, signed in | The application in the browser's language, at `/en/` or another folder |
+| The same without signing in | The proxy's sign-in |
+| `curl -sI` of a page, through the proxy | Each header of `headers.json` |
+| The browser's console on a page | No violation of the policy |

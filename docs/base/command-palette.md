@@ -18,5 +18,9 @@ It finds navigation items, the settings menu, and whatever is registered:
 register_search(application.state, lambda: [SearchItem(_("Invoices"), "/invoices", _("Records"), _("Sent and paid"))])
 ```
 
+In an application [exported as files](a-static-application.md#a-static-application), `/search` is written once
+for each language as `search.html`, with what everyone signed in may open, and an item that leads to a page the
+export does not have stops the export.
+
 The function runs inside each request, so it can use the person's language. The demo registers every component this way,
 with daisyUI's translated names and descriptions, and its class names as keywords.

@@ -192,10 +192,19 @@ def search_items(request: Request) -> list[SearchItem]:
     return [item for item in items if not (item.path in seen or seen.add(item.path))]  # type: ignore[func-returns-value]
 
 
+def is_static(request: Request) -> bool:
+    """Whether this page is being written to a file by tools/export_static.py, to be served with no application
+    behind it. Then nothing on it may need a server: no person, no saved preference, no settings menu. The exporter
+    alone sets it, on the application it builds for itself; no setting and no request can."""
+    return bool(getattr(request.app.state, "static", False))
+
+
 def layout_for(request: Request) -> dict[str, Any]:
     """The application's arrangement; where the demo lets people try others, their choice."""
     settings = request.app.state.settings
     layout: dict[str, Any] = {field: getattr(settings, f"layout_{field}") for field in LAYOUTS}
+    if is_static(request):
+        return layout  # no server remembers a person's choice: the arrangement is the application's
     for field in settings.layout_choices:
         value = request.cookies.get(f"layout_{field}")
         if value in LAYOUTS[field]:
@@ -210,7 +219,9 @@ def add_templates(folder: Path) -> None:
 
 def _render(request: Request, name: str, status_code: int, context: dict[str, Any]) -> HTMLResponse:
     state = request.app.state
-    person = getattr(request.state, "person", None)
+    static = is_static(request)
+    person = None if static else getattr(request.state, "person", None)
+    choices = [] if static else state.settings.layout_choices
     query = f"?{request.url.query}" if request.url.query else ""
 
     def local_datetime(value: datetime) -> str:
@@ -231,8 +242,9 @@ def _render(request: Request, name: str, status_code: int, context: dict[str, An
             layout=layout_for(request),
             person=person,
             navigation=visible_navigation(request),
-            settings_menu=bool(state.settings.layout_choices),
-            layout_choices=state.settings.layout_choices,
+            settings_menu=bool(choices),
+            layout_choices=choices,
+            static=static,
             theme_options=[
                 ("system", i18n._("As the system"), "monitor"),
                 ("light", i18n._("Light"), "sun"),

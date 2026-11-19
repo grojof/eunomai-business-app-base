@@ -76,4 +76,5 @@ def require_role(role: str) -> Callable[[Request], Person]:
             raise HTTPException(status_code=403)
         return person
 
+    check.role = role  # type: ignore[attr-defined]  # read by tools/export_static.py: a page for a role is not exported
     return check

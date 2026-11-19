@@ -87,6 +87,15 @@ def test_the_files_it_changes_keep_their_line_endings(application):
         assert b"\r\n" not in (application / changed).read_bytes(), changed
 
 
+def test_a_clean_application_needs_no_server_and_is_exported_as_files(application, tmp_path):
+    """Its one page reads nothing: the exporter reaches every application, and writes this one whole."""
+    succeeded(run_in(application, "tools/export_static.py", str(tmp_path / "exported")), "tools/export_static.py")
+    site = tmp_path / "exported" / "site"
+    assert (site / "index.html").is_file() and (tmp_path / "exported" / "headers.json").is_file()
+    assert "Inicio" in (site / "es" / "index.html").read_text(encoding="utf-8")
+    assert (site / "static" / "ui" / "app.css").is_file() and (site / "static" / "brand" / "logo.svg").is_file()
+
+
 def test_a_rule_only_the_demo_proved_says_it_is_checked_by_hand(application):
     pages = sorted((application / "docs" / "base" / "standards").glob("*.md"))
     rows = {row["id"]: row["check"] for page in pages for row in ROW.finditer(page.read_text(encoding="utf-8"))}

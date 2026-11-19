@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- **An application that needs no server is published as files.** `uv run --frozen python tools/export_static.py
+  <output>` writes `<output>/site/`, to serve at the root of a host behind the proxy that signs people in, and
+  `<output>/headers.json`, the headers that proxy must send, which are the application's own. Each language is a
+  folder, the search is a file in it, the theme and the language chosen are kept by the browser
+  (`app/ui/static/preferences.js`, loaded only there), and the shell names nobody. It exports everything or nothing:
+  a route that changes, reads the database, a form, the request or a role, and a page with a form to send, an htmx
+  request, a dead link, a link with a query or a missing file each stop it with their reason (SEC-17). Applications
+  with a server are as they were. See `docs/base/a-static-application.md`.
 - **Lucide's index from 1.66 on.** An icon now names its base icon and what its variant means with markers
   (`$extends:alarm-clock`, `$group:check`) in its tags and categories, and `tools/vendor.py` refused the index, taking
   them for categories that do not exist (issue #51). It expands them as Lucide's own build does, refusing what Lucide

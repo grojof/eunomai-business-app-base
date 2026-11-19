@@ -51,6 +51,9 @@ Add your own components as [Adapting it](docs/base/adapting-it.md#adapting-it) s
 - An illustration is a file in `app/ui/static/illustrations/`, made with the organization's own tools if it has them,
   and shown with `<img src>` or as a CSS background, never inline.
 - Each screen handles its empty, loading, error and no-permission states.
+- An application that needs no server (no database, no form to send, no roles) is published as files with
+  `tools/export_static.py`, which refuses what needs one: read
+  [A static application](docs/base/a-static-application.md#a-static-application) before building one.
 - A new component needs its page in the demo and its tests, in the same change.
 - Money and quantities are `Mapped[Decimal]`, moments `Mapped[datetime]` with their time zone. Never a float. On SQLite,
   a sum in SQL raises `InexactQuery`: use `total()`. [Where the two databases
@@ -88,6 +91,7 @@ uv run --frozen python tools/translations.py check   # after changing texts: too
 uv run --frozen python tools/test.py --affected      # while working: what the changes against main can break, and why
 uv run --frozen python tools/test.py                 # before merging: every test, in parallel, then those marked serial
 uv run --frozen python tools/test.py --application   # what an application can break; all, if its base changed
+uv run --frozen python tools/export_static.py static-export   # an application with no server, as files, or why not
 ```
 
 With `TEST_DATABASE_URL` set to a PostgreSQL kept for tests (an address with its password, kept in the person's own

@@ -1,7 +1,8 @@
 {#- The command palette, opened with the header's button, Ctrl+K or Cmd+K: a native dialog with the ARIA combobox and
-    listbox pattern. palette.js brings the results from /search the first time it opens, and filters them in the page. -#}
+    listbox pattern. palette.js brings the results from /search the first time it opens, and filters them in the page.
+    In an application exported as files, the same results are a file in each language's folder. -#}
 {% from "ui/macros.html" import icon %}
-<dialog id="palette" class="modal items-start" aria-label="{{ _('Search') }}" data-url="/search"
+<dialog id="palette" class="modal items-start" aria-label="{{ _('Search') }}" data-url="{{ '/' ~ language_tag ~ '/search.html' if static else '/search' }}"
         data-results="{{ _('Results: %(count)s', count='{count}') }}">
   <div class="modal-box mt-2 flex w-full max-w-2xl flex-col gap-0 p-0 sm:mt-16">
     <div class="flex items-center gap-3 border-b border-base-300 px-4">

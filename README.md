@@ -89,6 +89,7 @@ The base's documentation is in `docs/base/`, where every application keeps it as
 | [Components](docs/base/components/README.md) | Every component on offer, one page each, with its status |
 | [Decisions](docs/base/decisions.md) | Why it is built this way, and what is still open |
 | [Deployment](docs/base/deployment.md) | Running an application on a server: settings, database, service and the identity proxy in front |
+| [A static application](docs/base/a-static-application.md) | Publishing an application that needs no server as files, with `tools/export_static.py` |
 
 How to work in this repository: [AGENTS.md](AGENTS.md).
 
