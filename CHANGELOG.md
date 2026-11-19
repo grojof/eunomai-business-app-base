@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.5.0 (2026-11-19)
+
+An application that needs no server can be published as files; Lucide's newer index is read; a process opens at most
+8 database connections.
 
 - **An application that needs no server is published as files.** `uv run --frozen python tools/export_static.py
   <output>` writes `<output>/site/`, to serve at the root of a host behind the proxy that signs people in, and
