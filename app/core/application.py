@@ -61,6 +61,13 @@ CONTENT_SECURITY_POLICY = "; ".join(
         "frame-ancestors 'none'",
     ]
 )
+SECURITY_HEADERS = {
+    "Content-Security-Policy": CONTENT_SECURITY_POLICY,
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "same-origin",
+}
+"""What every response carries. An application exported as files has no process to add them: tools/export_static.py
+writes these same headers beside the site, for the proxy that serves it to send."""
 
 
 def _cross_site(request: Request) -> bool:
@@ -125,9 +132,7 @@ async def _context(request: Request, call_next: Callable[[Request], Awaitable[Re
             if request.scope.get(BODY_TOO_LARGE):
                 response = _error_page(request, 413)
 
-    response.headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["Referrer-Policy"] = "same-origin"
+    response.headers.update(SECURITY_HEADERS)
     return response
 
 
@@ -290,6 +295,7 @@ def create_core(settings: Settings) -> FastAPI:
     application.state.navigation = []
     application.state.search = []
     application.state.related = {}
+    application.state.static = False  # only tools/export_static.py sets it: no setting does
     engine = create_database_engine(settings.database_url.get_secret_value())
     application.state.sessions = sessionmaker(engine, expire_on_commit=False)
     application.state.uploads = UploadStore(settings.upload_folder, settings.upload_max_bytes)

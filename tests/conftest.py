@@ -74,6 +74,7 @@ BASE_TESTS = frozenset(
         "test_charts.py",
         "test_components.py",
         "test_excel.py",
+        "test_export_static.py",
         "test_form_macros.py",
         "test_gantt.py",
         "test_identity.py",

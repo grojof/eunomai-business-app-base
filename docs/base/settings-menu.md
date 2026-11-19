@@ -19,6 +19,9 @@ sends the person back. No inline script or style is needed, and focus returns to
 | How the theme control looks | daisyUI's `theme-controller` as a dropdown, toggle, swap or radio, each live on the page |
 | How the language control looks | A dropdown, a select with its own button, or a menu list, each live on the page |
 
+An application [exported as files](a-static-application.md#a-static-application) has no `/settings` and no
+`/preferences`: its layout is the application's, the theme is kept by the browser, and each language is a folder.
+
 The two last sections exist so that an organization can compare what daisyUI offers on real controls, then fix one with
 `APP_LAYOUT_THEME_CONTROL` and `APP_LAYOUT_LANGUAGE_CONTROL` and leave it out of `APP_LAYOUT_CHOICES`. A toggle and a swap
 have two states, so they cannot choose *as the system*: they show what is on screen, and the first change fixes a theme.

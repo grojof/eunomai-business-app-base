@@ -22,6 +22,9 @@ htmlcov/
 # The stylesheet's executable, downloaded by tools/css.py
 .cache/
 
+# An application exported as files, by tools/export_static.py
+/static-export/
+
 # Clutter
 .DS_Store
 Thumbs.db

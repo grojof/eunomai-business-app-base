@@ -1,7 +1,35 @@
 {#- The person's language, in the look the application chose: `variant` is one of settings.LAYOUTS["language_control"].
     Each language is named in itself. The select has its own button: on a closed select, arrow keys change the value,
-    and sending the form on each one would change the language under a person who is only reading the list. -#}
+    and sending the form on each one would change the language under a person who is only reading the list.
+    In an application exported as files (`static`) each language is a folder, so the control is links to this same
+    page in the others: `hreflang` says which folder, and tools/export_static.py writes the address. A select cannot
+    be links, so it is shown as the dropdown. -#}
 {% from "ui/macros.html" import icon %}
+{% if static %}
+{% if variant == "menu" %}
+<ul class="menu menu-horizontal menu-sm flex-nowrap gap-0.5 p-0" aria-label="{{ _('Language') }}" data-language-control>
+  {% for code, label in languages %}
+  <li><a{% if code == language %} class="menu-active" aria-current="true"{% endif %} href="{{ current_path }}"
+         hreflang="{{ code|replace('_', '-') }}" lang="{{ code|replace('_', '-') }}">{{ label }}</a></li>
+  {% endfor %}
+</ul>
+{% else %}
+<details class="dropdown dropdown-end" data-menu data-language-control>
+  <summary class="btn btn-ghost btn-sm gap-1 px-2">
+    {{ icon("languages", "size-4") }}
+    <span class="sr-only">{{ _("Language") }}</span>
+    <span class="uppercase" lang="{{ language_tag }}" aria-hidden="true">{{ language[:2] }}</span>
+    {{ icon("chevron-down", "size-3") }}
+  </summary>
+  <ul class="dropdown-content menu z-40 mt-2 w-44 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
+    {% for code, label in languages %}
+    <li><a{% if code == language %} class="menu-active" aria-current="true"{% endif %} href="{{ current_path }}"
+           hreflang="{{ code|replace('_', '-') }}" lang="{{ code|replace('_', '-') }}">{{ label }}</a></li>
+    {% endfor %}
+  </ul>
+</details>
+{% endif %}
+{% else %}
 <form method="post" action="/preferences" data-preferences="{{ place }}-language">
   <input type="hidden" name="next" value="{{ here }}">
   {% if variant == "select" %}
@@ -37,3 +65,4 @@
   </details>
   {% endif %}
 </form>
+{% endif %}

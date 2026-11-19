@@ -12,7 +12,7 @@ Each family of decisions is a page of its own: read the one a link names.
 
 ## Foundations and checks
 
-[Foundations and checks](decisions/foundations.md): Why the base is cloned and owned, built from standards, made on the server, checked by tests and tools rather than instructions, and on which Python.
+[Foundations and checks](decisions/foundations.md): Why the base is cloned and owned, built from standards, made on the server or exported as files, checked by tests and tools rather than instructions, and on which Python.
 
 ## Components and the gallery
 
@@ -43,7 +43,7 @@ Each family of decisions is a page of its own: read the one a link names.
 | Question | How it is settled |
 |---|---|
 | Which translation tool do translators use? | Files in git work for developers; decide if non-developers translate |
-| Can a person open a server running inside an assistant's sandbox? | Not documented. Until tested, the assistant shows results as screenshots or a self-contained HTML file |
+| Can a person open a server running inside an assistant's sandbox? | Not documented. Until tested, the assistant shows results as screenshots |
 | Does generating the stylesheet in an assistant's sandbox work under every organization's network rules? | Confirmed only [as far as the executable starting](stack.md#stack), on one account. Generate a full stylesheet there |
 | Does the dependency workflow run on other git servers? | It is written for GitHub Actions; test it on the first clone hosted elsewhere |
 | Is it worth buying ISO 9241-110 to compare the usability rules with it? | Not needed to work: no rule uses it. An organization that must show ISO conformance would buy it |

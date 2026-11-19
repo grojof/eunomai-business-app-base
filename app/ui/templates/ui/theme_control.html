@@ -1,22 +1,29 @@
 {#- The person's theme, in the look the application chose: `variant` is one of settings.LAYOUTS["theme_control"].
     Each is daisyUI's theme-controller inside a form: its class changes the theme at once, and app.js sends the form so
     the server saves it. Two-state looks (toggle, swap) send `light` unless the box is ticked.
-    `place` tells copies on one page apart, so focus can come back to the same control after the page reloads. -#}
+    `place` tells copies on one page apart, so focus can come back to the same control after the page reloads.
+    In an application exported as files (`static`) there is no server to send it to: the same controls stand without a
+    form, and preferences.js keeps the choice in the browser. Outside a form, radios of one name are one group across
+    the page, so each copy has a name of its own. -#}
 {% from "ui/macros.html" import icon %}
+{% if static %}
+<div data-theme-control>
+{% else %}
 <form method="post" action="/preferences" data-preferences="{{ place }}-theme" data-autosubmit>
   <input type="hidden" name="next" value="{{ here }}">
   {% if variant in ("toggle", "swap") %}
   <input type="hidden" name="theme" value="light">
   {% endif %}
+{% endif %}
   {% if variant == "toggle" %}
   <label class="toggle text-base-content">
-    <input class="theme-controller" type="checkbox" name="theme" value="dark" autocomplete="off" aria-label="{{ _('Dark theme') }}" data-follows-system{% if theme == "dark" %} checked{% endif %}>
+    <input class="theme-controller" type="checkbox" name="{% if static %}{{ place }}-{% endif %}theme" value="dark" autocomplete="off" aria-label="{{ _('Dark theme') }}" data-follows-system{% if theme == "dark" %} checked{% endif %}>
     {{ icon("sun", "size-6") }}
     {{ icon("moon", "size-6") }}
   </label>
   {% elif variant == "swap" %}
   <label class="swap swap-rotate btn btn-ghost btn-square btn-sm">
-    <input class="theme-controller" type="checkbox" name="theme" value="dark" autocomplete="off" aria-label="{{ _('Dark theme') }}" data-follows-system{% if theme == "dark" %} checked{% endif %}>
+    <input class="theme-controller" type="checkbox" name="{% if static %}{{ place }}-{% endif %}theme" value="dark" autocomplete="off" aria-label="{{ _('Dark theme') }}" data-follows-system{% if theme == "dark" %} checked{% endif %}>
     {{ icon("sun", "swap-off size-5") }}
     {{ icon("moon", "swap-on size-5") }}
   </label>
@@ -25,7 +32,7 @@
     <legend class="sr-only">{{ _("Theme") }}</legend>
     {% for value, label, name in theme_options %}
     <label class="flex cursor-pointer items-center gap-1">
-      <input class="radio radio-sm theme-controller" type="radio" name="theme" value="{{ value }}" autocomplete="off" aria-label="{{ label }}"{% if value == theme %} checked{% endif %}>
+      <input class="radio radio-sm theme-controller" type="radio" name="{% if static %}{{ place }}-{% endif %}theme" value="{{ value }}" autocomplete="off" aria-label="{{ label }}"{% if value == theme %} checked{% endif %}>
       {{ icon(name, "size-4") }}
     </label>
     {% endfor %}
@@ -33,16 +40,25 @@
   {% else %}
   <details class="dropdown dropdown-end" data-menu>
     <summary class="btn btn-ghost btn-sm gap-1 px-2">
+      {% if static %}
+      {#- Every theme's icon is here, and preferences.js shows the one of the theme the browser kept -#}
+      {% for value, _label, name in theme_options %}<span class="inline-flex" data-theme-icon="{{ value }}"{% if value != theme %} hidden{% endif %}>{{ icon(name, "size-4") }}</span>{% endfor %}
+      {% else %}
       {% for value, _label, name in theme_options %}{% if value == theme %}{{ icon(name, "size-4") }}{% endif %}{% endfor %}
+      {% endif %}
       <span class="sr-only">{{ _("Theme") }}</span>
       {{ icon("chevron-down", "size-3") }}
     </summary>
     <ul class="dropdown-content z-40 mt-2 w-44 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
       {% for value, label, name in theme_options %}
-      <li><input class="theme-controller btn btn-sm btn-block btn-ghost justify-start" type="radio" name="theme" value="{{ value }}" autocomplete="off" aria-label="{{ label }}"{% if value == theme %} checked{% endif %}></li>
+      <li><input class="theme-controller btn btn-sm btn-block btn-ghost justify-start" type="radio" name="{% if static %}{{ place }}-{% endif %}theme" value="{{ value }}" autocomplete="off" aria-label="{{ label }}"{% if value == theme %} checked{% endif %}></li>
       {% endfor %}
     </ul>
   </details>
   {% endif %}
+{% if static %}
+</div>
+{% else %}
   <button class="btn btn-xs hidden noscript:inline-flex" type="submit">{{ _("Apply") }}</button>
 </form>
+{% endif %}

@@ -26,5 +26,9 @@ at all is the proxy's, or Entra's, to decide.
 | One role from a family of groups, and what it covers from which | A pattern in `APP_ROLE_GROUPS`; the application reads the matching group from `Person.groups` |
 | Managed in the application, with the directory giving only who comes in | Not in the base: a module of the application's own, for whom may see that screen |
 
+An application [exported as files](a-static-application.md#a-static-application) has no process to read those
+headers: the proxy alone decides who may open it, its pages name nobody, and every file is the same for everyone the
+proxy lets in. A page that asks for a role other than `signed_in` is not exported.
+
 A visitor without identity gets the 401 page, with no navigation, version or user menu. The public paths are exactly
 `/health` and `/static/`. For local work, a fake identity is available and refuses to start outside development.

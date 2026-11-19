@@ -1,0 +1,22 @@
+{#- The shell of an application exported as files: nobody is signed in to it, so there is no user menu. On a small
+    screen the header has no room for the theme and language controls, so they live here, under a name of their own;
+    from a large screen up they are in the header, and this is not shown. It works without JavaScript; app.js adds
+    Escape. -#}
+{% from "ui/macros.html" import icon %}
+<details class="dropdown dropdown-end lg:hidden" data-menu>
+  <summary class="btn btn-ghost btn-square">
+    {{ icon("sliders-horizontal") }}
+    <span class="sr-only">{{ _("Preferences") }}</span>
+  </summary>
+  <div class="dropdown-content z-30 mt-2 w-72 space-y-3 rounded-box border border-base-300 bg-base-100 p-4 shadow-lg">
+    <div class="flex items-center justify-between gap-2">
+      <span class="text-sm font-semibold">{{ _("Theme") }}</span>
+      {% with variant=layout.theme_control, place="menu" %}{% include "ui/theme_control.html" %}{% endwith %}
+    </div>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <span class="text-sm font-semibold">{{ _("Language") }}</span>
+      {% with variant=layout.language_control, place="menu" %}{% include "ui/language_control.html" %}{% endwith %}
+    </div>
+    <p class="border-t border-base-300 pt-3 text-sm">{{ _("Version %(version)s", version=version) }}</p>
+  </div>
+</details>

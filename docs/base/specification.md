@@ -125,6 +125,10 @@ Each section is a page of its own: read the section a link names, not every page
 
 [Updating an application](updating-an-application.md): How an application takes a newer template: tools/update_application.py, what it merges and what it keeps.
 
+## A static application
+
+[A static application](a-static-application.md): How an application whose pages need nothing from a server is published as files: tools/export_static.py, what it writes, what it refuses, and how theme, language and search work without a server.
+
 ## Checks
 
 [Checks](checks.md): Every check the base runs and what each proves: tests, accessibility and contrast scans, keyboard, languages, uploads, exports and databases.
